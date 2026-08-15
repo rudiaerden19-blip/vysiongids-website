@@ -32,6 +32,17 @@ body {
   z-index: 0;
 }
 
+/* Zaakpagina: kaart vast — pagina scrollt, kaart niet pannen/zoomen */
+.vysiongids-listing-map .leaflet-container {
+  touch-action: pan-y;
+  cursor: default;
+}
+
+.vysiongids-listing-map .leaflet-grab,
+.vysiongids-listing-map .leaflet-dragging {
+  cursor: default !important;
+}
+
 /* Regio-popup: altijd overlay, nooit layout-shift */
 .vysiongids-region-backdrop {
   position: fixed;

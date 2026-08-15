@@ -32,6 +32,20 @@ function OpenPopupOnLoad({ lat, lng }: { lat: number; lng: number }) {
   return null
 }
 
+function LockMapView() {
+  const map = useMap()
+  useEffect(() => {
+    map.dragging.disable()
+    map.touchZoom.disable()
+    map.doubleClickZoom.disable()
+    map.boxZoom.disable()
+    map.keyboard.disable()
+    map.scrollWheelZoom.disable()
+    if (map.zoomControl) map.zoomControl.remove()
+  }, [map])
+  return null
+}
+
 function MarkerWithPopup({
   lat,
   lng,
@@ -63,10 +77,16 @@ export default function ListingMap({ listing }: ListingMapProps) {
   return (
     <section className="mt-8" aria-label="Locatie op de kaart">
       <h2 className="text-lg font-bold text-gray-900">Adres</h2>
-      <div className="relative mt-3 overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
+      <div className="vysiongids-listing-map relative mt-3 overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
         <MapContainer
           center={[lat, lng]}
           zoom={18}
+          zoomControl={false}
+          dragging={false}
+          touchZoom={false}
+          doubleClickZoom={false}
+          boxZoom={false}
+          keyboard={false}
           scrollWheelZoom={false}
           className="z-0 h-[min(420px,55vh)] w-full"
           style={{ height: 'min(420px, 55vh)', width: '100%' }}
@@ -77,6 +97,7 @@ export default function ListingMap({ listing }: ListingMapProps) {
             maxZoom={19}
           />
           <TileLayer url={ESRI_LABELS} maxZoom={19} opacity={0.85} />
+          <LockMapView />
           <OpenPopupOnLoad lat={lat} lng={lng} />
           <MarkerWithPopup
             lat={lat}
