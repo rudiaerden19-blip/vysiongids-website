@@ -125,7 +125,7 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
         count = 0
       }
 
-      const message = buildSearchResultsSpeechMessage({ count, q: trimmed, type, prov })
+      const message = buildSearchResultsSpeechMessage({ count })
       stashVoiceSearchAnnouncement(message)
       await speakDutchAsync(message)
       router.push(buildSearchPath(trimmed, type, prov))
