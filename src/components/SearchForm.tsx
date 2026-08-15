@@ -109,7 +109,7 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
     [formRef, prov, qInputRef, router],
   )
 
-  const { listening, supported, toggleListen } = useVoiceSearch(runSearchWithQuery)
+  const { listening, supported, startListen } = useVoiceSearch(runSearchWithQuery)
 
   return (
     <div
@@ -118,7 +118,7 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
       <button type="submit" className="vysiongids-hero-search-submit" style={submitStyle}>
         Zoeken
       </button>
-      <SearchVoiceMicButton listening={listening} supported={supported} onClick={toggleListen} />
+      <SearchVoiceMicButton listening={listening} supported={supported} onClick={startListen} />
     </div>
   )
 }

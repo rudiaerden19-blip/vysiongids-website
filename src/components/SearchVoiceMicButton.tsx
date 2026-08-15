@@ -29,7 +29,7 @@ function MicIcon() {
 export default function SearchVoiceMicButton({ listening, supported, onClick, className }: Props) {
   const title = supported
     ? listening
-      ? 'Luisteren… tik om te stoppen'
+      ? 'Luisteren… spreek je zoekopdracht in'
       : 'Inspreken — bv. pizzeria in Pelt, frituur, naam van de zaak'
     : 'Spraakzoeken werkt in Chrome, Edge of Safari'
 
@@ -38,7 +38,7 @@ export default function SearchVoiceMicButton({ listening, supported, onClick, cl
       type="button"
       className={`vysiongids-hero-search-voice${listening ? ' vysiongids-hero-search-voice--listening' : ''}${className ? ` ${className}` : ''}`}
       onClick={onClick}
-      disabled={!supported}
+      disabled={!supported || listening}
       title={title}
       aria-label={title}
       aria-pressed={listening}

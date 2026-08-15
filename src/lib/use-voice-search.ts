@@ -37,23 +37,11 @@ export function useVoiceSearch(onResult: (text: string) => void) {
     setSupported(!!getSpeechRecognitionCtor())
   }, [])
 
-  const stop = useCallback(() => {
-    try {
-      recRef.current?.stop()
-    } catch {
-      recRef.current?.abort()
-    }
-    setListening(false)
-  }, [])
+  const busyRef = useRef(false)
 
-  const toggleListen = useCallback(() => {
+  const startListen = useCallback(() => {
     const Ctor = getSpeechRecognitionCtor()
-    if (!Ctor) return
-
-    if (listening) {
-      stop()
-      return
-    }
+    if (!Ctor || busyRef.current) return
 
     try {
       recRef.current?.abort()
@@ -67,20 +55,32 @@ export function useVoiceSearch(onResult: (text: string) => void) {
     rec.maxAlternatives = 1
     rec.continuous = false
 
+    const release = () => {
+      busyRef.current = false
+      setListening(false)
+    }
+
     rec.onresult = (event) => {
       const text = event.results[0]?.[0]?.transcript?.trim() ?? ''
       if (text) onResultRef.current(text)
+      try {
+        rec.stop()
+      } catch {
+        /* ignore */
+      }
     }
-    rec.onend = () => setListening(false)
-    rec.onerror = () => setListening(false)
+    rec.onend = release
+    rec.onerror = release
 
     recRef.current = rec
+    busyRef.current = true
     setListening(true)
     rec.start()
-  }, [listening, stop])
+  }, [])
 
   useEffect(() => {
     return () => {
+      busyRef.current = false
       try {
         recRef.current?.abort()
       } catch {
@@ -89,5 +89,5 @@ export function useVoiceSearch(onResult: (text: string) => void) {
     }
   }, [])
 
-  return { listening, supported, toggleListen }
+  return { listening, supported, startListen }
 }
