@@ -918,6 +918,62 @@ body {
   border-color: #fca5a5;
 }
 
+.vysiongids-photo-pick {
+  flex: 1 1 7rem;
+  min-width: 0;
+  max-width: 11rem;
+}
+
+.vysiongids-photo-pick-label {
+  display: block;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.vysiongids-photo-pick-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.vysiongids-photo-pick-btn {
+  margin-top: 0.35rem;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  border: 1px solid var(--accent);
+  background: #fff;
+  color: var(--accent);
+  padding: 0.45rem 0.65rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.vysiongids-photo-pick-btn:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+.vysiongids-photo-pick-hint {
+  margin-top: 0.25rem;
+  font-size: 0.6875rem;
+  line-height: 1.25;
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 @media (max-width: 639px) {
   .vysiongids-listing-panel-body {
     padding: 1rem 1.1rem;

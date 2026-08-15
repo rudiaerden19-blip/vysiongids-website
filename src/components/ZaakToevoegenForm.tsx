@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
 import { LISTING_TYPES } from '@/lib/listing-types'
 
@@ -13,6 +13,47 @@ function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React
         *
       </span>
     </label>
+  )
+}
+
+function PhotoPickField({ index }: { index: number }) {
+  const inputRef = useRef<HTMLInputElement>(null)
+  const [fileLabel, setFileLabel] = useState<string | null>(null)
+  const id = `photo${index}`
+
+  return (
+    <div className="vysiongids-photo-pick">
+      <label className="vysiongids-photo-pick-label" htmlFor={id}>
+        Foto {index + 1}
+        <span className="vysiongids-form-required" aria-hidden>
+          *
+        </span>
+      </label>
+      <input
+        ref={inputRef}
+        id={id}
+        name={id}
+        type="file"
+        accept="image/*"
+        capture="environment"
+        required
+        className="vysiongids-photo-pick-input"
+        onChange={(e) => {
+          const f = e.target.files?.[0]
+          setFileLabel(f ? f.name : null)
+        }}
+      />
+      <button
+        type="button"
+        className="vysiongids-photo-pick-btn"
+        onClick={() => inputRef.current?.click()}
+      >
+        Kies bestand
+      </button>
+      <p className="vysiongids-photo-pick-hint" aria-live="polite">
+        {fileLabel ?? 'Nog geen foto'}
+      </p>
+    </div>
   )
 }
 
@@ -199,24 +240,9 @@ export default function ZaakToevoegenForm() {
           </span>
         </p>
         <p className="mt-0.5 text-xs text-gray-500">JPG/PNG/WebP, max. 5 MB per foto.</p>
-        <div className="mt-2 grid gap-3 sm:grid-cols-3">
+        <div className="mt-2 flex flex-wrap gap-3">
           {[0, 1, 2].map((i) => (
-            <div key={i}>
-              <label className="text-xs font-medium text-gray-600" htmlFor={`photo${i}`}>
-                Foto {i + 1}
-                <span className="vysiongids-form-required" aria-hidden>
-                  *
-                </span>
-              </label>
-              <input
-                id={`photo${i}`}
-                name={`photo${i}`}
-                type="file"
-                accept="image/*"
-                required
-                className="mt-1 block w-full text-sm"
-              />
-            </div>
+            <PhotoPickField key={i} index={i} />
           ))}
         </div>
       </div>
