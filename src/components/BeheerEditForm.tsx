@@ -8,6 +8,7 @@ import OpeningHoursEditor from '@/components/OpeningHoursEditor'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
 import { GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
 import { compressListingPhoto } from '@/lib/compress-listing-photo'
+import DeliveryRadiusKmField from '@/components/DeliveryRadiusKmField'
 import ListingOwnerOptionsFields from '@/components/ListingOwnerOptionsFields'
 import KitchenTypeSelect from '@/components/KitchenTypeSelect'
 
@@ -445,6 +446,8 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
             />
           </div>
         </div>
+
+        <DeliveryRadiusKmField idPrefix="edit-" defaultValueKm={listing.deliveryRadiusKm} />
 
         <div>
           <p className="vysiongids-form-label">Foto&apos;s</p>

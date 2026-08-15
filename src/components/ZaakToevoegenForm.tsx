@@ -9,6 +9,7 @@ import { normalizeHttpsUrl } from '@/lib/normalize-url'
 import { GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
 import { compressListingPhoto } from '@/lib/compress-listing-photo'
 import ListingOwnerOptionsFields from '@/components/ListingOwnerOptionsFields'
+import DeliveryRadiusKmField from '@/components/DeliveryRadiusKmField'
 import KitchenTypeSelect from '@/components/KitchenTypeSelect'
 
 function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
@@ -409,6 +410,8 @@ export default function ZaakToevoegenForm() {
           />
         </div>
       </div>
+
+      <DeliveryRadiusKmField />
 
       <div>
         <p className="vysiongids-form-label">

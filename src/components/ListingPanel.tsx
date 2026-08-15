@@ -7,12 +7,12 @@ import type { Listing } from '@/lib/listing-types'
 import { DAY_LABEL } from '@/lib/gids-opening-hours'
 import { resolveHoursByDay } from '@/lib/listing-info'
 import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
-import { formatDeliveryFee, formatListingAddressLines, formatMinOrder, getListingTypeLabel, listingPhotoUrls } from '@/lib/listings'
+import { formatDeliveryFee, formatDeliveryRadius, formatListingAddressLines, formatMinOrder, listingPhotoUrls } from '@/lib/listings'
 
 export default function ListingPanel({ listing, compact }: { listing: Listing; compact?: boolean }) {
-  const typeLabel = getListingTypeLabel(listing.type)
   const cuisineLine = getListingCuisineDisplay(listing.cuisineType)
   const minOrder = formatMinOrder(listing)
+  const deliveryRadiusLabel = formatDeliveryRadius(listing)
   const deliveryLabel = formatDeliveryFee(listing)
   const timeLabel =
     listing.deliveryTimeMin != null && listing.deliveryTimeMax != null
@@ -58,12 +58,11 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
           <p style={{ margin: 0, display: 'flex', gap: '0.5rem', fontSize: bodyTextSize, color: '#4b5563' }}>
             <span aria-hidden>🍽</span>
             <span>
-              {typeLabel}
               {listing.pickupEnabled && listing.deliveryEnabled
-                ? ' · Afhalen & levering'
+                ? 'Afhalen & levering'
                 : listing.deliveryEnabled
-                  ? ' · Levering'
-                  : ' · Afhalen'}
+                  ? 'Levering'
+                  : 'Afhalen'}
             </span>
           </p>
           <div className="vysiongids-listing-panel-hours-wrap">
@@ -84,6 +83,9 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
             {timeLabel ? <span style={{ color: '#6b7280' }}>{timeLabel}</span> : null}
             <span style={{ fontWeight: 500, color: '#374151' }}>{deliveryLabel}</span>
             {minOrder ? <span style={{ color: '#6b7280' }}>{minOrder}</span> : null}
+            {deliveryRadiusLabel ? (
+              <span style={{ color: '#6b7280' }}>{deliveryRadiusLabel}</span>
+            ) : null}
           </div>
           <div className="vysiongids-listing-panel-actions">
             <ListingPanelAmenityFooter listing={listing} variant="inline" />

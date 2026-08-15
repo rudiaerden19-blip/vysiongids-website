@@ -27,6 +27,7 @@ export type GidsListingRow = {
   rating_count: number | null
   delivery_time_min: number | null
   delivery_time_max: number | null
+  delivery_radius_km?: number | null
   delivery_fee_eur: number | null
   min_order_eur: number | null
   pickup_enabled: boolean | null
@@ -62,6 +63,8 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
     ratingCount: Number(row.rating_count ?? 0),
     deliveryTimeMin: row.delivery_time_min ?? undefined,
     deliveryTimeMax: row.delivery_time_max ?? undefined,
+    deliveryRadiusKm:
+      row.delivery_radius_km == null ? null : Number(row.delivery_radius_km),
     deliveryFeeEur: row.delivery_fee_eur == null ? null : Number(row.delivery_fee_eur),
     minOrderEur: row.min_order_eur == null ? null : Number(row.min_order_eur),
     pickupEnabled: row.pickup_enabled ?? true,

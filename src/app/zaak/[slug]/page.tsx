@@ -12,6 +12,7 @@ import ZaakOwnerDeleteSection from '@/components/ZaakOwnerDeleteSection'
 import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
 import {
   formatDeliveryFee,
+  formatDeliveryRadius,
   formatListingAddressLines,
   formatMinOrder,
   getListingBySlug,
@@ -43,9 +44,9 @@ export default async function ZaakPage({ params }: Props) {
   const listing = await getListingBySlug(slug)
   if (!listing) notFound()
 
-  const typeLabel = getListingTypeLabel(listing.type)
   const cuisineLine = getListingCuisineDisplay(listing.cuisineType)
   const minOrder = formatMinOrder(listing)
+  const deliveryRadiusLabel = formatDeliveryRadius(listing)
   const { street, cityLine } = formatListingAddressLines(listing)
   const reviews = (await fetchReviewsByListingSlug(slug, 5)) ?? []
   const reviewStats = await fetchReviewStatsByListingSlug(slug)
@@ -86,7 +87,6 @@ export default async function ZaakPage({ params }: Props) {
                 {cityLine}
               </span>
             </p>
-            <p className="mt-2 text-sm font-medium text-gray-700">{typeLabel}</p>
 
             <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100">
               <ListingPhotoSlider
@@ -147,6 +147,12 @@ export default async function ZaakPage({ params }: Props) {
                   <div>
                     <dt className="font-semibold text-gray-500">Minimum</dt>
                     <dd>{minOrder}</dd>
+                  </div>
+                ) : null}
+                {deliveryRadiusLabel ? (
+                  <div>
+                    <dt className="font-semibold text-gray-500">Leveringsstraal</dt>
+                    <dd>{deliveryRadiusLabel.replace('Levering binnen ', '')}</dd>
                   </div>
                 ) : null}
               </dl>

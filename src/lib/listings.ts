@@ -3,6 +3,8 @@ import type { Listing, ListingSearchParams, ListingTypeId } from '@/lib/listing-
 import { LISTING_TYPES } from '@/lib/listing-types'
 import { fetchListingBySlugFromDb, fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
 import { normalizeSearchText } from '@/lib/gids-text'
+import { parseListingSearchQuery, listingMatchesParsedSearch } from '@/lib/gids-listing-search'
+import { formatDeliveryRadiusKm } from '@/lib/listing-delivery-radius'
 import { unstable_cache } from 'next/cache'
 
 const jsonFallback = listingsJson as Listing[]
@@ -72,10 +74,10 @@ export function getListingTypeLabel(type: Listing['type']): string {
   return LISTING_TYPES.find((t) => t.id === type)?.label ?? type
 }
 
-/** Zoek op stad, postcode, naam of adres (query `q`). Filter op keukentype. */
+/** Zoek op stad, postcode, naam, adres, keukentype of voorzieningen (query `q`). Filter op zaaktype / provincie. */
 export async function searchListings(params: ListingSearchParams): Promise<Listing[]> {
   const listings = await loadListings()
-  const q = normalizeSearchText(params.q ?? '')
+  const parsed = parseListingSearchQuery(params.q ?? '')
   const type = (params.type ?? 'all') as ListingTypeId
   const prov = normalizeSearchText(params.prov ?? '')
 
@@ -85,11 +87,7 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
       const listingProv = normalizeSearchText(listing.province ?? '')
       if (!listingProv || listingProv !== prov) return false
     }
-    if (!q) return true
-    const haystack = normalizeSearchText(
-      [listing.name, listing.city, listing.postcode, listing.address, listing.type].join(' '),
-    )
-    return haystack.includes(q) || q.split(/\s+/).every((part) => part.length >= 2 && haystack.includes(part))
+    return listingMatchesParsedSearch(listing, parsed)
   })
 }
 
@@ -102,6 +100,12 @@ export function formatDeliveryFee(listing: Listing): string {
 export function formatMinOrder(listing: Listing): string | null {
   if (listing.minOrderEur == null) return null
   return `Min. €${listing.minOrderEur.toFixed(2).replace('.', ',')}`
+}
+
+export function formatDeliveryRadius(listing: Listing): string | null {
+  const km = formatDeliveryRadiusKm(listing.deliveryRadiusKm)
+  if (!km) return null
+  return `Levering binnen ${km}`
 }
 
 /** Openingstijden voor panelen en profiel — altijd zichtbaar */

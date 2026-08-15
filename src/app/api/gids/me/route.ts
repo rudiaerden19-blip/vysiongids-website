@@ -5,7 +5,7 @@ import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { mapGidsRowToListing, fetchListingRowByIdAdmin, fetchListingByNormalizedNameAdmin } from '@/lib/gids-listings-db'
 import { parseGidsListingFormData } from '@/lib/gids-listing-form-server'
 import { mergeListingAmenitiesWithOwnerChoices } from '@/lib/gids-owner-amenities'
-import { applyCuisineTypeToUpdatePayload, gidsListingSaveErrorMessage } from '@/lib/gids-listing-db-write'
+import { applyCuisineTypeToUpdatePayload, applyDeliveryRadiusToUpdatePayload, gidsListingSaveErrorMessage } from '@/lib/gids-listing-db-write'
 import { hashGidsPin } from '@/lib/gids-pin'
 import { normalizeGidsBusinessName, slugifyListing } from '@/lib/gids-text'
 import {
@@ -190,6 +190,7 @@ export async function PATCH(req: Request) {
   }
 
   applyCuisineTypeToUpdatePayload(updatePayload, d.cuisineType)
+  applyDeliveryRadiusToUpdatePayload(updatePayload, d.deliveryRadiusKmValue)
 
   const { error: updateErr } = await admin.from('gids_listings').update(updatePayload).eq('id', listingId)
   if (updateErr) {

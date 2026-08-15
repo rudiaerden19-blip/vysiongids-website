@@ -56,7 +56,10 @@ export default async function ZoekenPage({ searchParams }: Props) {
               textAlign: 'center',
             }}
           >
-            <p style={{ margin: 0, color: '#374151' }}>Geen zaken gevonden. Probeer een andere stad of type.</p>
+            <p style={{ margin: 0, color: '#374151' }}>
+              Geen zaken gevonden. Probeer een andere stad, keukentype (bv. Belgische keuken) of voorziening (bv.
+              glutenvrij, parking).
+            </p>
             <Link href="/zoeken" style={{ marginTop: '0.75rem', display: 'inline-block', fontWeight: 600, color: '#0e5d82' }}>
               Toon alle zaken
             </Link>

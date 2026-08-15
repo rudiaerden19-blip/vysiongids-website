@@ -5,6 +5,7 @@ import { isValidGidsPin } from '@/lib/gids-pin'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
 import { GIDS_REGISTER_MAX_PHOTO_BYTES, GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
 import { parseOwnerAmenitiesFromForm } from '@/lib/gids-owner-amenities'
+import { isAllowedDeliveryRadiusKm, parseDeliveryRadiusKmFromForm } from '@/lib/listing-delivery-radius'
 import { WEEKDAYS_NL } from '@/lib/listing-info'
 
 const VALID_TYPES = LISTING_TYPES.filter((t) => t.id !== 'all').map((t) => t.id)
@@ -28,6 +29,7 @@ export type ParsedGidsListingForm = {
   minOrderValue: number | null
   deliveryTimeMinValue: number | null
   deliveryTimeMaxValue: number | null
+  deliveryRadiusKmValue: number | null
   photos: { index: number; file: File }[]
   removePhotoSlots: number[]
   ownerAmenities: ListingAmenityId[]
@@ -61,6 +63,7 @@ export async function parseGidsListingFormData(
   const minOrderRaw = String(form.get('minOrderEur') ?? '').trim()
   const deliveryTimeMinRaw = String(form.get('deliveryTimeMin') ?? '').trim()
   const deliveryTimeMaxRaw = String(form.get('deliveryTimeMax') ?? '').trim()
+  const deliveryRadiusKmRaw = String(form.get('deliveryRadiusKm') ?? '').trim()
 
   const deliveryFeeEur = deliveryFeeRaw === '' ? NaN : Number(deliveryFeeRaw.replace(',', '.'))
   const minOrderEur = minOrderRaw === '' ? NaN : Number(minOrderRaw.replace(',', '.'))
@@ -163,6 +166,15 @@ export async function parseGidsListingFormData(
     return { ok: false, error: 'Levertijd tot moet minstens gelijk zijn aan vanaf.', status: 400 }
   }
 
+  let deliveryRadiusKmValue: number | null = null
+  if (deliveryRadiusKmRaw !== '') {
+    const parsedRadius = parseDeliveryRadiusKmFromForm(deliveryRadiusKmRaw)
+    if (parsedRadius == null || !isAllowedDeliveryRadiusKm(parsedRadius)) {
+      return { ok: false, error: 'Leveringsstraal: kies een afstand tussen 1 en 100 km.', status: 400 }
+    }
+    deliveryRadiusKmValue = parsedRadius
+  }
+
   const removePhotoSlots: number[] = []
   for (let i = 0; i < 3; i++) {
     if (String(form.get(`removePhoto${i}`) ?? '') === '1') removePhotoSlots.push(i)
@@ -230,6 +242,7 @@ export async function parseGidsListingFormData(
       minOrderValue,
       deliveryTimeMinValue,
       deliveryTimeMaxValue,
+      deliveryRadiusKmValue,
       photos,
       removePhotoSlots,
       ownerAmenities: parseOwnerAmenitiesFromForm(form),

@@ -7,6 +7,9 @@ export function gidsListingSaveErrorMessage(message: string | undefined): string
   if (/cuisine_type/i.test(message)) {
     return 'Type keuken kan niet opgeslagen worden: voer in Supabase SQL uit: supabase/migrations/006_gids_listings_cuisine_type.sql — of laat type keuken leeg en probeer opnieuw.'
   }
+  if (/delivery_radius_km/i.test(message)) {
+    return 'Leveringsstraal kan niet opgeslagen worden: voer in Supabase SQL uit: supabase/migrations/007_gids_listings_delivery_radius_km.sql — of laat leveringsstraal leeg.'
+  }
   return 'Opslaan mislukt. Probeer later opnieuw.'
 }
 
@@ -47,7 +50,15 @@ export function buildGidsListingInsertRow(d: ParsedGidsListingForm, extras: Inse
     delivery_time_max: d.deliveryTimeMaxValue,
   }
   if (d.cuisineType) row.cuisine_type = d.cuisineType
+  if (d.deliveryRadiusKmValue != null) row.delivery_radius_km = d.deliveryRadiusKmValue
   return row
+}
+
+export function applyDeliveryRadiusToUpdatePayload(
+  payload: Record<string, unknown>,
+  deliveryRadiusKm: ParsedGidsListingForm['deliveryRadiusKmValue'],
+): void {
+  payload.delivery_radius_km = deliveryRadiusKm
 }
 
 export function applyCuisineTypeToUpdatePayload(
