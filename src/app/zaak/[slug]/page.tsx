@@ -68,7 +68,7 @@ export default async function ZaakPage({ params }: Props) {
           <span className="text-gray-800">{listing.city}</span>
         </nav>
 
-        <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_min(18rem,22vw)] xl:grid-cols-[minmax(0,1fr)_20rem]">
           <div>
             <h1 className="vysiongids-zaak-title text-3xl font-bold text-accent sm:text-4xl">{listing.name}</h1>
             <p className="mt-2 flex items-start gap-2 text-gray-600">
@@ -87,7 +87,7 @@ export default async function ZaakPage({ params }: Props) {
                 alt={listing.name}
                 priority
                 showControls
-                sizes="(max-width: 1024px) 100vw, 720px"
+                sizes="(max-width: 1024px) 100vw, min(960px, 75vw)"
                 className="object-cover"
               />
             </div>

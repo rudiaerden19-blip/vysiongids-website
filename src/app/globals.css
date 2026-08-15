@@ -6,7 +6,9 @@
   --accent: #0e5d82;
   --vysiongids-hero-min-height: clamp(18rem, 42vh, 26rem);
   --vysiongids-home-section-y: clamp(3.25rem, 7vw, 5.75rem);
-  --vysiongids-home-section-x: clamp(1.25rem, 4vw, 3rem);
+  --vysiongids-home-section-x: clamp(1.25rem, 3vw, 2.5rem);
+  --vysiongids-content-max: 90rem;
+  --vysiongids-page-x: clamp(1rem, 3vw, 2.5rem);
 }
 
 @theme inline {
@@ -210,7 +212,7 @@ body {
   justify-content: space-between;
   gap: 0.75rem;
   width: 100%;
-  max-width: 90rem;
+  max-width: var(--vysiongids-content-max);
   margin: 0 auto;
   padding: 0.75rem 1rem;
   box-sizing: border-box;
@@ -419,7 +421,7 @@ body {
 
 .vysiongids-hero-wrap {
   width: 100%;
-  max-width: 90rem;
+  max-width: var(--vysiongids-content-max);
   margin-left: auto;
   margin-right: auto;
   box-sizing: border-box;
@@ -461,7 +463,8 @@ body {
 }
 
 .vysiongids-home-stats-inner {
-  max-width: 56rem;
+  width: 100%;
+  max-width: var(--vysiongids-content-max);
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;
@@ -480,7 +483,7 @@ body {
 
 .vysiongids-home-stat {
   width: 100%;
-  max-width: 14rem;
+  max-width: none;
   text-align: center;
 }
 
@@ -502,7 +505,8 @@ body {
 }
 
 .vysiongids-home-featured-inner {
-  max-width: 44rem;
+  width: 100%;
+  max-width: var(--vysiongids-content-max);
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -660,7 +664,8 @@ body {
 }
 
 .vysiongids-home-regions-inner {
-  max-width: 56rem;
+  width: 100%;
+  max-width: var(--vysiongids-content-max);
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -704,6 +709,7 @@ body {
 @media (min-width: 960px) {
   .vysiongids-home-regions-grid {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 1.25rem 1.15rem;
   }
 }
 
@@ -901,9 +907,11 @@ body {
 
 .vysiongids-zaak-info {
   margin-top: 2rem;
-  width: 100%;
-  max-width: 100%;
-  padding: 1.25rem 1rem;
+  width: calc(100% + 2 * var(--vysiongids-page-x));
+  max-width: none;
+  margin-left: calc(-1 * var(--vysiongids-page-x));
+  margin-right: calc(-1 * var(--vysiongids-page-x));
+  padding: 1.25rem var(--vysiongids-page-x);
   background: #ececec;
   box-sizing: border-box;
   overflow-x: hidden;
@@ -911,7 +919,7 @@ body {
 
 @media (min-width: 640px) {
   .vysiongids-zaak-info {
-    padding: 2rem clamp(1.25rem, 3vw, 2.5rem);
+    padding: 2rem var(--vysiongids-page-x);
   }
 }
 
@@ -1072,17 +1080,27 @@ body {
 
 .vysiongids-page-wrap {
   width: 100%;
-  max-width: 90rem;
+  max-width: var(--vysiongids-content-max);
   margin-left: auto;
   margin-right: auto;
-  padding: 1.25rem 1rem 2rem;
+  padding: 1.25rem var(--vysiongids-page-x) 2rem;
   box-sizing: border-box;
 }
 
 @media (min-width: 640px) {
   .vysiongids-page-wrap {
-    padding: 2rem clamp(1rem, 4vw, 4rem) 2.5rem;
+    padding: 2rem var(--vysiongids-page-x) 2.5rem;
   }
+}
+
+.vysiongids-zaak-page .vysiongids-listing-map {
+  width: calc(100% + 2 * var(--vysiongids-page-x));
+  max-width: none;
+  margin-left: calc(-1 * var(--vysiongids-page-x));
+  margin-right: calc(-1 * var(--vysiongids-page-x));
+  border-radius: 0;
+  border-left: none;
+  border-right: none;
 }
 
 .vysiongids-zoeken-search {
@@ -1778,7 +1796,7 @@ body {
 }
 
 .vysiongids-site-footer-inner {
-  max-width: 90rem;
+  max-width: var(--vysiongids-content-max);
   margin: 0 auto;
   padding: 2.75rem clamp(1rem, 4vw, 4rem) 2rem;
   box-sizing: border-box;
