@@ -451,8 +451,19 @@ body {
 
 .vysiongids-home-section-intro {
   margin: 0 auto clamp(2.25rem, 5vw, 3.5rem);
-  max-width: 40rem;
+  max-width: min(52rem, 100%);
   text-align: center;
+}
+
+.vysiongids-home-featured-title,
+.vysiongids-home-regions-title {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(1.75rem, 4.5vw, 2.625rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #0e5d82;
+  line-height: 1.2;
 }
 
 .vysiongids-home-featured {
@@ -511,21 +522,11 @@ body {
   box-sizing: border-box;
 }
 
-.vysiongids-home-featured-title {
-  margin: 0;
-  text-align: center;
-  font-size: clamp(1.35rem, 3.2vw, 1.75rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #0e5d82;
-  line-height: 1.25;
-}
-
 .vysiongids-home-featured-lead {
-  margin: 1.25rem auto 0;
-  max-width: 36rem;
+  margin: 1.35rem auto 0;
+  max-width: 42rem;
   text-align: center;
-  font-size: 1rem;
+  font-size: clamp(1rem, 2vw, 1.125rem);
   font-weight: 500;
   color: #6b7280;
   line-height: 1.6;
@@ -670,21 +671,11 @@ body {
   box-sizing: border-box;
 }
 
-.vysiongids-home-regions-title {
-  margin: 0;
-  text-align: center;
-  font-size: clamp(1.35rem, 3.2vw, 1.75rem);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-  color: #0e5d82;
-  line-height: 1.25;
-}
-
 .vysiongids-home-regions-lead {
-  margin: 1.25rem auto 0;
-  max-width: 36rem;
+  margin: 1.35rem auto 0;
+  max-width: 42rem;
   text-align: center;
-  font-size: 1rem;
+  font-size: clamp(1rem, 2vw, 1.125rem);
   font-weight: 500;
   color: #6b7280;
   line-height: 1.6;
