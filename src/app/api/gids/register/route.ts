@@ -71,6 +71,7 @@ async function handleRegisterPost(req: Request) {
       opening_hours: d.openingHours,
       closed_days: d.closedDays,
       hours_by_day: d.hoursByDay,
+      amenities: d.ownerAmenities.length ? d.ownerAmenities : null,
       status: 'published',
       rating_avg: 0,
       rating_count: 0,

@@ -4,6 +4,7 @@ import { GIDS_SESSION_COOKIE, getGidsOwnerListingIdFromCookies } from '@/lib/gid
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { mapGidsRowToListing, fetchListingRowByIdAdmin, fetchListingByNormalizedNameAdmin } from '@/lib/gids-listings-db'
 import { parseGidsListingFormData } from '@/lib/gids-listing-form-server'
+import { mergeListingAmenitiesWithOwnerChoices } from '@/lib/gids-owner-amenities'
 import { hashGidsPin } from '@/lib/gids-pin'
 import { normalizeGidsBusinessName, slugifyListing } from '@/lib/gids-text'
 import {
@@ -175,6 +176,7 @@ export async function PATCH(req: Request) {
     opening_hours: d.openingHours,
     closed_days: d.closedDays,
     hours_by_day: d.hoursByDay,
+    amenities: mergeListingAmenitiesWithOwnerChoices(row.amenities, d.ownerAmenities),
     delivery_fee_eur: d.deliveryFeeValue,
     min_order_eur: d.minOrderValue,
     delivery_time_min: d.deliveryTimeMinValue,

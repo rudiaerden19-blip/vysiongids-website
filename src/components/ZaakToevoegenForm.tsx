@@ -8,6 +8,7 @@ import OpeningHoursEditor from '@/components/OpeningHoursEditor'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
 import { GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
 import { compressListingPhoto } from '@/lib/compress-listing-photo'
+import ListingOwnerOptionsFields from '@/components/ListingOwnerOptionsFields'
 
 function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
@@ -422,6 +423,8 @@ export default function ZaakToevoegenForm() {
           ))}
         </div>
       </div>
+
+      <ListingOwnerOptionsFields />
 
       <button
         type="submit"

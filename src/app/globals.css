@@ -1387,6 +1387,39 @@ body {
   font-weight: 700;
 }
 
+.vysiongids-owner-options {
+  margin: 0;
+  padding: 0;
+  border: none;
+}
+
+.vysiongids-owner-options-list {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.vysiongids-owner-options-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: #374151;
+  cursor: pointer;
+}
+
+.vysiongids-owner-options-checkbox {
+  margin-top: 0.2rem;
+  width: 1.05rem;
+  height: 1.05rem;
+  flex-shrink: 0;
+  accent-color: #0e5d82;
+}
+
 .vysiongids-form-input {
   display: block;
   width: 100%;

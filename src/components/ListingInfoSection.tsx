@@ -75,6 +75,42 @@ function AmenityIcon({ id }: { id: ListingAmenityId }) {
           <path d="M9 6h6" />
         </svg>
       )
+    case 'halal':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden {...props}>
+          <path d="M8 12c0-2.5 1.8-4.5 4-4.5s4 2 4 4.5v6H8v-6z" />
+          <path d="M12 7.5V4M10 5l2-2 2 2" />
+        </svg>
+      )
+    case 'gluten_free':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden {...props}>
+          <path d="M12 3c-2 3-4 6-4 9a4 4 0 008 0c0-3-2-6-4-9z" />
+          <path d="M9 15h6" />
+        </svg>
+      )
+    case 'accessible':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden {...props}>
+          <circle cx="12" cy="5" r="2" />
+          <path d="M12 7v4l4 2-2 6h-4l-2-6 2-1" />
+        </svg>
+      )
+    case 'vegetarian':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden {...props}>
+          <path d="M12 21c-4-4-6-8-6-12a6 6 0 1112 0c0 4-2 8-6 12z" />
+        </svg>
+      )
+    case 'takeaway':
+    case 'delivery':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden {...props}>
+          <path d="M4 7h11v10H4zM15 10h3l2 3v4h-5V10z" />
+          <circle cx="7" cy="18" r="2" />
+          <circle cx="17" cy="18" r="2" />
+        </svg>
+      )
     default:
       return (
         <svg viewBox="0 0 24 24" aria-hidden {...props}>
@@ -115,7 +151,10 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
   const defaultAmenities: ListingAmenityId[] = []
   if (listing.pickupEnabled) defaultAmenities.push('takeaway')
   if (listing.deliveryEnabled) defaultAmenities.push('delivery')
-  const amenityList = amenities.length ? amenities : defaultAmenities
+  const amenityList =
+    amenities.length > 0
+      ? [...amenities, ...defaultAmenities.filter((d) => !amenities.includes(d))]
+      : defaultAmenities
 
   return (
     <section id="info" className="vysiongids-zaak-info">

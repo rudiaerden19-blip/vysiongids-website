@@ -16,7 +16,18 @@ export const LISTING_TYPES = [
 
 export type ListingTypeId = (typeof LISTING_TYPES)[number]['id']
 
-export type ListingAmenityId = 'bancontact' | 'wifi' | 'chef' | 'wheelchair' | 'terrace' | 'takeaway' | 'delivery'
+export type ListingAmenityId =
+  | 'bancontact'
+  | 'wifi'
+  | 'chef'
+  | 'wheelchair'
+  | 'terrace'
+  | 'takeaway'
+  | 'delivery'
+  | 'halal'
+  | 'gluten_free'
+  | 'accessible'
+  | 'vegetarian'
 
 export type ListingWeekday =
   | 'maandag'

@@ -18,6 +18,10 @@ export const AMENITY_LABELS: Record<ListingAmenityId, string> = {
   terrace: 'Terras',
   takeaway: 'Afhalen',
   delivery: 'Levering',
+  halal: 'Wij verkopen halal producten',
+  gluten_free: 'Wij verkopen glutenvrije producten',
+  accessible: 'Aangepast aan gehandicapten',
+  vegetarian: 'Vegetarische producten',
 }
 
 const CLOSED_WORD = 'gesloten'

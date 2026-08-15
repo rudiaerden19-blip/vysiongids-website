@@ -1,8 +1,9 @@
-import { LISTING_TYPES, type ListingDayHours } from '@/lib/listing-types'
+import { LISTING_TYPES, type ListingAmenityId, type ListingDayHours } from '@/lib/listing-types'
 import { closedDaysFromRows, summarizeOpeningHours } from '@/lib/gids-opening-hours'
 import { isValidGidsPin } from '@/lib/gids-pin'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
 import { GIDS_REGISTER_MAX_PHOTO_BYTES, GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
+import { parseOwnerAmenitiesFromForm } from '@/lib/gids-owner-amenities'
 import { WEEKDAYS_NL } from '@/lib/listing-info'
 
 const VALID_TYPES = LISTING_TYPES.filter((t) => t.id !== 'all').map((t) => t.id)
@@ -28,6 +29,7 @@ export type ParsedGidsListingForm = {
   deliveryTimeMaxValue: number | null
   photos: { index: number; file: File }[]
   removePhotoSlots: number[]
+  ownerAmenities: ListingAmenityId[]
 }
 
 export type ParseGidsListingFormResult =
@@ -219,6 +221,7 @@ export async function parseGidsListingFormData(
       deliveryTimeMaxValue,
       photos,
       removePhotoSlots,
+      ownerAmenities: parseOwnerAmenitiesFromForm(form),
     },
   }
 }
