@@ -4,16 +4,16 @@ import type { Listing } from '@/lib/listing-types'
 
 type Props = {
   listing: Pick<Listing, 'ratingAvg' | 'ratingCount'>
-  /** tussen foto en tekst op zoekkaart */
-  variant?: 'between' | 'inline'
+  /** rechts onder «Nu open» op zoekkaart */
+  variant?: 'underOpen' | 'inline'
   className?: string
 }
 
-export default function ListingTopZaakStamp({ listing, variant = 'between', className }: Props) {
+export default function ListingTopZaakStamp({ listing, variant = 'underOpen', className }: Props) {
   if (!isTopZaakListing(listing)) return null
 
   const variantClass =
-    variant === 'inline' ? 'vysiongids-topzaak-stamp--inline' : 'vysiongids-topzaak-stamp--between'
+    variant === 'inline' ? 'vysiongids-topzaak-stamp--inline' : 'vysiongids-topzaak-stamp--under-open'
 
   return (
     <div

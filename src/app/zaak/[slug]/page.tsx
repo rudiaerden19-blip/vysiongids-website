@@ -90,7 +90,7 @@ export default async function ZaakPage({ params }: Props) {
 
             {isTopZaakListing(listingForRating) ? (
               <div className="vysiongids-zaak-topzaak-stamp-row">
-                <ListingTopZaakStamp listing={listingForRating} variant="between" />
+                <ListingTopZaakStamp listing={listingForRating} variant="underOpen" />
               </div>
             ) : null}
 
