@@ -2,8 +2,12 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import SiteHeader from '@/components/SiteHeader'
+import ListingInfoSection from '@/components/ListingInfoSection'
+import ListingMap from '@/components/ListingMapClient'
+import ListingNavigationButtons from '@/components/ListingNavigationButtons'
 import {
   formatDeliveryFee,
+  formatListingAddressLines,
   formatMinOrder,
   getAllListings,
   getListingBySlug,
@@ -33,11 +37,12 @@ export default async function ZaakPage({ params }: Props) {
 
   const typeLabel = getListingTypeLabel(listing.type)
   const minOrder = formatMinOrder(listing)
+  const { street, cityLine } = formatListingAddressLines(listing)
 
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
+      <main className="vysiongids-page-wrap">
         <nav className="mb-4 text-sm text-gray-500">
           <Link href="/" className="hover:text-accent">
             Home
@@ -55,13 +60,21 @@ export default async function ZaakPage({ params }: Props) {
             <h1 className="text-3xl font-bold text-accent sm:text-4xl">{listing.name}</h1>
             <p className="mt-2 flex items-start gap-2 text-gray-600">
               <span aria-hidden>📍</span>
-              {listing.address}, {listing.postcode} {listing.city}
+              <span>
+                {street}
+                <br />
+                {cityLine}
+              </span>
             </p>
             <p className="mt-2 text-sm font-medium text-gray-700">{typeLabel}</p>
 
             <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100">
               <Image src={listing.photoUrl} alt={listing.name} fill className="object-cover" priority sizes="(max-width: 1024px) 100vw, 720px" />
             </div>
+
+            <ListingInfoSection listing={listing} />
+
+            <ListingMap listing={listing} />
 
             <section className="mt-8 border-t border-gray-200 pt-8">
               <h2 className="text-lg font-bold text-gray-900">Beoordeling</h2>
@@ -89,12 +102,6 @@ export default async function ZaakPage({ params }: Props) {
                     <dd>{minOrder}</dd>
                   </div>
                 ) : null}
-                {listing.closedDays ? (
-                  <div>
-                    <dt className="font-semibold text-gray-500">Gesloten</dt>
-                    <dd>{listing.closedDays}</dd>
-                  </div>
-                ) : null}
               </dl>
             </section>
           </div>
@@ -110,14 +117,10 @@ export default async function ZaakPage({ params }: Props) {
               >
                 Bestel
               </a>
-              <a
-                href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(`${listing.address} ${listing.postcode} ${listing.city}`)}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="mt-3 block text-center text-sm font-semibold text-accent hover:underline"
-              >
-                Bekijk op kaart
-              </a>
+              <div className="mt-4 border-t border-gray-200 pt-4">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Route</p>
+                <ListingNavigationButtons listing={listing} compact />
+              </div>
             </div>
           </aside>
         </div>

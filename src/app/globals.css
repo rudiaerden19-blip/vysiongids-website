@@ -4,6 +4,7 @@
   --background: #f5f5f5;
   --foreground: #171717;
   --accent: #0e5d82;
+  --vysiongids-hero-min-height: calc(2cm + clamp(20rem, 38vh, 26rem));
 }
 
 @theme inline {
@@ -17,4 +18,512 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-inter), system-ui, sans-serif;
+}
+
+.leaflet-container {
+  font-family: inherit;
+  z-index: 0;
+}
+
+/* Regio-popup: altijd overlay, nooit layout-shift */
+.vysiongids-region-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: rgb(0 0 0 / 0.4);
+  cursor: default;
+}
+
+.vysiongids-region-panel {
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: 1001;
+  margin: 0;
+  padding: 0 1rem;
+  pointer-events: none;
+}
+
+.vysiongids-region-panel-inner {
+  pointer-events: auto;
+}
+
+.vysiongids-header-nav {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 500;
+  color: #4b5563;
+}
+
+.vysiongids-header-nav a:not(.vysiongids-header-nav-cta) {
+  display: inline-block;
+  white-space: nowrap;
+  color: inherit;
+  text-decoration: none;
+}
+
+.vysiongids-header-nav a:not(.vysiongids-header-nav-cta):hover {
+  color: var(--accent);
+}
+
+.vysiongids-header-nav-cta {
+  display: inline-block;
+  white-space: nowrap;
+  border-radius: 9999px;
+  background: var(--accent);
+  padding: 0.5rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff !important;
+  text-decoration: none;
+}
+
+.vysiongids-hero-root {
+  position: relative;
+  min-height: var(--vysiongids-hero-min-height);
+  overflow: hidden;
+}
+
+.vysiongids-hero-media {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+}
+
+.vysiongids-hero-media > span {
+  position: absolute !important;
+  inset: 0 !important;
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+.vysiongids-hero-media img {
+  object-fit: cover;
+  object-position: center;
+}
+
+.vysiongids-hero-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  margin: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgb(0 0 0 / 0.22),
+    rgb(0 0 0 / 0.12),
+    rgb(0 0 0 / 0.18)
+  );
+}
+
+.vysiongids-hero-section {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  min-height: var(--vysiongids-hero-min-height);
+  padding: 1.75rem clamp(1rem, 4vw, 4rem) 2rem;
+  box-sizing: border-box;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.vysiongids-hero-title-bar {
+  display: inline-block;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  color: #0e5d82;
+  font-size: clamp(2.75rem, 8vw, 4.75rem);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  text-align: center;
+  text-shadow: 0 1px 8px rgb(255 255 255 / 0.85), 0 0 2px rgb(255 255 255 / 0.9);
+  box-sizing: border-box;
+}
+
+.vysiongids-hero-wrap {
+  width: 100%;
+  max-width: 90rem;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.vysiongids-hero-search-wrap {
+  width: 100%;
+  max-width: 40rem;
+  margin-left: auto;
+  margin-right: auto;
+  box-sizing: border-box;
+}
+
+.vysiongids-hero-search {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.65rem 0.85rem;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  background: #fff;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.07);
+}
+
+.vysiongids-hero-search-grow {
+  flex: 1 1 10rem;
+  min-width: min(100%, 9rem);
+}
+
+.vysiongids-hero-search-type {
+  flex: 0 1 8.5rem;
+  min-width: 7.5rem;
+}
+
+.vysiongids-hero-search-submit {
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.5rem 1.1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.vysiongids-hero-search-submit:hover {
+  filter: brightness(0.95);
+}
+
+.vysiongids-hero-search label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.vysiongids-hero-search input,
+.vysiongids-hero-search select {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.45rem 0.6rem;
+  font-size: 0.9375rem;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+}
+
+.vysiongids-zaak-info {
+  margin-top: 2rem;
+  padding: 2rem clamp(1.25rem, 3vw, 2.5rem);
+  background: #ececec;
+  box-sizing: border-box;
+}
+
+.vysiongids-zaak-info-grid {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 2.5rem 3rem;
+  width: 100%;
+  max-width: 100%;
+}
+
+.vysiongids-zaak-info-col {
+  flex: 1 1 50%;
+  min-width: 0;
+}
+
+.vysiongids-zaak-info-heading {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #1e3a5f;
+}
+
+.vysiongids-zaak-hours-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+  color: #374151;
+}
+
+.vysiongids-zaak-hours-table th {
+  padding: 0.35rem 1.25rem 0.35rem 0;
+  font-weight: 400;
+  text-align: left;
+  vertical-align: top;
+  white-space: nowrap;
+}
+
+.vysiongids-zaak-hours-table td {
+  padding: 0.35rem 0;
+  font-weight: 500;
+  text-align: left;
+  vertical-align: top;
+}
+
+.vysiongids-zaak-info-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vysiongids-zaak-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.65rem;
+  margin-bottom: 0.85rem;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  color: #374151;
+}
+
+.vysiongids-zaak-info-item a {
+  color: #374151;
+  text-decoration: none;
+}
+
+.vysiongids-zaak-info-item a:hover {
+  color: #0e5d82;
+  text-decoration: underline;
+}
+
+.vysiongids-zaak-info-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  border: 2px solid;
+  background: #fff;
+}
+
+.vysiongids-zaak-info-icon--blue {
+  border-color: #0e5d82;
+}
+
+.vysiongids-zaak-info-icon--red {
+  border-color: #9b2743;
+}
+
+@media (max-width: 640px) {
+  .vysiongids-zaak-info-grid {
+    flex-direction: column;
+    flex-wrap: wrap;
+  }
+
+  .vysiongids-zaak-info-col {
+    flex: 1 1 100%;
+    width: 100%;
+  }
+}
+
+.vysiongids-page-wrap {
+  width: 100%;
+  max-width: 90rem;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 2rem clamp(1rem, 4vw, 4rem) 2.5rem;
+  box-sizing: border-box;
+}
+
+.vysiongids-zoeken-search {
+  width: 100%;
+  max-width: none;
+}
+
+.vysiongids-listing-panel {
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+}
+
+.vysiongids-listing-panel:hover {
+  border-color: rgb(14 93 130 / 0.35);
+  box-shadow: 0 4px 14px rgb(0 0 0 / 0.08);
+}
+
+.vysiongids-listing-panel-row {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.vysiongids-listing-panel-photo {
+  position: relative;
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  flex-shrink: 0;
+  background: #f3f4f6;
+  text-decoration: none;
+}
+
+.vysiongids-listing-panel-body {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1.25rem 1.5rem;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-listing-panel-row {
+    flex-direction: row;
+    align-items: stretch;
+  }
+
+  .vysiongids-listing-panel-photo {
+    width: min(42%, 26rem);
+    min-width: 16rem;
+    max-width: 26rem;
+    aspect-ratio: auto;
+    min-height: 13rem;
+  }
+
+  .vysiongids-listing-panel-body {
+    min-height: 13rem;
+    padding: 1.35rem 1.75rem;
+  }
+}
+
+.vysiongids-site-footer {
+  background: #2b2b2b;
+  color: #d1d5db;
+  margin-top: auto;
+}
+
+.vysiongids-site-footer-inner {
+  max-width: 90rem;
+  margin: 0 auto;
+  padding: 2.75rem clamp(1rem, 4vw, 4rem) 2rem;
+  box-sizing: border-box;
+}
+
+.vysiongids-site-footer-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 2rem 2.5rem;
+}
+
+.vysiongids-site-footer-heading {
+  margin: 0 0 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #fff;
+}
+
+.vysiongids-site-footer-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vysiongids-site-footer-list--offset {
+  padding-top: 2.35rem;
+}
+
+.vysiongids-site-footer-list li {
+  margin: 0 0 0.65rem;
+}
+
+.vysiongids-site-footer-list a {
+  color: #b8bcc4;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  text-decoration: none;
+}
+
+.vysiongids-site-footer-list a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.vysiongids-site-footer-socials {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
+
+.vysiongids-footer-social {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.08);
+  color: #fff;
+  text-decoration: none;
+}
+
+.vysiongids-footer-social:hover {
+  background: rgb(255 255 255 / 0.16);
+}
+
+.vysiongids-site-footer-copy {
+  margin: 2.25rem 0 0;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgb(255 255 255 / 0.1);
+  font-size: 0.8125rem;
+  color: #9ca3af;
+  text-align: center;
+}
+
+.vysiongids-site-footer-copy a {
+  color: #b8bcc4;
+  text-decoration: none;
+}
+
+.vysiongids-site-footer-copy a:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .vysiongids-site-footer-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .vysiongids-site-footer-list--offset {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 520px) {
+  .vysiongids-site-footer-grid {
+    grid-template-columns: 1fr;
+  }
 }

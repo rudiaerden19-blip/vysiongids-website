@@ -4,42 +4,65 @@ import ListingPanel from '@/components/ListingPanel'
 import SearchForm from '@/components/SearchForm'
 import SiteHeader from '@/components/SiteHeader'
 import { searchListings } from '@/lib/listings'
+import { provinceLabel } from '@/lib/belgium-locations'
 
 type Props = {
-  searchParams: Promise<{ q?: string; type?: string }>
+  searchParams: Promise<{ q?: string; type?: string; prov?: string }>
 }
 
 export default async function ZoekenPage({ searchParams }: Props) {
   const sp = await searchParams
-  const results = searchListings({ q: sp.q, type: sp.type })
+  const results = searchListings({ q: sp.q, type: sp.type, prov: sp.prov })
 
   const qLabel = sp.q?.trim()
-  const title = qLabel ? `Zaken in «${qLabel}»` : 'Alle zaken'
+  const provLabel = sp.prov?.trim() ? provinceLabel(sp.prov) : null
+  const title = qLabel
+    ? `Zaken in «${qLabel}»`
+    : provLabel
+      ? `Zaken in ${provLabel}`
+      : 'Alle zaken'
 
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 sm:py-10">
-        <h1 className="mb-2 text-2xl font-bold text-gray-900 sm:text-3xl">{title}</h1>
-        <p className="mb-6 text-gray-600">
+      <main className="vysiongids-page-wrap">
+        <h1
+          style={{
+            margin: '0 0 0.5rem',
+            fontSize: 'clamp(1.5rem, 3vw, 2rem)',
+            fontWeight: 700,
+            color: '#111827',
+          }}
+        >
+          {title}
+        </h1>
+        <p style={{ margin: '0 0 1.5rem', color: '#4b5563', fontSize: '1rem' }}>
           {results.length} {results.length === 1 ? 'zaak' : 'zaken'} · Bestel rechtstreeks bij de zaak
         </p>
 
         <Suspense fallback={null}>
-          <div className="mb-8">
+          <div className="vysiongids-zoeken-search" style={{ marginBottom: '2rem', width: '100%' }}>
             <SearchForm compact />
           </div>
         </Suspense>
 
         {results.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
-            <p className="text-gray-700">Geen zaken gevonden. Probeer een andere stad of type.</p>
-            <Link href="/zoeken" className="mt-3 inline-block font-semibold text-accent hover:underline">
+          <div
+            style={{
+              borderRadius: '0.75rem',
+              border: '1px dashed #d1d5db',
+              background: '#f9fafb',
+              padding: '2rem',
+              textAlign: 'center',
+            }}
+          >
+            <p style={{ margin: 0, color: '#374151' }}>Geen zaken gevonden. Probeer een andere stad of type.</p>
+            <Link href="/zoeken" style={{ marginTop: '0.75rem', display: 'inline-block', fontWeight: 600, color: '#0e5d82' }}>
               Toon alle zaken
             </Link>
           </div>
         ) : (
-          <ul className="flex flex-col gap-4">
+          <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {results.map((listing) => (
               <li key={listing.slug}>
                 <ListingPanel listing={listing} />

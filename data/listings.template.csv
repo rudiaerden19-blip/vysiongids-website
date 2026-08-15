@@ -1,2 +1,2 @@
-slug;name;type;city;postcode;address;orderUrl;photoUrl;ratingAvg;ratingCount;deliveryTimeMin;deliveryTimeMax;deliveryFeeEur;minOrderEur;pickupEnabled;deliveryEnabled;closedDays
-;Frituur Voorbeeld;frituur;Pelt;3900;Markt 1;https://example.com/shop;;4.5;10;20;35;2.5;15;1;1;
+slug;name;type;city;postcode;address;orderUrl;photoUrl;ratingAvg;ratingCount;deliveryTimeMin;deliveryTimeMax;deliveryFeeEur;minOrderEur;pickupEnabled;deliveryEnabled;openingHours;closedDays;lat;lng
+;Frituur Voorbeeld;frituur;Pelt;3900;Markt 1;https://example.com/shop;;4.5;10;20;35;2.5;15;1;1;Di–Zo 11:00–22:00;;

@@ -28,7 +28,9 @@ Open http://localhost:3000
 
 Data staat in `data/listings.json` (nu 6 demo-zaken).
 
-## Deploy
+## Deploy (apart van Vysion Order)
 
-- Vercel: nieuw project, root `vysiongids-website`.
-- Domein: `vysiongids.be` + `www` → DNS zoals Vercel toont.
+**Volledige stappen:** zie [`DEPLOY.md`](./DEPLOY.md) — nieuw **Supabase-project**, nieuw **Vercel-project**, repo **`vysiongids-website`**, domein **www.vysiongids.be**.
+
+- Geen kassa/GKS/tenant-keys in dit project.
+- Env: `.env.local.example` → `NEXT_PUBLIC_VYSIONGIDS_*` + `VYSIONGIDS_SUPABASE_SERVICE_ROLE_KEY`.

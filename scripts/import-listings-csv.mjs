@@ -61,7 +61,10 @@ const listings = rows.map((line) => {
     minOrderEur: r.minOrderEur === '' ? null : Number(r.minOrderEur),
     pickupEnabled: r.pickupEnabled !== '0' && r.pickupEnabled !== 'false',
     deliveryEnabled: r.deliveryEnabled !== '0' && r.deliveryEnabled !== 'false',
+    openingHours: r.openingHours?.trim() || 'Di–Zo 11:00–22:00',
+    ...(r.province ? { province: r.province } : {}),
     ...(r.closedDays ? { closedDays: r.closedDays } : {}),
+    ...(r.lat !== '' && r.lng !== '' ? { lat: Number(r.lat), lng: Number(r.lng) } : {}),
   }
 })
 
