@@ -5,6 +5,8 @@
   --foreground: #171717;
   --accent: #0e5d82;
   --vysiongids-hero-min-height: clamp(18rem, 42vh, 26rem);
+  --vysiongids-home-section-y: clamp(3.25rem, 7vw, 5.75rem);
+  --vysiongids-home-section-x: clamp(1.25rem, 4vw, 3rem);
 }
 
 @theme inline {
@@ -394,7 +396,7 @@ body {
   justify-content: center;
   width: 100%;
   min-height: var(--vysiongids-hero-min-height);
-  padding: 2rem clamp(1rem, 4vw, 4rem) 3rem;
+  padding: 2.25rem clamp(1rem, 4vw, 4rem) 3.75rem;
   box-sizing: border-box;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -442,7 +444,20 @@ body {
   background: #ececec;
   border-top: 1px solid #e0e0e0;
   border-bottom: 1px solid #e0e0e0;
-  padding: 3rem clamp(1.25rem, 4vw, 2.5rem) 3.25rem;
+  padding: var(--vysiongids-home-section-y) var(--vysiongids-home-section-x);
+}
+
+.vysiongids-home-section-intro {
+  margin: 0 auto clamp(2.25rem, 5vw, 3.5rem);
+  max-width: 40rem;
+  text-align: center;
+}
+
+.vysiongids-home-featured {
+  background: #f8fafc;
+  padding: var(--vysiongids-home-section-y) var(--vysiongids-home-section-x);
+  border-top: 1px solid #e5e7eb;
+  border-bottom: 1px solid #e5e7eb;
 }
 
 .vysiongids-home-stats-inner {
@@ -486,12 +501,6 @@ body {
   color: #6b7280;
 }
 
-.vysiongids-home-featured {
-  background: #fff;
-  padding: 3.5rem clamp(1.25rem, 4vw, 2.5rem) 4rem;
-  border-bottom: 1px solid #e5e7eb;
-}
-
 .vysiongids-home-featured-inner {
   max-width: 44rem;
   margin: 0 auto;
@@ -505,21 +514,21 @@ body {
   font-weight: 800;
   letter-spacing: -0.02em;
   color: #0e5d82;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .vysiongids-home-featured-lead {
-  margin: 1.1rem auto 0;
+  margin: 1.25rem auto 0;
   max-width: 36rem;
   text-align: center;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 500;
   color: #6b7280;
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 .vysiongids-home-featured-carousel {
-  margin-top: 2.25rem;
+  margin-top: 0;
 }
 
 @media (max-width: 639px) {
@@ -588,6 +597,7 @@ body {
   overflow: hidden;
   width: 100%;
   border-radius: 0.75rem;
+  box-shadow: 0 10px 32px rgb(15 23 42 / 0.08);
 }
 
 .vysiongids-home-featured-track {
@@ -607,7 +617,7 @@ body {
   display: flex;
   justify-content: center;
   gap: 0.45rem;
-  margin-top: 1.35rem;
+  margin-top: 1.75rem;
 }
 
 .vysiongids-home-featured-dot {
@@ -627,7 +637,7 @@ body {
 }
 
 .vysiongids-home-featured-more {
-  margin: 2.5rem 0 0;
+  margin: clamp(2.25rem, 5vw, 3.25rem) 0 0;
   text-align: center;
 }
 
@@ -644,7 +654,8 @@ body {
 
 .vysiongids-home-regions {
   background: #fff;
-  padding: 4rem clamp(1.25rem, 4vw, 2.5rem) 4.5rem;
+  padding: var(--vysiongids-home-section-y) var(--vysiongids-home-section-x)
+    calc(var(--vysiongids-home-section-y) + 0.5rem);
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -661,32 +672,32 @@ body {
   font-weight: 800;
   letter-spacing: -0.02em;
   color: #0e5d82;
-  line-height: 1.2;
+  line-height: 1.25;
 }
 
 .vysiongids-home-regions-lead {
-  margin: 1.1rem auto 0;
+  margin: 1.25rem auto 0;
   max-width: 36rem;
   text-align: center;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 500;
   color: #6b7280;
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 .vysiongids-home-regions-grid {
   list-style: none;
-  margin: 2.5rem 0 0;
+  margin: 0;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.85rem 0.75rem;
+  gap: 1rem 0.85rem;
 }
 
 @media (min-width: 640px) {
   .vysiongids-home-regions-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 1rem;
+    gap: 1.15rem 1rem;
   }
 }
 
@@ -748,8 +759,8 @@ body {
 }
 
 .vysiongids-home-cities {
-  margin-top: 3rem;
-  padding-top: 2.5rem;
+  margin-top: clamp(2.75rem, 6vw, 4rem);
+  padding-top: clamp(2rem, 4vw, 2.75rem);
   border-top: 1px solid #e5e7eb;
 }
 

@@ -9,12 +9,14 @@ export default async function HomeFeaturedListingsSection() {
   return (
     <section className="vysiongids-home-featured" aria-labelledby="home-featured-title">
       <div className="vysiongids-home-featured-inner">
-        <h2 id="home-featured-title" className="vysiongids-home-featured-title">
-          Horecazaken in de kijker
-        </h2>
-        <p className="vysiongids-home-featured-lead">
-          Ontdek de populairste zaken die deze week de meeste ratings gekregen hebben van klanten
-        </p>
+        <header className="vysiongids-home-section-intro">
+          <h2 id="home-featured-title" className="vysiongids-home-featured-title">
+            Horecazaken in de kijker
+          </h2>
+          <p className="vysiongids-home-featured-lead">
+            Ontdek de populairste zaken die deze week de meeste ratings gekregen hebben van klanten
+          </p>
+        </header>
 
         <HomeFeaturedCarousel listings={listings} />
 

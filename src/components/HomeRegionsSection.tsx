@@ -7,12 +7,14 @@ export default function HomeRegionsSection() {
   return (
     <section className="vysiongids-home-regions" aria-labelledby="home-regions-title">
       <div className="vysiongids-home-regions-inner">
-        <h2 id="home-regions-title" className="vysiongids-home-regions-title">
-          Alle horeca zaken per stad en provincie
-        </h2>
-        <p className="vysiongids-home-regions-lead">
-          Kies een provincie of stad — je ziet meteen welke zaken in de gids staan.
-        </p>
+        <header className="vysiongids-home-section-intro">
+          <h2 id="home-regions-title" className="vysiongids-home-regions-title">
+            Alle horeca zaken per stad en provincie
+          </h2>
+          <p className="vysiongids-home-regions-lead">
+            Kies een provincie of stad — je ziet meteen welke zaken in de gids staan.
+          </p>
+        </header>
 
         <ul className="vysiongids-home-regions-grid">
           {BELGIUM_PROVINCES.map((prov) => {
