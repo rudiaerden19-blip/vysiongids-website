@@ -71,7 +71,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Website moet beginnen met https://' }, { status: 400 })
   }
   if (!orderUrl.startsWith('https://')) {
-    return NextResponse.json({ error: 'Bestel-URL moet beginnen met https://' }, { status: 400 })
+    return NextResponse.json({ error: 'Bestel- of reserveer-URL moet beginnen met https://' }, { status: 400 })
   }
   if (!openingHours) {
     return NextResponse.json({ error: 'Openingstijden zijn verplicht.' }, { status: 400 })
