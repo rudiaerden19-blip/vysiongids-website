@@ -96,7 +96,7 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
             name="q"
             type="search"
             defaultValue={q}
-            placeholder="Bv. stad, 3900, frituur, restaurant, piizza"
+            placeholder="Bv. stad, 3900, frituur, restaurant, pizza"
             autoComplete="off"
             style={fieldInput}
           />
@@ -141,7 +141,7 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
           name="q"
           type="search"
           defaultValue={q}
-          placeholder="Bv. stad, 3900, frituur, restaurant, piizza"
+          placeholder="Bv. stad, 3900, frituur, restaurant, pizza"
           style={fieldInput}
           autoComplete="off"
         />
