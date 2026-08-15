@@ -34,6 +34,13 @@ export async function getListingBySlug(slug: string): Promise<Listing | undefine
   return jsonFallback.find((l) => l.slug === slug)
 }
 
+/** Alle foto-URL's voor slider (max. 3 in DB). */
+export function listingPhotoUrls(listing: Listing): string[] {
+  if (listing.photoUrls?.length) return listing.photoUrls
+  if (listing.photoUrl?.trim()) return [listing.photoUrl.trim()]
+  return []
+}
+
 export function getListingTypeLabel(type: Listing['type']): string {
   return LISTING_TYPES.find((t) => t.id === type)?.label ?? type
 }

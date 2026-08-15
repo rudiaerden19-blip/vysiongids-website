@@ -5,7 +5,7 @@ import ReviewList from '@/components/ReviewList'
 import ReviewSubmitForm from '@/components/ReviewSubmitForm'
 import SiteHeader from '@/components/SiteHeader'
 import ListingInfoSection from '@/components/ListingInfoSection'
-import ListingPhoto from '@/components/ListingPhoto'
+import ListingPhotoSlider from '@/components/ListingPhotoSlider'
 import ListingMap from '@/components/ListingMapClient'
 import ListingNavigationButtons from '@/components/ListingNavigationButtons'
 import ZaakOwnerDeleteSection from '@/components/ZaakOwnerDeleteSection'
@@ -15,6 +15,7 @@ import {
   formatMinOrder,
   getListingBySlug,
   getListingTypeLabel,
+  listingPhotoUrls,
 } from '@/lib/listings'
 import { fetchListingIdBySlugAdmin, fetchReviewStatsByListingSlug, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
 
@@ -81,10 +82,11 @@ export default async function ZaakPage({ params }: Props) {
             <p className="mt-2 text-sm font-medium text-gray-700">{typeLabel}</p>
 
             <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100">
-              <ListingPhoto
-                src={listing.photoUrl}
+              <ListingPhotoSlider
+                urls={listingPhotoUrls(listing)}
                 alt={listing.name}
                 priority
+                showControls
                 sizes="(max-width: 1024px) 100vw, 720px"
                 className="object-cover"
               />

@@ -1,11 +1,11 @@
 import Link from 'next/link'
 import ListingPanelOpenStatus from '@/components/ListingPanelOpenStatus'
-import ListingPhoto from '@/components/ListingPhoto'
+import ListingPhotoSlider from '@/components/ListingPhotoSlider'
 import ListingStarRating from '@/components/ListingStarRating'
 import type { Listing } from '@/lib/listing-types'
 import { DAY_LABEL } from '@/lib/gids-opening-hours'
 import { resolveHoursByDay } from '@/lib/listing-info'
-import { formatDeliveryFee, formatListingAddressLines, formatMinOrder, getListingTypeLabel } from '@/lib/listings'
+import { formatDeliveryFee, formatListingAddressLines, formatMinOrder, getListingTypeLabel, listingPhotoUrls } from '@/lib/listings'
 
 export default function ListingPanel({ listing }: { listing: Listing }) {
   const typeLabel = getListingTypeLabel(listing.type)
@@ -24,8 +24,8 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
     <article className="vysiongids-listing-panel">
       <div className="vysiongids-listing-panel-row">
         <Link href={profileHref} className="vysiongids-listing-panel-photo">
-          <ListingPhoto
-            src={listing.photoUrl}
+          <ListingPhotoSlider
+            urls={listingPhotoUrls(listing)}
             alt={listing.name}
             sizes="(max-width: 640px) 100vw, 26rem"
           />

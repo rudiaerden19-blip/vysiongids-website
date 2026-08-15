@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 const FALLBACK = '/images/placeholder-frituur.svg'
 
@@ -22,6 +22,10 @@ export default function ListingPhoto({
 }: Props) {
   const [currentSrc, setCurrentSrc] = useState(src || FALLBACK)
   const isRemote = currentSrc.startsWith('http://') || currentSrc.startsWith('https://')
+
+  useEffect(() => {
+    setCurrentSrc(src?.trim() || FALLBACK)
+  }, [src])
 
   return (
     <Image
