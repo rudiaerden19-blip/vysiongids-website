@@ -3,7 +3,9 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { FormEvent, useCallback, useRef, type CSSProperties } from 'react'
 import { LISTING_TYPES } from '@/lib/listing-types'
+import { buildSearchResultsSpeechMessage } from '@/lib/search-results-speech'
 import { useVoiceSearch } from '@/lib/use-voice-search'
+import { primeSpeechSynthesis, speakDutchAsync, stashVoiceSearchAnnouncement } from '@/lib/speak-dutch'
 import SearchVoiceMicButton from '@/components/SearchVoiceMicButton'
 
 const fieldLabel: CSSProperties = {
@@ -77,14 +79,24 @@ const heroSubmitStyle: CSSProperties = {
   width: '100%',
 }
 
-function buildSearchPath(nextQ: string, nextType: string, prov: string, fromVoice?: boolean) {
+function buildSearchPath(nextQ: string, nextType: string, prov: string) {
   const params = new URLSearchParams()
   if (nextQ) params.set('q', nextQ)
   if (nextType && nextType !== 'all') params.set('type', nextType)
   if (prov.trim()) params.set('prov', prov.trim())
-  if (fromVoice) params.set('voice', '1')
   const qs = params.toString()
   return qs ? `/zoeken?${qs}` : '/zoeken'
+}
+
+async function fetchSearchCount(q: string, type: string, prov: string): Promise<number> {
+  const params = new URLSearchParams()
+  if (q) params.set('q', q)
+  if (type && type !== 'all') params.set('type', type)
+  if (prov.trim()) params.set('prov', prov.trim())
+  const res = await fetch(`/api/gids/search?${params.toString()}`, { cache: 'no-store' })
+  if (!res.ok) return 0
+  const data = (await res.json()) as { count?: number }
+  return typeof data.count === 'number' ? data.count : 0
 }
 
 type SearchActionsProps = {
@@ -99,18 +111,34 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
   const router = useRouter()
 
   const runSearchWithQuery = useCallback(
-    (spoken: string) => {
+    async (spoken: string) => {
       const trimmed = spoken.trim()
       if (!trimmed) return
       const form = formRef.current
       const type = form ? String(new FormData(form).get('type') ?? 'all') : 'all'
       if (qInputRef.current) qInputRef.current.value = trimmed
-      router.push(buildSearchPath(trimmed, type, prov, true))
+
+      let count = 0
+      try {
+        count = await fetchSearchCount(trimmed, type, prov)
+      } catch {
+        count = 0
+      }
+
+      const message = buildSearchResultsSpeechMessage({ count, q: trimmed, type, prov })
+      stashVoiceSearchAnnouncement(message)
+      await speakDutchAsync(message)
+      router.push(buildSearchPath(trimmed, type, prov))
     },
     [formRef, prov, qInputRef, router],
   )
 
   const { listening, supported, startListen } = useVoiceSearch(runSearchWithQuery)
+
+  const onMicClick = useCallback(() => {
+    primeSpeechSynthesis()
+    startListen()
+  }, [startListen])
 
   return (
     <div
@@ -119,7 +147,7 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
       <button type="submit" className="vysiongids-hero-search-submit" style={submitStyle}>
         Zoeken
       </button>
-      <SearchVoiceMicButton listening={listening} supported={supported} onClick={startListen} />
+      <SearchVoiceMicButton listening={listening} supported={supported} onClick={onMicClick} />
     </div>
   )
 }

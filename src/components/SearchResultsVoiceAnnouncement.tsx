@@ -1,35 +1,37 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
-import { useEffect, useRef } from 'react'
-import { buildSearchResultsSpeechMessage } from '@/lib/search-results-speech'
-import { speakDutch } from '@/lib/speak-dutch'
+import { useEffect, useState } from 'react'
+import {
+  clearVoiceSearchAnnouncement,
+  readVoiceSearchAnnouncement,
+  speakDutch,
+} from '@/lib/speak-dutch'
 
-type Props = {
-  count: number
-  q?: string
-  type?: string
-  prov?: string
-}
-
-/** Spreekt resultaat uit na inspreken (URL bevat kort `voice=1`). */
-export default function SearchResultsVoiceAnnouncement({ count, q, type, prov }: Props) {
-  const searchParams = useSearchParams()
-  const spokenRef = useRef(false)
+/** Tekst + knop om resultaat te beluisteren (als TTS geblokkeerd was). */
+export default function SearchResultsVoiceAnnouncement() {
+  const [message, setMessage] = useState<string | null>(null)
 
   useEffect(() => {
-    if (spokenRef.current) return
-    if (searchParams.get('voice') !== '1') return
-    spokenRef.current = true
+    const stored = readVoiceSearchAnnouncement()
+    if (stored?.trim()) setMessage(stored)
+  }, [])
 
-    const message = buildSearchResultsSpeechMessage({ count, q, type, prov })
-    speakDutch(message)
+  if (!message) return null
 
-    const url = new URL(window.location.href)
-    url.searchParams.delete('voice')
-    const next = url.pathname + (url.searchParams.toString() ? `?${url.searchParams}` : '')
-    window.history.replaceState(null, '', next)
-  }, [count, prov, q, searchParams, type])
-
-  return null
+  return (
+    <div className="vysiongids-voice-result-banner" role="status">
+      <p className="vysiongids-voice-result-banner-text">{message}</p>
+      <button
+        type="button"
+        className="vysiongids-voice-result-banner-btn"
+        onClick={() => {
+          speakDutch(message)
+          clearVoiceSearchAnnouncement()
+          setMessage(null)
+        }}
+      >
+        Beluister resultaat
+      </button>
+    </div>
+  )
 }

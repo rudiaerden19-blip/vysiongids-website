@@ -44,12 +44,7 @@ export default async function ZoekenPage({ searchParams }: Props) {
         </p>
 
         <Suspense fallback={null}>
-          <SearchResultsVoiceAnnouncement
-            count={results.length}
-            q={sp.q}
-            type={sp.type}
-            prov={sp.prov}
-          />
+          <SearchResultsVoiceAnnouncement />
         </Suspense>
 
         <Suspense fallback={null}>

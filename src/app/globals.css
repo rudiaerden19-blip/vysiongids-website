@@ -1225,6 +1225,44 @@ body {
   overflow: hidden;
 }
 
+.vysiongids-voice-result-banner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin: 0 0 1.25rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #bae6fd;
+  background: #f0f9ff;
+}
+
+.vysiongids-voice-result-banner-text {
+  margin: 0;
+  flex: 1 1 12rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0c4a6e;
+  line-height: 1.45;
+}
+
+.vysiongids-voice-result-banner-btn {
+  flex: 0 0 auto;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.55rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.vysiongids-voice-result-banner-btn:hover {
+  filter: brightness(0.95);
+}
+
 .vysiongids-topzaak-stamp {
   pointer-events: none;
   line-height: 0;
