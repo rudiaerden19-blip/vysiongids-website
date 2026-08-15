@@ -23,8 +23,8 @@ export default function ListingTopZaakStamp({ listing, variant = 'between', clas
       <Image
         src="/images/topzaak-stamp.svg"
         alt="Topzaak stempel"
-        width={120}
-        height={120}
+        width={140}
+        height={140}
         className="vysiongids-topzaak-stamp-img"
         priority={false}
       />

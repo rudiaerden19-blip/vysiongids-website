@@ -1162,19 +1162,39 @@ body {
 }
 
 .vysiongids-topzaak-stamp--between {
-  width: clamp(4.75rem, 12vw, 6.25rem);
+  width: clamp(5.25rem, 14vw, 7rem);
   max-width: 100%;
 }
 
-.vysiongids-listing-panel-stamp-col {
+.vysiongids-listing-panel-row--topzaak {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-areas:
+    'photo'
+    'stamp'
+    'body';
+}
+
+.vysiongids-listing-panel-area-photo {
+  grid-area: photo;
+}
+
+.vysiongids-listing-panel-area-stamp {
+  grid-area: stamp;
+}
+
+.vysiongids-listing-panel-area-body {
+  grid-area: body;
+}
+
+.vysiongids-listing-panel-stamp-gap {
   display: flex;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
-  padding: 0.75rem 1rem;
-  background: #f9fafb;
-  border-top: 1px solid #e5e7eb;
-  border-bottom: 1px solid #e5e7eb;
+  padding: 0.25rem 0.5rem;
+  background: transparent;
+  border: none;
 }
 
 .vysiongids-topzaak-stamp--inline {
@@ -1186,8 +1206,8 @@ body {
 .vysiongids-topzaak-stamp-img {
   width: 100%;
   height: auto;
-  opacity: 0.94;
-  filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.2));
+  opacity: 1;
+  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.12));
 }
 
 .vysiongids-zaak-topzaak-stamp-row {
@@ -2071,6 +2091,14 @@ body {
     align-items: stretch;
   }
 
+  .vysiongids-listing-panel-row--topzaak {
+    display: grid;
+    grid-template-columns: min(42%, 26rem) auto minmax(0, 1fr);
+    grid-template-areas: 'photo stamp body';
+    align-items: center;
+    column-gap: 0;
+  }
+
   .vysiongids-listing-panel-photo {
     width: min(42%, 26rem);
     min-width: 16rem;
@@ -2079,19 +2107,18 @@ body {
     min-height: 13rem;
   }
 
-  .vysiongids-listing-panel-stamp-col {
-    width: 6.5rem;
-    min-width: 6.5rem;
-    padding: 0.75rem 0.4rem;
-    border-top: none;
-    border-bottom: none;
-    border-left: 1px solid #e5e7eb;
-    border-right: 1px solid #e5e7eb;
-    align-self: stretch;
+  .vysiongids-listing-panel-row--topzaak .vysiongids-listing-panel-photo {
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+  }
+
+  .vysiongids-listing-panel-stamp-gap {
+    padding: 0 0.2rem;
   }
 
   .vysiongids-topzaak-stamp--between {
-    width: 5.75rem;
+    width: 7rem;
   }
 
   .vysiongids-listing-panel-body {

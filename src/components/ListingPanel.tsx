@@ -30,8 +30,10 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
 
   return (
     <article className={`vysiongids-listing-panel${compact ? ' vysiongids-listing-panel--compact' : ''}`}>
-      <div className="vysiongids-listing-panel-row">
-        <Link href={profileHref} className="vysiongids-listing-panel-photo">
+      <div
+        className={`vysiongids-listing-panel-row${showTopZaakStamp ? ' vysiongids-listing-panel-row--topzaak' : ''}`}
+      >
+        <Link href={profileHref} className="vysiongids-listing-panel-photo vysiongids-listing-panel-area-photo">
           <ListingPhotoSlider
             urls={listingPhotoUrls(listing)}
             alt={listing.name}
@@ -39,11 +41,11 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
           />
         </Link>
         {showTopZaakStamp ? (
-          <div className="vysiongids-listing-panel-stamp-col">
+          <div className="vysiongids-listing-panel-stamp-gap vysiongids-listing-panel-area-stamp">
             <ListingTopZaakStamp listing={listing} variant="between" />
           </div>
         ) : null}
-        <div className="vysiongids-listing-panel-body">
+        <div className="vysiongids-listing-panel-body vysiongids-listing-panel-area-body">
           <div className="vysiongids-listing-panel-head">
             <Link href={profileHref} className="vysiongids-listing-panel-title-link">
               <h2 className="vysiongids-listing-panel-title">
