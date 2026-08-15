@@ -1385,14 +1385,44 @@ body {
   font-size: 0.6875rem;
 }
 
+.vysiongids-listing-panel-status-col {
+  flex: 0 0 auto;
+  max-width: 11.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.45rem;
+}
+
 .vysiongids-listing-open-status {
   flex: 0 0 auto;
   margin: 0;
-  max-width: 11rem;
+  max-width: 11.5rem;
   font-size: 0.8125rem;
   font-weight: 600;
   line-height: 1.35;
   text-align: right;
+}
+
+.vysiongids-listing-daily-views {
+  margin: 0;
+  padding: 0.5rem 0.6rem;
+  max-width: 11.5rem;
+  box-sizing: border-box;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  font-weight: 500;
+  color: #4b5563;
+  text-align: right;
+  background: #f9fafb;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+.vysiongids-listing-daily-views-count {
+  font-weight: 700;
+  color: #0e5d82;
+  white-space: nowrap;
 }
 
 .vysiongids-listing-open-status.is-open {
