@@ -206,6 +206,11 @@ body {
   z-index: 10002;
 }
 
+/* Geen wit/grijze streep tussen header en homepage-hero */
+.vysiongids-site-header:has(+ .vysiongids-hero-root) {
+  border-bottom-color: transparent;
+}
+
 .vysiongids-site-header-inner {
   display: flex;
   align-items: center;
@@ -400,7 +405,6 @@ body {
   min-height: var(--vysiongids-hero-min-height);
   padding: 2.25rem clamp(1rem, 4vw, 4rem) 3.75rem;
   box-sizing: border-box;
-  border-bottom: 1px solid #e5e7eb;
 }
 
 .vysiongids-hero-title-bar {
@@ -444,7 +448,7 @@ body {
 
 .vysiongids-home-stats {
   background: #ececec;
-  border-top: 1px solid #e0e0e0;
+  border-top: none;
   border-bottom: 1px solid #e0e0e0;
   padding: var(--vysiongids-home-section-y) var(--vysiongids-home-section-x);
 }
