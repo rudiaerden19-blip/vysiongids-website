@@ -7,6 +7,7 @@ import 'leaflet/dist/leaflet.css'
 import type { Listing } from '@/lib/listing-types'
 import { formatListingAddressLines, getListingCoordinates } from '@/lib/listings'
 import ListingNavigationButtons from '@/components/ListingNavigationButtons'
+import ListingTopZaakStamp from '@/components/ListingTopZaakStamp'
 
 /** Rode pin (Google-achtig) + satelliettegels via Esri. */
 const pinIcon = L.icon({
@@ -106,6 +107,7 @@ export default function ListingMap({ listing }: ListingMapProps) {
             lng={lng}
             popup={
               <div className="min-w-[11rem] pr-1 text-sm leading-snug">
+                <ListingTopZaakStamp listing={listing} variant="inline" className="mb-2" />
                 <p className="font-bold text-gray-900">{listing.name}</p>
                 <p className="mt-1 text-gray-600">
                   {street}

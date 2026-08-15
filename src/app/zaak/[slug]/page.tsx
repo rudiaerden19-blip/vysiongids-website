@@ -6,6 +6,7 @@ import ReviewSubmitForm from '@/components/ReviewSubmitForm'
 import SiteHeader from '@/components/SiteHeader'
 import ListingInfoSection from '@/components/ListingInfoSection'
 import ListingPhotoSlider from '@/components/ListingPhotoSlider'
+import ListingTopZaakStamp from '@/components/ListingTopZaakStamp'
 import ListingMap from '@/components/ListingMapClient'
 import ListingNavigationButtons from '@/components/ListingNavigationButtons'
 import ZaakOwnerDeleteSection from '@/components/ZaakOwnerDeleteSection'
@@ -52,6 +53,7 @@ export default async function ZaakPage({ params }: Props) {
   const reviewStats = await fetchReviewStatsByListingSlug(slug)
   const ratingCount = reviewStats?.count ?? listing.ratingCount
   const ratingAvg = reviewStats && reviewStats.count > 0 ? reviewStats.avg : listing.ratingAvg
+  const listingForRating = { ...listing, ratingAvg, ratingCount }
   const canSubmitReview = Boolean(await fetchListingIdBySlugAdmin(slug))
   const reviewsHref = `/zaak/${slug}/reviews`
 

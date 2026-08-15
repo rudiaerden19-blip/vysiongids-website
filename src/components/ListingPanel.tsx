@@ -3,6 +3,7 @@ import ListingPanelOpenStatus from '@/components/ListingPanelOpenStatus'
 import ListingOwnerDailyViews from '@/components/ListingOwnerDailyViews'
 import ListingPanelAmenityFooter from '@/components/ListingPanelAmenityFooter'
 import ListingPhotoSlider from '@/components/ListingPhotoSlider'
+import ListingTopZaakStamp from '@/components/ListingTopZaakStamp'
 import ListingStarRating from '@/components/ListingStarRating'
 import type { Listing } from '@/lib/listing-types'
 import { DAY_LABEL } from '@/lib/gids-opening-hours'
@@ -35,6 +36,7 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
             alt={listing.name}
             sizes="(max-width: 640px) 100vw, 26rem"
           />
+          <ListingTopZaakStamp listing={listing} variant="photo" />
         </Link>
         <div className="vysiongids-listing-panel-body">
           <div className="vysiongids-listing-panel-head">

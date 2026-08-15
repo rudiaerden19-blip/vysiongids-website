@@ -1156,6 +1156,32 @@ body {
   overflow: hidden;
 }
 
+.vysiongids-topzaak-stamp {
+  pointer-events: none;
+  line-height: 0;
+}
+
+.vysiongids-topzaak-stamp--photo {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 4;
+  width: clamp(4.25rem, 22%, 6rem);
+}
+
+.vysiongids-topzaak-stamp--inline {
+  width: 5.5rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.vysiongids-topzaak-stamp-img {
+  width: 100%;
+  height: auto;
+  opacity: 0.94;
+  filter: drop-shadow(0 1px 3px rgb(0 0 0 / 0.2));
+}
+
 .vysiongids-listing-photo-slider {
   position: relative;
   width: 100%;
