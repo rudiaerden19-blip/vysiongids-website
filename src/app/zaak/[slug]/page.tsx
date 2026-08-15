@@ -1,4 +1,3 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import ListingStarRating from '@/components/ListingStarRating'
@@ -6,6 +5,7 @@ import ReviewList from '@/components/ReviewList'
 import ReviewSubmitForm from '@/components/ReviewSubmitForm'
 import SiteHeader from '@/components/SiteHeader'
 import ListingInfoSection from '@/components/ListingInfoSection'
+import ListingPhoto from '@/components/ListingPhoto'
 import ListingMap from '@/components/ListingMapClient'
 import ListingNavigationButtons from '@/components/ListingNavigationButtons'
 import ZaakOwnerDeleteSection from '@/components/ZaakOwnerDeleteSection'
@@ -83,7 +83,13 @@ export default async function ZaakPage({ params }: Props) {
             <p className="mt-2 text-sm font-medium text-gray-700">{typeLabel}</p>
 
             <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100">
-              <Image src={listing.photoUrl} alt={listing.name} fill className="object-cover" priority sizes="(max-width: 1024px) 100vw, 720px" />
+              <ListingPhoto
+                src={listing.photoUrl}
+                alt={listing.name}
+                priority
+                sizes="(max-width: 1024px) 100vw, 720px"
+                className="object-cover"
+              />
             </div>
 
             <ListingInfoSection listing={listing} />

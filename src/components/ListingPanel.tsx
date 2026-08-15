@@ -1,9 +1,11 @@
-import Image from 'next/image'
 import Link from 'next/link'
 import ListingPanelOpenStatus from '@/components/ListingPanelOpenStatus'
+import ListingPhoto from '@/components/ListingPhoto'
 import ListingStarRating from '@/components/ListingStarRating'
 import type { Listing } from '@/lib/listing-types'
-import { formatDeliveryFee, formatListingAddressLines, formatMinOrder, formatOpeningHours, getListingTypeLabel } from '@/lib/listings'
+import { DAY_LABEL } from '@/lib/gids-opening-hours'
+import { resolveHoursByDay } from '@/lib/listing-info'
+import { formatDeliveryFee, formatListingAddressLines, formatMinOrder, getListingTypeLabel } from '@/lib/listings'
 
 export default function ListingPanel({ listing }: { listing: Listing }) {
   const typeLabel = getListingTypeLabel(listing.type)
@@ -14,7 +16,7 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
       ? `${listing.deliveryTimeMin}–${listing.deliveryTimeMax} min`
       : null
   const { street, cityLine } = formatListingAddressLines(listing)
-  const hoursLabel = formatOpeningHours(listing)
+  const hoursRows = resolveHoursByDay(listing)
   const profileHref = `/zaak/${listing.slug}`
   const reviewsHref = `${profileHref}/reviews`
 
@@ -22,11 +24,9 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
     <article className="vysiongids-listing-panel">
       <div className="vysiongids-listing-panel-row">
         <Link href={profileHref} className="vysiongids-listing-panel-photo">
-          <Image
+          <ListingPhoto
             src={listing.photoUrl}
-            alt=""
-            fill
-            style={{ objectFit: 'cover' }}
+            alt={listing.name}
             sizes="(max-width: 640px) 100vw, 26rem"
           />
         </Link>
@@ -54,10 +54,19 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
                 ? ' · Levering'
                 : ' · Afhalen'}
           </p>
-          <p style={{ margin: 0, display: 'flex', gap: '0.5rem', fontSize: '0.9375rem', color: '#4b5563', lineHeight: 1.45 }}>
-            <span aria-hidden>🕐</span>
-            <span>{hoursLabel}</span>
-          </p>
+          <div className="vysiongids-listing-panel-hours-wrap">
+            <span className="vysiongids-listing-panel-hours-icon" aria-hidden>
+              🕐
+            </span>
+            <ul className="vysiongids-listing-panel-hours">
+              {hoursRows.map((row) => (
+                <li key={row.day}>
+                  <span className="vysiongids-listing-panel-hours-day">{DAY_LABEL[row.day]}</span>
+                  <span className="vysiongids-listing-panel-hours-time">{row.hours}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem 0.85rem', fontSize: '0.9375rem' }}>
             <ListingStarRating slug={listing.slug} avg={listing.ratingAvg} count={listing.ratingCount} />
             {timeLabel ? <span style={{ color: '#6b7280' }}>{timeLabel}</span> : null}
