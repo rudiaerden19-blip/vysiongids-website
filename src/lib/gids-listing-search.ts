@@ -59,15 +59,22 @@ function normalizeQueryWithTypoFix(raw: string): string {
 }
 
 function phraseInQuery(qNorm: string, phrase: string): boolean {
+  if (!qNorm) return false
   const p = normalizeSearchText(phrase)
   if (p.length < 3) return false
   if (qNorm.includes(p)) return true
   if (p.includes(' ')) return false
-  return qNorm.split(/\s+/).some((w) => w === p || w.startsWith(p) || p.startsWith(w))
+  return qNorm.split(/\s+/).some((w) => {
+    if (!w) return false
+    return w === p || w.startsWith(p) || (w.length >= 3 && p.startsWith(w))
+  })
 }
 
 export function parseListingSearchQuery(raw: string): ParsedListingSearchQuery {
   const qNorm = normalizeQueryWithTypoFix(raw)
+  if (!qNorm) {
+    return { cuisineIds: [], amenityIds: [], freeText: '', strippedPhrases: [] }
+  }
   const cuisineIds: ListingCuisineId[] = []
   const amenityIds: ListingAmenityId[] = []
   const strippedPhrases: string[] = []
