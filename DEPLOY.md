@@ -33,8 +33,8 @@ git push origin main
    - Project URL → `NEXT_PUBLIC_VYSIONGIDS_SUPABASE_URL`
    - anon public → `NEXT_PUBLIC_VYSIONGIDS_SUPABASE_ANON_KEY`
    - service_role → `VYSIONGIDS_SUPABASE_SERVICE_ROLE_KEY` (alleen server / Vercel, nooit client)
-
-Gebruik **geen** URL/keys van het Order/kassa-project.
+5. **SQL Editor** → run ook `supabase/migrations/002_seed_demo_listings.sql` (demo-zaken + foto-URLs; demo-PIN `000000`).
+6. **Storage** → bucket `gids-listing-photos` (public).
 
 ---
 
