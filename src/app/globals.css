@@ -1287,14 +1287,35 @@ body {
   }
 }
 
-.vysiongids-listing-panel-amenities {
+.vysiongids-listing-panel-amenities--inline {
+  flex: 1 1 auto;
+  min-width: 0;
+  align-self: stretch;
+  background: #f3f4f6;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.6rem;
+}
+
+.vysiongids-listing-panel-amenities--inline .vysiongids-listing-panel-amenities-list {
+  grid-template-columns: 1fr;
+  gap: 0.35rem;
+}
+
+@media (min-width: 480px) {
+  .vysiongids-listing-panel-amenities--inline .vysiongids-listing-panel-amenities-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 0.65rem;
+  }
+}
+
+.vysiongids-listing-panel-amenities--footer {
   border-top: 1px solid #e5e7eb;
   background: #f3f4f6;
   padding: 0.85rem 1.25rem 1rem;
 }
 
 @media (min-width: 640px) {
-  .vysiongids-listing-panel-amenities {
+  .vysiongids-listing-panel-amenities--footer {
     padding: 0.9rem 1.5rem 1.05rem;
   }
 }
@@ -1309,25 +1330,40 @@ body {
 }
 
 @media (min-width: 520px) {
-  .vysiongids-listing-panel-amenities-list {
+  .vysiongids-listing-panel-amenities--footer .vysiongids-listing-panel-amenities-list {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
 @media (min-width: 960px) {
-  .vysiongids-listing-panel-amenities-list {
+  .vysiongids-listing-panel-amenities--footer .vysiongids-listing-panel-amenities-list {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 }
 
 .vysiongids-listing-panel-amenity-item {
   display: flex;
-  align-items: flex-start;
-  gap: 0.55rem;
+  align-items: center;
+  gap: 0.4rem;
   min-width: 0;
-  font-size: 0.8125rem;
-  line-height: 1.4;
+  font-size: 0.75rem;
+  line-height: 1.25;
   color: #374151;
+}
+
+.vysiongids-listing-panel-amenities--inline .vysiongids-listing-panel-amenity-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.vysiongids-listing-panel-amenities--inline .vysiongids-listing-panel-amenity-icon svg {
+  width: 13px;
+  height: 13px;
+}
+
+.vysiongids-listing-panel-amenities--inline .vysiongids-listing-panel-amenity-label {
+  padding-top: 0;
+  font-size: 0.75rem;
 }
 
 .vysiongids-listing-panel-amenity-icon {
@@ -1349,22 +1385,12 @@ body {
   overflow-wrap: anywhere;
 }
 
-.vysiongids-listing-panel--compact .vysiongids-listing-panel-amenities {
-  padding: 0.65rem 1rem 0.75rem;
+.vysiongids-listing-panel--compact .vysiongids-listing-panel-amenities--inline {
+  padding: 0.4rem 0.5rem;
 }
 
 .vysiongids-listing-panel--compact .vysiongids-listing-panel-amenity-item {
-  font-size: 0.75rem;
-}
-
-.vysiongids-listing-panel--compact .vysiongids-listing-panel-amenity-icon {
-  width: 1.65rem;
-  height: 1.65rem;
-}
-
-.vysiongids-listing-panel--compact .vysiongids-listing-panel-amenity-icon svg {
-  width: 14px;
-  height: 14px;
+  font-size: 0.6875rem;
 }
 
 .vysiongids-listing-open-status {
@@ -1438,10 +1464,10 @@ body {
   margin-top: auto;
   display: flex;
   flex-wrap: wrap;
-  align-items: stretch;
-  justify-content: flex-end;
-  gap: 0.75rem;
-  padding-top: 0.75rem;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.65rem 0.85rem;
+  padding-top: 0.65rem;
 }
 
 .vysiongids-listing-panel-cta-stack {
@@ -1450,6 +1476,7 @@ body {
   align-items: stretch;
   gap: 0.5rem;
   min-width: 8.5rem;
+  flex: 0 0 auto;
 }
 
 .vysiongids-listing-action-btn {
@@ -1921,6 +1948,10 @@ body {
   .vysiongids-listing-panel-actions {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .vysiongids-listing-panel-amenities--inline {
+    width: 100%;
   }
 
   .vysiongids-listing-panel-cta-stack {

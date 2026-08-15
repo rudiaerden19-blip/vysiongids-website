@@ -86,6 +86,7 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
             {minOrder ? <span style={{ color: '#6b7280' }}>{minOrder}</span> : null}
           </div>
           <div className="vysiongids-listing-panel-actions">
+            <ListingPanelAmenityFooter listing={listing} variant="inline" />
             <div className="vysiongids-listing-panel-cta-stack">
               <Link href={`${profileHref}#info`} className="vysiongids-listing-action-btn">
                 Info
@@ -105,7 +106,6 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
           </div>
         </div>
       </div>
-      <ListingPanelAmenityFooter listing={listing} />
     </article>
   )
 }
