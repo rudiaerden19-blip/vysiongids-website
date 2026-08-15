@@ -1,6 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import ListingStarRating from '@/components/ListingStarRating'
+import ReviewList from '@/components/ReviewList'
+import ReviewSubmitForm from '@/components/ReviewSubmitForm'
 import SiteHeader from '@/components/SiteHeader'
 import ListingInfoSection from '@/components/ListingInfoSection'
 import ListingMap from '@/components/ListingMapClient'
@@ -13,6 +16,7 @@ import {
   getListingBySlug,
   getListingTypeLabel,
 } from '@/lib/listings'
+import { fetchListingIdBySlugAdmin, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -39,6 +43,9 @@ export default async function ZaakPage({ params }: Props) {
   const typeLabel = getListingTypeLabel(listing.type)
   const minOrder = formatMinOrder(listing)
   const { street, cityLine } = formatListingAddressLines(listing)
+  const reviews = (await fetchReviewsByListingSlug(slug, 5)) ?? []
+  const canSubmitReview = Boolean(await fetchListingIdBySlugAdmin(slug))
+  const reviewsHref = `/zaak/${slug}/reviews`
 
   return (
     <>
@@ -79,11 +86,27 @@ export default async function ZaakPage({ params }: Props) {
 
             <section id="beoordeling" className="mt-8 border-t border-gray-200 pt-8 scroll-mt-24">
               <h2 className="text-lg font-bold text-gray-900">Beoordeling</h2>
-              <p className="mt-2 flex items-center gap-2 text-gray-700">
-                <span className="text-2xl text-amber-500">★</span>
-                <span className="text-xl font-bold">{listing.ratingAvg.toFixed(1)}</span>
-                <span className="text-gray-500">({listing.ratingCount}+ beoordelingen)</span>
+              <div className="mt-3">
+                <ListingStarRating slug={slug} avg={listing.ratingAvg} count={listing.ratingCount} size="md" />
+              </div>
+              {reviews.length > 0 ? (
+                <div className="mt-4">
+                  <ReviewList reviews={reviews.slice(0, 3)} />
+                </div>
+              ) : null}
+              <p className="mt-4">
+                <Link href={reviewsHref} className="font-semibold text-accent hover:underline">
+                  Alle reviews bekijken →
+                </Link>
               </p>
+              {canSubmitReview ? (
+                <div className="mt-8">
+                  <h3 className="text-base font-bold text-gray-900">Schrijf een review</h3>
+                  <div className="mt-3">
+                    <ReviewSubmitForm slug={slug} listingName={listing.name} />
+                  </div>
+                </div>
+              ) : null}
             </section>
 
             <section className="mt-8 border-t border-gray-200 pt-8">
@@ -122,9 +145,9 @@ export default async function ZaakPage({ params }: Props) {
                 >
                   Bestel
                 </a>
-                <a href="#beoordeling" className="vysiongids-zaak-action-btn">
+                <Link href={`${reviewsHref}#schrijven`} className="vysiongids-zaak-action-btn">
                   Geef review
-                </a>
+                </Link>
               </div>
               <div className="mt-4 border-t border-gray-200 pt-4">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Route</p>

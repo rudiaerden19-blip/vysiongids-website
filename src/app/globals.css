@@ -974,6 +974,69 @@ body {
   white-space: nowrap;
 }
 
+.vysiongids-star-rating-link {
+  display: inline-flex;
+  text-decoration: none;
+  color: inherit;
+}
+
+.vysiongids-star-rating-link:hover .vysiongids-star-rating-avg {
+  color: var(--accent);
+}
+
+.vysiongids-star-rating {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  font-size: 0.875rem;
+  color: #4b5563;
+}
+
+.vysiongids-star-rating--md {
+  font-size: 1rem;
+}
+
+.vysiongids-star-rating--md .vysiongids-star-rating-stars {
+  font-size: 1.35rem;
+}
+
+.vysiongids-star-rating-stars {
+  color: #f59e0b;
+  letter-spacing: 0.05em;
+}
+
+.vysiongids-star-rating-avg {
+  font-weight: 700;
+  color: #1f2937;
+}
+
+.vysiongids-star-rating-count {
+  color: #6b7280;
+}
+
+.vysiongids-review-star-btn {
+  border: 1px solid #d1d5db;
+  background: #fff;
+  border-radius: 0.5rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 1.25rem;
+  line-height: 1;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.vysiongids-review-star-btn.is-active {
+  border-color: #f59e0b;
+  background: #fffbeb;
+  color: #f59e0b;
+}
+
+.vysiongids-review-form textarea.vysiongids-form-input {
+  min-height: 6rem;
+}
+
 @media (max-width: 639px) {
   .vysiongids-listing-panel-body {
     padding: 1rem 1.1rem;

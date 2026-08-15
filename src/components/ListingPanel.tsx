@@ -1,20 +1,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import ListingPanelOpenStatus from '@/components/ListingPanelOpenStatus'
+import ListingStarRating from '@/components/ListingStarRating'
 import type { Listing } from '@/lib/listing-types'
 import { formatDeliveryFee, formatListingAddressLines, formatMinOrder, formatOpeningHours, getListingTypeLabel } from '@/lib/listings'
-
-function StarRating({ avg, count }: { avg: number; count: number }) {
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: '0.25rem', fontSize: '0.875rem', color: '#4b5563' }}>
-      <span style={{ color: '#f59e0b' }} aria-hidden>
-        ★
-      </span>
-      <span style={{ fontWeight: 600, color: '#1f2937' }}>{avg.toFixed(1)}</span>
-      <span style={{ color: '#6b7280' }}>({count}+)</span>
-    </span>
-  )
-}
 
 export default function ListingPanel({ listing }: { listing: Listing }) {
   const typeLabel = getListingTypeLabel(listing.type)
@@ -24,6 +13,7 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
   const { street, cityLine } = formatListingAddressLines(listing)
   const hoursLabel = formatOpeningHours(listing)
   const profileHref = `/zaak/${listing.slug}`
+  const reviewsHref = `${profileHref}/reviews`
 
   return (
     <article className="vysiongids-listing-panel">
@@ -66,7 +56,7 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
             <span>{hoursLabel}</span>
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem 0.85rem', fontSize: '0.9375rem' }}>
-            <StarRating avg={listing.ratingAvg} count={listing.ratingCount} />
+            <ListingStarRating slug={listing.slug} avg={listing.ratingAvg} count={listing.ratingCount} />
             <span style={{ color: '#6b7280' }}>{timeLabel}</span>
             <span style={{ fontWeight: 500, color: '#374151' }}>{deliveryLabel}</span>
             {minOrder ? <span style={{ color: '#6b7280' }}>{minOrder}</span> : null}
@@ -84,7 +74,7 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
               >
                 Bestel
               </a>
-              <Link href={`${profileHref}#beoordeling`} className="vysiongids-listing-action-btn">
+              <Link href={`${reviewsHref}#schrijven`} className="vysiongids-listing-action-btn">
                 Geef review
               </Link>
             </div>
