@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import ListingPanel from '@/components/ListingPanel'
 import SearchForm from '@/components/SearchForm'
+import SearchResultsVoiceAnnouncement from '@/components/SearchResultsVoiceAnnouncement'
 import SiteHeader from '@/components/SiteHeader'
 import { searchListings } from '@/lib/listings'
 import { provinceLabel } from '@/lib/belgium-locations'
@@ -41,6 +42,15 @@ export default async function ZoekenPage({ searchParams }: Props) {
         <p style={{ margin: '0 0 1.5rem', color: '#4b5563', fontSize: '1rem' }}>
           {results.length} {results.length === 1 ? 'zaak' : 'zaken'} · Bestel rechtstreeks bij de zaak
         </p>
+
+        <Suspense fallback={null}>
+          <SearchResultsVoiceAnnouncement
+            count={results.length}
+            q={sp.q}
+            type={sp.type}
+            prov={sp.prov}
+          />
+        </Suspense>
 
         <Suspense fallback={null}>
           <div className="vysiongids-zoeken-search" style={{ marginBottom: '2rem', width: '100%' }}>

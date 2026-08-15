@@ -77,11 +77,12 @@ const heroSubmitStyle: CSSProperties = {
   width: '100%',
 }
 
-function buildSearchPath(nextQ: string, nextType: string, prov: string) {
+function buildSearchPath(nextQ: string, nextType: string, prov: string, fromVoice?: boolean) {
   const params = new URLSearchParams()
   if (nextQ) params.set('q', nextQ)
   if (nextType && nextType !== 'all') params.set('type', nextType)
   if (prov.trim()) params.set('prov', prov.trim())
+  if (fromVoice) params.set('voice', '1')
   const qs = params.toString()
   return qs ? `/zoeken?${qs}` : '/zoeken'
 }
@@ -104,7 +105,7 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
       const form = formRef.current
       const type = form ? String(new FormData(form).get('type') ?? 'all') : 'all'
       if (qInputRef.current) qInputRef.current.value = trimmed
-      router.push(buildSearchPath(trimmed, type, prov))
+      router.push(buildSearchPath(trimmed, type, prov, true))
     },
     [formRef, prov, qInputRef, router],
   )
