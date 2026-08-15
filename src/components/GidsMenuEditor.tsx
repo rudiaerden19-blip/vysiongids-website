@@ -178,6 +178,11 @@ export default function GidsMenuEditor() {
       setError('Wacht tot de foto klaar is met uploaden, daarna opnieuw opslaan.')
       return
     }
+    const missingCat = categories.find((c) => !c.name.trim())
+    if (missingCat) {
+      setError('Geef elke categorie een naam (bv. Friet, Burgers).')
+      return
+    }
     setSaving(true)
     setError(null)
     setSuccess(null)

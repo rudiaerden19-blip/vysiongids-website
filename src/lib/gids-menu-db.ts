@@ -142,7 +142,9 @@ export async function saveGidsMenuCatalog(listingId: string, payload: GidsMenuSa
   for (let ci = 0; ci < payload.categories.length; ci++) {
     const cat = payload.categories[ci]!
     const name = cat.name.trim()
-    if (!name) continue
+    if (!name) {
+      throw new Error('Elke categorie moet een naam hebben (bv. Friet, Burgers).')
+    }
 
     const catRow = {
       id: cat.id,
