@@ -1,15 +1,11 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import { Suspense } from 'react'
 import SearchForm from '@/components/SearchForm'
 import HomeStatsBar from '@/components/HomeStatsBar'
 import SiteHeader from '@/components/SiteHeader'
 import { getHomePublicStats } from '@/lib/gids-home-stats'
-import { getAllListings, listingsDataSourceLabel } from '@/lib/listings'
 
 export default async function HomePage() {
-  const total = (await getAllListings()).length
-  const source = await listingsDataSourceLabel()
   const stats = await getHomePublicStats()
 
   return (
@@ -99,22 +95,6 @@ export default async function HomePage() {
         </section>
       </div>
       <HomeStatsBar activeZaken={stats.activeZaken} zoekactiesPerDag={stats.zoekactiesPerDag} />
-      <main>
-        <section className="vysiongids-page-wrap" style={{ paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h2 className="text-xl font-bold text-gray-900">Begin hier</h2>
-              <p className="mt-1 text-gray-600">
-                {total} {total === 1 ? 'zaak' : 'zaken'} in de gids
-                {source === 'json' ? ' (demo-data — run seed in Supabase).' : '.'}
-              </p>
-            </div>
-            <Link href="/zoeken" className="font-semibold text-accent hover:underline">
-              Alle zaken bekijken →
-            </Link>
-          </div>
-        </section>
-      </main>
     </>
   )
 }
