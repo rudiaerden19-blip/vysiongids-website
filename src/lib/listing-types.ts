@@ -6,6 +6,11 @@ export const LISTING_TYPES = [
   { id: 'snack', label: 'Snack' },
   { id: 'traiteur', label: 'Traiteur' },
   { id: 'restaurant', label: 'Restaurant' },
+  { id: 'broodjeszaak', label: 'Broodjeszaak' },
+  { id: 'chinees', label: 'Chinees' },
+  { id: 'sushi', label: 'Sushi restaurant' },
+  { id: 'cafe', label: 'Café' },
+  { id: 'bistro', label: 'Bistro' },
 ] as const
 
 export type ListingTypeId = (typeof LISTING_TYPES)[number]['id']
