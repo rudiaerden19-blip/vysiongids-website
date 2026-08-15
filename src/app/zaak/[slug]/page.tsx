@@ -79,13 +79,10 @@ export default async function ZaakPage({ params }: Props) {
                 <span className="vysiongids-zaak-title-cuisine-inline"> · {cuisineLine}</span>
               ) : null}
             </h1>
-            <p className="mt-2 flex items-start gap-2 text-gray-600">
-              <span aria-hidden>📍</span>
-              <span>
-                {street}
-                <br />
-                {cityLine}
-              </span>
+            <p className="mt-2 text-gray-600">
+              {street}
+              <br />
+              {cityLine}
             </p>
 
             <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100">

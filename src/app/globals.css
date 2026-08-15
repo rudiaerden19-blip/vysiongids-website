@@ -1411,16 +1411,8 @@ body {
 }
 
 .vysiongids-listing-panel-hours-wrap {
-  display: flex;
-  gap: 0.5rem;
-  align-items: flex-start;
   font-size: 0.875rem;
   color: #4b5563;
-  line-height: 1.4;
-}
-
-.vysiongids-listing-panel-hours-icon {
-  flex-shrink: 0;
   line-height: 1.4;
 }
 

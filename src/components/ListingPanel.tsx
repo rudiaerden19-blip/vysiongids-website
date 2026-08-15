@@ -47,28 +47,19 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
             </Link>
             <ListingPanelOpenStatus listing={listing} />
           </div>
-          <p style={{ margin: 0, display: 'flex', gap: '0.5rem', fontSize: bodyTextSize, color: '#4b5563', lineHeight: 1.45 }}>
-            <span aria-hidden>📍</span>
-            <span>
-              {street}
-              <br />
-              {cityLine}
-            </span>
+          <p style={{ margin: 0, fontSize: bodyTextSize, color: '#4b5563', lineHeight: 1.45 }}>
+            {street}
+            <br />
+            {cityLine}
           </p>
-          <p style={{ margin: 0, display: 'flex', gap: '0.5rem', fontSize: bodyTextSize, color: '#4b5563' }}>
-            <span aria-hidden>🍽</span>
-            <span>
-              {listing.pickupEnabled && listing.deliveryEnabled
-                ? 'Afhalen & levering'
-                : listing.deliveryEnabled
-                  ? 'Levering'
-                  : 'Afhalen'}
-            </span>
+          <p style={{ margin: 0, fontSize: bodyTextSize, color: '#4b5563' }}>
+            {listing.pickupEnabled && listing.deliveryEnabled
+              ? 'Afhalen & levering'
+              : listing.deliveryEnabled
+                ? 'Levering'
+                : 'Afhalen'}
           </p>
           <div className="vysiongids-listing-panel-hours-wrap">
-            <span className="vysiongids-listing-panel-hours-icon" aria-hidden>
-              🕐
-            </span>
             <ul className="vysiongids-listing-panel-hours">
               {hoursRows.map((row) => (
                 <li key={row.day}>
