@@ -17,9 +17,11 @@ import {
   getListingBySlug,
   getListingTypeLabel,
 } from '@/lib/listings'
-import { fetchListingIdBySlugAdmin, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
+import { fetchListingIdBySlugAdmin, fetchReviewStatsByListingSlug, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
 
 type Props = { params: Promise<{ slug: string }> }
+
+export const revalidate = 60
 
 export async function generateStaticParams() {
   const all = await getAllListings()
@@ -45,6 +47,9 @@ export default async function ZaakPage({ params }: Props) {
   const minOrder = formatMinOrder(listing)
   const { street, cityLine } = formatListingAddressLines(listing)
   const reviews = (await fetchReviewsByListingSlug(slug, 5)) ?? []
+  const reviewStats = await fetchReviewStatsByListingSlug(slug)
+  const ratingCount = reviewStats?.count ?? listing.ratingCount
+  const ratingAvg = reviewStats && reviewStats.count > 0 ? reviewStats.avg : listing.ratingAvg
   const canSubmitReview = Boolean(await fetchListingIdBySlugAdmin(slug))
   const reviewsHref = `/zaak/${slug}/reviews`
 
@@ -88,7 +93,7 @@ export default async function ZaakPage({ params }: Props) {
             <section id="beoordeling" className="mt-8 border-t border-gray-200 pt-8 scroll-mt-24">
               <h2 className="text-lg font-bold text-gray-900">Beoordeling</h2>
               <div className="mt-3">
-                <ListingStarRating slug={slug} avg={listing.ratingAvg} count={listing.ratingCount} size="md" />
+                <ListingStarRating slug={slug} avg={ratingAvg} count={ratingCount} size="md" />
               </div>
               {reviews.length > 0 ? (
                 <div className="mt-4">

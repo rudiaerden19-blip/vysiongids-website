@@ -68,6 +68,73 @@ export async function fetchReviewsByListingSlug(slug: string, limit = 50): Promi
   return (data as ReviewRow[]).map(mapReview)
 }
 
+export async function fetchReviewStatsByListingSlug(
+  slug: string,
+): Promise<{ avg: number; count: number } | null> {
+  if (!isGidsSupabaseConfigured()) return null
+  const supabase = createGidsSupabasePublic()
+  if (!supabase) return null
+
+  const { data: listing, error: listingErr } = await supabase
+    .from('gids_listings')
+    .select('id')
+    .eq('slug', slug)
+    .eq('status', 'published')
+    .maybeSingle()
+
+  if (listingErr || !listing) return { avg: 0, count: 0 }
+
+  const { data, error, count } = await supabase
+    .from('gids_reviews')
+    .select('rating', { count: 'exact' })
+    .eq('listing_id', listing.id)
+
+  if (error) {
+    console.error('[gids] review stats:', error.message)
+    return null
+  }
+
+  const rows = (data ?? []) as { rating: number }[]
+  const total = count ?? rows.length
+  if (total === 0) return { avg: 0, count: 0 }
+
+  const sum = rows.reduce((acc, row) => acc + Number(row.rating), 0)
+  const avg = Math.round((sum / total) * 10) / 10
+  return { avg, count: total }
+}
+
+async function refreshListingRatingAdmin(listingId: string): Promise<void> {
+  const supabase = createGidsSupabaseAdmin()
+  if (!supabase) return
+
+  const { data, error, count } = await supabase
+    .from('gids_reviews')
+    .select('rating', { count: 'exact' })
+    .eq('listing_id', listingId)
+
+  if (error) {
+    console.error('[gids] refresh listing rating:', error.message)
+    return
+  }
+
+  const rows = (data ?? []) as { rating: number }[]
+  const total = count ?? rows.length
+  let ratingAvg = 0
+  if (total > 0) {
+    const sum = rows.reduce((acc, row) => acc + Number(row.rating), 0)
+    ratingAvg = Math.round((sum / total) * 10) / 10
+  }
+
+  const { error: updateErr } = await supabase
+    .from('gids_listings')
+    .update({ rating_avg: ratingAvg, rating_count: total })
+    .eq('id', listingId)
+
+  if (updateErr) {
+    console.error('[gids] update listing rating:', updateErr.message)
+  }
+}
+
 export async function insertReviewAdmin(input: {
   listingId: string
   rating: number
@@ -92,6 +159,8 @@ export async function insertReviewAdmin(input: {
     console.error('[gids] insert review:', error?.message)
     return { ok: false, error: 'Review opslaan mislukt.' }
   }
+
+  await refreshListingRatingAdmin(input.listingId)
 
   return { ok: true, id: data.id as string }
 }

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { fetchListingIdBySlugAdmin, fetchReviewsByListingSlug, insertReviewAdmin } from '@/lib/gids-reviews-db'
 
 export async function GET(req: Request) {
@@ -55,6 +55,8 @@ export async function POST(req: Request) {
   }
 
   revalidateTag('gids-listings', 'max')
+  revalidatePath(`/zaak/${slug}`)
+  revalidatePath(`/zaak/${slug}/reviews`)
 
   return NextResponse.json({ ok: true, id: result.id })
 }

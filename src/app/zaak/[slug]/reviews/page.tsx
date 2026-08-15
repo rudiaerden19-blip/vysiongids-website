@@ -4,10 +4,12 @@ import ListingStarRating from '@/components/ListingStarRating'
 import ReviewList from '@/components/ReviewList'
 import ReviewSubmitForm from '@/components/ReviewSubmitForm'
 import SiteHeader from '@/components/SiteHeader'
-import { fetchListingIdBySlugAdmin, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
+import { fetchListingIdBySlugAdmin, fetchReviewStatsByListingSlug, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
 import { formatListingAddressLines, getListingBySlug, getListingTypeLabel } from '@/lib/listings'
 
 type Props = { params: Promise<{ slug: string }> }
+
+export const revalidate = 60
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
@@ -25,6 +27,9 @@ export default async function ZaakReviewsPage({ params }: Props) {
   if (!listing) notFound()
 
   const reviews = (await fetchReviewsByListingSlug(slug)) ?? []
+  const reviewStats = await fetchReviewStatsByListingSlug(slug)
+  const ratingCount = reviewStats?.count ?? listing.ratingCount
+  const ratingAvg = reviewStats && reviewStats.count > 0 ? reviewStats.avg : listing.ratingAvg
   const canSubmit = Boolean(await fetchListingIdBySlugAdmin(slug))
   const { cityLine } = formatListingAddressLines(listing)
   const typeLabel = getListingTypeLabel(listing.type)
@@ -51,7 +56,7 @@ export default async function ZaakReviewsPage({ params }: Props) {
             {typeLabel} · {cityLine}
           </p>
           <div className="mt-4">
-            <ListingStarRating slug={slug} avg={listing.ratingAvg} count={listing.ratingCount} size="md" linkToReviews={false} />
+            <ListingStarRating slug={slug} avg={ratingAvg} count={ratingCount} size="md" linkToReviews={false} />
           </div>
         </header>
 
