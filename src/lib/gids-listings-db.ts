@@ -10,7 +10,7 @@ export type GidsListingRow = {
   name_normalized?: string
   pin_hash?: string
   type: string
-  cuisine_type: string | null
+  cuisine_type?: string | null
   city: string
   postcode: string
   province: string | null
@@ -37,10 +37,7 @@ export type GidsListingRow = {
 }
 
 const LISTING_SELECT = `
-  id, slug, name, type, cuisine_type, city, postcode, province, address, order_url,
-  website, phone, email, opening_hours, closed_days, hours_by_day, amenities,
-  rating_avg, rating_count, delivery_time_min, delivery_time_max,
-  delivery_fee_eur, min_order_eur, pickup_enabled, delivery_enabled, lat, lng,
+  *,
   gids_listing_photos ( sort_order, public_url )
 `
 

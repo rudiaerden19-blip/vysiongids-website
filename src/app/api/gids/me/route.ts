@@ -5,6 +5,7 @@ import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { mapGidsRowToListing, fetchListingRowByIdAdmin, fetchListingByNormalizedNameAdmin } from '@/lib/gids-listings-db'
 import { parseGidsListingFormData } from '@/lib/gids-listing-form-server'
 import { mergeListingAmenitiesWithOwnerChoices } from '@/lib/gids-owner-amenities'
+import { applyCuisineTypeToUpdatePayload, gidsListingSaveErrorMessage } from '@/lib/gids-listing-db-write'
 import { hashGidsPin } from '@/lib/gids-pin'
 import { normalizeGidsBusinessName, slugifyListing } from '@/lib/gids-text'
 import {
@@ -165,7 +166,6 @@ export async function PATCH(req: Request) {
     name_normalized: nameNormalized,
     slug,
     type: d.type,
-    cuisine_type: d.cuisineType,
     city: d.city,
     postcode: d.postcode,
     province: d.province,
@@ -189,10 +189,12 @@ export async function PATCH(req: Request) {
     updatePayload.pin_hash = hashGidsPin(d.pin)
   }
 
+  applyCuisineTypeToUpdatePayload(updatePayload, d.cuisineType)
+
   const { error: updateErr } = await admin.from('gids_listings').update(updatePayload).eq('id', listingId)
   if (updateErr) {
     console.error('[gids me patch]', updateErr.message)
-    return NextResponse.json({ error: 'Opslaan mislukt.' }, { status: 500 })
+    return NextResponse.json({ error: gidsListingSaveErrorMessage(updateErr.message) }, { status: 500 })
   }
 
   revalidateTag('gids-listings', 'max')

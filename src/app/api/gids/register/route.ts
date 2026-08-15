@@ -5,6 +5,7 @@ import { normalizeGidsBusinessName, slugifyListing } from '@/lib/gids-text'
 import { fetchListingByNormalizedNameAdmin } from '@/lib/gids-listings-db'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { parseGidsListingFormData } from '@/lib/gids-listing-form-server'
+import { buildGidsListingInsertRow, gidsListingSaveErrorMessage } from '@/lib/gids-listing-db-write'
 import { siteOriginFromRequest, uploadGidsListingPhoto, ensureGidsPhotosBucket } from '@/lib/gids-listing-photos-server'
 
 export const maxDuration = 60
@@ -54,44 +55,13 @@ async function handleRegisterPost(req: Request) {
 
   const { data: inserted, error: insertErr } = await admin
     .from('gids_listings')
-    .insert({
-      slug,
-      name: d.name,
-      name_normalized: nameNormalized,
-      pin_hash: pinHash,
-      type: d.type,
-      cuisine_type: d.cuisineType,
-      city: d.city,
-      postcode: d.postcode,
-      province: d.province,
-      address: d.address,
-      order_url: d.orderUrlFinal,
-      website: d.websiteFinal,
-      phone: d.phone,
-      email: d.email,
-      opening_hours: d.openingHours,
-      closed_days: d.closedDays,
-      hours_by_day: d.hoursByDay,
-      amenities: d.ownerAmenities.length ? d.ownerAmenities : null,
-      status: 'published',
-      rating_avg: 0,
-      rating_count: 0,
-      pickup_enabled: true,
-      delivery_enabled: true,
-      delivery_fee_eur: d.deliveryFeeValue,
-      min_order_eur: d.minOrderValue,
-      delivery_time_min: d.deliveryTimeMinValue,
-      delivery_time_max: d.deliveryTimeMaxValue,
-    })
+    .insert(buildGidsListingInsertRow(d, { slug, nameNormalized, pinHash }))
     .select('id, slug')
     .single()
 
   if (insertErr || !inserted) {
     console.error('[gids register]', insertErr?.message, insertErr?.code)
-    const msg = insertErr?.message?.includes('duplicate')
-      ? 'Deze zaaknaam of slug bestaat al.'
-      : 'Opslaan mislukt. Probeer later opnieuw.'
-    return NextResponse.json({ error: msg }, { status: 500 })
+    return NextResponse.json({ error: gidsListingSaveErrorMessage(insertErr?.message) }, { status: 500 })
   }
 
   const origin = siteOriginFromRequest(req)
