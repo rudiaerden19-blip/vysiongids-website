@@ -28,6 +28,12 @@ export type ListingAmenityId =
   | 'gluten_free'
   | 'accessible'
   | 'vegetarian'
+  | 'vegan'
+  | 'dogs_welcome'
+  | 'child_friendly'
+  | 'parking'
+  | 'gift_vouchers'
+  | 'groups_welcome'
 
 export type ListingWeekday =
   | 'maandag'

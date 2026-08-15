@@ -11,17 +11,23 @@ export const WEEKDAYS_NL: ListingWeekday[] = [
 ]
 
 export const AMENITY_LABELS: Record<ListingAmenityId, string> = {
-  bancontact: 'Bancontact mogelijk',
-  wifi: 'Wifi aanwezig',
+  bancontact: 'Bancontact',
+  wifi: 'Wi-Fi',
   chef: 'Chef achter het fornuis',
   wheelchair: 'Toegankelijk voor rolstoelgebruikers',
   terrace: 'Terras',
-  takeaway: 'Afhalen',
+  takeaway: 'Take-away',
   delivery: 'Levering',
-  halal: 'Wij verkopen halal producten',
-  gluten_free: 'Wij verkopen glutenvrije producten',
-  accessible: 'Aangepast aan gehandicapten',
-  vegetarian: 'Vegetarische producten',
+  halal: 'Halal',
+  gluten_free: 'Glutenvrij',
+  accessible: 'Toegankelijk',
+  vegetarian: 'Vegetarisch',
+  vegan: 'Vegan',
+  dogs_welcome: 'Honden welkom',
+  child_friendly: 'Kindvriendelijk',
+  parking: 'Parking',
+  gift_vouchers: 'Cadeaubonnen',
+  groups_welcome: 'Groepen welkom',
 }
 
 const CLOSED_WORD = 'gesloten'

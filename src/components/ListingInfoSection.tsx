@@ -102,6 +102,18 @@ function AmenityIcon({ id }: { id: ListingAmenityId }) {
           <path d="M12 21c-4-4-6-8-6-12a6 6 0 1112 0c0 4-2 8-6 12z" />
         </svg>
       )
+    case 'vegan':
+    case 'dogs_welcome':
+    case 'child_friendly':
+    case 'parking':
+    case 'gift_vouchers':
+    case 'groups_welcome':
+      return (
+        <svg viewBox="0 0 24 24" aria-hidden {...props}>
+          <circle cx="12" cy="12" r="8" />
+          <path d="M8 12h8" />
+        </svg>
+      )
     case 'takeaway':
     case 'delivery':
       return (

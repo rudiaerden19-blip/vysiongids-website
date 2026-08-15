@@ -1425,6 +1425,11 @@ body {
   accent-color: #0e5d82;
 }
 
+.vysiongids-owner-options-emoji {
+  display: inline-block;
+  min-width: 1.35rem;
+}
+
 .vysiongids-form-input {
   display: block;
   width: 100%;

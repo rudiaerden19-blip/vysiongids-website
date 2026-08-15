@@ -1,12 +1,23 @@
 import type { ListingAmenityId } from '@/lib/listing-types'
 
-/** Opties die de ondernemer op zaak toevoegen / beheer kan aanvinken. */
+/** Opties die de ondernemer op zaak toevoegen / beheer kan aanvinken (volgorde = formulier). */
 export const OWNER_PROFILE_AMENITIES = [
-  { id: 'halal', label: 'Wij verkopen halal producten' },
-  { id: 'gluten_free', label: 'Wij verkopen glutenvrije producten' },
-  { id: 'accessible', label: 'Aangepast aan gehandicapten' },
-  { id: 'vegetarian', label: 'Vegetarische producten' },
-] as const satisfies ReadonlyArray<{ id: ListingAmenityId; label: string }>
+  { id: 'vegetarian', emoji: '🥗', label: 'Vegetarisch' },
+  { id: 'vegan', emoji: '🌱', label: 'Vegan' },
+  { id: 'halal', emoji: '☪️', label: 'Halal' },
+  { id: 'gluten_free', emoji: '🌾', label: 'Glutenvrij' },
+  { id: 'dogs_welcome', emoji: '🐕', label: 'Honden welkom' },
+  { id: 'accessible', emoji: '♿', label: 'Toegankelijk' },
+  { id: 'child_friendly', emoji: '👶', label: 'Kindvriendelijk' },
+  { id: 'parking', emoji: '🅿️', label: 'Parking' },
+  { id: 'terrace', emoji: '🌳', label: 'Terras' },
+  { id: 'takeaway', emoji: '🍴', label: 'Take-away' },
+  { id: 'delivery', emoji: '🚚', label: 'Levering' },
+  { id: 'bancontact', emoji: '💳', label: 'Bancontact' },
+  { id: 'gift_vouchers', emoji: '🎁', label: 'Cadeaubonnen' },
+  { id: 'wifi', emoji: '📶', label: 'Wi-Fi' },
+  { id: 'groups_welcome', emoji: '🪑', label: 'Groepen welkom' },
+] as const satisfies ReadonlyArray<{ id: ListingAmenityId; emoji: string; label: string }>
 
 const OWNER_IDS = new Set<ListingAmenityId>(OWNER_PROFILE_AMENITIES.map((a) => a.id))
 
@@ -22,7 +33,7 @@ export function mergeListingAmenitiesWithOwnerChoices(
   existing: ListingAmenityId[] | null | undefined,
   ownerSelected: ListingAmenityId[],
 ): ListingAmenityId[] | null {
-  const kept = (existing ?? []).filter((id) => !OWNER_IDS.has(id))
+  const kept = (existing ?? []).filter((id) => !OWNER_IDS.has(id) && id !== 'wheelchair')
   const merged = [...kept, ...ownerSelected]
   return merged.length ? merged : null
 }
@@ -31,6 +42,7 @@ export function ownerAmenitiesFromListing(amenities: ListingAmenityId[] | undefi
   const set = new Set<ListingAmenityId>()
   for (const id of amenities ?? []) {
     if (OWNER_IDS.has(id)) set.add(id)
+    if (id === 'wheelchair') set.add('accessible')
   }
   return set
 }

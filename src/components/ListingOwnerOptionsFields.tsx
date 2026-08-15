@@ -14,7 +14,7 @@ export default function ListingOwnerOptionsFields({ initialAmenities }: Props) {
       <legend className="vysiongids-form-label">Extra info voor je online profiel</legend>
       <p className="mt-0.5 text-xs text-gray-500">Optioneel — wat je aanvinkt, tonen we op je zaakpagina bij INFO.</p>
       <ul className="vysiongids-owner-options-list">
-        {OWNER_PROFILE_AMENITIES.map(({ id, label }) => (
+        {OWNER_PROFILE_AMENITIES.map(({ id, emoji, label }) => (
           <li key={id}>
             <label className="vysiongids-owner-options-item">
               <input
@@ -23,7 +23,12 @@ export default function ListingOwnerOptionsFields({ initialAmenities }: Props) {
                 defaultChecked={checked?.has(id) ?? false}
                 className="vysiongids-owner-options-checkbox"
               />
-              <span>{label}</span>
+              <span>
+                <span className="vysiongids-owner-options-emoji" aria-hidden>
+                  {emoji}{' '}
+                </span>
+                {label}
+              </span>
             </label>
           </li>
         ))}
