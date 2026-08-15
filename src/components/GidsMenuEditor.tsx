@@ -1,7 +1,8 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type { GidsMenuCatalog, GidsMenuCategory, GidsMenuProduct } from '@/lib/gids-menu-types'
+import { compressListingPhoto } from '@/lib/compress-listing-photo'
 
 function newId(): string {
   return crypto.randomUUID()
@@ -38,6 +39,7 @@ export default function GidsMenuEditor() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [uploadingProductId, setUploadingProductId] = useState<string | null>(null)
+  const uploadSeqRef = useRef(0)
 
   useEffect(() => {
     fetch('/api/gids/me/menu')
@@ -102,27 +104,61 @@ export default function GidsMenuEditor() {
     )
   }
 
-  async function uploadPhoto(productId: string, file: File) {
+  async function uploadPhoto(categoryId: string, productId: string, file: File) {
+    const seq = ++uploadSeqRef.current
     setUploadingProductId(productId)
     setError(null)
+
+    let previewUrl: string | null = null
     try {
+      previewUrl = URL.createObjectURL(file)
+      updateProduct(categoryId, productId, { imageUrl: previewUrl })
+
+      const compressed = await compressListingPhoto(file)
+      if (seq !== uploadSeqRef.current) return
+
       const fd = new FormData()
       fd.set('productId', productId)
-      fd.set('photo', file)
-      const res = await fetch('/api/gids/me/menu/product-photo', { method: 'POST', body: fd })
-      const data = (await res.json()) as { publicUrl?: string; error?: string }
+      fd.set('photo', compressed)
+
+      const controller = new AbortController()
+      const timeoutId = window.setTimeout(() => controller.abort(), 45000)
+
+      const res = await fetch('/api/gids/me/menu/product-photo', {
+        method: 'POST',
+        body: fd,
+        credentials: 'same-origin',
+        signal: controller.signal,
+      })
+      window.clearTimeout(timeoutId)
+
+      let data: { publicUrl?: string; error?: string } = {}
+      try {
+        data = (await res.json()) as { publicUrl?: string; error?: string }
+      } catch {
+        /* lege of ongeldige response */
+      }
+
+      if (seq !== uploadSeqRef.current) return
       if (!res.ok) throw new Error(data.error ?? 'Upload mislukt')
-      if (!data.publicUrl) throw new Error('Geen URL')
-      setCategories((prev) =>
-        prev.map((c) => ({
-          ...c,
-          products: c.products.map((p) => (p.id === productId ? { ...p, imageUrl: data.publicUrl! } : p)),
-        })),
-      )
+      if (!data.publicUrl) throw new Error('Geen foto-URL terug van server')
+
+      updateProduct(categoryId, productId, { imageUrl: data.publicUrl })
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Upload mislukt')
+      if (seq !== uploadSeqRef.current) return
+      const msg =
+        e instanceof Error && e.name === 'AbortError'
+          ? 'Upload duurde te lang. Probeer opnieuw of een kleinere foto.'
+          : e instanceof Error
+            ? e.message
+            : 'Upload mislukt'
+      setError(msg)
+      updateProduct(categoryId, productId, { imageUrl: null })
     } finally {
-      setUploadingProductId(null)
+      if (previewUrl) URL.revokeObjectURL(previewUrl)
+      if (seq === uploadSeqRef.current) {
+        setUploadingProductId(null)
+      }
     }
   }
 
@@ -244,8 +280,10 @@ export default function GidsMenuEditor() {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={p.imageUrl} alt="" className="h-16 w-16 rounded-lg object-cover" />
                   ) : null}
-                  <label className="vysiongids-photo-pick-btn cursor-pointer">
-                    {uploadingProductId === p.id ? 'Uploaden…' : p.imageUrl ? 'Foto vervangen' : 'Foto toevoegen'}
+                  <label
+                    className={`vysiongids-photo-pick-btn cursor-pointer${uploadingProductId === p.id ? ' opacity-70' : ''}`}
+                  >
+                    {uploadingProductId === p.id ? 'Bezig…' : p.imageUrl ? 'Foto vervangen' : 'Foto toevoegen'}
                     <input
                       type="file"
                       accept="image/*"
@@ -253,7 +291,7 @@ export default function GidsMenuEditor() {
                       disabled={uploadingProductId === p.id}
                       onChange={(e) => {
                         const f = e.target.files?.[0]
-                        if (f) void uploadPhoto(p.id, f)
+                        if (f) void uploadPhoto(cat.id, p.id, f)
                         e.target.value = ''
                       }}
                     />
