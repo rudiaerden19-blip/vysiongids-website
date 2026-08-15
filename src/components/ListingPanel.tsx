@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import ListingPanelOpenStatus from '@/components/ListingPanelOpenStatus'
 import type { Listing } from '@/lib/listing-types'
 import { formatDeliveryFee, formatListingAddressLines, formatMinOrder, formatOpeningHours, getListingTypeLabel } from '@/lib/listings'
 
@@ -37,20 +38,12 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
           />
         </Link>
         <div className="vysiongids-listing-panel-body">
-          <Link href={profileHref} style={{ textDecoration: 'none', width: 'fit-content' }}>
-            <h2
-              style={{
-                margin: 0,
-                fontSize: 'clamp(1.125rem, 2vw, 1.35rem)',
-                fontWeight: 700,
-                letterSpacing: '-0.02em',
-                textTransform: 'uppercase',
-                color: '#111827',
-              }}
-            >
-              {listing.name}
-            </h2>
-          </Link>
+          <div className="vysiongids-listing-panel-head">
+            <Link href={profileHref} className="vysiongids-listing-panel-title-link">
+              <h2 className="vysiongids-listing-panel-title">{listing.name}</h2>
+            </Link>
+            <ListingPanelOpenStatus listing={listing} />
+          </div>
           <p style={{ margin: 0, display: 'flex', gap: '0.5rem', fontSize: '0.9375rem', color: '#4b5563', lineHeight: 1.45 }}>
             <span aria-hidden>📍</span>
             <span>

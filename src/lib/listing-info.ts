@@ -71,8 +71,17 @@ const DAY_INDEX: Record<ListingWeekday, number> = {
   zondag: 6,
 }
 
-/** Europe/Brussels — vereenvoudigd open-check voor demo */
-export function isListingOpenNow(listing: Listing, now = new Date()): boolean {
+const DAY_MAP: Record<string, ListingWeekday> = {
+  monday: 'maandag',
+  tuesday: 'dinsdag',
+  wednesday: 'woensdag',
+  thursday: 'donderdag',
+  friday: 'vrijdag',
+  saturday: 'zaterdag',
+  sunday: 'zondag',
+}
+
+function brusselsNow(now: Date): { dayNl: ListingWeekday; nowMins: number; dayIndex: number } | null {
   const formatter = new Intl.DateTimeFormat('en-GB', {
     timeZone: 'Europe/Brussels',
     weekday: 'long',
@@ -84,24 +93,73 @@ export function isListingOpenNow(listing: Listing, now = new Date()): boolean {
   const weekday = parts.find((p) => p.type === 'weekday')?.value?.toLowerCase()
   const hour = Number(parts.find((p) => p.type === 'hour')?.value ?? '0')
   const minute = Number(parts.find((p) => p.type === 'minute')?.value ?? '0')
-  const nowMins = hour * 60 + minute
+  const dayNl = weekday ? DAY_MAP[weekday] : undefined
+  if (!dayNl) return null
+  return { dayNl, nowMins: hour * 60 + minute, dayIndex: DAY_INDEX[dayNl] }
+}
 
-  const dayMap: Record<string, ListingWeekday> = {
-    monday: 'maandag',
-    tuesday: 'dinsdag',
-    wednesday: 'woensdag',
-    thursday: 'donderdag',
-    friday: 'vrijdag',
-    saturday: 'zaterdag',
-    sunday: 'zondag',
+function formatMinutesAsTime(mins: number): string {
+  const h = Math.floor(mins / 60) % 24
+  const m = mins % 60
+  return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
+}
+
+function dayLabelForOffset(offset: number, day: ListingWeekday): string {
+  if (offset === 0) return 'vandaag'
+  if (offset === 1) return 'morgen'
+  return day
+}
+
+function findNextOpeningSlot(
+  listing: Listing,
+  now: Date,
+): { dayLabel: string; timeLabel: string } | null {
+  const ctx = brusselsNow(now)
+  if (!ctx) return null
+  const hours = resolveHoursByDay(listing)
+
+  for (let offset = 0; offset < 7; offset++) {
+    const day = WEEKDAYS_NL[(ctx.dayIndex + offset) % 7]
+    const row = hours.find((r) => r.day === day)
+    if (!row) continue
+    const slots = parseSlots(row.hours).sort((a, b) => a.start - b.start)
+    for (const slot of slots) {
+      if (offset === 0 && slot.start <= ctx.nowMins) continue
+      return {
+        dayLabel: dayLabelForOffset(offset, day),
+        timeLabel: formatMinutesAsTime(slot.start),
+      }
+    }
   }
-  const dayNl = weekday ? dayMap[weekday] : undefined
-  if (!dayNl) return false
+  return null
+}
 
-  const row = resolveHoursByDay(listing).find((r) => r.day === dayNl)
+export type ListingOpenStatus = {
+  isOpen: boolean
+  label: string
+}
+
+/** Tekst voor zoeklijst / badges: «Nu open» of «Opent woensdag om 12:00». */
+export function getListingOpenStatus(listing: Listing, now = new Date()): ListingOpenStatus {
+  if (isListingOpenNow(listing, now)) {
+    return { isOpen: true, label: 'Nu open' }
+  }
+  const next = findNextOpeningSlot(listing, now)
+  if (next) {
+    return { isOpen: false, label: `Opent ${next.dayLabel} om ${next.timeLabel}` }
+  }
+  return { isOpen: false, label: 'Momenteel gesloten' }
+}
+
+/** Europe/Brussels — vereenvoudigd open-check voor demo */
+export function isListingOpenNow(listing: Listing, now = new Date()): boolean {
+  const ctx = brusselsNow(now)
+  if (!ctx) return false
+
+  const row = resolveHoursByDay(listing).find((r) => r.day === ctx.dayNl)
   if (!row) return false
   const slots = parseSlots(row.hours)
-  return slots.some(({ start, end }) => nowMins >= start && nowMins < end)
+  return slots.some(({ start, end }) => ctx.nowMins >= start && ctx.nowMins < end)
 }
 
 export function listingWebsiteDisplay(url: string): string {
