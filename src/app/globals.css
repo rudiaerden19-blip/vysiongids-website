@@ -1452,10 +1452,20 @@ body {
 }
 
 .vysiongids-beheer-views-card {
-  border-radius: 0.75rem;
-  border: 1px solid #bfdbfe;
-  background: #eff6ff;
-  padding: 1rem 1.25rem;
+  border-radius: 1rem;
+  border: 2px solid #0e5d82;
+  background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
+  padding: 1.35rem 1.5rem;
+  box-shadow: 0 4px 14px rgb(14 93 130 / 0.12);
+}
+
+.vysiongids-beheer-views-kicker {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #0e5d82;
 }
 
 .vysiongids-listing-daily-views--beheer {
@@ -1465,15 +1475,22 @@ body {
   border: none;
   background: transparent;
   text-align: left;
-  font-size: 1rem;
-  line-height: 1.45;
-  color: #1e3a5f;
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #0f172a;
+}
+
+.vysiongids-beheer-views-card .vysiongids-listing-daily-views-count {
+  font-size: 1.75rem;
+  font-weight: 800;
+  color: #0e5d82;
 }
 
 .vysiongids-beheer-views-hint {
-  margin: 0.35rem 0 0;
+  margin: 0.5rem 0 0;
   font-size: 0.8125rem;
-  color: #64748b;
+  color: #475569;
 }
 
 .vysiongids-listing-open-status.is-open {

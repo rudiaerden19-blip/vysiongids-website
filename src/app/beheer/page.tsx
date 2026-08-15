@@ -9,7 +9,9 @@ export default function BeheerPage() {
       <SiteHeader />
       <main className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
         <h1 className="text-2xl font-bold text-gray-900">Zaak beheren</h1>
-        <BeheerClient />
+        <div className="mt-6">
+          <BeheerClient />
+        </div>
       </main>
     </>
   )

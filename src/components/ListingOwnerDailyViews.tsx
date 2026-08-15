@@ -33,16 +33,19 @@ export default function ListingOwnerDailyViews({ slug, className, variant = 'car
 
   return (
     <div className={variant === 'beheer' ? 'vysiongids-beheer-views-card' : undefined}>
+      {variant === 'beheer' ? (
+        <p className="vysiongids-beheer-views-kicker">Vandaag in Vysiongids</p>
+      ) : null}
       <p
         className={`${variantClass}${className ? ` ${className}` : ''}`}
         aria-label={`Vandaag ${views} keer bekeken`}
       >
-      Uw zaak is vandaag{' '}
-      <span className="vysiongids-listing-daily-views-count">{formatListingDailyViewCount(views)}</span> keer
+        Uw zaak is vandaag{' '}
+        <span className="vysiongids-listing-daily-views-count">{formatListingDailyViewCount(views)}</span> keer
         bekeken
       </p>
       {variant === 'beheer' ? (
-        <p className="vysiongids-beheer-views-hint">Alleen jij ziet dit in beheer — niet op de publieke gids.</p>
+        <p className="vysiongids-beheer-views-hint">Alleen zichtbaar in beheer — klanten zien dit niet.</p>
       ) : null}
     </div>
   )

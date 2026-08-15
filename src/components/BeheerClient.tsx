@@ -53,6 +53,8 @@ export default function BeheerClient() {
 
   return (
     <div className="space-y-8">
+      {slug ? <ListingOwnerDailyViews slug={slug} variant="beheer" /> : null}
+
       <p className="text-lg text-gray-800">
         Ingelogd als <strong>{me.name}</strong>
       </p>
@@ -61,8 +63,6 @@ export default function BeheerClient() {
           Publieke pagina bekijken →
         </Link>
       ) : null}
-
-      {slug ? <ListingOwnerDailyViews slug={slug} variant="beheer" /> : null}
 
       <BeheerEditForm
         key={me.listing.slug + (me.listing.name ?? '')}

@@ -1,6 +1,5 @@
 import Link from 'next/link'
 import ListingPanelOpenStatus from '@/components/ListingPanelOpenStatus'
-import ListingOwnerDailyViews from '@/components/ListingOwnerDailyViews'
 import ListingPanelAmenityFooter from '@/components/ListingPanelAmenityFooter'
 import ListingPhotoSlider from '@/components/ListingPhotoSlider'
 import ListingTopZaakStamp from '@/components/ListingTopZaakStamp'
@@ -48,10 +47,7 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
                 ) : null}
               </h2>
             </Link>
-            <div className="vysiongids-listing-panel-status-col">
-              <ListingPanelOpenStatus listing={listing} />
-              <ListingOwnerDailyViews slug={listing.slug} />
-            </div>
+            <ListingPanelOpenStatus listing={listing} />
           </div>
           <p style={{ margin: 0, fontSize: bodyTextSize, color: '#4b5563', lineHeight: 1.45 }}>
             {street}
