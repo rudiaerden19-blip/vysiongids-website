@@ -1,5 +1,6 @@
 'use client'
 
+import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
 type Props = {
@@ -7,14 +8,23 @@ type Props = {
 }
 
 export default function ZaakToevoegenIntroGate({ children }: Props) {
+  const router = useRouter()
   const [open, setOpen] = useState(true)
 
-  const close = useCallback(() => setOpen(false), [])
+  const continueToForm = useCallback(() => setOpen(false), [])
+
+  const dismiss = useCallback(() => {
+    if (typeof window !== 'undefined' && window.history.length > 1) {
+      router.back()
+      return
+    }
+    router.push('/')
+  }, [router])
 
   useEffect(() => {
     if (!open) return
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') close()
+      if (e.key === 'Escape') dismiss()
     }
     document.body.style.overflow = 'hidden'
     window.addEventListener('keydown', onKey)
@@ -22,7 +32,7 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
       document.body.style.overflow = ''
       window.removeEventListener('keydown', onKey)
     }
-  }, [open, close])
+  }, [open, dismiss])
 
   if (!open) {
     return <>{children}</>
@@ -30,16 +40,26 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
 
   return (
     <>
-      <div className="vysiongids-zaak-intro-backdrop" aria-hidden onClick={close} />
+      <div className="vysiongids-zaak-intro-backdrop" aria-hidden onClick={dismiss} />
       <div
         className="vysiongids-zaak-intro-dialog"
         role="dialog"
         aria-modal="true"
         aria-labelledby="zaak-intro-title"
       >
-        <h2 id="zaak-intro-title" className="vysiongids-zaak-intro-title">
-          Lees eerst dit
-        </h2>
+        <div className="vysiongids-zaak-intro-head">
+          <h2 id="zaak-intro-title" className="vysiongids-zaak-intro-title">
+            Lees eerst dit
+          </h2>
+          <button
+            type="button"
+            className="vysiongids-zaak-intro-close"
+            onClick={dismiss}
+            aria-label="Sluiten"
+          >
+            ×
+          </button>
+        </div>
         <div className="vysiongids-zaak-intro-body">
           <p>
             Voordat je je zaak online zet in Vysiongids, lees onderstaande punten. Zo blijft de gids betrouwbaar voor
@@ -76,8 +96,11 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
           </p>
         </div>
         <div className="vysiongids-zaak-intro-actions">
-          <button type="button" className="vysiongids-zaak-intro-btn-primary" onClick={close}>
+          <button type="button" className="vysiongids-zaak-intro-btn-primary" onClick={continueToForm}>
             Ik heb gelezen — verder met registratie
+          </button>
+          <button type="button" className="vysiongids-zaak-intro-btn-secondary" onClick={dismiss}>
+            Sluiten
           </button>
         </div>
       </div>

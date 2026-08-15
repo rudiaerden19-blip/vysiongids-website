@@ -1192,6 +1192,37 @@ body {
   font-size: 1.5rem;
   font-weight: 800;
   color: #0e5d82;
+  flex: 1;
+  min-width: 0;
+  padding-right: 0.5rem;
+}
+
+.vysiongids-zaak-intro-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.vysiongids-zaak-intro-close {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  margin: -0.25rem -0.25rem 0 0;
+  border: none;
+  border-radius: 0.5rem;
+  background: #f3f4f6;
+  color: #374151;
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.vysiongids-zaak-intro-close:hover {
+  background: #e5e7eb;
 }
 
 @media (min-width: 640px) {
@@ -1223,6 +1254,26 @@ body {
   margin-top: 1.25rem;
   padding-top: 1rem;
   border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.vysiongids-zaak-intro-btn-secondary {
+  display: block;
+  width: 100%;
+  border: 1px solid #d1d5db;
+  border-radius: 0.75rem;
+  background: #fff;
+  color: #374151;
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.vysiongids-zaak-intro-btn-secondary:hover {
+  background: #f9fafb;
 }
 
 .vysiongids-zaak-intro-btn-primary {
