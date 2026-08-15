@@ -394,7 +394,7 @@ body {
   justify-content: center;
   width: 100%;
   min-height: var(--vysiongids-hero-min-height);
-  padding: 1.75rem clamp(1rem, 4vw, 4rem) 2rem;
+  padding: 2rem clamp(1rem, 4vw, 4rem) 3rem;
   box-sizing: border-box;
   border-bottom: 1px solid #e5e7eb;
 }
@@ -428,13 +428,13 @@ body {
   max-width: 40rem;
   margin-left: auto;
   margin-right: auto;
-  margin-top: 1.25rem;
+  margin-top: 1.75rem;
   box-sizing: border-box;
 }
 
 @media (min-width: 640px) {
   .vysiongids-hero-search-wrap {
-    margin-top: 2rem;
+    margin-top: 2.25rem;
   }
 }
 
@@ -442,7 +442,7 @@ body {
   background: #ececec;
   border-top: 1px solid #e0e0e0;
   border-bottom: 1px solid #e0e0e0;
-  padding: 1.75rem clamp(1rem, 4vw, 2rem);
+  padding: 3rem clamp(1.25rem, 4vw, 2.5rem) 3.25rem;
 }
 
 .vysiongids-home-stats-inner {
@@ -450,7 +450,7 @@ body {
   margin: 0 auto;
   display: grid;
   grid-template-columns: 1fr;
-  gap: 1.5rem 2rem;
+  gap: 2rem 2.5rem;
   text-align: center;
   justify-items: center;
 }
@@ -488,7 +488,7 @@ body {
 
 .vysiongids-home-featured {
   background: #fff;
-  padding: 2rem clamp(1rem, 4vw, 2rem) 2.25rem;
+  padding: 3.5rem clamp(1.25rem, 4vw, 2.5rem) 4rem;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -509,17 +509,17 @@ body {
 }
 
 .vysiongids-home-featured-lead {
-  margin: 0.65rem auto 0;
+  margin: 1.1rem auto 0;
   max-width: 36rem;
   text-align: center;
   font-size: 0.9375rem;
   font-weight: 500;
   color: #6b7280;
-  line-height: 1.45;
+  line-height: 1.55;
 }
 
 .vysiongids-home-featured-carousel {
-  margin-top: 1.25rem;
+  margin-top: 2.25rem;
 }
 
 @media (max-width: 639px) {
@@ -607,7 +607,7 @@ body {
   display: flex;
   justify-content: center;
   gap: 0.45rem;
-  margin-top: 1rem;
+  margin-top: 1.35rem;
 }
 
 .vysiongids-home-featured-dot {
@@ -627,7 +627,7 @@ body {
 }
 
 .vysiongids-home-featured-more {
-  margin: 1.5rem 0 0;
+  margin: 2.5rem 0 0;
   text-align: center;
 }
 
@@ -644,7 +644,7 @@ body {
 
 .vysiongids-home-regions {
   background: #fff;
-  padding: 2.25rem clamp(1rem, 4vw, 2rem) 2.75rem;
+  padding: 4rem clamp(1.25rem, 4vw, 2.5rem) 4.5rem;
   border-bottom: 1px solid #e5e7eb;
 }
 
@@ -665,18 +665,18 @@ body {
 }
 
 .vysiongids-home-regions-lead {
-  margin: 0.65rem auto 0;
+  margin: 1.1rem auto 0;
   max-width: 36rem;
   text-align: center;
   font-size: 0.9375rem;
   font-weight: 500;
   color: #6b7280;
-  line-height: 1.45;
+  line-height: 1.55;
 }
 
 .vysiongids-home-regions-grid {
   list-style: none;
-  margin: 1.75rem 0 0;
+  margin: 2.5rem 0 0;
   padding: 0;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -748,8 +748,8 @@ body {
 }
 
 .vysiongids-home-cities {
-  margin-top: 2.25rem;
-  padding-top: 2rem;
+  margin-top: 3rem;
+  padding-top: 2.5rem;
   border-top: 1px solid #e5e7eb;
 }
 

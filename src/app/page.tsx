@@ -39,21 +39,7 @@ export default async function HomePage() {
               'linear-gradient(to bottom, rgba(0,0,0,0.22), rgba(0,0,0,0.12), rgba(0,0,0,0.18))',
           }}
         />
-        <section
-          className="vysiongids-hero-section"
-          style={{
-            position: 'relative',
-            zIndex: 2,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'stretch',
-            justifyContent: 'center',
-            width: '100%',
-            minHeight: 'calc(2cm + clamp(20rem, 38vh, 26rem))',
-            padding: '1.75rem clamp(1rem, 4vw, 4rem) 2rem',
-            boxSizing: 'border-box',
-          }}
-        >
+        <section className="vysiongids-hero-section">
           <div className="vysiongids-hero-wrap" style={{ textAlign: 'center' }}>
             <h1
               className="vysiongids-hero-title-bar"
