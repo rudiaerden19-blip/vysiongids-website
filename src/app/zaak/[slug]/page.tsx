@@ -77,7 +77,7 @@ export default async function ZaakPage({ params }: Props) {
 
             <ListingMap listing={listing} />
 
-            <section className="mt-8 border-t border-gray-200 pt-8">
+            <section id="beoordeling" className="mt-8 border-t border-gray-200 pt-8 scroll-mt-24">
               <h2 className="text-lg font-bold text-gray-900">Beoordeling</h2>
               <p className="mt-2 flex items-center gap-2 text-gray-700">
                 <span className="text-2xl text-amber-500">★</span>
@@ -121,6 +121,9 @@ export default async function ZaakPage({ params }: Props) {
                   className="vysiongids-zaak-action-btn"
                 >
                   Bestel
+                </a>
+                <a href="#beoordeling" className="vysiongids-zaak-action-btn">
+                  Geef review
                 </a>
               </div>
               <div className="mt-4 border-t border-gray-200 pt-4">

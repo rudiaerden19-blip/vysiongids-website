@@ -84,6 +84,9 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
               >
                 Bestel
               </a>
+              <Link href={`${profileHref}#beoordeling`} className="vysiongids-listing-action-btn">
+                Geef review
+              </Link>
             </div>
           </div>
         </div>
