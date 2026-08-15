@@ -22,41 +22,53 @@ const fieldInput: CSSProperties = {
   borderRadius: '0.5rem',
 }
 
+const heroFieldInput: CSSProperties = {
+  ...fieldInput,
+  padding: '0.65rem 0.85rem',
+  borderRadius: '0.625rem',
+}
+
+const heroFieldLabel: CSSProperties = {
+  ...fieldLabel,
+  fontSize: '0.875rem',
+  marginBottom: '0.35rem',
+}
+
 const heroFormStyle: CSSProperties = {
   display: 'flex',
   flexDirection: 'row',
   flexWrap: 'wrap',
   alignItems: 'flex-end',
-  gap: '0.65rem 0.85rem',
+  gap: '0.75rem 1rem',
   width: '100%',
-  maxWidth: '40rem',
+  maxWidth: '100%',
   margin: '0 auto',
   boxSizing: 'border-box',
-  padding: '0.85rem 1rem',
+  padding: '1.1rem 1.35rem',
   border: '1px solid #e5e7eb',
-  borderRadius: '0.75rem',
+  borderRadius: '0.875rem',
   background: '#fff',
   boxShadow: '0 2px 10px rgb(0 0 0 / 0.08)',
 }
 
 const heroGrowStyle: CSSProperties = {
-  flex: '1 1 10rem',
-  minWidth: 'min(100%, 9rem)',
+  flex: '1 1 14rem',
+  minWidth: 'min(100%, 11rem)',
 }
 
 const heroTypeStyle: CSSProperties = {
-  flex: '0 1 8.5rem',
-  minWidth: '7.5rem',
+  flex: '0 1 11rem',
+  minWidth: '9.5rem',
 }
 
 const heroSubmitStyle: CSSProperties = {
   flex: '0 0 auto',
   border: 'none',
-  borderRadius: '0.5rem',
+  borderRadius: '0.625rem',
   background: 'var(--accent, #0e5d82)',
   color: '#fff',
-  padding: '0.5rem 1.1rem',
-  fontSize: '0.9375rem',
+  padding: '0.68rem 1.45rem',
+  fontSize: '1rem',
   fontWeight: 600,
   cursor: 'pointer',
   whiteSpace: 'nowrap',
@@ -90,7 +102,7 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
     return (
       <form onSubmit={onSubmit} className="vysiongids-hero-search" style={heroFormStyle}>
         <div className="vysiongids-hero-search-grow" style={heroGrowStyle}>
-          <label htmlFor="search-q" style={fieldLabel}>
+          <label htmlFor="search-q" style={heroFieldLabel}>
             Stad, postcode of naam
           </label>
           <input
@@ -100,14 +112,14 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
             defaultValue={q}
             placeholder="Bv. Pelt, Belgische keuken, glutenvrij, parking"
             autoComplete="off"
-            style={fieldInput}
+            style={heroFieldInput}
           />
         </div>
         <div className="vysiongids-hero-search-type" style={heroTypeStyle}>
-          <label htmlFor="search-type" style={fieldLabel}>
+          <label htmlFor="search-type" style={heroFieldLabel}>
             Type zaak
           </label>
-          <select id="search-type" name="type" defaultValue={type} style={fieldInput}>
+          <select id="search-type" name="type" defaultValue={type} style={heroFieldInput}>
             {LISTING_TYPES.map((t) => (
               <option key={t.id} value={t.id}>
                 {t.label}
