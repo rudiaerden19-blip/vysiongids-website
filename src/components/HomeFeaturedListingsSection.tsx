@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import ListingPanel from '@/components/ListingPanel'
+import HomeFeaturedCarousel from '@/components/HomeFeaturedCarousel'
 import { getFeaturedListings } from '@/lib/listings'
 
 export default async function HomeFeaturedListingsSection() {
@@ -16,13 +16,7 @@ export default async function HomeFeaturedListingsSection() {
           Ontdek populaire zaken in de gids — bestel rechtstreeks bij de zaak, zonder commissie via Vysiongids.
         </p>
 
-        <ul className="vysiongids-home-featured-list">
-          {listings.map((listing) => (
-            <li key={listing.slug}>
-              <ListingPanel listing={listing} />
-            </li>
-          ))}
-        </ul>
+        <HomeFeaturedCarousel listings={listings} />
 
         <p className="vysiongids-home-featured-more">
           <Link href="/zoeken" className="vysiongids-home-featured-more-link">

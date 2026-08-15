@@ -518,13 +518,50 @@ body {
   line-height: 1.45;
 }
 
-.vysiongids-home-featured-list {
-  list-style: none;
-  margin: 1.5rem 0 0;
-  padding: 0;
+.vysiongids-home-featured-carousel {
+  margin-top: 1.5rem;
+}
+
+.vysiongids-home-featured-viewport {
+  overflow: hidden;
+  width: 100%;
+  border-radius: 0.75rem;
+}
+
+.vysiongids-home-featured-track {
   display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
+  width: 100%;
+  will-change: transform;
+}
+
+.vysiongids-home-featured-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.vysiongids-home-featured-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.45rem;
+  margin-top: 1rem;
+}
+
+.vysiongids-home-featured-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  padding: 0;
+  border: none;
+  border-radius: 9999px;
+  background: #cbd5e1;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+
+.vysiongids-home-featured-dot.is-active {
+  background: #0e5d82;
+  transform: scale(1.15);
 }
 
 .vysiongids-home-featured-more {
