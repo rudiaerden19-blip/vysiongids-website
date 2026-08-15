@@ -60,14 +60,14 @@ export default function HomeStatsBar({ activeZaken, zoekactiesPerDag }: HomeStat
 
   const active = useCountUp(activeZaken, 1500, animate)
   const searches = useCountUp(zoekactiesPerDag, 1800, animate)
-  const gratis = useCountUp(100, 1200, animate)
+  const gratis = useCountUp(0, 1200, animate)
 
   return (
     <section className="vysiongids-home-stats" aria-label="Platformcijfers">
       <div className="vysiongids-home-stats-inner">
         <Stat display={formatStatNumber(active)} label="Actieve zaken" />
         <Stat display={formatStatNumber(searches)} label="Zoekacties vandaag" />
-        <Stat display={`${gratis}%`} label="Gratis vermelding" />
+        <Stat display={`${gratis}%`} label="0% commissie" />
       </div>
     </section>
   )
