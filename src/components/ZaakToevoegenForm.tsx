@@ -197,13 +197,13 @@ export default function ZaakToevoegenForm() {
       </div>
 
       <div>
-        <RequiredLabel htmlFor="orderUrl">Bestel-URL</RequiredLabel>
+        <RequiredLabel htmlFor="orderUrl">Bestel of reserveer-URL</RequiredLabel>
         <input
           id="orderUrl"
           name="orderUrl"
           type="url"
           required
-          placeholder="https://jouwzaak.ordervysion.com"
+          placeholder="https://jouwzaak.be/bestellen of reserveren"
           className="vysiongids-form-input mt-1"
         />
       </div>
