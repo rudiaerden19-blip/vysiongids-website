@@ -87,7 +87,7 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
               reviews.
             </li>
             <li>
-              <strong>Verwijderen:</strong> wil je offline? Log in via <em>Login → Beheer → Verwijder je zaak</em>.
+              <strong>Verwijderen:</strong> wil je offline? Log in en kies <em>Verwijder je zaak</em> in je account.
             </li>
           </ul>
           <p className="text-sm text-gray-600">

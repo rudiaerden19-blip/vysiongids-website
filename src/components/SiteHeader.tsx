@@ -51,9 +51,6 @@ function HeaderNavLinks({ onNavigate, className }: { onNavigate?: () => void; cl
       <Link href="/login" onClick={onNavigate}>
         Login
       </Link>
-      <Link href="/beheer" onClick={onNavigate}>
-        Beheer
-      </Link>
       <span className="vysiongids-header-nav-lang">
         <HeaderLanguagePicker compact />
       </span>
