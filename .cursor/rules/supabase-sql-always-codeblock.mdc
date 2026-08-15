@@ -1,0 +1,15 @@
+---
+description: Supabase SQL altijd in markdown code blocks geven aan de eigenaar
+alwaysApply: true
+---
+
+# Supabase SQL — altijd in codeblok
+
+Wanneer je SQL voor **Supabase** (migraties, fixes, seeds, handmatige queries) aan de eigenaar geeft:
+
+1. **Altijd** een volledig uitvoerbaar script in een **markdown fenced code block** met taal `sql` — nooit alleen verwijzen naar een bestand zonder de SQL te tonen.
+2. Geen «open het bestand in de repo» als enige antwoord; **plak de SQL in het antwoord**.
+3. Vermeld kort: **Supabase → SQL Editor → New query → Run**.
+4. Nieuwe migraties horen ook in `supabase/migrations/` in de repo; het codeblok in de chat blijft verplicht.
+
+Uitzondering: puur «migration already applied» zonder nieuwe SQL — dan geen leeg codeblok.
