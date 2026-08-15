@@ -17,29 +17,16 @@ function readLocale(): string {
   return m?.[1] || 'nl'
 }
 
-export default function HeaderLanguagePicker() {
+export default function HeaderLanguagePicker({ compact }: { compact?: boolean }) {
   const [locale, setLocale] = useState('nl')
 
   useEffect(() => setLocale(readLocale()), [])
 
   return (
-    <div
-      style={{
-        display: 'inline-flex',
-        alignItems: 'center',
-        gap: '0.65rem',
-      }}
-    >
-      <span
-        style={{
-          fontSize: '1rem',
-          fontWeight: 500,
-          color: '#4b5563',
-          whiteSpace: 'nowrap',
-        }}
-      >
-        Taal
-      </span>
+    <div className="vysiongids-lang-picker">
+      {!compact ? (
+        <span className="vysiongids-lang-picker-label">Taal</span>
+      ) : null}
       <select
         value={locale}
         onChange={(e) => {
@@ -48,16 +35,7 @@ export default function HeaderLanguagePicker() {
           document.cookie = `${COOKIE}=${next};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`
         }}
         aria-label="Taal kiezen"
-        style={{
-          cursor: 'pointer',
-          borderRadius: '0.375rem',
-          border: '1px solid #d1d5db',
-          background: '#fff',
-          padding: '0.5rem 0.75rem',
-          fontSize: '1rem',
-          fontWeight: 500,
-          color: '#374151',
-        }}
+        className="vysiongids-lang-picker-select"
       >
         {LOCALES.map((l) => (
           <option key={l.code} value={l.code}>

@@ -114,7 +114,7 @@ export default async function ZaakPage({ params }: Props) {
                 href={listing.orderUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="mt-4 flex w-full items-center justify-center rounded-xl bg-accent py-3.5 text-center text-lg font-bold text-white transition hover:bg-accent/90"
+                className="vysiongids-zaak-bestel-btn mt-4 flex w-full items-center justify-center rounded-xl bg-accent py-3.5 text-center text-lg font-bold text-white transition hover:bg-accent/90"
               >
                 Bestel
               </a>

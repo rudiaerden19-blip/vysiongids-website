@@ -96,6 +96,7 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
               href={listing.orderUrl}
               target="_blank"
               rel="noopener noreferrer"
+              className="vysiongids-listing-bestel-btn"
               style={{
                 display: 'inline-flex',
                 alignItems: 'center',

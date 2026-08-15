@@ -88,7 +88,7 @@ export default async function HomePage() {
               Alle horeca zaken in jou bereik
             </p>
           </div>
-          <div className="vysiongids-hero-search-wrap" style={{ marginTop: 'calc(1rem + 1.5cm)', width: '100%' }}>
+          <div className="vysiongids-hero-search-wrap">
             <Suspense fallback={null}>
               <SearchForm />
             </Suspense>

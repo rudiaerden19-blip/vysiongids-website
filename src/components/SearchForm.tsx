@@ -17,7 +17,7 @@ const fieldInput: CSSProperties = {
   width: '100%',
   boxSizing: 'border-box',
   padding: '0.45rem 0.6rem',
-  fontSize: '0.9375rem',
+  fontSize: '16px',
   border: '1px solid #d1d5db',
   borderRadius: '0.5rem',
 }
@@ -158,7 +158,7 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
           ))}
         </select>
       </div>
-      <button type="submit" style={{ ...heroSubmitStyle, alignSelf: 'flex-end' }}>
+      <button type="submit" style={{ ...heroSubmitStyle, alignSelf: 'stretch', width: '100%' }} className="sm:vysiongids-compact-search-submit">
         Zoeken
       </button>
     </form>

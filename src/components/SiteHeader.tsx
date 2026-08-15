@@ -39,8 +39,31 @@ function setRegionCookie(slug: ProvinceSlug) {
   document.cookie = `${REGION_COOKIE}=${slug};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`
 }
 
+function HeaderNavLinks({ onNavigate, className }: { onNavigate?: () => void; className?: string }) {
+  return (
+    <nav className={className ?? 'vysiongids-header-nav'} aria-label="Hoofdmenu">
+      <Link href="/sterrenzaken" onClick={onNavigate}>
+        Sterrenzaken
+      </Link>
+      <Link href="/cadeaubonnen" onClick={onNavigate}>
+        Cadeaubonnen
+      </Link>
+      <Link href="/login" onClick={onNavigate}>
+        Login
+      </Link>
+      <span className="vysiongids-header-nav-lang">
+        <HeaderLanguagePicker compact />
+      </span>
+      <Link href="/zaak-toevoegen" className="vysiongids-header-nav-cta" onClick={onNavigate}>
+        Zaak toevoegen
+      </Link>
+    </nav>
+  )
+}
+
 function SiteHeaderBar() {
   const [open, setOpen] = useState(false)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [region, setRegion] = useState<ProvinceSlug>(DEFAULT_PROVINCE_SLUG)
   const [caretLeftPx, setCaretLeftPx] = useState(100)
   const [panelTopPx, setPanelTopPx] = useState(0)
@@ -65,7 +88,17 @@ function SiteHeaderBar() {
     }
   }, [searchParams])
 
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+    const prev = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.body.style.overflow = prev
+    }
+  }, [mobileMenuOpen])
+
   const close = useCallback(() => setOpen(false), [])
+  const closeMobile = useCallback(() => setMobileMenuOpen(false), [])
 
   const measurePanel = useCallback(() => {
     const header = headerRef.current
@@ -112,6 +145,19 @@ function SiteHeaderBar() {
     document.addEventListener('keydown', onKey)
     return () => document.removeEventListener('keydown', onKey)
   }, [open, close])
+
+  useEffect(() => {
+    if (!mobileMenuOpen) return
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') closeMobile()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [mobileMenuOpen, closeMobile])
+
+  useEffect(() => {
+    closeMobile()
+  }, [pathname, closeMobile])
 
   const pickProvince = useCallback(
     (slug: ProvinceSlug) => {
@@ -233,81 +279,53 @@ function SiteHeaderBar() {
 
   return (
     <>
-      <header
-        ref={headerRef}
-        className="relative shrink-0 border-b border-gray-200 bg-white"
-        style={{ zIndex: 10002 }}
-      >
-        <div className="mx-auto flex w-full max-w-[90rem] items-center justify-between gap-6 px-4 py-4 sm:px-8 sm:py-5 lg:px-10">
-          <div className="flex min-w-0 flex-wrap items-center gap-y-2">
-            <Link href="/" className="shrink-0 text-xl font-bold tracking-tight text-accent sm:text-2xl">
+      <header ref={headerRef} className="vysiongids-site-header relative shrink-0 border-b border-gray-200 bg-white">
+        <div className="vysiongids-site-header-inner">
+          <div className="vysiongids-site-header-brand">
+            <Link href="/" className="vysiongids-site-logo">
               Vysiongids
             </Link>
-            <span className="mx-2 text-gray-300 sm:mx-3" aria-hidden>
+            <span className="vysiongids-site-header-sep" aria-hidden>
               |
             </span>
-            <div ref={triggerRef} className="ml-[1cm] inline-flex items-center gap-0.5 sm:gap-1">
+            <div ref={triggerRef} className="vysiongids-site-header-region">
               <Link href={`/zoeken?prov=${region}`} className={labelClass}>
                 {regionLabel}
               </Link>
               <button
                 type="button"
-                className="inline-flex h-8 w-8 items-center justify-center rounded-md text-accent hover:bg-accent/5"
+                className="vysiongids-region-toggle"
                 aria-expanded={open}
                 aria-haspopup="dialog"
                 aria-label={`${regionLabel}: kies stad of provincie`}
                 onClick={() => (open ? close() : openMenu())}
               >
-                <span
-                  className={`inline-block text-[0.6rem] leading-none transition-transform ${open ? 'rotate-180' : ''}`}
-                  aria-hidden
-                >
+                <span className={`vysiongids-region-caret ${open ? 'is-open' : ''}`} aria-hidden>
                   ▼
                 </span>
               </button>
             </div>
           </div>
-          <nav
-            className="vysiongids-header-nav shrink-0"
-            style={{
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              justifyContent: 'flex-end',
-            }}
+
+          <HeaderNavLinks className="vysiongids-header-nav vysiongids-header-nav--desktop" />
+
+          <button
+            type="button"
+            className="vysiongids-mobile-menu-btn"
+            aria-expanded={mobileMenuOpen}
+            aria-controls="vysiongids-mobile-nav"
+            aria-label={mobileMenuOpen ? 'Menu sluiten' : 'Menu openen'}
+            onClick={() => setMobileMenuOpen((v) => !v)}
           >
-            <Link href="/sterrenzaken" style={{ padding: '0.35rem 1.15rem' }}>
-              Sterrenzaken
-            </Link>
-            <Link href="/cadeaubonnen" style={{ padding: '0.35rem 1.15rem' }}>
-              Cadeaubonnen
-            </Link>
-            <Link href="/login" style={{ padding: '0.35rem 1.15rem' }}>
-              Login
-            </Link>
-            <span style={{ display: 'inline-flex', padding: '0.35rem 0.75rem 0.35rem 1rem' }}>
-              <HeaderLanguagePicker />
-            </span>
-            <Link
-              href="/zaak-toevoegen"
-              style={{
-                display: 'inline-block',
-                marginLeft: '0.75rem',
-                borderRadius: '9999px',
-                backgroundColor: '#0e5d82',
-                color: '#ffffff',
-                padding: '0.5rem 1.35rem',
-                fontSize: '1rem',
-                fontWeight: 600,
-                lineHeight: 1.5,
-                textDecoration: 'none',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Zaak toevoegen
-            </Link>
-          </nav>
+            <span className="vysiongids-mobile-menu-icon" aria-hidden />
+          </button>
         </div>
+
+        {mobileMenuOpen ? (
+          <div id="vysiongids-mobile-nav" className="vysiongids-mobile-nav" role="dialog" aria-label="Navigatie">
+            <HeaderNavLinks className="vysiongids-header-nav vysiongids-header-nav--mobile" onNavigate={closeMobile} />
+          </div>
+        ) : null}
       </header>
       {regionOverlay}
     </>
@@ -316,9 +334,9 @@ function SiteHeaderBar() {
 
 function SiteHeaderFallback() {
   return (
-    <header className="relative shrink-0 border-b border-gray-200 bg-white" style={{ zIndex: 10002 }}>
-      <div className="mx-auto flex w-full max-w-[90rem] items-center justify-between gap-4 px-4 py-4 sm:px-8">
-        <Link href="/" className="text-xl font-bold tracking-tight text-accent sm:text-2xl">
+    <header className="vysiongids-site-header relative shrink-0 border-b border-gray-200 bg-white">
+      <div className="vysiongids-site-header-inner">
+        <Link href="/" className="vysiongids-site-logo">
           Vysiongids
         </Link>
       </div>
