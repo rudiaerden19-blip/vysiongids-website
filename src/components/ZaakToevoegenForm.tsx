@@ -85,14 +85,18 @@ export default function ZaakToevoegenForm() {
       setLoading(false)
       return
     }
-    const orderUrlNorm = normalizeHttpsUrl(orderUrlRaw)
-    if (!orderUrlNorm.ok) {
-      setError(`Bestel- of reserveer-URL: ${orderUrlNorm.message}`)
-      setLoading(false)
-      return
-    }
     fd.set('website', websiteNorm.url)
-    fd.set('orderUrl', orderUrlNorm.url)
+    if (orderUrlRaw) {
+      const orderUrlNorm = normalizeHttpsUrl(orderUrlRaw)
+      if (!orderUrlNorm.ok) {
+        setError(`Bestel- of reserveer-URL: ${orderUrlNorm.message}`)
+        setLoading(false)
+        return
+      }
+      fd.set('orderUrl', orderUrlNorm.url)
+    } else {
+      fd.set('orderUrl', '')
+    }
     try {
       const rows = JSON.parse(hoursRaw) as ListingDayHours[]
       if (!Array.isArray(rows) || rows.length !== 7) {
@@ -209,14 +213,15 @@ export default function ZaakToevoegenForm() {
       </div>
 
       <div>
-        <RequiredLabel htmlFor="phone">Telefoon</RequiredLabel>
+        <label className="vysiongids-form-label" htmlFor="phone">
+          Telefoon
+        </label>
         <input
           id="phone"
           name="phone"
           type="tel"
-          required
           autoComplete="tel"
-          placeholder="+32 …"
+          placeholder="+32 … (optioneel)"
           className="vysiongids-form-input mt-1"
         />
       </div>
@@ -242,18 +247,21 @@ export default function ZaakToevoegenForm() {
       </div>
 
       <div>
-        <RequiredLabel htmlFor="orderUrl">Bestel of reserveer-URL</RequiredLabel>
+        <label className="vysiongids-form-label" htmlFor="orderUrl">
+          Bestel of reserveer-URL
+        </label>
         <input
           id="orderUrl"
           name="orderUrl"
           type="text"
           inputMode="url"
           autoComplete="url"
-          required
-          placeholder="shop.jouwzaak.be of https://…"
+          placeholder="shop.jouwzaak.be (optioneel)"
           className="vysiongids-form-input mt-1"
         />
-        <p className="mt-1 text-xs text-gray-500">Link waar klanten bestellen of reserveren (mag hetzelfde zijn als website).</p>
+        <p className="mt-1 text-xs text-gray-500">
+          Leeg laten = de website-link wordt gebruikt voor «Bestel».
+        </p>
       </div>
 
       <div>
@@ -268,7 +276,9 @@ export default function ZaakToevoegenForm() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <RequiredLabel htmlFor="deliveryFeeEur">Leveringskosten (€)</RequiredLabel>
+          <label className="vysiongids-form-label" htmlFor="deliveryFeeEur">
+            Leveringskosten (€)
+          </label>
           <input
             id="deliveryFeeEur"
             name="deliveryFeeEur"
@@ -276,13 +286,14 @@ export default function ZaakToevoegenForm() {
             inputMode="decimal"
             min={0}
             step={0.5}
-            required
-            placeholder="0 = gratis"
+            placeholder="0 = gratis (optioneel)"
             className="vysiongids-form-input mt-1"
           />
         </div>
         <div>
-          <RequiredLabel htmlFor="minOrderEur">Minimum bestelbedrag (€)</RequiredLabel>
+          <label className="vysiongids-form-label" htmlFor="minOrderEur">
+            Minimum bestelbedrag (€)
+          </label>
           <input
             id="minOrderEur"
             name="minOrderEur"
@@ -290,8 +301,7 @@ export default function ZaakToevoegenForm() {
             inputMode="decimal"
             min={0}
             step={0.5}
-            required
-            placeholder="Bv. 15"
+            placeholder="Optioneel"
             className="vysiongids-form-input mt-1"
           />
         </div>
@@ -299,7 +309,9 @@ export default function ZaakToevoegenForm() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <RequiredLabel htmlFor="deliveryTimeMin">Levertijd vanaf (min)</RequiredLabel>
+          <label className="vysiongids-form-label" htmlFor="deliveryTimeMin">
+            Levertijd vanaf (min)
+          </label>
           <input
             id="deliveryTimeMin"
             name="deliveryTimeMin"
@@ -307,13 +319,14 @@ export default function ZaakToevoegenForm() {
             inputMode="numeric"
             min={1}
             max={180}
-            required
-            placeholder="Bv. 25"
+            placeholder="Optioneel"
             className="vysiongids-form-input mt-1"
           />
         </div>
         <div>
-          <RequiredLabel htmlFor="deliveryTimeMax">Levertijd tot (min)</RequiredLabel>
+          <label className="vysiongids-form-label" htmlFor="deliveryTimeMax">
+            Levertijd tot (min)
+          </label>
           <input
             id="deliveryTimeMax"
             name="deliveryTimeMax"
@@ -321,8 +334,7 @@ export default function ZaakToevoegenForm() {
             inputMode="numeric"
             min={1}
             max={240}
-            required
-            placeholder="Bv. 45"
+            placeholder="Optioneel"
             className="vysiongids-form-input mt-1"
           />
         </div>

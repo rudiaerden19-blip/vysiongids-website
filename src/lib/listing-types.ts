@@ -44,8 +44,8 @@ export type Listing = {
   photoUrl: string
   ratingAvg: number
   ratingCount: number
-  deliveryTimeMin: number
-  deliveryTimeMax: number
+  deliveryTimeMin?: number
+  deliveryTimeMax?: number
   deliveryFeeEur: number | null
   minOrderEur: number | null
   pickupEnabled: boolean

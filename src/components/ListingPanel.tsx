@@ -9,7 +9,10 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
   const typeLabel = getListingTypeLabel(listing.type)
   const minOrder = formatMinOrder(listing)
   const deliveryLabel = formatDeliveryFee(listing)
-  const timeLabel = `${listing.deliveryTimeMin}–${listing.deliveryTimeMax} min`
+  const timeLabel =
+    listing.deliveryTimeMin != null && listing.deliveryTimeMax != null
+      ? `${listing.deliveryTimeMin}–${listing.deliveryTimeMax} min`
+      : null
   const { street, cityLine } = formatListingAddressLines(listing)
   const hoursLabel = formatOpeningHours(listing)
   const profileHref = `/zaak/${listing.slug}`
@@ -57,7 +60,7 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
           </p>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem 0.85rem', fontSize: '0.9375rem' }}>
             <ListingStarRating slug={listing.slug} avg={listing.ratingAvg} count={listing.ratingCount} />
-            <span style={{ color: '#6b7280' }}>{timeLabel}</span>
+            {timeLabel ? <span style={{ color: '#6b7280' }}>{timeLabel}</span> : null}
             <span style={{ fontWeight: 500, color: '#374151' }}>{deliveryLabel}</span>
             {minOrder ? <span style={{ color: '#6b7280' }}>{minOrder}</span> : null}
           </div>

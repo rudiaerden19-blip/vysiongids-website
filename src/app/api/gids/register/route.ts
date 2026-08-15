@@ -65,7 +65,6 @@ export async function POST(req: Request) {
   if (!city || !postcode || !address) {
     return NextResponse.json({ error: 'Adres, postcode en gemeente zijn verplicht.' }, { status: 400 })
   }
-  if (!phone) return NextResponse.json({ error: 'Telefoon is verplicht.' }, { status: 400 })
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json({ error: 'Vul een geldig e-mailadres in.' }, { status: 400 })
   }
@@ -73,12 +72,18 @@ export async function POST(req: Request) {
   if (!websiteNorm.ok) {
     return NextResponse.json({ error: `Website: ${websiteNorm.message}` }, { status: 400 })
   }
-  const orderUrlNorm = normalizeHttpsUrl(orderUrl)
-  if (!orderUrlNorm.ok) {
-    return NextResponse.json({ error: `Bestel- of reserveer-URL: ${orderUrlNorm.message}` }, { status: 400 })
-  }
   const websiteFinal = websiteNorm.url
-  const orderUrlFinal = orderUrlNorm.url
+
+  let orderUrlFinal = websiteFinal
+  if (orderUrl) {
+    const orderUrlNorm = normalizeHttpsUrl(orderUrl)
+    if (!orderUrlNorm.ok) {
+      return NextResponse.json({ error: `Bestel- of reserveer-URL: ${orderUrlNorm.message}` }, { status: 400 })
+    }
+    orderUrlFinal = orderUrlNorm.url
+  }
+
+  const phoneFinal = phone || null
 
   let hoursByDay: ListingDayHours[]
   try {
@@ -103,19 +108,47 @@ export async function POST(req: Request) {
 
   const openingHours = summarizeOpeningHours(hoursByDay)
   const closedDays = closedDaysFromRows(hoursByDay)
-  if (!Number.isFinite(deliveryFeeEur) || deliveryFeeEur < 0) {
-    return NextResponse.json({ error: 'Vul geldige leveringskosten in (0 = gratis).' }, { status: 400 })
+
+  let deliveryFeeValue: number | null = null
+  if (deliveryFeeRaw !== '') {
+    if (!Number.isFinite(deliveryFeeEur) || deliveryFeeEur < 0) {
+      return NextResponse.json({ error: 'Vul geldige leveringskosten in (0 = gratis).' }, { status: 400 })
+    }
+    deliveryFeeValue = deliveryFeeEur
   }
-  if (!Number.isFinite(minOrderEur) || minOrderEur < 0) {
-    return NextResponse.json({ error: 'Vul een geldig minimum bestelbedrag in.' }, { status: 400 })
+
+  let minOrderValue: number | null = null
+  if (minOrderRaw !== '') {
+    if (!Number.isFinite(minOrderEur) || minOrderEur < 0) {
+      return NextResponse.json({ error: 'Vul een geldig minimum bestelbedrag in.' }, { status: 400 })
+    }
+    minOrderValue = minOrderEur
   }
-  if (!Number.isInteger(deliveryTimeMin) || deliveryTimeMin < 1 || deliveryTimeMin > 180) {
-    return NextResponse.json({ error: 'Levertijd vanaf: kies 1–180 minuten.' }, { status: 400 })
+
+  let deliveryTimeMinValue: number | null = null
+  let deliveryTimeMaxValue: number | null = null
+  if (deliveryTimeMinRaw !== '') {
+    if (!Number.isInteger(deliveryTimeMin) || deliveryTimeMin < 1 || deliveryTimeMin > 180) {
+      return NextResponse.json({ error: 'Levertijd vanaf: kies 1–180 minuten.' }, { status: 400 })
+    }
+    deliveryTimeMinValue = deliveryTimeMin
   }
-  if (!Number.isInteger(deliveryTimeMax) || deliveryTimeMax < 1 || deliveryTimeMax > 240) {
-    return NextResponse.json({ error: 'Levertijd tot: kies 1–240 minuten.' }, { status: 400 })
+  if (deliveryTimeMaxRaw !== '') {
+    if (!Number.isInteger(deliveryTimeMax) || deliveryTimeMax < 1 || deliveryTimeMax > 240) {
+      return NextResponse.json({ error: 'Levertijd tot: kies 1–240 minuten.' }, { status: 400 })
+    }
+    deliveryTimeMaxValue = deliveryTimeMax
   }
-  if (deliveryTimeMax < deliveryTimeMin) {
+  if (
+    (deliveryTimeMinValue == null) !== (deliveryTimeMaxValue == null)
+  ) {
+    return NextResponse.json({ error: 'Vul beide levertijden in of laat beide leeg.' }, { status: 400 })
+  }
+  if (
+    deliveryTimeMinValue != null &&
+    deliveryTimeMaxValue != null &&
+    deliveryTimeMaxValue < deliveryTimeMinValue
+  ) {
     return NextResponse.json({ error: 'Levertijd tot moet minstens gelijk zijn aan vanaf.' }, { status: 400 })
   }
 
@@ -169,7 +202,7 @@ export async function POST(req: Request) {
       address,
       order_url: orderUrlFinal,
       website: websiteFinal,
-      phone,
+      phone: phoneFinal,
       email,
       opening_hours: openingHours,
       closed_days: closedDays,
@@ -179,10 +212,10 @@ export async function POST(req: Request) {
       rating_count: 0,
       pickup_enabled: true,
       delivery_enabled: true,
-      delivery_fee_eur: deliveryFeeEur,
-      min_order_eur: minOrderEur,
-      delivery_time_min: deliveryTimeMin,
-      delivery_time_max: deliveryTimeMax,
+      delivery_fee_eur: deliveryFeeValue,
+      min_order_eur: minOrderValue,
+      delivery_time_min: deliveryTimeMinValue,
+      delivery_time_max: deliveryTimeMaxValue,
     })
     .select('id, slug')
     .single()
