@@ -6,11 +6,8 @@ import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
 import { LISTING_TYPES, type ListingDayHours } from '@/lib/listing-types'
 import OpeningHoursEditor from '@/components/OpeningHoursEditor'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
-import {
-  GIDS_REGISTER_MAX_PHOTO_BYTES,
-  GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES,
-  formatPhotoSizeMb,
-} from '@/lib/gids-register-limits'
+import { GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
+import { compressListingPhoto } from '@/lib/compress-listing-photo'
 
 function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
@@ -23,7 +20,15 @@ function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React
   )
 }
 
-function PhotoPickField({ index, required }: { index: number; required?: boolean }) {
+function PhotoPickField({
+  index,
+  required,
+  disabled,
+}: {
+  index: number
+  required?: boolean
+  disabled?: boolean
+}) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [fileLabel, setFileLabel] = useState<string | null>(null)
   const id = `photo${index}`
@@ -47,6 +52,7 @@ function PhotoPickField({ index, required }: { index: number; required?: boolean
         accept="image/*"
         capture="environment"
         required={isRequired}
+        disabled={disabled}
         className="vysiongids-photo-pick-input"
         onChange={(e) => {
           const f = e.target.files?.[0]
@@ -56,6 +62,7 @@ function PhotoPickField({ index, required }: { index: number; required?: boolean
       <button
         type="button"
         className="vysiongids-photo-pick-btn"
+        disabled={disabled}
         onClick={() => inputRef.current?.click()}
       >
         Kies bestand
@@ -71,6 +78,7 @@ export default function ZaakToevoegenForm() {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
+  const [loadingHint, setLoadingHint] = useState<string | null>(null)
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -123,26 +131,39 @@ export default function ZaakToevoegenForm() {
       return
     }
     try {
+      setLoadingHint('Foto\'s worden verkleind…')
       let totalPhotoBytes = 0
+      let hasPhoto = false
       for (let i = 0; i < 3; i++) {
         const f = fd.get(`photo${i}`)
-        if (f instanceof File && f.size > 0) {
-          if (f.size > GIDS_REGISTER_MAX_PHOTO_BYTES) {
-            setError(
-              `Foto ${i + 1} is te groot (max. ${formatPhotoSizeMb(GIDS_REGISTER_MAX_PHOTO_BYTES)} per foto). Verklein de afbeelding.`,
-            )
-            setLoading(false)
-            return
-          }
-          totalPhotoBytes += f.size
+        if (!(f instanceof File) || f.size === 0) continue
+        hasPhoto = true
+        let compressed: File
+        try {
+          compressed = await compressListingPhoto(f)
+        } catch {
+          setError(`Foto ${i + 1} kon niet verwerkt worden. Probeer een andere foto (JPG/PNG).`)
+          setLoading(false)
+          setLoadingHint(null)
+          return
         }
+        fd.set(`photo${i}`, compressed, compressed.name)
+        totalPhotoBytes += compressed.size
+      }
+      if (!hasPhoto) {
+        setError('Upload minstens 1 foto.')
+        setLoading(false)
+        setLoadingHint(null)
+        return
       }
       if (totalPhotoBytes > GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES) {
-        setError('Foto\'s samen te groot (max. ca. 4 MB). Upload minder foto\'s of verklein ze.')
+        setError('Foto\'s samen nog te groot na verkleinen. Upload minder foto\'s.')
         setLoading(false)
+        setLoadingHint(null)
         return
       }
 
+      setLoadingHint('Zaak wordt online gezet…')
       const res = await fetch('/api/gids/register', { method: 'POST', body: fd })
       const raw = await res.text()
       let data: { error?: string; url?: string } = {}
@@ -151,7 +172,7 @@ export default function ZaakToevoegenForm() {
           data = JSON.parse(raw) as { error?: string; url?: string }
         } catch {
           if (res.status === 413) {
-            setError('Upload te groot voor de server. Gebruik kleinere foto\'s (max. ca. 1,4 MB per foto).')
+            setError('Upload te groot voor de server. Probeer met minder foto\'s.')
           } else {
             setError(`Server antwoordde niet correct (${res.status}). Probeer later opnieuw.`)
           }
@@ -168,6 +189,7 @@ export default function ZaakToevoegenForm() {
       setError('Verbinding mislukt. Controleer je internet en probeer opnieuw.')
     } finally {
       setLoading(false)
+      setLoadingHint(null)
     }
   }
 
@@ -389,11 +411,11 @@ export default function ZaakToevoegenForm() {
           </span>
         </p>
         <p className="mt-0.5 text-xs text-gray-500">
-          Minstens 1 foto, tot max. 3. Per foto max. ca. 1,4 MB (totaal max. ca. 4 MB).
+          Minstens 1 foto, tot max. 3. Grote foto&apos;s van je telefoon verkleinen we automatisch.
         </p>
         <div className="mt-2 flex flex-wrap gap-3">
           {[0, 1, 2].map((i) => (
-            <PhotoPickField key={i} index={i} required={i === 0} />
+            <PhotoPickField key={i} index={i} required={i === 0} disabled={loading} />
           ))}
         </div>
       </div>
@@ -403,7 +425,7 @@ export default function ZaakToevoegenForm() {
         disabled={loading}
         className="w-full rounded-xl bg-accent py-3.5 text-lg font-bold text-white hover:bg-accent/90 disabled:opacity-60 sm:w-auto sm:px-10"
       >
-        {loading ? 'Bezig…' : 'Direct online zetten'}
+        {loading ? (loadingHint ?? 'Bezig…') : 'Direct online zetten'}
       </button>
     </form>
   )
