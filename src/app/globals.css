@@ -1155,29 +1155,34 @@ body {
 .vysiongids-zaak-intro-backdrop {
   position: fixed;
   inset: 0;
-  z-index: 1100;
+  z-index: 10100;
   background: rgb(0 0 0 / 0.55);
 }
 
 .vysiongids-zaak-intro-dialog {
   position: fixed;
-  z-index: 1101;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  z-index: 10101;
   box-sizing: border-box;
-  width: min(42rem, calc(100vw - 2rem));
-  max-height: min(88vh, 40rem);
+  inset: max(0.75rem, env(safe-area-inset-top, 0px)) 1rem max(0.75rem, env(safe-area-inset-bottom, 0px)) 1rem;
+  width: auto;
+  max-height: none;
+  height: auto;
   display: flex;
   flex-direction: column;
   border-radius: 1rem;
   background: #fff;
   box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.35);
-  padding: 1.5rem 1.5rem 1.25rem;
+  padding: 1.25rem 1.25rem 1rem;
 }
 
 @media (min-width: 640px) {
   .vysiongids-zaak-intro-dialog {
+    inset: auto;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(42rem, calc(100vw - 2rem));
+    max-height: min(88vh, 40rem);
     padding: 2rem 2rem 1.5rem;
   }
 }
