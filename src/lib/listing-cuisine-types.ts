@@ -12,7 +12,6 @@ export const LISTING_CUISINE_TYPES = [
   { id: 'grill', emoji: '🥩', label: 'Grill' },
   { id: 'sushi', emoji: '🍣', label: 'Sushi' },
   { id: 'pizzeria', emoji: '🍕', label: 'Pizzeria' },
-  { id: 'frituur', emoji: '🍟', label: 'Frituur' },
   { id: 'vegetarisch', emoji: '🥗', label: 'Vegetarisch' },
 ] as const
 
