@@ -1,11 +1,28 @@
-import { createHmac, timingSafeEqual } from 'crypto'
+import { createHash, createHmac, timingSafeEqual } from 'crypto'
 import { cookies } from 'next/headers'
 
 export const GIDS_SESSION_COOKIE = 'gids_owner_session'
 
+/** Expliciete secret in Vercel, of afgeleid van service role (zelfde project, server-only). */
+export function resolveGidsSessionSecret(): string | null {
+  const explicit =
+    process.env.VYSIONGIDS_SESSION_SECRET?.trim() || process.env.GIDS_SESSION_SECRET?.trim()
+  if (explicit && explicit.length >= 16) return explicit
+
+  const service = process.env.VYSIONGIDS_SUPABASE_SERVICE_ROLE_KEY?.trim()
+  if (service && service.length >= 32) {
+    return createHash('sha256').update(`vysiongids-owner-session:v1:${service}`).digest('base64')
+  }
+
+  return null
+}
+
+export function isGidsSessionConfigured(): boolean {
+  return resolveGidsSessionSecret() != null
+}
+
 function sessionSecret(): string | null {
-  const s = process.env.VYSIONGIDS_SESSION_SECRET?.trim()
-  return s && s.length >= 16 ? s : null
+  return resolveGidsSessionSecret()
 }
 
 export function signGidsSession(listingId: string): string | null {

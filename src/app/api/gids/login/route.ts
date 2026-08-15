@@ -35,7 +35,10 @@ export async function POST(req: Request) {
   const token = signGidsSession(row.id)
   if (!token) {
     return NextResponse.json(
-      { error: 'Sessie niet beschikbaar (VYSIONGIDS_SESSION_SECRET ontbreekt op server).' },
+      {
+        error:
+          'Sessie niet beschikbaar (zet VYSIONGIDS_SESSION_SECRET in Vercel of controleer VYSIONGIDS_SUPABASE_SERVICE_ROLE_KEY).',
+      },
       { status: 503 },
     )
   }

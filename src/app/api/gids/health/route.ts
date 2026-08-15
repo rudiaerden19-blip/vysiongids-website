@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { isGidsSupabaseConfigured } from '@/lib/supabase-gids'
 import { fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
+import { isGidsSessionConfigured } from '@/lib/gids-session'
 
 export async function GET() {
   const configured = isGidsSupabaseConfigured()
@@ -9,10 +10,12 @@ export async function GET() {
     const rows = await fetchPublishedListingsFromDb()
     dbCount = rows?.length ?? null
   }
+  const explicitSecret = Boolean(process.env.VYSIONGIDS_SESSION_SECRET?.trim())
   return NextResponse.json({
     ok: true,
     supabaseConfigured: configured,
     publishedListingsInDb: dbCount,
-    sessionSecretSet: Boolean(process.env.VYSIONGIDS_SESSION_SECRET?.trim()),
+    sessionSecretSet: isGidsSessionConfigured(),
+    sessionSecretExplicit: explicitSecret,
   })
 }

@@ -50,7 +50,9 @@ git push origin main
    | `NEXT_PUBLIC_VYSIONGIDS_SUPABASE_URL` | Supabase project URL |
    | `NEXT_PUBLIC_VYSIONGIDS_SUPABASE_ANON_KEY` | anon key |
    | `VYSIONGIDS_SUPABASE_SERVICE_ROLE_KEY` | service role (geheim) |
-   | `VYSIONGIDS_SESSION_SECRET` | `openssl rand -base64 32` |
+   | `VYSIONGIDS_SESSION_SECRET` | optioneel: `openssl rand -base64 32` (min. 16 tekens). Zonder deze key wordt de sessie afgeleid van de service role — login werkt dan ook, mits service role gezet is. |
+
+   **Naam in Vercel:** alleen `A-Z`, `0-9` en `_` (geen streepjes). Geen spaties. Bij “invalid characters”: key volledig wissen en handmatig opnieuw typen (`VYSIONGIDS_SESSION_SECRET`).
 
 5. Deploy. Controleer dat deployment type **Production** is op `main`.
 
