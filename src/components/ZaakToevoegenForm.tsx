@@ -18,18 +18,21 @@ function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React
   )
 }
 
-function PhotoPickField({ index }: { index: number }) {
+function PhotoPickField({ index, required }: { index: number; required?: boolean }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [fileLabel, setFileLabel] = useState<string | null>(null)
   const id = `photo${index}`
+  const isRequired = required ?? false
 
   return (
     <div className="vysiongids-photo-pick">
       <label className="vysiongids-photo-pick-label" htmlFor={id}>
         Foto {index + 1}
-        <span className="vysiongids-form-required" aria-hidden>
-          *
-        </span>
+        {isRequired ? (
+          <span className="vysiongids-form-required" aria-hidden>
+            *
+          </span>
+        ) : null}
       </label>
       <input
         ref={inputRef}
@@ -38,7 +41,7 @@ function PhotoPickField({ index }: { index: number }) {
         type="file"
         accept="image/*"
         capture="environment"
-        required
+        required={isRequired}
         className="vysiongids-photo-pick-input"
         onChange={(e) => {
           const f = e.target.files?.[0]
@@ -342,15 +345,15 @@ export default function ZaakToevoegenForm() {
 
       <div>
         <p className="vysiongids-form-label">
-          3 foto&apos;s
+          Foto&apos;s
           <span className="vysiongids-form-required" aria-hidden>
             *
           </span>
         </p>
-        <p className="mt-0.5 text-xs text-gray-500">JPG/PNG/WebP, max. 5 MB per foto.</p>
+        <p className="mt-0.5 text-xs text-gray-500">Minstens 1 foto, tot max. 3. JPG/PNG/WebP, max. 5 MB per foto.</p>
         <div className="mt-2 flex flex-wrap gap-3">
           {[0, 1, 2].map((i) => (
-            <PhotoPickField key={i} index={i} />
+            <PhotoPickField key={i} index={i} required={i === 0} />
           ))}
         </div>
       </div>

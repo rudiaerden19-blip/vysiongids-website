@@ -158,22 +158,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Deze zaaknaam staat al in de gids.' }, { status: 409 })
   }
 
-  const photos: File[] = []
+  const photos: { index: number; file: File }[] = []
   for (let i = 0; i < 3; i++) {
     const f = form.get(`photo${i}`)
-    if (f instanceof File && f.size > 0) photos.push(f)
+    if (f instanceof File && f.size > 0) photos.push({ index: i, file: f })
   }
   if (photos.length === 0) {
     return NextResponse.json({ error: 'Upload minstens 1 foto (max. 3).' }, { status: 400 })
   }
-  if (photos.length !== 3) {
-    return NextResponse.json({ error: 'Upload precies 3 foto\'s.' }, { status: 400 })
-  }
-  if (photos.length > 3) {
-    return NextResponse.json({ error: 'Maximaal 3 foto\'s.' }, { status: 400 })
-  }
 
-  for (const file of photos) {
+  for (const { file } of photos) {
     if (!file.type.startsWith('image/')) {
       return NextResponse.json({ error: 'Alleen afbeeldingen toegestaan.' }, { status: 400 })
     }
@@ -228,10 +222,9 @@ export async function POST(req: Request) {
   const origin = siteOrigin(req)
   const publicUrls: string[] = []
 
-  for (let i = 0; i < photos.length; i++) {
-    const file = photos[i]
+  for (const { index, file } of photos) {
     const ext = file.type.includes('png') ? 'png' : file.type.includes('webp') ? 'webp' : 'jpg'
-    const path = `${inserted.id}/${i}.${ext}`
+    const path = `${inserted.id}/${index}.${ext}`
     const buf = Buffer.from(await file.arrayBuffer())
     const { error: upErr } = await admin.storage.from('gids-listing-photos').upload(path, buf, {
       contentType: file.type,
@@ -247,7 +240,7 @@ export async function POST(req: Request) {
     publicUrls.push(publicUrl)
     const { error: photoErr } = await admin.from('gids_listing_photos').insert({
       listing_id: inserted.id,
-      sort_order: i,
+      sort_order: index,
       storage_path: path,
       public_url: publicUrl,
     })

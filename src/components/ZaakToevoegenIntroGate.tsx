@@ -75,7 +75,7 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
               verwijderen. Vysiongids kan je PIN niet teruggeven.
             </li>
             <li>
-              <strong>Foto&apos;s:</strong> upload enkel beelden van jouw zaak (max. 3). Geen stockfoto&apos;s van andere
+              <strong>Foto&apos;s:</strong> upload enkel beelden van jouw zaak (minstens 1, max. 3). Geen stockfoto&apos;s van andere
               zaken.
             </li>
             <li>
