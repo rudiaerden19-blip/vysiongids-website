@@ -7,7 +7,7 @@ import { DAY_LABEL } from '@/lib/gids-opening-hours'
 import { resolveHoursByDay } from '@/lib/listing-info'
 import { formatDeliveryFee, formatListingAddressLines, formatMinOrder, getListingTypeLabel, listingPhotoUrls } from '@/lib/listings'
 
-export default function ListingPanel({ listing }: { listing: Listing }) {
+export default function ListingPanel({ listing, compact }: { listing: Listing; compact?: boolean }) {
   const typeLabel = getListingTypeLabel(listing.type)
   const minOrder = formatMinOrder(listing)
   const deliveryLabel = formatDeliveryFee(listing)
@@ -20,8 +20,10 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
   const profileHref = `/zaak/${listing.slug}`
   const reviewsHref = `${profileHref}/reviews`
 
+  const bodyTextSize = compact ? '0.8125rem' : '0.9375rem'
+
   return (
-    <article className="vysiongids-listing-panel">
+    <article className={`vysiongids-listing-panel${compact ? ' vysiongids-listing-panel--compact' : ''}`}>
       <div className="vysiongids-listing-panel-row">
         <Link href={profileHref} className="vysiongids-listing-panel-photo">
           <ListingPhotoSlider
@@ -37,7 +39,7 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
             </Link>
             <ListingPanelOpenStatus listing={listing} />
           </div>
-          <p style={{ margin: 0, display: 'flex', gap: '0.5rem', fontSize: '0.9375rem', color: '#4b5563', lineHeight: 1.45 }}>
+          <p style={{ margin: 0, display: 'flex', gap: '0.5rem', fontSize: bodyTextSize, color: '#4b5563', lineHeight: 1.45 }}>
             <span aria-hidden>📍</span>
             <span>
               {street}
@@ -45,7 +47,7 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
               {cityLine}
             </span>
           </p>
-          <p style={{ margin: 0, display: 'flex', gap: '0.5rem', fontSize: '0.9375rem', color: '#4b5563' }}>
+          <p style={{ margin: 0, display: 'flex', gap: '0.5rem', fontSize: bodyTextSize, color: '#4b5563' }}>
             <span aria-hidden>🍽</span>
             {typeLabel}
             {listing.pickupEnabled && listing.deliveryEnabled
@@ -67,7 +69,7 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
               ))}
             </ul>
           </div>
-          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem 0.85rem', fontSize: '0.9375rem' }}>
+          <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem 0.85rem', fontSize: bodyTextSize }}>
             <ListingStarRating slug={listing.slug} avg={listing.ratingAvg} count={listing.ratingCount} />
             {timeLabel ? <span style={{ color: '#6b7280' }}>{timeLabel}</span> : null}
             <span style={{ fontWeight: 500, color: '#374151' }}>{deliveryLabel}</span>

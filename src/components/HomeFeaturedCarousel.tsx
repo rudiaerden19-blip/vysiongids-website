@@ -34,7 +34,7 @@ export default function HomeFeaturedCarousel({ listings }: Props) {
   if (total === 1) {
     return (
       <div className="vysiongids-home-featured-viewport">
-        <ListingPanel listing={listings[0]!} />
+        <ListingPanel listing={listings[0]!} compact />
       </div>
     )
   }
@@ -51,7 +51,7 @@ export default function HomeFeaturedCarousel({ listings }: Props) {
         >
           {listings.map((listing) => (
             <div key={listing.slug} className="vysiongids-home-featured-slide">
-              <ListingPanel listing={listing} />
+              <ListingPanel listing={listing} compact />
             </div>
           ))}
         </div>
