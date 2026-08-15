@@ -1162,9 +1162,13 @@ body {
 }
 
 .vysiongids-topzaak-stamp--under-open {
+  position: absolute;
+  top: calc(100% + 2cm);
+  right: 0;
   width: 6.25rem;
   max-width: 100%;
-  margin-top: 2cm;
+  margin-top: 0;
+  z-index: 2;
 }
 
 .vysiongids-topzaak-stamp--inline {
