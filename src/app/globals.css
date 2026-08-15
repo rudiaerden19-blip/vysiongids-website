@@ -1180,8 +1180,7 @@ body {
 .vysiongids-topzaak-stamp-img {
   width: 100%;
   height: auto;
-  opacity: 1;
-  filter: drop-shadow(0 2px 4px rgb(0 0 0 / 0.12));
+  display: block;
 }
 
 .vysiongids-zaak-topzaak-stamp-row {
@@ -1435,7 +1434,9 @@ body {
 }
 
 .vysiongids-listing-panel-status-col--topzaak {
-  min-width: 6.5rem;
+  position: relative;
+  flex-shrink: 0;
+  width: 6.25rem;
 }
 
 .vysiongids-listing-open-status {

@@ -21,10 +21,10 @@ export default function ListingTopZaakStamp({ listing, variant = 'underOpen', cl
       title="Topzaak — 4 sterren of meer"
     >
       <Image
-        src="/images/topzaak-stamp.svg"
+        src="/images/topzaak-stamp.png"
         alt="Topzaak stempel"
-        width={140}
-        height={140}
+        width={469}
+        height={476}
         className="vysiongids-topzaak-stamp-img"
         priority={false}
       />
