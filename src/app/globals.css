@@ -755,14 +755,101 @@ body {
   padding: 1.25rem 1.5rem;
 }
 
+.vysiongids-listing-panel-actions {
+  margin-top: auto;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding-top: 0.75rem;
+}
+
+.vysiongids-listing-panel-more {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0e5d82;
+  text-decoration: none;
+}
+
+.vysiongids-listing-panel-more:hover {
+  text-decoration: underline;
+}
+
+.vysiongids-listing-panel-cta-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  min-width: 8.5rem;
+}
+
+.vysiongids-listing-action-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  background: var(--accent);
+  color: #fff !important;
+  padding: 0.65rem 1.75rem;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.25;
+  text-decoration: none;
+  white-space: nowrap;
+  border: none;
+  cursor: pointer;
+  transition: filter 0.15s ease;
+}
+
+.vysiongids-listing-action-btn:hover {
+  filter: brightness(0.95);
+}
+
+.vysiongids-zaak-sidebar-cta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.vysiongids-zaak-action-btn {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border-radius: 0.75rem;
+  background: var(--accent);
+  color: #fff !important;
+  padding: 0.875rem 1rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: filter 0.15s ease;
+}
+
+.vysiongids-zaak-action-btn:hover {
+  filter: brightness(0.95);
+}
+
 @media (max-width: 639px) {
   .vysiongids-listing-panel-body {
     padding: 1rem 1.1rem;
   }
 
-  .vysiongids-listing-bestel-btn {
+  .vysiongids-listing-panel-actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .vysiongids-listing-panel-cta-stack {
     width: 100%;
-    box-sizing: border-box;
+    min-width: 0;
+  }
+
+  .vysiongids-listing-action-btn {
+    width: 100%;
   }
 }
 

@@ -110,14 +110,19 @@ export default async function ZaakPage({ params }: Props) {
           <aside className="lg:sticky lg:top-6 lg:self-start">
             <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5 shadow-sm">
               <p className="text-sm text-gray-600">Bestel rechtstreeks bij deze zaak — geen commissie via Vysiongids.</p>
-              <a
-                href={listing.orderUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="vysiongids-zaak-bestel-btn mt-4 flex w-full items-center justify-center rounded-xl bg-accent py-3.5 text-center text-lg font-bold text-white transition hover:bg-accent/90"
-              >
-                Bestel
-              </a>
+              <div className="vysiongids-zaak-sidebar-cta mt-4">
+                <a href="#info" className="vysiongids-zaak-action-btn">
+                  Info
+                </a>
+                <a
+                  href={listing.orderUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="vysiongids-zaak-action-btn"
+                >
+                  Bestel
+                </a>
+              </div>
               <div className="mt-4 border-t border-gray-200 pt-4">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Route</p>
                 <ListingNavigationButtons listing={listing} compact />

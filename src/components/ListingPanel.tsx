@@ -78,41 +78,23 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
             <span style={{ fontWeight: 500, color: '#374151' }}>{deliveryLabel}</span>
             {minOrder ? <span style={{ color: '#6b7280' }}>{minOrder}</span> : null}
           </div>
-          <div
-            style={{
-              marginTop: 'auto',
-              display: 'flex',
-              flexWrap: 'wrap',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: '0.75rem',
-              paddingTop: '0.75rem',
-            }}
-          >
-            <Link href={profileHref} style={{ fontSize: '0.9375rem', fontWeight: 600, color: '#0e5d82', textDecoration: 'none' }}>
+          <div className="vysiongids-listing-panel-actions">
+            <Link href={profileHref} className="vysiongids-listing-panel-more">
               Bekijk zaak →
             </Link>
-            <a
-              href={listing.orderUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="vysiongids-listing-bestel-btn"
-              style={{
-                display: 'inline-flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                borderRadius: '0.5rem',
-                background: '#0e5d82',
-                color: '#fff',
-                padding: '0.65rem 1.75rem',
-                fontSize: '1rem',
-                fontWeight: 600,
-                textDecoration: 'none',
-                whiteSpace: 'nowrap',
-              }}
-            >
-              Bestel
-            </a>
+            <div className="vysiongids-listing-panel-cta-stack">
+              <Link href={`${profileHref}#info`} className="vysiongids-listing-action-btn">
+                Info
+              </Link>
+              <a
+                href={listing.orderUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="vysiongids-listing-action-btn"
+              >
+                Bestel
+              </a>
+            </div>
           </div>
         </div>
       </div>
