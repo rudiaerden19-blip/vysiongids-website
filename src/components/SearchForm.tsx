@@ -1,12 +1,13 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FormEvent, useCallback, useRef, type CSSProperties } from 'react'
+import { FormEvent, useCallback, useEffect, useRef, type CSSProperties } from 'react'
 import { LISTING_TYPES } from '@/lib/listing-types'
 import { buildSearchResultsSpeechMessage } from '@/lib/search-results-speech'
 import { useVoiceSearch } from '@/lib/use-voice-search'
 import { primeSpeechSynthesis, speakDutchAsync, stashVoiceSearchAnnouncement } from '@/lib/speak-dutch'
 import SearchVoiceMicButton from '@/components/SearchVoiceMicButton'
+import type { VoiceNameHint } from '@/lib/voice-search-transcript-fix'
 
 const fieldLabel: CSSProperties = {
   display: 'block',
@@ -109,6 +110,20 @@ type SearchActionsProps = {
 
 function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: SearchActionsProps) {
   const router = useRouter()
+  const voiceNameHintsRef = useRef<VoiceNameHint[]>([])
+
+  useEffect(() => {
+    let cancelled = false
+    void fetch('/api/gids/voice-names', { cache: 'force-cache' })
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { hints?: VoiceNameHint[] } | null) => {
+        if (!cancelled && data?.hints?.length) voiceNameHintsRef.current = data.hints
+      })
+      .catch(() => {})
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   const runSearchWithQuery = useCallback(
     async (spoken: string) => {
@@ -133,10 +148,18 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
     [formRef, prov, qInputRef, router],
   )
 
-  const { listening, supported, startListen } = useVoiceSearch(runSearchWithQuery)
+  const { listening, supported, startListen } = useVoiceSearch(runSearchWithQuery, {
+    nameHintsRef: voiceNameHintsRef,
+  })
 
   const onMicClick = useCallback(() => {
     primeSpeechSynthesis()
+    void fetch('/api/gids/voice-names')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data: { hints?: VoiceNameHint[] } | null) => {
+        if (data?.hints?.length) voiceNameHintsRef.current = data.hints
+      })
+      .catch(() => {})
     startListen()
   }, [startListen])
 
