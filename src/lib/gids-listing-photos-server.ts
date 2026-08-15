@@ -9,21 +9,26 @@ export function siteOriginFromRequest(req: Request): string {
   return process.env.NEXT_PUBLIC_VYSIONGIDS_SITE_URL ?? 'https://www.vysiongids.be'
 }
 
-/** Registratie/uploads falen duidelijk als de bucket in Supabase ontbreekt. */
+/** Registratie/uploads falen duidelijk als de bucket in Supabase ontbreekt of niet public is. */
 export async function ensureGidsPhotosBucket(
   admin: SupabaseClient,
-): Promise<{ ok: true } | { ok: false; message: string }> {
-  const { data, error } = await admin.storage.listBuckets()
-  if (error) return { ok: false, message: error.message }
-  const found = data?.some((b) => b.name === GIDS_LISTING_PHOTOS_BUCKET)
-  if (!found) {
+): Promise<{ ok: true; public: boolean } | { ok: false; message: string }> {
+  const { data: bucket, error } = await admin.storage.getBucket(GIDS_LISTING_PHOTOS_BUCKET)
+  if (error || !bucket) {
     return {
       ok: false,
       message:
-        'Foto-opslag ontbreekt: maak in Supabase Storage een public bucket «gids-listing-photos» aan (zie DEPLOY.md).',
+        'Foto-opslag ontbreekt: maak in Supabase Storage een bucket «gids-listing-photos» aan (zie DEPLOY.md).',
     }
   }
-  return { ok: true }
+  if (!bucket.public) {
+    return {
+      ok: false,
+      message:
+        'Bucket gids-listing-photos is niet public (POLICIES 0). Zet «Public bucket» aan in Supabase Storage, of run supabase/migrations/005_storage_gids_listing_photos_public.sql in de SQL Editor.',
+    }
+  }
+  return { ok: true, public: true }
 }
 
 export async function uploadGidsListingPhoto(

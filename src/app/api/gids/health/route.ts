@@ -8,6 +8,7 @@ export async function GET() {
   const configured = isGidsSupabaseConfigured()
   let dbCount: number | null = null
   let photosBucketReady: boolean | null = null
+  let photosBucketPublic: boolean | null = null
   if (configured) {
     const rows = await fetchPublishedListingsFromDb()
     dbCount = rows?.length ?? null
@@ -15,6 +16,7 @@ export async function GET() {
     if (admin) {
       const bucket = await ensureGidsPhotosBucket(admin)
       photosBucketReady = bucket.ok
+      photosBucketPublic = bucket.ok ? bucket.public : false
     }
   }
   const explicitSecret = Boolean(process.env.VYSIONGIDS_SESSION_SECRET?.trim())
@@ -25,5 +27,6 @@ export async function GET() {
     sessionSecretSet: isGidsSessionConfigured(),
     sessionSecretExplicit: explicitSecret,
     photosBucketReady,
+    photosBucketPublic,
   })
 }
