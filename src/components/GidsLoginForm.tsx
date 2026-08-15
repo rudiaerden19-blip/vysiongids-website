@@ -1,0 +1,79 @@
+'use client'
+
+import Link from 'next/link'
+import { useRouter } from 'next/navigation'
+import { useState } from 'react'
+
+export default function GidsLoginForm() {
+  const router = useRouter()
+  const [error, setError] = useState<string | null>(null)
+  const [loading, setLoading] = useState(false)
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault()
+    setError(null)
+    setLoading(true)
+    const fd = new FormData(e.currentTarget)
+    const name = String(fd.get('name') ?? '')
+    const pin = String(fd.get('pin') ?? '')
+    try {
+      const res = await fetch('/api/gids/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, pin }),
+      })
+      const data = (await res.json()) as { error?: string; slug?: string }
+      if (!res.ok) {
+        setError(data.error ?? 'Inloggen mislukt.')
+        return
+      }
+      router.push('/beheer')
+      router.refresh()
+    } catch {
+      setError('Netwerkfout.')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="mt-8 max-w-md space-y-4">
+      {error ? (
+        <p className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{error}</p>
+      ) : null}
+      <div>
+        <label className="block text-sm font-semibold text-gray-700" htmlFor="name">
+          Zaaknaam (exact zoals in de gids)
+        </label>
+        <input id="name" name="name" required className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2" />
+      </div>
+      <div>
+        <label className="block text-sm font-semibold text-gray-700" htmlFor="pin">
+          6-cijferige PIN
+        </label>
+        <input
+          id="pin"
+          name="pin"
+          required
+          inputMode="numeric"
+          pattern="\d{6}"
+          maxLength={6}
+          className="mt-1 w-full max-w-xs rounded-lg border border-gray-300 px-3 py-2 tracking-widest"
+        />
+      </div>
+      <button
+        type="submit"
+        disabled={loading}
+        className="rounded-xl bg-accent px-8 py-3 font-bold text-white hover:bg-accent/90 disabled:opacity-60"
+      >
+        {loading ? 'Bezig…' : 'Inloggen'}
+      </button>
+      <p className="text-sm text-gray-600">
+        Nog geen zaak?{' '}
+        <Link href="/zaak-toevoegen" className="font-semibold text-accent hover:underline">
+          Zaak toevoegen
+        </Link>
+      </p>
+    </form>
+  )
+}

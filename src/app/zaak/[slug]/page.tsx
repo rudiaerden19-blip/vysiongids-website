@@ -17,12 +17,13 @@ import {
 type Props = { params: Promise<{ slug: string }> }
 
 export async function generateStaticParams() {
-  return getAllListings().map((l) => ({ slug: l.slug }))
+  const all = await getAllListings()
+  return all.map((l) => ({ slug: l.slug }))
 }
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
-  const listing = getListingBySlug(slug)
+  const listing = await getListingBySlug(slug)
   if (!listing) return { title: 'Zaak niet gevonden' }
   return {
     title: `${listing.name} · ${listing.city}`,
@@ -32,7 +33,7 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function ZaakPage({ params }: Props) {
   const { slug } = await params
-  const listing = getListingBySlug(slug)
+  const listing = await getListingBySlug(slug)
   if (!listing) notFound()
 
   const typeLabel = getListingTypeLabel(listing.type)

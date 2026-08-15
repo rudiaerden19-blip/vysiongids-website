@@ -12,7 +12,7 @@ type Props = {
 
 export default async function ZoekenPage({ searchParams }: Props) {
   const sp = await searchParams
-  const results = searchListings({ q: sp.q, type: sp.type, prov: sp.prov })
+  const results = await searchListings({ q: sp.q, type: sp.type, prov: sp.prov })
 
   const qLabel = sp.q?.trim()
   const provLabel = sp.prov?.trim() ? provinceLabel(sp.prov) : null

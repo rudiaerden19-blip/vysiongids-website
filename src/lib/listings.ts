@@ -1,43 +1,54 @@
 import listingsJson from '../../data/listings.json'
 import type { Listing, ListingSearchParams, ListingTypeId } from '@/lib/listing-types'
 import { LISTING_TYPES } from '@/lib/listing-types'
+import { fetchListingBySlugFromDb, fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
+import { normalizeSearchText } from '@/lib/gids-text'
+import { unstable_cache } from 'next/cache'
 
-const listings = listingsJson as Listing[]
+const jsonFallback = listingsJson as Listing[]
 
-export function getAllListings(): Listing[] {
-  return listings
+const cachedDbListings = unstable_cache(
+  async () => fetchPublishedListingsFromDb(),
+  ['gids-published-listings'],
+  { revalidate: 60, tags: ['gids-listings'] },
+)
+
+async function loadListings(): Promise<Listing[]> {
+  const fromDb = await cachedDbListings()
+  if (fromDb && fromDb.length > 0) return fromDb
+  return jsonFallback
 }
 
-export function getListingBySlug(slug: string): Listing | undefined {
-  return listings.find((l) => l.slug === slug)
+export async function getAllListings(): Promise<Listing[]> {
+  return loadListings()
+}
+
+export async function getListingBySlug(slug: string): Promise<Listing | undefined> {
+  const fromDb = await fetchListingBySlugFromDb(slug)
+  if (fromDb) return fromDb
+  const all = await loadListings()
+  return all.find((l) => l.slug === slug)
 }
 
 export function getListingTypeLabel(type: Listing['type']): string {
   return LISTING_TYPES.find((t) => t.id === type)?.label ?? type
 }
 
-function normalize(s: string): string {
-  return s
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .trim()
-}
-
 /** Zoek op stad, postcode, naam of adres (query `q`). Filter op keukentype. */
-export function searchListings(params: ListingSearchParams): Listing[] {
-  const q = normalize(params.q ?? '')
+export async function searchListings(params: ListingSearchParams): Promise<Listing[]> {
+  const listings = await loadListings()
+  const q = normalizeSearchText(params.q ?? '')
   const type = (params.type ?? 'all') as ListingTypeId
-  const prov = normalize(params.prov ?? '')
+  const prov = normalizeSearchText(params.prov ?? '')
 
   return listings.filter((listing) => {
     if (type !== 'all' && listing.type !== type) return false
     if (prov) {
-      const listingProv = normalize(listing.province ?? '')
+      const listingProv = normalizeSearchText(listing.province ?? '')
       if (!listingProv || listingProv !== prov) return false
     }
     if (!q) return true
-    const haystack = normalize(
+    const haystack = normalizeSearchText(
       [listing.name, listing.city, listing.postcode, listing.address, listing.type].join(' '),
     )
     return haystack.includes(q) || q.split(/\s+/).every((part) => part.length >= 2 && haystack.includes(part))
@@ -96,8 +107,13 @@ export function getListingCoordinates(listing: Listing): { lat: number; lng: num
   if (typeof listing.lat === 'number' && typeof listing.lng === 'number') {
     return { lat: listing.lat, lng: listing.lng }
   }
-  const key = normalize(listing.city)
+  const key = normalizeSearchText(listing.city)
   const hit = CITY_COORDS[key]
   if (hit) return hit
   return { lat: 50.85, lng: 4.35 }
+}
+
+export async function listingsDataSourceLabel(): Promise<'supabase' | 'json'> {
+  const fromDb = await cachedDbListings()
+  return fromDb && fromDb.length > 0 ? 'supabase' : 'json'
 }

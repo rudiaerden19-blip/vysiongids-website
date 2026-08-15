@@ -3,10 +3,11 @@ import Link from 'next/link'
 import { Suspense } from 'react'
 import SearchForm from '@/components/SearchForm'
 import SiteHeader from '@/components/SiteHeader'
-import { getAllListings } from '@/lib/listings'
+import { getAllListings, listingsDataSourceLabel } from '@/lib/listings'
 
-export default function HomePage() {
-  const total = getAllListings().length
+export default async function HomePage() {
+  const total = (await getAllListings()).length
+  const source = await listingsDataSourceLabel()
 
   return (
     <>
@@ -100,7 +101,8 @@ export default function HomePage() {
             <div>
               <h2 className="text-xl font-bold text-gray-900">Begin hier</h2>
               <p className="mt-1 text-gray-600">
-                {total} {total === 1 ? 'zaak' : 'zaken'} in de gids (demo-data — later 400+).
+                {total} {total === 1 ? 'zaak' : 'zaken'} in de gids
+                {source === 'json' ? ' (demo-data — run seed in Supabase).' : '.'}
               </p>
             </div>
             <Link href="/zoeken" className="font-semibold text-accent hover:underline">
