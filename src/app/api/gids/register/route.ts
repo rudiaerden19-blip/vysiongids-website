@@ -36,18 +36,36 @@ export async function POST(req: Request) {
   const postcode = String(form.get('postcode') ?? '').trim()
   const address = String(form.get('address') ?? '').trim()
   const orderUrl = String(form.get('orderUrl') ?? '').trim()
-  const province = String(form.get('province') ?? '').trim() || null
+  const province = String(form.get('province') ?? '').trim()
+  const phone = String(form.get('phone') ?? '').trim()
+  const email = String(form.get('email') ?? '').trim()
+  const website = String(form.get('website') ?? '').trim()
+  const openingHours = String(form.get('openingHours') ?? '').trim()
+  const closedDays = String(form.get('closedDays') ?? '').trim() || null
 
   if (name.length < 3) return NextResponse.json({ error: 'Vul een volledige zaaknaam in.' }, { status: 400 })
   if (!isValidGidsPin(pin)) return NextResponse.json({ error: 'PIN moet 6 cijfers zijn.' }, { status: 400 })
   if (!VALID_TYPES.includes(type as (typeof VALID_TYPES)[number])) {
     return NextResponse.json({ error: 'Kies een type zaak.' }, { status: 400 })
   }
+  if (!province) {
+    return NextResponse.json({ error: 'Kies een provincie.' }, { status: 400 })
+  }
   if (!city || !postcode || !address) {
     return NextResponse.json({ error: 'Adres, postcode en gemeente zijn verplicht.' }, { status: 400 })
   }
+  if (!phone) return NextResponse.json({ error: 'Telefoon is verplicht.' }, { status: 400 })
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return NextResponse.json({ error: 'Vul een geldig e-mailadres in.' }, { status: 400 })
+  }
+  if (!website.startsWith('https://')) {
+    return NextResponse.json({ error: 'Website moet beginnen met https://' }, { status: 400 })
+  }
   if (!orderUrl.startsWith('https://')) {
     return NextResponse.json({ error: 'Bestel-URL moet beginnen met https://' }, { status: 400 })
+  }
+  if (!openingHours) {
+    return NextResponse.json({ error: 'Openingstijden zijn verplicht.' }, { status: 400 })
   }
 
   const nameNormalized = normalizeGidsBusinessName(name)
@@ -63,6 +81,9 @@ export async function POST(req: Request) {
   }
   if (photos.length === 0) {
     return NextResponse.json({ error: 'Upload minstens 1 foto (max. 3).' }, { status: 400 })
+  }
+  if (photos.length !== 3) {
+    return NextResponse.json({ error: 'Upload precies 3 foto\'s.' }, { status: 400 })
   }
   if (photos.length > 3) {
     return NextResponse.json({ error: 'Maximaal 3 foto\'s.' }, { status: 400 })
@@ -96,8 +117,12 @@ export async function POST(req: Request) {
       province,
       address,
       order_url: orderUrl,
+      website,
+      phone,
+      email,
+      opening_hours: openingHours,
+      closed_days: closedDays,
       status: 'published',
-      opening_hours: 'Openingstijden via zaak',
       rating_avg: 0,
       rating_count: 0,
       pickup_enabled: true,

@@ -874,6 +874,39 @@ body {
   filter: brightness(0.95);
 }
 
+.vysiongids-form-label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
+.vysiongids-form-required {
+  color: #dc2626;
+  font-weight: 700;
+}
+
+.vysiongids-form-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  border: 1px solid #d1d5db;
+  padding: 0.5rem 0.75rem;
+  font-size: 16px;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-form-input {
+    font-size: 0.9375rem;
+  }
+}
+
+.vysiongids-zaak-form input:required:invalid:not(:focus):not(:placeholder-shown),
+.vysiongids-zaak-form select:required:invalid:not(:focus) {
+  border-color: #fca5a5;
+}
+
 @media (max-width: 639px) {
   .vysiongids-listing-panel-body {
     padding: 1rem 1.1rem;
