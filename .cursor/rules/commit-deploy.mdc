@@ -1,0 +1,16 @@
+---
+description: Na code-wijzigingen altijd commit en push naar main (Vercel Production)
+alwaysApply: true
+---
+
+# Commit & deploy — nooit vragen
+
+Na elke bouwtaak met **bestandswijzigingen**:
+
+1. `npm run build` (of `npx tsc --noEmit` bij kleine TS-only wijzigingen)
+2. **`git commit`** — duidelijke boodschap
+3. **`git push origin main`** — Production op Vercel
+
+**Nooit** aan het einde vragen «wil je committen/pushen?» — gewoon doen.
+
+Uitzonderingen: geen commit bij puur uitleg/lezen; geen lege commits; geen force-push tenzij expliciet gevraagd.
