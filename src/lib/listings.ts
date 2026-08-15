@@ -13,10 +13,15 @@ const cachedDbListings = unstable_cache(
   { revalidate: 60, tags: ['gids-listings'] },
 )
 
+/** Supabase is leidend per slug; JSON vult ontbrekende demo-zaken aan tot volledige seed. */
 async function loadListings(): Promise<Listing[]> {
   const fromDb = await cachedDbListings()
-  if (fromDb && fromDb.length > 0) return fromDb
-  return jsonFallback
+  if (!fromDb || fromDb.length === 0) return jsonFallback
+
+  const bySlug = new Map<string, Listing>()
+  for (const listing of jsonFallback) bySlug.set(listing.slug, listing)
+  for (const listing of fromDb) bySlug.set(listing.slug, listing)
+  return Array.from(bySlug.values())
 }
 
 export async function getAllListings(): Promise<Listing[]> {
@@ -26,8 +31,7 @@ export async function getAllListings(): Promise<Listing[]> {
 export async function getListingBySlug(slug: string): Promise<Listing | undefined> {
   const fromDb = await fetchListingBySlugFromDb(slug)
   if (fromDb) return fromDb
-  const all = await loadListings()
-  return all.find((l) => l.slug === slug)
+  return jsonFallback.find((l) => l.slug === slug)
 }
 
 export function getListingTypeLabel(type: Listing['type']): string {
@@ -113,7 +117,10 @@ export function getListingCoordinates(listing: Listing): { lat: number; lng: num
   return { lat: 50.85, lng: 4.35 }
 }
 
-export async function listingsDataSourceLabel(): Promise<'supabase' | 'json'> {
+export async function listingsDataSourceLabel(): Promise<'supabase' | 'json' | 'mixed'> {
   const fromDb = await cachedDbListings()
-  return fromDb && fromDb.length > 0 ? 'supabase' : 'json'
+  const dbCount = fromDb?.length ?? 0
+  if (dbCount === 0) return 'json'
+  if (dbCount >= jsonFallback.length) return 'supabase'
+  return 'mixed'
 }
