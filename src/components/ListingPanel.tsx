@@ -8,6 +8,7 @@ import type { Listing } from '@/lib/listing-types'
 import { DAY_LABEL } from '@/lib/gids-opening-hours'
 import { resolveHoursByDay } from '@/lib/listing-info'
 import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
+import { isTopZaakListing } from '@/lib/listing-topzaak'
 import { formatDeliveryFee, formatDeliveryRadius, formatListingAddressLines, formatMinOrder, listingPhotoUrls } from '@/lib/listings'
 
 export default function ListingPanel({ listing, compact }: { listing: Listing; compact?: boolean }) {
@@ -25,6 +26,7 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
   const reviewsHref = `${profileHref}/reviews`
 
   const bodyTextSize = compact ? '0.8125rem' : '0.9375rem'
+  const showTopZaakStamp = isTopZaakListing(listing)
 
   return (
     <article className={`vysiongids-listing-panel${compact ? ' vysiongids-listing-panel--compact' : ''}`}>
@@ -35,8 +37,12 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
             alt={listing.name}
             sizes="(max-width: 640px) 100vw, 26rem"
           />
-          <ListingTopZaakStamp listing={listing} variant="photo" />
         </Link>
+        {showTopZaakStamp ? (
+          <div className="vysiongids-listing-panel-stamp-col">
+            <ListingTopZaakStamp listing={listing} variant="between" />
+          </div>
+        ) : null}
         <div className="vysiongids-listing-panel-body">
           <div className="vysiongids-listing-panel-head">
             <Link href={profileHref} className="vysiongids-listing-panel-title-link">

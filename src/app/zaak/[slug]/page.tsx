@@ -11,6 +11,7 @@ import ListingMap from '@/components/ListingMapClient'
 import ListingNavigationButtons from '@/components/ListingNavigationButtons'
 import ZaakOwnerDeleteSection from '@/components/ZaakOwnerDeleteSection'
 import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
+import { isTopZaakListing } from '@/lib/listing-topzaak'
 import {
   formatDeliveryFee,
   formatDeliveryRadius,
@@ -87,6 +88,12 @@ export default async function ZaakPage({ params }: Props) {
               {cityLine}
             </p>
 
+            {isTopZaakListing(listingForRating) ? (
+              <div className="vysiongids-zaak-topzaak-stamp-row">
+                <ListingTopZaakStamp listing={listingForRating} variant="between" />
+              </div>
+            ) : null}
+
             <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100">
               <ListingPhotoSlider
                 urls={listingPhotoUrls(listing)}
@@ -96,7 +103,6 @@ export default async function ZaakPage({ params }: Props) {
                 sizes="(max-width: 1024px) 100vw, min(960px, 75vw)"
                 className="object-cover"
               />
-              <ListingTopZaakStamp listing={listingForRating} variant="photo" />
             </div>
 
             <ListingInfoSection listing={listing} />
