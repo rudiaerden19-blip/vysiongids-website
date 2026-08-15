@@ -5,6 +5,7 @@ import { useRef, useState } from 'react'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
 import { LISTING_TYPES, type ListingDayHours } from '@/lib/listing-types'
 import OpeningHoursEditor from '@/components/OpeningHoursEditor'
+import { normalizeHttpsUrl } from '@/lib/normalize-url'
 
 function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
@@ -75,6 +76,23 @@ export default function ZaakToevoegenForm() {
       setLoading(false)
       return
     }
+
+    const websiteRaw = String(fd.get('website') ?? '').trim()
+    const orderUrlRaw = String(fd.get('orderUrl') ?? '').trim()
+    const websiteNorm = normalizeHttpsUrl(websiteRaw)
+    if (!websiteNorm.ok) {
+      setError(`Website: ${websiteNorm.message}`)
+      setLoading(false)
+      return
+    }
+    const orderUrlNorm = normalizeHttpsUrl(orderUrlRaw)
+    if (!orderUrlNorm.ok) {
+      setError(`Bestel- of reserveer-URL: ${orderUrlNorm.message}`)
+      setLoading(false)
+      return
+    }
+    fd.set('website', websiteNorm.url)
+    fd.set('orderUrl', orderUrlNorm.url)
     try {
       const rows = JSON.parse(hoursRaw) as ListingDayHours[]
       if (!Array.isArray(rows) || rows.length !== 7) {
@@ -111,7 +129,7 @@ export default function ZaakToevoegenForm() {
   const types = LISTING_TYPES.filter((t) => t.id !== 'all')
 
   return (
-    <form onSubmit={onSubmit} className="vysiongids-zaak-form mt-8 space-y-5">
+    <form onSubmit={onSubmit} noValidate className="vysiongids-zaak-form mt-8 space-y-5">
       <p className="text-sm text-gray-600">
         Velden met <span className="vysiongids-form-required" aria-hidden>*</span> zijn verplicht.
       </p>
@@ -213,11 +231,14 @@ export default function ZaakToevoegenForm() {
         <input
           id="website"
           name="website"
-          type="url"
+          type="text"
+          inputMode="url"
+          autoComplete="url"
           required
-          placeholder="https://jouwzaak.be"
+          placeholder="jouwzaak.be of https://jouwzaak.be"
           className="vysiongids-form-input mt-1"
         />
+        <p className="mt-1 text-xs text-gray-500">https:// mag weg — wij vullen dat automatisch aan.</p>
       </div>
 
       <div>
@@ -225,11 +246,14 @@ export default function ZaakToevoegenForm() {
         <input
           id="orderUrl"
           name="orderUrl"
-          type="url"
+          type="text"
+          inputMode="url"
+          autoComplete="url"
           required
-          placeholder="https://jouwzaak.be/bestellen of reserveren"
+          placeholder="shop.jouwzaak.be of https://…"
           className="vysiongids-form-input mt-1"
         />
+        <p className="mt-1 text-xs text-gray-500">Link waar klanten bestellen of reserveren (mag hetzelfde zijn als website).</p>
       </div>
 
       <div>

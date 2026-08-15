@@ -6,6 +6,7 @@ import { fetchListingByNormalizedNameAdmin } from '@/lib/gids-listings-db'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { LISTING_TYPES, type ListingDayHours } from '@/lib/listing-types'
 import { closedDaysFromRows, summarizeOpeningHours } from '@/lib/gids-opening-hours'
+import { normalizeHttpsUrl } from '@/lib/normalize-url'
 import { WEEKDAYS_NL } from '@/lib/listing-info'
 
 const VALID_TYPES = LISTING_TYPES.filter((t) => t.id !== 'all').map((t) => t.id)
@@ -68,12 +69,16 @@ export async function POST(req: Request) {
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     return NextResponse.json({ error: 'Vul een geldig e-mailadres in.' }, { status: 400 })
   }
-  if (!website.startsWith('https://')) {
-    return NextResponse.json({ error: 'Website moet beginnen met https://' }, { status: 400 })
+  const websiteNorm = normalizeHttpsUrl(website)
+  if (!websiteNorm.ok) {
+    return NextResponse.json({ error: `Website: ${websiteNorm.message}` }, { status: 400 })
   }
-  if (!orderUrl.startsWith('https://')) {
-    return NextResponse.json({ error: 'Bestel- of reserveer-URL moet beginnen met https://' }, { status: 400 })
+  const orderUrlNorm = normalizeHttpsUrl(orderUrl)
+  if (!orderUrlNorm.ok) {
+    return NextResponse.json({ error: `Bestel- of reserveer-URL: ${orderUrlNorm.message}` }, { status: 400 })
   }
+  const websiteFinal = websiteNorm.url
+  const orderUrlFinal = orderUrlNorm.url
 
   let hoursByDay: ListingDayHours[]
   try {
@@ -162,8 +167,8 @@ export async function POST(req: Request) {
       postcode,
       province,
       address,
-      order_url: orderUrl,
-      website,
+      order_url: orderUrlFinal,
+      website: websiteFinal,
       phone,
       email,
       opening_hours: openingHours,
