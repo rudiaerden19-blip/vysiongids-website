@@ -1,11 +1,11 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import Link from 'next/link'
 import VerwijderZaakButton from '@/components/VerwijderZaakButton'
 
 type Props = { slug: string }
 
+/** Alleen zichtbaar voor ingelogde zaakhouder van deze slug — niet voor bezoekers. */
 export default function ZaakOwnerDeleteSection({ slug }: Props) {
   const [ownerSlug, setOwnerSlug] = useState<string | null>(null)
   const [checked, setChecked] = useState(false)
@@ -19,18 +19,7 @@ export default function ZaakOwnerDeleteSection({ slug }: Props) {
       .finally(() => setChecked(true))
   }, [])
 
-  if (!checked) return null
-  if (ownerSlug !== slug) {
-    return (
-      <p className="mt-6 text-sm text-gray-600">
-        Zaak uit de gids halen?{' '}
-        <Link href="/login" className="font-semibold text-accent hover:underline">
-          Log in
-        </Link>{' '}
-        en kies <strong>Verwijder je zaak</strong> in beheer.
-      </p>
-    )
-  }
+  if (!checked || ownerSlug !== slug) return null
 
   return (
     <section className="mt-10 rounded-xl border border-red-200 bg-red-50/50 p-5">
