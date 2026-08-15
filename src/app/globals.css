@@ -534,6 +534,7 @@ body {
 }
 
 @media (min-width: 640px) {
+  .vysiongids-listing-panel--compact .vysiongids-listing-panel-photo {
     width: min(34%, 16.5rem);
     min-width: 11rem;
     max-width: 16.5rem;
