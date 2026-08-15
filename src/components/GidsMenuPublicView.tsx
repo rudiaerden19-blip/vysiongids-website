@@ -1,10 +1,10 @@
 'use client'
 
-import Image from 'next/image'
 import Link from 'next/link'
 import { useMemo, useState } from 'react'
 import type { Listing } from '@/lib/listing-types'
 import type { GidsMenuCatalog } from '@/lib/gids-menu-types'
+import { sanitizeMenuImageUrl } from '@/lib/gids-menu-image-url'
 
 type Props = {
   listing: Listing
@@ -66,11 +66,14 @@ export default function GidsMenuPublicView({ listing, catalog }: Props) {
       ) : null}
 
       <ul className="vysiongids-menu-catalog-list">
-        {products.map((p) => (
+        {products.map((p) => {
+          const imageSrc = sanitizeMenuImageUrl(p.imageUrl)
+          return (
           <li key={p.id} className="vysiongids-menu-catalog-item">
-            {p.imageUrl ? (
+            {imageSrc ? (
               <div className="vysiongids-menu-catalog-thumb">
-                <Image src={p.imageUrl} alt="" width={88} height={88} className="object-cover" unoptimized />
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={imageSrc} alt="" className="vysiongids-menu-catalog-thumb-img" loading="lazy" />
               </div>
             ) : (
               <div className="vysiongids-menu-catalog-thumb vysiongids-menu-catalog-thumb--empty" aria-hidden />
@@ -87,7 +90,8 @@ export default function GidsMenuPublicView({ listing, catalog }: Props) {
               ) : null}
             </div>
           </li>
-        ))}
+          )
+        })}
       </ul>
 
       {products.length === 0 ? (

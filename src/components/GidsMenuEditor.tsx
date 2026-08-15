@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { GidsMenuCatalog, GidsMenuCategory, GidsMenuProduct } from '@/lib/gids-menu-types'
 import { compressListingPhoto } from '@/lib/compress-listing-photo'
+import { sanitizeMenuImageUrl } from '@/lib/gids-menu-image-url'
 
 function newId(): string {
   return crypto.randomUUID()
@@ -39,6 +40,7 @@ export default function GidsMenuEditor() {
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
   const [uploadingProductId, setUploadingProductId] = useState<string | null>(null)
+  const [photoPreviewByProductId, setPhotoPreviewByProductId] = useState<Record<string, string>>({})
   const uploadSeqRef = useRef(0)
 
   useEffect(() => {
@@ -112,7 +114,7 @@ export default function GidsMenuEditor() {
     let previewUrl: string | null = null
     try {
       previewUrl = URL.createObjectURL(file)
-      updateProduct(categoryId, productId, { imageUrl: previewUrl })
+      setPhotoPreviewByProductId((prev) => ({ ...prev, [productId]: previewUrl! }))
 
       const compressed = await compressListingPhoto(file)
       if (seq !== uploadSeqRef.current) return
@@ -144,6 +146,11 @@ export default function GidsMenuEditor() {
       if (!data.publicUrl) throw new Error('Geen foto-URL terug van server')
 
       updateProduct(categoryId, productId, { imageUrl: data.publicUrl })
+      setPhotoPreviewByProductId((prev) => {
+        const next = { ...prev }
+        delete next[productId]
+        return next
+      })
     } catch (e) {
       if (seq !== uploadSeqRef.current) return
       const msg =
@@ -153,7 +160,11 @@ export default function GidsMenuEditor() {
             ? e.message
             : 'Upload mislukt'
       setError(msg)
-      updateProduct(categoryId, productId, { imageUrl: null })
+      setPhotoPreviewByProductId((prev) => {
+        const next = { ...prev }
+        delete next[productId]
+        return next
+      })
     } finally {
       if (previewUrl) URL.revokeObjectURL(previewUrl)
       if (seq === uploadSeqRef.current) {
@@ -163,6 +174,10 @@ export default function GidsMenuEditor() {
   }
 
   async function saveMenu() {
+    if (uploadingProductId) {
+      setError('Wacht tot de foto klaar is met uploaden, daarna opnieuw opslaan.')
+      return
+    }
     setSaving(true)
     setError(null)
     setSuccess(null)
@@ -178,7 +193,7 @@ export default function GidsMenuEditor() {
             name: p.name,
             description: p.description,
             priceEur: p.priceEur,
-            imageUrl: p.imageUrl,
+            imageUrl: sanitizeMenuImageUrl(p.imageUrl),
             sortOrder: pi,
             isActive: p.isActive,
           })),
@@ -276,14 +291,17 @@ export default function GidsMenuEditor() {
                   />
                 </div>
                 <div className="mt-3 flex flex-wrap items-center gap-3">
-                  {p.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={p.imageUrl} alt="" className="h-16 w-16 rounded-lg object-cover" />
-                  ) : null}
+                  {(() => {
+                    const thumb = photoPreviewByProductId[p.id] ?? sanitizeMenuImageUrl(p.imageUrl)
+                    return thumb ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={thumb} alt="" className="h-16 w-16 rounded-lg object-cover" />
+                    ) : null
+                  })()}
                   <label
                     className={`vysiongids-photo-pick-btn cursor-pointer${uploadingProductId === p.id ? ' opacity-70' : ''}`}
                   >
-                    {uploadingProductId === p.id ? 'Bezig…' : p.imageUrl ? 'Foto vervangen' : 'Foto toevoegen'}
+                    {uploadingProductId === p.id ? 'Bezig…' : photoPreviewByProductId[p.id] || sanitizeMenuImageUrl(p.imageUrl) ? 'Foto vervangen' : 'Foto toevoegen'}
                     <input
                       type="file"
                       accept="image/*"

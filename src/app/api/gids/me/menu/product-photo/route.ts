@@ -51,7 +51,19 @@ export async function POST(req: Request) {
 
   const origin = siteOriginFromRequest(req)
   const { data: pub } = admin.storage.from(GIDS_LISTING_PHOTOS_BUCKET).getPublicUrl(path)
-  const publicUrl = pub.publicUrl.startsWith('http') ? pub.publicUrl : `${origin}${pub.publicUrl}`
+  let publicUrl = pub.publicUrl
+  if (!publicUrl.startsWith('http')) {
+    publicUrl = `${origin}${publicUrl.startsWith('/') ? '' : '/'}${publicUrl}`
+  }
+
+  await admin
+    .from('gids_menu_products')
+    .update({ image_url: publicUrl })
+    .eq('id', productId)
+    .eq('listing_id', listingId)
+    .then(({ error }) => {
+      if (error) console.warn('[gids menu photo] db image_url update:', error.message)
+    })
 
   return NextResponse.json({ publicUrl })
 }

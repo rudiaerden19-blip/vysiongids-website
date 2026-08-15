@@ -1,4 +1,5 @@
 import type { GidsMenuCatalog, GidsMenuCategory, GidsMenuProduct, GidsMenuSavePayload } from '@/lib/gids-menu-types'
+import { sanitizeMenuImageUrl } from '@/lib/gids-menu-image-url'
 import { createGidsSupabaseAdmin, createGidsSupabasePublic, isGidsSupabaseConfigured } from '@/lib/supabase-gids'
 
 type CategoryRow = {
@@ -173,7 +174,7 @@ export async function saveGidsMenuCatalog(listingId: string, payload: GidsMenuSa
         name: pName,
         description: p.description?.trim() || null,
         price_eur: price,
-        image_url: p.imageUrl?.trim() || null,
+        image_url: sanitizeMenuImageUrl(p.imageUrl),
         sort_order: p.sortOrder ?? pi,
         is_active: p.isActive !== false,
       }
