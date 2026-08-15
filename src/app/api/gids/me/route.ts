@@ -15,6 +15,10 @@ import {
   siteOriginFromRequest,
   uploadGidsListingPhoto,
 } from '@/lib/gids-listing-photos-server'
+import {
+  removeGidsListingMenuPdfStorage,
+  uploadGidsListingMenuPdf,
+} from '@/lib/gids-listing-menu-server'
 
 export const maxDuration = 60
 
@@ -50,6 +54,10 @@ export async function DELETE() {
   if (photos?.length) {
     const paths = photos.map((p) => p.storage_path).filter(Boolean)
     if (paths.length) await admin.storage.from(GIDS_LISTING_PHOTOS_BUCKET).remove(paths)
+  }
+  const rowBeforeDelete = await fetchListingRowByIdAdmin(listingId)
+  if (rowBeforeDelete?.menu_pdf_path) {
+    await removeGidsListingMenuPdfStorage(admin, rowBeforeDelete.menu_pdf_path)
   }
 
   const { error } = await admin.from('gids_listings').delete().eq('id', listingId)
@@ -92,7 +100,8 @@ export async function PATCH(req: Request) {
   const d = parsed.data
 
   const needsPhotoUpload = d.photos.length > 0 || d.removePhotoSlots.length > 0
-  if (needsPhotoUpload) {
+  const needsMenuUpload = Boolean(d.menuPdfFile) || d.removeMenuPdf
+  if (needsPhotoUpload || needsMenuUpload) {
     const bucketReady = await ensureGidsPhotosBucket(admin)
     if (!bucketReady.ok) {
       return NextResponse.json({ error: bucketReady.message }, { status: 503 })
@@ -161,6 +170,29 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: 'Je zaak moet minstens 1 foto hebben.' }, { status: 400 })
   }
 
+  let menuPdfPath: string | null = row.menu_pdf_path ?? null
+  let menuPdfPublicUrl: string | null = row.menu_pdf_public_url ?? null
+
+  try {
+    if (d.removeMenuPdf && menuPdfPath) {
+      await removeGidsListingMenuPdfStorage(admin, menuPdfPath)
+      menuPdfPath = null
+      menuPdfPublicUrl = null
+    }
+    if (d.menuPdfFile) {
+      if (menuPdfPath) {
+        await removeGidsListingMenuPdfStorage(admin, menuPdfPath)
+      }
+      const uploaded = await uploadGidsListingMenuPdf(admin, listingId, d.menuPdfFile, origin)
+      menuPdfPath = uploaded.path
+      menuPdfPublicUrl = uploaded.publicUrl
+    }
+  } catch (menuErr) {
+    const message = menuErr instanceof Error ? menuErr.message : 'Menu upload mislukt'
+    console.error('[gids me patch menu]', message)
+    return NextResponse.json({ error: message }, { status: 500 })
+  }
+
   const updatePayload: Record<string, unknown> = {
     name: d.name,
     name_normalized: nameNormalized,
@@ -171,6 +203,9 @@ export async function PATCH(req: Request) {
     province: d.province,
     address: d.address,
     order_url: d.orderUrlFinal,
+    menu_url: d.menuUrlFinal,
+    menu_pdf_path: menuPdfPath,
+    menu_pdf_public_url: menuPdfPublicUrl,
     website: d.websiteFinal,
     phone: d.phone,
     email: d.email,
@@ -201,7 +236,11 @@ export async function PATCH(req: Request) {
   revalidateTag('gids-listings', 'max')
   revalidatePath('/zoeken')
   revalidatePath(`/zaak/${slug}`)
-  if (slug !== row.slug) revalidatePath(`/zaak/${row.slug}`)
+  revalidatePath(`/zaak/${slug}/menu`)
+  if (slug !== row.slug) {
+    revalidatePath(`/zaak/${row.slug}`)
+    revalidatePath(`/zaak/${row.slug}/menu`)
+  }
 
   return NextResponse.json({
     ok: true,

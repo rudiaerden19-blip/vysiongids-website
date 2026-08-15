@@ -7,6 +7,7 @@ import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { parseGidsListingFormData } from '@/lib/gids-listing-form-server'
 import { buildGidsListingInsertRow, gidsListingSaveErrorMessage } from '@/lib/gids-listing-db-write'
 import { siteOriginFromRequest, uploadGidsListingPhoto, ensureGidsPhotosBucket } from '@/lib/gids-listing-photos-server'
+import { uploadGidsListingMenuPdf } from '@/lib/gids-listing-menu-server'
 
 export const maxDuration = 60
 
@@ -78,6 +79,24 @@ async function handleRegisterPost(req: Request) {
       ? ' Foto-opslag (bucket gids-listing-photos) ontbreekt in Supabase.'
       : ''
     return NextResponse.json({ error: `Foto upload mislukt.${hint}` }, { status: 500 })
+  }
+
+  if (d.menuPdfFile) {
+    try {
+      const uploaded = await uploadGidsListingMenuPdf(admin, inserted.id, d.menuPdfFile, origin)
+      await admin
+        .from('gids_listings')
+        .update({
+          menu_pdf_path: uploaded.path,
+          menu_pdf_public_url: uploaded.publicUrl,
+        })
+        .eq('id', inserted.id)
+    } catch (menuErr) {
+      const message = menuErr instanceof Error ? menuErr.message : 'Menu upload mislukt'
+      console.error('[gids menu upload]', message)
+      await admin.from('gids_listings').delete().eq('id', inserted.id)
+      return NextResponse.json({ error: message }, { status: 500 })
+    }
   }
 
   try {

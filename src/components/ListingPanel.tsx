@@ -10,7 +10,7 @@ import { resolveHoursByDay } from '@/lib/listing-info'
 import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
 import { isTopZaakListing } from '@/lib/listing-topzaak'
 import { formatDeliveryFee, formatDeliveryRadius, formatListingAddressLines, formatMinOrder, listingPhotoUrls } from '@/lib/listings'
-import { listingMenuUrl } from '@/lib/listing-menu-url'
+import ListingMenuButton from '@/components/ListingMenuButton'
 
 export default function ListingPanel({ listing, compact }: { listing: Listing; compact?: boolean }) {
   const cuisineLine = getListingCuisineDisplay(listing.cuisineType)
@@ -25,7 +25,6 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
   const hoursRows = resolveHoursByDay(listing)
   const profileHref = `/zaak/${listing.slug}`
   const reviewsHref = `${profileHref}/reviews`
-  const menuUrl = listingMenuUrl(listing)
 
   const bodyTextSize = compact ? '0.8125rem' : '0.9375rem'
   const showTopZaakStamp = isTopZaakListing(listing)
@@ -107,16 +106,7 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
               <Link href={`${reviewsHref}#schrijven`} className="vysiongids-listing-action-btn">
                 Geef review
               </Link>
-              {menuUrl ? (
-                <a
-                  href={menuUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="vysiongids-listing-action-btn"
-                >
-                  Menu
-                </a>
-              ) : null}
+              <ListingMenuButton listing={listing} className="vysiongids-listing-action-btn" />
             </div>
           </div>
         </div>

@@ -9,6 +9,7 @@ import { normalizeHttpsUrl } from '@/lib/normalize-url'
 import { GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
 import { compressListingPhoto } from '@/lib/compress-listing-photo'
 import ListingOwnerOptionsFields from '@/components/ListingOwnerOptionsFields'
+import ListingMenuOwnerFields from '@/components/ListingMenuOwnerFields'
 import DeliveryRadiusKmField from '@/components/DeliveryRadiusKmField'
 import KitchenTypeSelect from '@/components/KitchenTypeSelect'
 
@@ -334,6 +335,8 @@ export default function ZaakToevoegenForm() {
           Leeg laten = de website-link wordt gebruikt voor «Bestel».
         </p>
       </div>
+
+      <ListingMenuOwnerFields idPrefix="register" disabled={loading} />
 
       <div>
         <p className="vysiongids-form-label">

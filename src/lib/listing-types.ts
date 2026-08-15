@@ -63,6 +63,10 @@ export type Listing = {
   address: string
   /** Publieke bestel-URL (Vysion shop of eigen site) */
   orderUrl: string
+  /** Optionele menu-URL (eigen menukaart) */
+  menuUrl?: string
+  /** Publieke URL van geüploade menu-PDF */
+  menuPdfUrl?: string
   photoUrl: string
   /** Alle foto-URL's (sort_order), voor beheer */
   photoUrls?: string[]

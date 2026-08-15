@@ -10,6 +10,9 @@ export function gidsListingSaveErrorMessage(message: string | undefined): string
   if (/delivery_radius_km/i.test(message)) {
     return 'Leveringsstraal kan niet opgeslagen worden: voer in Supabase SQL uit: supabase/migrations/007_gids_listings_delivery_radius_km.sql — of laat leveringsstraal leeg.'
   }
+  if (/menu_url|menu_pdf/i.test(message)) {
+    return 'Menu kan niet opgeslagen worden: voer in Supabase SQL uit: supabase/migrations/008_gids_listings_menu.sql.'
+  }
   return 'Opslaan mislukt. Probeer later opnieuw.'
 }
 
@@ -32,6 +35,7 @@ export function buildGidsListingInsertRow(d: ParsedGidsListingForm, extras: Inse
     province: d.province,
     address: d.address,
     order_url: d.orderUrlFinal,
+    menu_url: d.menuUrlFinal,
     website: d.websiteFinal,
     phone: d.phone,
     email: d.email,

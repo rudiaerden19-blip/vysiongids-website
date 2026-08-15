@@ -16,6 +16,9 @@ export type GidsListingRow = {
   province: string | null
   address: string
   order_url: string
+  menu_url?: string | null
+  menu_pdf_path?: string | null
+  menu_pdf_public_url?: string | null
   website: string | null
   phone: string | null
   email: string | null
@@ -57,6 +60,8 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
     province: row.province ?? undefined,
     address: row.address,
     orderUrl: row.order_url,
+    menuUrl: row.menu_url?.trim() || undefined,
+    menuPdfUrl: row.menu_pdf_public_url?.trim() || undefined,
     photoUrl,
     photoUrls,
     ratingAvg: Number(row.rating_avg ?? 0),

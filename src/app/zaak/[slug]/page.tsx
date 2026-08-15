@@ -21,7 +21,7 @@ import {
   getListingTypeLabel,
   listingPhotoUrls,
 } from '@/lib/listings'
-import { listingMenuUrl } from '@/lib/listing-menu-url'
+import ListingMenuButton from '@/components/ListingMenuButton'
 import { fetchListingIdBySlugAdmin, fetchReviewStatsByListingSlug, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -58,7 +58,6 @@ export default async function ZaakPage({ params }: Props) {
   const listingForRating = { ...listing, ratingAvg, ratingCount }
   const canSubmitReview = Boolean(await fetchListingIdBySlugAdmin(slug))
   const reviewsHref = `/zaak/${slug}/reviews`
-  const menuUrl = listingMenuUrl(listing)
 
   return (
     <>
@@ -187,16 +186,7 @@ export default async function ZaakPage({ params }: Props) {
                 <Link href={`${reviewsHref}#schrijven`} className="vysiongids-zaak-action-btn">
                   Geef review
                 </Link>
-                {menuUrl ? (
-                  <a
-                    href={menuUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="vysiongids-zaak-action-btn"
-                  >
-                    Menu
-                  </a>
-                ) : null}
+                <ListingMenuButton listing={listing} className="vysiongids-zaak-action-btn" />
               </div>
               <div className="mt-4 border-t border-gray-200 pt-4">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Route</p>

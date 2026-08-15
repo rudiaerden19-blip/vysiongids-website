@@ -10,6 +10,7 @@ import { GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
 import { compressListingPhoto } from '@/lib/compress-listing-photo'
 import DeliveryRadiusKmField from '@/components/DeliveryRadiusKmField'
 import ListingOwnerOptionsFields from '@/components/ListingOwnerOptionsFields'
+import ListingMenuOwnerFields from '@/components/ListingMenuOwnerFields'
 import KitchenTypeSelect from '@/components/KitchenTypeSelect'
 
 function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
@@ -126,6 +127,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
 
     const websiteRaw = String(fd.get('website') ?? '').trim()
     const orderUrlRaw = String(fd.get('orderUrl') ?? '').trim()
+    const menuUrlRaw = String(fd.get('menuUrl') ?? '').trim()
     const websiteNorm = normalizeHttpsUrl(websiteRaw)
     if (!websiteNorm.ok) {
       setError(`Website: ${websiteNorm.message}`)
@@ -143,6 +145,17 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
       fd.set('orderUrl', orderUrlNorm.url)
     } else {
       fd.set('orderUrl', '')
+    }
+    if (menuUrlRaw) {
+      const menuUrlNorm = normalizeHttpsUrl(menuUrlRaw)
+      if (!menuUrlNorm.ok) {
+        setError(`Menu-link: ${menuUrlNorm.message}`)
+        setLoading(false)
+        return
+      }
+      fd.set('menuUrl', menuUrlNorm.url)
+    } else {
+      fd.set('menuUrl', '')
     }
 
     try {
@@ -374,6 +387,13 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
             className="vysiongids-form-input mt-1"
           />
         </div>
+
+        <ListingMenuOwnerFields
+          idPrefix="edit"
+          defaultMenuUrl={listing.menuUrl ?? ''}
+          existingMenuPdfUrl={listing.menuPdfUrl}
+          disabled={loading}
+        />
 
         <div>
           <p className="vysiongids-form-label">

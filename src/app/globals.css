@@ -1736,6 +1736,68 @@ body {
   filter: brightness(0.95);
 }
 
+.vysiongids-form-menu-block {
+  margin-top: 0.25rem;
+  padding-top: 0.5rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.vysiongids-menu-pdf-page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+  background: #111827;
+}
+
+.vysiongids-menu-pdf-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  padding: 0.65rem 1rem;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+}
+
+.vysiongids-menu-pdf-title {
+  flex: 1 1 auto;
+  margin: 0;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #111827;
+}
+
+.vysiongids-menu-pdf-close {
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--accent, #0e5d82);
+  color: #fff;
+  padding: 0.45rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.vysiongids-menu-pdf-back-link {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent, #0e5d82);
+  text-decoration: none;
+}
+
+.vysiongids-menu-pdf-frame {
+  flex: 1 1 auto;
+  width: 100%;
+  min-height: 0;
+  border: none;
+  background: #374151;
+}
+
+.vysiongids-menu-empty-back {
+  text-decoration: none;
+}
+
 .vysiongids-form-label {
   display: block;
   font-size: 0.875rem;

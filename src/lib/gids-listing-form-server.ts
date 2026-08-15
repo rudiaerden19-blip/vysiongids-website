@@ -3,6 +3,7 @@ import { LISTING_TYPES, type ListingAmenityId, type ListingDayHours } from '@/li
 import { closedDaysFromRows, summarizeOpeningHours } from '@/lib/gids-opening-hours'
 import { isValidGidsPin } from '@/lib/gids-pin'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
+import { GIDS_MENU_PDF_MAX_BYTES } from '@/lib/gids-listing-menu-server'
 import { GIDS_REGISTER_MAX_PHOTO_BYTES, GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
 import { parseOwnerAmenitiesFromForm } from '@/lib/gids-owner-amenities'
 import { isAllowedDeliveryRadiusKm, parseDeliveryRadiusKmFromForm } from '@/lib/listing-delivery-radius'
@@ -22,6 +23,9 @@ export type ParsedGidsListingForm = {
   email: string
   websiteFinal: string
   orderUrlFinal: string
+  menuUrlFinal: string | null
+  menuPdfFile: File | null
+  removeMenuPdf: boolean
   hoursByDay: ListingDayHours[]
   openingHours: string
   closedDays: string | null
@@ -54,6 +58,7 @@ export async function parseGidsListingFormData(
   const postcode = String(form.get('postcode') ?? '').trim()
   const address = String(form.get('address') ?? '').trim()
   const orderUrl = String(form.get('orderUrl') ?? '').trim()
+  const menuUrl = String(form.get('menuUrl') ?? '').trim()
   const province = String(form.get('province') ?? '').trim()
   const phone = String(form.get('phone') ?? '').trim()
   const email = String(form.get('email') ?? '').trim()
@@ -100,6 +105,34 @@ export async function parseGidsListingFormData(
     }
     orderUrlFinal = orderUrlNorm.url
   }
+
+  let menuUrlFinal: string | null = null
+  if (menuUrl) {
+    const menuUrlNorm = normalizeHttpsUrl(menuUrl)
+    if (!menuUrlNorm.ok) {
+      return { ok: false, error: `Menu-link: ${menuUrlNorm.message}`, status: 400 }
+    }
+    menuUrlFinal = menuUrlNorm.url
+  }
+
+  const menuPdfRaw = form.get('menuPdf')
+  let menuPdfFile: File | null = null
+  if (menuPdfRaw instanceof File && menuPdfRaw.size > 0) {
+    const isPdf =
+      menuPdfRaw.type === 'application/pdf' || menuPdfRaw.name.toLowerCase().endsWith('.pdf')
+    if (!isPdf) {
+      return { ok: false, error: 'Menu: alleen PDF-bestanden toegestaan.', status: 400 }
+    }
+    if (menuPdfRaw.size > GIDS_MENU_PDF_MAX_BYTES) {
+      return {
+        ok: false,
+        error: `Menu-PDF max. ${Math.round(GIDS_MENU_PDF_MAX_BYTES / (1024 * 1024))} MB.`,
+        status: 400,
+      }
+    }
+    menuPdfFile = menuPdfRaw
+  }
+  const removeMenuPdf = String(form.get('removeMenuPdf') ?? '') === '1'
 
   let hoursByDay: ListingDayHours[]
   try {
@@ -235,6 +268,9 @@ export async function parseGidsListingFormData(
       email,
       websiteFinal,
       orderUrlFinal,
+      menuUrlFinal,
+      menuPdfFile,
+      removeMenuPdf,
       hoursByDay,
       openingHours,
       closedDays,
