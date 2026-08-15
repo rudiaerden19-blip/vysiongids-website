@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import ListingPanelOpenStatus from '@/components/ListingPanelOpenStatus'
+import ListingPanelAmenityFooter from '@/components/ListingPanelAmenityFooter'
 import ListingPhotoSlider from '@/components/ListingPhotoSlider'
 import ListingStarRating from '@/components/ListingStarRating'
 import type { Listing } from '@/lib/listing-types'
@@ -37,7 +38,12 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
         <div className="vysiongids-listing-panel-body">
           <div className="vysiongids-listing-panel-head">
             <Link href={profileHref} className="vysiongids-listing-panel-title-link">
-              <h2 className="vysiongids-listing-panel-title">{listing.name}</h2>
+              <div className="vysiongids-listing-panel-title-block">
+                <h2 className="vysiongids-listing-panel-title">{listing.name}</h2>
+                {cuisineLine ? (
+                  <p className="vysiongids-listing-panel-cuisine">{cuisineLine}</p>
+                ) : null}
+              </div>
             </Link>
             <ListingPanelOpenStatus listing={listing} />
           </div>
@@ -53,12 +59,6 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
             <span aria-hidden>🍽</span>
             <span>
               {typeLabel}
-              {cuisineLine ? (
-                <>
-                  <br />
-                  {cuisineLine}
-                </>
-              ) : null}
               {listing.pickupEnabled && listing.deliveryEnabled
                 ? ' · Afhalen & levering'
                 : listing.deliveryEnabled
@@ -105,6 +105,7 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
           </div>
         </div>
       </div>
+      <ListingPanelAmenityFooter listing={listing} />
     </article>
   )
 }

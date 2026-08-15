@@ -1068,6 +1068,27 @@ body {
   max-width: 100%;
 }
 
+.vysiongids-zaak-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35rem 0.85rem;
+}
+
+.vysiongids-zaak-title-cuisine {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #0e5d82;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-zaak-title-cuisine {
+    font-size: 1.125rem;
+  }
+}
+
 .vysiongids-zaak-page .grid {
   min-width: 0;
   max-width: 100%;
@@ -1239,6 +1260,111 @@ body {
   color: #111827;
   overflow-wrap: anywhere;
   word-break: break-word;
+}
+
+.vysiongids-listing-panel-title-block {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.25rem 0.65rem;
+  min-width: 0;
+}
+
+.vysiongids-listing-panel-cuisine {
+  margin: 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #0e5d82;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-listing-panel-cuisine {
+    font-size: 0.875rem;
+  }
+}
+
+.vysiongids-listing-panel-amenities {
+  border-top: 1px solid #e5e7eb;
+  background: #f3f4f6;
+  padding: 0.85rem 1.25rem 1rem;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-listing-panel-amenities {
+    padding: 0.9rem 1.5rem 1.05rem;
+  }
+}
+
+.vysiongids-listing-panel-amenities-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.55rem 1rem;
+}
+
+@media (min-width: 520px) {
+  .vysiongids-listing-panel-amenities-list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 960px) {
+  .vysiongids-listing-panel-amenities-list {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.vysiongids-listing-panel-amenity-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+  min-width: 0;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: #374151;
+}
+
+.vysiongids-listing-panel-amenity-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 9999px;
+  border: 2px solid #9b2743;
+  background: #fff;
+}
+
+.vysiongids-listing-panel-amenity-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding-top: 0.35rem;
+  overflow-wrap: anywhere;
+}
+
+.vysiongids-listing-panel--compact .vysiongids-listing-panel-amenities {
+  padding: 0.65rem 1rem 0.75rem;
+}
+
+.vysiongids-listing-panel--compact .vysiongids-listing-panel-amenity-item {
+  font-size: 0.75rem;
+}
+
+.vysiongids-listing-panel--compact .vysiongids-listing-panel-amenity-icon {
+  width: 1.65rem;
+  height: 1.65rem;
+}
+
+.vysiongids-listing-panel--compact .vysiongids-listing-panel-amenity-icon svg {
+  width: 14px;
+  height: 14px;
 }
 
 .vysiongids-listing-open-status {
