@@ -64,6 +64,20 @@ export default function BeheerClient() {
         </Link>
       ) : null}
 
+      <div className="rounded-xl border border-accent/30 bg-sky-50/80 p-5">
+        <h2 className="text-lg font-bold text-gray-900">Menukaart</h2>
+        <p className="mt-2 text-sm text-gray-600">
+          Voeg categorieën, producten en foto&apos;s toe — zoals in je kassa. Bezoekers openen het via de knop{' '}
+          <strong>Menu</strong>.
+        </p>
+        <Link
+          href="/beheer/menu"
+          className="mt-4 inline-block rounded-lg bg-accent px-4 py-2.5 font-semibold text-white hover:opacity-95"
+        >
+          Menu beheren →
+        </Link>
+      </div>
+
       <BeheerEditForm
         key={me.listing.slug + (me.listing.name ?? '')}
         listing={me.listing}

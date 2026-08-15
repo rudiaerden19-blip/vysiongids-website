@@ -26,8 +26,11 @@ export default function ListingMenuOwnerFields({
     <div className="vysiongids-form-menu-block">
       <p className="vysiongids-form-label">Menu</p>
       <p className="mb-2 text-xs text-gray-500">
-        Link naar je online menukaart, of upload een PDF. Bezoekers zien altijd een «Menu»-knop op je
-        profiel.
+        Of bouw je volledige menu (categorieën & producten) via{' '}
+        <a href="/beheer/menu" className="font-semibold text-accent hover:underline">
+          Menu beheren
+        </a>
+        . PDF/link hieronder is optioneel.
       </p>
 
       <label className="vysiongids-form-label mt-2 block text-sm" htmlFor={menuUrlId}>

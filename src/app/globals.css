@@ -1798,6 +1798,137 @@ body {
   text-decoration: none;
 }
 
+.vysiongids-menu-catalog {
+  min-height: 100dvh;
+  background: #f3f4f6;
+}
+
+.vysiongids-menu-catalog-header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  padding: 0.75rem 1rem 1rem;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+}
+
+.vysiongids-menu-catalog-back {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent, #0e5d82);
+  text-decoration: none;
+}
+
+.vysiongids-menu-catalog-title {
+  margin: 0.35rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.vysiongids-menu-catalog-sub {
+  margin: 0.15rem 0 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.vysiongids-menu-catalog-tabs {
+  display: flex;
+  gap: 0.5rem;
+  overflow-x: auto;
+  padding: 0.75rem 1rem;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.vysiongids-menu-catalog-tab {
+  flex: 0 0 auto;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  background: #fff;
+  padding: 0.4rem 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+  cursor: pointer;
+}
+
+.vysiongids-menu-catalog-tab.is-active {
+  border-color: var(--accent, #0e5d82);
+  background: var(--accent, #0e5d82);
+  color: #fff;
+}
+
+.vysiongids-menu-catalog-list {
+  list-style: none;
+  margin: 0;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.vysiongids-menu-catalog-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+}
+
+.vysiongids-menu-catalog-thumb {
+  flex: 0 0 88px;
+  width: 88px;
+  height: 88px;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+.vysiongids-menu-catalog-thumb--empty {
+  opacity: 0.35;
+}
+
+.vysiongids-menu-catalog-item-body {
+  flex: 1;
+  min-width: 0;
+}
+
+.vysiongids-menu-catalog-item-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  align-items: flex-start;
+}
+
+.vysiongids-menu-catalog-item-name {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.vysiongids-menu-catalog-item-price {
+  font-weight: 700;
+  color: var(--accent, #0e5d82);
+  white-space: nowrap;
+}
+
+.vysiongids-menu-catalog-item-desc {
+  margin: 0.35rem 0 0;
+  font-size: 0.875rem;
+  color: #4b5563;
+  line-height: 1.45;
+}
+
+.vysiongids-menu-catalog-empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #6b7280;
+}
+
 .vysiongids-form-label {
   display: block;
   font-size: 0.875rem;

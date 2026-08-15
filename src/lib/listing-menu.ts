@@ -18,8 +18,11 @@ function inferOrdervysionMenuUrl(orderUrl: string | undefined): string | null {
   }
 }
 
-/** Waar de Menu-knop naartoe gaat (PDF-pagina op gids, externe link, of lege menu-pagina). */
+/** Waar de Menu-knop naartoe gaat. */
 export function resolveListingMenuTarget(listing: Listing): ListingMenuTarget {
+  if (listing.hasMenuCatalog) {
+    return { kind: 'pdf', href: `/zaak/${listing.slug}/menu` }
+  }
   if (listing.menuPdfUrl?.trim()) {
     return { kind: 'pdf', href: `/zaak/${listing.slug}/menu` }
   }

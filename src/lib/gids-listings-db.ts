@@ -19,6 +19,7 @@ export type GidsListingRow = {
   menu_url?: string | null
   menu_pdf_path?: string | null
   menu_pdf_public_url?: string | null
+  menu_catalog_active?: boolean | null
   website: string | null
   phone: string | null
   email: string | null
@@ -62,6 +63,7 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
     orderUrl: row.order_url,
     menuUrl: row.menu_url?.trim() || undefined,
     menuPdfUrl: row.menu_pdf_public_url?.trim() || undefined,
+    hasMenuCatalog: Boolean(row.menu_catalog_active),
     photoUrl,
     photoUrls,
     ratingAvg: Number(row.rating_avg ?? 0),

@@ -67,6 +67,8 @@ export type Listing = {
   menuUrl?: string
   /** Publieke URL van geüploade menu-PDF */
   menuPdfUrl?: string
+  /** Digitaal menu (categorieën/producten) in beheer */
+  hasMenuCatalog?: boolean
   photoUrl: string
   /** Alle foto-URL's (sort_order), voor beheer */
   photoUrls?: string[]

@@ -135,7 +135,8 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
 
   const runSearchWithQuery = useCallback(
     async (spoken: string) => {
-      const trimmed = spoken.trim()
+      const hints = voiceNameHintsRef.current
+      const trimmed = fixVoiceSearchTranscript(spoken.trim(), hints)
       if (!trimmed) return
       const form = formRef.current
       const type = form ? String(new FormData(form).get('type') ?? 'all') : 'all'
@@ -160,16 +161,15 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
     nameHintsRef: voiceNameHintsRef,
   })
 
-  const onMicClick = useCallback(() => {
+  const onMicClick = useCallback(async () => {
     primeSpeechSynthesis()
-    void fetch('/api/gids/voice-names')
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: { hints?: VoiceNameHint[] } | null) => {
-        if (data?.hints?.length) voiceNameHintsRef.current = data.hints
-      })
-      .catch(() => {})
+    try {
+      await Promise.race([loadVoiceNameHints(), new Promise<void>((r) => window.setTimeout(r, 1200))])
+    } catch {
+      /* hints optioneel */
+    }
     startListen()
-  }, [startListen])
+  }, [loadVoiceNameHints, startListen])
 
   return (
     <div
