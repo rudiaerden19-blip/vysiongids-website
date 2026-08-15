@@ -13,7 +13,6 @@ import {
   formatDeliveryFee,
   formatListingAddressLines,
   formatMinOrder,
-  getAllListings,
   getListingBySlug,
   getListingTypeLabel,
 } from '@/lib/listings'
@@ -21,12 +20,11 @@ import { fetchListingIdBySlugAdmin, fetchReviewStatsByListingSlug, fetchReviewsB
 
 type Props = { params: Promise<{ slug: string }> }
 
-export const revalidate = 60
+/** Nieuwe zaken na registratie: altijd server-side ophalen (geen 404 op onbekende slug). */
+export const dynamic = 'force-dynamic'
+export const dynamicParams = true
 
-export async function generateStaticParams() {
-  const all = await getAllListings()
-  return all.map((l) => ({ slug: l.slug }))
-}
+export const revalidate = 60
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params

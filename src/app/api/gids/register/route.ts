@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { hashGidsPin } from '@/lib/gids-pin'
 import { normalizeGidsBusinessName, slugifyListing } from '@/lib/gids-text'
 import { fetchListingByNormalizedNameAdmin } from '@/lib/gids-listings-db'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { parseGidsListingFormData } from '@/lib/gids-listing-form-server'
-import { siteOriginFromRequest, uploadGidsListingPhoto } from '@/lib/gids-listing-photos-server'
+import { siteOriginFromRequest, uploadGidsListingPhoto, ensureGidsPhotosBucket } from '@/lib/gids-listing-photos-server'
 
 export const maxDuration = 60
 
@@ -34,6 +34,11 @@ async function handleRegisterPost(req: Request) {
   const parsed = await parseGidsListingFormData(form, { requirePin: true, requireNewPhotos: true })
   if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: parsed.status })
   const d = parsed.data
+
+  const bucketReady = await ensureGidsPhotosBucket(admin)
+  if (!bucketReady.ok) {
+    return NextResponse.json({ error: bucketReady.message }, { status: 503 })
+  }
 
   const nameNormalized = normalizeGidsBusinessName(d.name)
   const existing = await fetchListingByNormalizedNameAdmin(nameNormalized)
@@ -105,6 +110,8 @@ async function handleRegisterPost(req: Request) {
 
   try {
     revalidateTag('gids-listings', 'max')
+    revalidatePath('/zoeken')
+    revalidatePath(`/zaak/${inserted.slug}`)
   } catch (revalidateErr) {
     console.error('[gids register] revalidateTag', revalidateErr)
   }

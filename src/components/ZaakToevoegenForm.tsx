@@ -183,8 +183,11 @@ export default function ZaakToevoegenForm() {
         setError(data.error ?? 'Registratie mislukt.')
         return
       }
-      if (data.url) router.push(data.url)
-      else router.push('/zoeken')
+      if (data.url) {
+        window.location.assign(data.url)
+        return
+      }
+      router.push('/zoeken')
     } catch {
       setError('Verbinding mislukt. Controleer je internet en probeer opnieuw.')
     } finally {

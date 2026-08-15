@@ -21,6 +21,7 @@ export default function ListingPhoto({
   priority,
 }: Props) {
   const [currentSrc, setCurrentSrc] = useState(src || FALLBACK)
+  const isRemote = currentSrc.startsWith('http://') || currentSrc.startsWith('https://')
 
   return (
     <Image
@@ -29,6 +30,7 @@ export default function ListingPhoto({
       fill
       sizes={sizes}
       priority={priority}
+      unoptimized={isRemote}
       className={className}
       style={{ objectFit: 'cover' }}
       onError={() => {

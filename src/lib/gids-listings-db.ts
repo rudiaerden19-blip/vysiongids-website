@@ -45,7 +45,7 @@ const LISTING_SELECT = `
 
 export function mapGidsRowToListing(row: GidsListingRow): Listing {
   const photos = [...(row.gids_listing_photos ?? [])].sort((a, b) => a.sort_order - b.sort_order)
-  const photoUrl = photos[0]?.public_url ?? '/images/listings/frituur-1.jpg'
+  const photoUrl = photos[0]?.public_url ?? '/images/placeholder-frituur.svg'
   const photoUrls = photos.map((p) => p.public_url).filter(Boolean)
 
   return {

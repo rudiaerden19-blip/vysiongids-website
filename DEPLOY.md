@@ -28,7 +28,7 @@ git push origin main
 
 1. Dashboard → **New project** (naam bv. `vysiongids`, regio **Frankfurt** of dicht bij BE).
 2. **SQL Editor** → run `supabase/migrations/001_gids_schema.sql`.
-3. **Storage** → bucket `gids-listing-photos` (public read voor foto-URLs, of later signed).
+3. **Storage** → bucket **`gids-listing-photos`** → **Public** (verplicht voor zaakfoto’s). Zonder deze bucket: geen foto’s en `/api/gids/health` toont `"photosBucketReady": false`.
 4. **Settings → API**:
    - Project URL → `NEXT_PUBLIC_VYSIONGIDS_SUPABASE_URL`
    - anon public → `NEXT_PUBLIC_VYSIONGIDS_SUPABASE_ANON_KEY`

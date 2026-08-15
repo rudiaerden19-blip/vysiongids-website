@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { revalidateTag } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { GIDS_SESSION_COOKIE, getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { mapGidsRowToListing, fetchListingRowByIdAdmin, fetchListingByNormalizedNameAdmin } from '@/lib/gids-listings-db'
@@ -7,6 +7,8 @@ import { parseGidsListingFormData } from '@/lib/gids-listing-form-server'
 import { hashGidsPin } from '@/lib/gids-pin'
 import { normalizeGidsBusinessName, slugifyListing } from '@/lib/gids-text'
 import {
+  ensureGidsPhotosBucket,
+  GIDS_LISTING_PHOTOS_BUCKET,
   removeGidsListingPhotoSlot,
   siteOriginFromRequest,
   uploadGidsListingPhoto,
@@ -45,7 +47,7 @@ export async function DELETE() {
   const { data: photos } = await admin.from('gids_listing_photos').select('storage_path').eq('listing_id', listingId)
   if (photos?.length) {
     const paths = photos.map((p) => p.storage_path).filter(Boolean)
-    if (paths.length) await admin.storage.from('gids-listing-photos').remove(paths)
+    if (paths.length) await admin.storage.from(GIDS_LISTING_PHOTOS_BUCKET).remove(paths)
   }
 
   const { error } = await admin.from('gids_listings').delete().eq('id', listingId)
@@ -86,6 +88,14 @@ export async function PATCH(req: Request) {
   const parsed = await parseGidsListingFormData(form, { requirePin: false, requireNewPhotos: false })
   if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: parsed.status })
   const d = parsed.data
+
+  const needsPhotoUpload = d.photos.length > 0 || d.removePhotoSlots.length > 0
+  if (needsPhotoUpload) {
+    const bucketReady = await ensureGidsPhotosBucket(admin)
+    if (!bucketReady.ok) {
+      return NextResponse.json({ error: bucketReady.message }, { status: 503 })
+    }
+  }
 
   const nameNormalized = normalizeGidsBusinessName(d.name)
   if (nameNormalized !== row.name_normalized) {
@@ -183,6 +193,9 @@ export async function PATCH(req: Request) {
   }
 
   revalidateTag('gids-listings', 'max')
+  revalidatePath('/zoeken')
+  revalidatePath(`/zaak/${slug}`)
+  if (slug !== row.slug) revalidatePath(`/zaak/${row.slug}`)
 
   return NextResponse.json({
     ok: true,
