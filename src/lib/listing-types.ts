@@ -1,3 +1,5 @@
+import type { ListingCuisineId } from '@/lib/listing-cuisine-types'
+
 export const LISTING_TYPES = [
   { id: 'all', label: 'Alles' },
   { id: 'frituur', label: 'Frituur' },
@@ -53,6 +55,8 @@ export type Listing = {
   slug: string
   name: string
   type: Exclude<ListingTypeId, 'all'>
+  /** Optioneel keukentype (Frans, Italiaans, …) */
+  cuisineType?: ListingCuisineId
   city: string
   postcode: string
   /** Straat + huisnummer (verplicht voor weergave en navigatie) */

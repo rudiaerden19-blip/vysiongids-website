@@ -1,3 +1,4 @@
+import { VALID_CUISINE_IDS, type ListingCuisineId } from '@/lib/listing-cuisine-types'
 import { LISTING_TYPES, type ListingAmenityId, type ListingDayHours } from '@/lib/listing-types'
 import { closedDaysFromRows, summarizeOpeningHours } from '@/lib/gids-opening-hours'
 import { isValidGidsPin } from '@/lib/gids-pin'
@@ -30,6 +31,7 @@ export type ParsedGidsListingForm = {
   photos: { index: number; file: File }[]
   removePhotoSlots: number[]
   ownerAmenities: ListingAmenityId[]
+  cuisineType: ListingCuisineId | null
 }
 
 export type ParseGidsListingFormResult =
@@ -198,6 +200,15 @@ export async function parseGidsListingFormData(
     }
   }
 
+  const cuisineRaw = String(form.get('cuisineType') ?? '').trim()
+  let cuisineType: ListingCuisineId | null = null
+  if (cuisineRaw) {
+    if (!VALID_CUISINE_IDS.includes(cuisineRaw as ListingCuisineId)) {
+      return { ok: false, error: 'Kies een geldig type keuken.', status: 400 }
+    }
+    cuisineType = cuisineRaw as ListingCuisineId
+  }
+
   return {
     ok: true,
     data: {
@@ -222,6 +233,7 @@ export async function parseGidsListingFormData(
       photos,
       removePhotoSlots,
       ownerAmenities: parseOwnerAmenitiesFromForm(form),
+      cuisineType,
     },
   }
 }

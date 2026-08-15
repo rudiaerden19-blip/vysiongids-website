@@ -165,6 +165,7 @@ export async function PATCH(req: Request) {
     name_normalized: nameNormalized,
     slug,
     type: d.type,
+    cuisine_type: d.cuisineType,
     city: d.city,
     postcode: d.postcode,
     province: d.province,

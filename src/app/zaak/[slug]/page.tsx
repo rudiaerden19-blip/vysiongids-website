@@ -9,6 +9,7 @@ import ListingPhotoSlider from '@/components/ListingPhotoSlider'
 import ListingMap from '@/components/ListingMapClient'
 import ListingNavigationButtons from '@/components/ListingNavigationButtons'
 import ZaakOwnerDeleteSection from '@/components/ZaakOwnerDeleteSection'
+import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
 import {
   formatDeliveryFee,
   formatListingAddressLines,
@@ -43,6 +44,7 @@ export default async function ZaakPage({ params }: Props) {
   if (!listing) notFound()
 
   const typeLabel = getListingTypeLabel(listing.type)
+  const cuisineLine = getListingCuisineDisplay(listing.cuisineType)
   const minOrder = formatMinOrder(listing)
   const { street, cityLine } = formatListingAddressLines(listing)
   const reviews = (await fetchReviewsByListingSlug(slug, 5)) ?? []
@@ -80,6 +82,7 @@ export default async function ZaakPage({ params }: Props) {
               </span>
             </p>
             <p className="mt-2 text-sm font-medium text-gray-700">{typeLabel}</p>
+            {cuisineLine ? <p className="mt-1 text-sm text-gray-600">{cuisineLine}</p> : null}
 
             <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100">
               <ListingPhotoSlider

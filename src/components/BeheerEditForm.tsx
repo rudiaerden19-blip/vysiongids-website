@@ -9,6 +9,7 @@ import { normalizeHttpsUrl } from '@/lib/normalize-url'
 import { GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
 import { compressListingPhoto } from '@/lib/compress-listing-photo'
 import ListingOwnerOptionsFields from '@/components/ListingOwnerOptionsFields'
+import KitchenTypeSelect from '@/components/KitchenTypeSelect'
 
 function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
@@ -289,6 +290,8 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
             </select>
           </div>
         </div>
+
+        <KitchenTypeSelect id="edit-cuisineType" defaultValue={listing.cuisineType} />
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>

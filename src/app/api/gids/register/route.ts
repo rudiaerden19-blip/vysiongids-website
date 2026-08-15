@@ -60,6 +60,7 @@ async function handleRegisterPost(req: Request) {
       name_normalized: nameNormalized,
       pin_hash: pinHash,
       type: d.type,
+      cuisine_type: d.cuisineType,
       city: d.city,
       postcode: d.postcode,
       province: d.province,
