@@ -1,8 +1,10 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FormEvent, useCallback, type CSSProperties } from 'react'
+import { FormEvent, useCallback, useRef, type CSSProperties } from 'react'
 import { LISTING_TYPES } from '@/lib/listing-types'
+import { useVoiceSearch } from '@/lib/use-voice-search'
+import SearchVoiceMicButton from '@/components/SearchVoiceMicButton'
 
 const fieldLabel: CSSProperties = {
   display: 'block',
@@ -72,11 +74,60 @@ const heroSubmitStyle: CSSProperties = {
   fontWeight: 600,
   cursor: 'pointer',
   whiteSpace: 'nowrap',
+  width: '100%',
+}
+
+function buildSearchPath(nextQ: string, nextType: string, prov: string) {
+  const params = new URLSearchParams()
+  if (nextQ) params.set('q', nextQ)
+  if (nextType && nextType !== 'all') params.set('type', nextType)
+  if (prov.trim()) params.set('prov', prov.trim())
+  const qs = params.toString()
+  return qs ? `/zoeken?${qs}` : '/zoeken'
+}
+
+type SearchActionsProps = {
+  submitStyle: CSSProperties
+  formRef: React.RefObject<HTMLFormElement | null>
+  qInputRef: React.RefObject<HTMLInputElement | null>
+  prov: string
+  compact?: boolean
+}
+
+function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: SearchActionsProps) {
+  const router = useRouter()
+
+  const runSearchWithQuery = useCallback(
+    (spoken: string) => {
+      const trimmed = spoken.trim()
+      if (!trimmed) return
+      const form = formRef.current
+      const type = form ? String(new FormData(form).get('type') ?? 'all') : 'all'
+      if (qInputRef.current) qInputRef.current.value = trimmed
+      router.push(buildSearchPath(trimmed, type, prov))
+    },
+    [formRef, prov, qInputRef, router],
+  )
+
+  const { listening, supported, toggleListen } = useVoiceSearch(runSearchWithQuery)
+
+  return (
+    <div
+      className={`vysiongids-hero-search-actions${compact ? ' vysiongids-hero-search-actions--compact' : ''}`}
+    >
+      <button type="submit" className="vysiongids-hero-search-submit" style={submitStyle}>
+        Zoeken
+      </button>
+      <SearchVoiceMicButton listening={listening} supported={supported} onClick={toggleListen} />
+    </div>
+  )
 }
 
 export default function SearchForm({ compact }: { compact?: boolean }) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const formRef = useRef<HTMLFormElement>(null)
+  const qInputRef = useRef<HTMLInputElement>(null)
 
   const q = searchParams.get('q') ?? ''
   const type = searchParams.get('type') ?? 'all'
@@ -88,29 +139,25 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
       const fd = new FormData(e.currentTarget)
       const nextQ = String(fd.get('q') ?? '').trim()
       const nextType = String(fd.get('type') ?? 'all')
-      const params = new URLSearchParams()
-      if (nextQ) params.set('q', nextQ)
-      if (nextType && nextType !== 'all') params.set('type', nextType)
-      if (prov.trim()) params.set('prov', prov.trim())
-      const qs = params.toString()
-      router.push(qs ? `/zoeken?${qs}` : '/zoeken')
+      router.push(buildSearchPath(nextQ, nextType, prov))
     },
     [router, prov],
   )
 
   if (!compact) {
     return (
-      <form onSubmit={onSubmit} className="vysiongids-hero-search" style={heroFormStyle}>
+      <form ref={formRef} onSubmit={onSubmit} className="vysiongids-hero-search" style={heroFormStyle}>
         <div className="vysiongids-hero-search-grow" style={heroGrowStyle}>
           <label htmlFor="search-q" style={heroFieldLabel}>
             Stad, postcode of naam
           </label>
           <input
+            ref={qInputRef}
             id="search-q"
             name="q"
             type="search"
             defaultValue={q}
-            placeholder="Bv. Pelt, Belgische keuken, glutenvrij, parking"
+            placeholder="Bv. pizzeria in Pelt, frituur, naam van de zaak — of inspreken ↓"
             autoComplete="off"
             style={heroFieldInput}
           />
@@ -127,15 +174,14 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
             ))}
           </select>
         </div>
-        <button type="submit" className="vysiongids-hero-search-submit" style={heroSubmitStyle}>
-          Zoeken
-        </button>
+        <SearchActions submitStyle={heroSubmitStyle} formRef={formRef} qInputRef={qInputRef} prov={prov} />
       </form>
     )
   }
 
   return (
     <form
+      ref={formRef}
       onSubmit={onSubmit}
       style={{
         display: 'flex',
@@ -151,11 +197,12 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
           Stad, postcode of naam
         </label>
         <input
+          ref={qInputRef}
           id="search-q-compact"
           name="q"
           type="search"
           defaultValue={q}
-          placeholder="Bv. Pelt, Belgische keuken, glutenvrij, parking"
+          placeholder="Bv. pizzeria in Pelt, frituur, naam van de zaak"
           style={fieldInput}
           autoComplete="off"
         />
@@ -172,9 +219,13 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
           ))}
         </select>
       </div>
-      <button type="submit" style={{ ...heroSubmitStyle, alignSelf: 'stretch', width: '100%' }}>
-        Zoeken
-      </button>
+      <SearchActions
+        submitStyle={{ ...heroSubmitStyle, alignSelf: 'stretch' }}
+        formRef={formRef}
+        qInputRef={qInputRef}
+        prov={prov}
+        compact
+      />
     </form>
   )
 }

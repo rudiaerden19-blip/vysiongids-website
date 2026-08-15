@@ -1,0 +1,93 @@
+'use client'
+
+import { useCallback, useEffect, useRef, useState } from 'react'
+
+type SpeechRecognitionInstance = {
+  lang: string
+  interimResults: boolean
+  maxAlternatives: number
+  continuous: boolean
+  start: () => void
+  stop: () => void
+  abort: () => void
+  onresult: ((event: { results: { [index: number]: { [index: number]: { transcript: string } } } }) => void) | null
+  onend: (() => void) | null
+  onerror: (() => void) | null
+}
+
+type SpeechRecognitionCtor = new () => SpeechRecognitionInstance
+
+function getSpeechRecognitionCtor(): SpeechRecognitionCtor | null {
+  if (typeof window === 'undefined') return null
+  const w = window as Window & {
+    SpeechRecognition?: SpeechRecognitionCtor
+    webkitSpeechRecognition?: SpeechRecognitionCtor
+  }
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null
+}
+
+export function useVoiceSearch(onResult: (text: string) => void) {
+  const [listening, setListening] = useState(false)
+  const [supported, setSupported] = useState(false)
+  const recRef = useRef<SpeechRecognitionInstance | null>(null)
+  const onResultRef = useRef(onResult)
+  onResultRef.current = onResult
+
+  useEffect(() => {
+    setSupported(!!getSpeechRecognitionCtor())
+  }, [])
+
+  const stop = useCallback(() => {
+    try {
+      recRef.current?.stop()
+    } catch {
+      recRef.current?.abort()
+    }
+    setListening(false)
+  }, [])
+
+  const toggleListen = useCallback(() => {
+    const Ctor = getSpeechRecognitionCtor()
+    if (!Ctor) return
+
+    if (listening) {
+      stop()
+      return
+    }
+
+    try {
+      recRef.current?.abort()
+    } catch {
+      /* ignore */
+    }
+
+    const rec = new Ctor()
+    rec.lang = 'nl-BE'
+    rec.interimResults = false
+    rec.maxAlternatives = 1
+    rec.continuous = false
+
+    rec.onresult = (event) => {
+      const text = event.results[0]?.[0]?.transcript?.trim() ?? ''
+      if (text) onResultRef.current(text)
+    }
+    rec.onend = () => setListening(false)
+    rec.onerror = () => setListening(false)
+
+    recRef.current = rec
+    setListening(true)
+    rec.start()
+  }, [listening, stop])
+
+  useEffect(() => {
+    return () => {
+      try {
+        recRef.current?.abort()
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [])
+
+  return { listening, supported, toggleListen }
+}
