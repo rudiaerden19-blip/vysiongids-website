@@ -6,6 +6,11 @@ import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
 import { LISTING_TYPES, type ListingDayHours } from '@/lib/listing-types'
 import OpeningHoursEditor from '@/components/OpeningHoursEditor'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
+import {
+  GIDS_REGISTER_MAX_PHOTO_BYTES,
+  GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES,
+  formatPhotoSizeMb,
+} from '@/lib/gids-register-limits'
 
 function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
@@ -118,8 +123,41 @@ export default function ZaakToevoegenForm() {
       return
     }
     try {
+      let totalPhotoBytes = 0
+      for (let i = 0; i < 3; i++) {
+        const f = fd.get(`photo${i}`)
+        if (f instanceof File && f.size > 0) {
+          if (f.size > GIDS_REGISTER_MAX_PHOTO_BYTES) {
+            setError(
+              `Foto ${i + 1} is te groot (max. ${formatPhotoSizeMb(GIDS_REGISTER_MAX_PHOTO_BYTES)} per foto). Verklein de afbeelding.`,
+            )
+            setLoading(false)
+            return
+          }
+          totalPhotoBytes += f.size
+        }
+      }
+      if (totalPhotoBytes > GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES) {
+        setError('Foto\'s samen te groot (max. ca. 4 MB). Upload minder foto\'s of verklein ze.')
+        setLoading(false)
+        return
+      }
+
       const res = await fetch('/api/gids/register', { method: 'POST', body: fd })
-      const data = (await res.json()) as { error?: string; url?: string }
+      const raw = await res.text()
+      let data: { error?: string; url?: string } = {}
+      if (raw) {
+        try {
+          data = JSON.parse(raw) as { error?: string; url?: string }
+        } catch {
+          if (res.status === 413) {
+            setError('Upload te groot voor de server. Gebruik kleinere foto\'s (max. ca. 1,4 MB per foto).')
+          } else {
+            setError(`Server antwoordde niet correct (${res.status}). Probeer later opnieuw.`)
+          }
+          return
+        }
+      }
       if (!res.ok) {
         setError(data.error ?? 'Registratie mislukt.')
         return
@@ -127,7 +165,7 @@ export default function ZaakToevoegenForm() {
       if (data.url) router.push(data.url)
       else router.push('/zoeken')
     } catch {
-      setError('Netwerkfout. Probeer opnieuw.')
+      setError('Verbinding mislukt. Controleer je internet en probeer opnieuw.')
     } finally {
       setLoading(false)
     }
@@ -350,7 +388,9 @@ export default function ZaakToevoegenForm() {
             *
           </span>
         </p>
-        <p className="mt-0.5 text-xs text-gray-500">Minstens 1 foto, tot max. 3. JPG/PNG/WebP, max. 5 MB per foto.</p>
+        <p className="mt-0.5 text-xs text-gray-500">
+          Minstens 1 foto, tot max. 3. Per foto max. ca. 1,4 MB (totaal max. ca. 4 MB).
+        </p>
         <div className="mt-2 flex flex-wrap gap-3">
           {[0, 1, 2].map((i) => (
             <PhotoPickField key={i} index={i} required={i === 0} />

@@ -7,10 +7,12 @@ import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { LISTING_TYPES, type ListingDayHours } from '@/lib/listing-types'
 import { closedDaysFromRows, summarizeOpeningHours } from '@/lib/gids-opening-hours'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
+import { GIDS_REGISTER_MAX_PHOTO_BYTES, GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
 import { WEEKDAYS_NL } from '@/lib/listing-info'
 
+export const maxDuration = 60
+
 const VALID_TYPES = LISTING_TYPES.filter((t) => t.id !== 'all').map((t) => t.id)
-const MAX_PHOTO_BYTES = 5 * 1024 * 1024
 
 function siteOrigin(req: Request): string {
   const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host')
@@ -20,6 +22,15 @@ function siteOrigin(req: Request): string {
 }
 
 export async function POST(req: Request) {
+  try {
+    return await handleRegisterPost(req)
+  } catch (err) {
+    console.error('[gids register] unhandled', err)
+    return NextResponse.json({ error: 'Registratie mislukt door een serverfout.' }, { status: 500 })
+  }
+}
+
+async function handleRegisterPost(req: Request) {
   const admin = createGidsSupabaseAdmin()
   if (!admin) {
     return NextResponse.json({ error: 'Database niet geconfigureerd.' }, { status: 503 })
@@ -167,13 +178,28 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Upload minstens 1 foto (max. 3).' }, { status: 400 })
   }
 
+  let totalPhotoBytes = 0
   for (const { file } of photos) {
     if (!file.type.startsWith('image/')) {
       return NextResponse.json({ error: 'Alleen afbeeldingen toegestaan.' }, { status: 400 })
     }
-    if (file.size > MAX_PHOTO_BYTES) {
-      return NextResponse.json({ error: 'Elke foto max. 5 MB.' }, { status: 400 })
+    if (file.size > GIDS_REGISTER_MAX_PHOTO_BYTES) {
+      return NextResponse.json(
+        {
+          error: `Elke foto max. ${Math.round(GIDS_REGISTER_MAX_PHOTO_BYTES / (1024 * 1024))} MB (serverlimiet). Kies een kleinere afbeelding.`,
+        },
+        { status: 400 },
+      )
     }
+    totalPhotoBytes += file.size
+  }
+  if (totalPhotoBytes > GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES) {
+    return NextResponse.json(
+      {
+        error: 'Foto\'s samen te groot (max. ca. 4 MB). Upload minder foto\'s of verklein ze.',
+      },
+      { status: 400 },
+    )
   }
 
   let slug = slugifyListing(name, city)
@@ -215,46 +241,61 @@ export async function POST(req: Request) {
     .single()
 
   if (insertErr || !inserted) {
-    console.error('[gids register]', insertErr?.message)
-    return NextResponse.json({ error: 'Opslaan mislukt. Probeer later opnieuw.' }, { status: 500 })
+    console.error('[gids register]', insertErr?.message, insertErr?.code)
+    const msg = insertErr?.message?.includes('duplicate')
+      ? 'Deze zaaknaam of slug bestaat al.'
+      : 'Opslaan mislukt. Probeer later opnieuw.'
+    return NextResponse.json({ error: msg }, { status: 500 })
   }
 
   const origin = siteOrigin(req)
-  const publicUrls: string[] = []
 
-  for (const { index, file } of photos) {
-    const ext = file.type.includes('png') ? 'png' : file.type.includes('webp') ? 'webp' : 'jpg'
-    const path = `${inserted.id}/${index}.${ext}`
-    const buf = Buffer.from(await file.arrayBuffer())
-    const { error: upErr } = await admin.storage.from('gids-listing-photos').upload(path, buf, {
-      contentType: file.type,
-      upsert: true,
-    })
-    if (upErr) {
-      console.error('[gids photo upload]', upErr.message)
-      await admin.from('gids_listings').delete().eq('id', inserted.id)
-      return NextResponse.json({ error: 'Foto upload mislukt.' }, { status: 500 })
-    }
-    const { data: pub } = admin.storage.from('gids-listing-photos').getPublicUrl(path)
-    const publicUrl = pub.publicUrl.startsWith('http') ? pub.publicUrl : `${origin}${pub.publicUrl}`
-    publicUrls.push(publicUrl)
-    const { error: photoErr } = await admin.from('gids_listing_photos').insert({
-      listing_id: inserted.id,
-      sort_order: index,
-      storage_path: path,
-      public_url: publicUrl,
-    })
-    if (photoErr) {
-      console.error('[gids photo row]', photoErr.message)
-    }
+  try {
+    await Promise.all(
+      photos.map(async ({ index, file }) => {
+        const ext = file.type.includes('png') ? 'png' : file.type.includes('webp') ? 'webp' : 'jpg'
+        const path = `${inserted.id}/${index}.${ext}`
+        const buf = Buffer.from(await file.arrayBuffer())
+        const { error: upErr } = await admin.storage.from('gids-listing-photos').upload(path, buf, {
+          contentType: file.type,
+          upsert: true,
+        })
+        if (upErr) {
+          throw new Error(upErr.message)
+        }
+        const { data: pub } = admin.storage.from('gids-listing-photos').getPublicUrl(path)
+        const publicUrl = pub.publicUrl.startsWith('http') ? pub.publicUrl : `${origin}${pub.publicUrl}`
+        const { error: photoErr } = await admin.from('gids_listing_photos').insert({
+          listing_id: inserted.id,
+          sort_order: index,
+          storage_path: path,
+          public_url: publicUrl,
+        })
+        if (photoErr) {
+          console.error('[gids photo row]', photoErr.message)
+        }
+      }),
+    )
+  } catch (uploadErr) {
+    const message = uploadErr instanceof Error ? uploadErr.message : 'Onbekende uploadfout'
+    console.error('[gids photo upload]', message)
+    await admin.from('gids_listings').delete().eq('id', inserted.id)
+    const hint = /bucket|not found|404/i.test(message)
+      ? ' Foto-opslag (bucket gids-listing-photos) ontbreekt in Supabase.'
+      : ''
+    return NextResponse.json({ error: `Foto upload mislukt.${hint}` }, { status: 500 })
   }
 
-  revalidateTag('gids-listings', 'max')
+  try {
+    revalidateTag('gids-listings', 'max')
+  } catch (revalidateErr) {
+    console.error('[gids register] revalidateTag', revalidateErr)
+  }
 
   return NextResponse.json({
     ok: true,
     slug: inserted.slug,
     url: `/zaak/${inserted.slug}`,
-    photoCount: publicUrls.length,
+    photoCount: photos.length,
   })
 }
