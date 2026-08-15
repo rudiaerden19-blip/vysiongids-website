@@ -429,7 +429,7 @@ export default function ZaakToevoegenForm() {
       <button
         type="submit"
         disabled={loading}
-        className="w-full rounded-xl bg-accent py-3.5 text-lg font-bold text-white hover:bg-accent/90 disabled:opacity-60 sm:w-auto sm:px-10"
+        className="vysiongids-form-submit w-full rounded-xl bg-accent py-3.5 text-lg font-bold text-white hover:bg-accent/90 disabled:opacity-60 sm:w-auto sm:px-10"
       >
         {loading ? (loadingHint ?? 'Bezig…') : 'Direct online zetten'}
       </button>

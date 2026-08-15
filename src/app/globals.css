@@ -1391,6 +1391,11 @@ body {
   margin: 0;
   padding: 0;
   border: none;
+  margin-bottom: 0.25rem;
+}
+
+.vysiongids-zaak-form .vysiongids-form-submit {
+  margin-top: 1.5rem;
 }
 
 .vysiongids-owner-options-list {
