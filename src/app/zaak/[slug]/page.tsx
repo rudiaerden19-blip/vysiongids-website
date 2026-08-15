@@ -8,6 +8,7 @@ import SiteHeader from '@/components/SiteHeader'
 import ListingInfoSection from '@/components/ListingInfoSection'
 import ListingMap from '@/components/ListingMapClient'
 import ListingNavigationButtons from '@/components/ListingNavigationButtons'
+import ZaakOwnerDeleteSection from '@/components/ZaakOwnerDeleteSection'
 import {
   formatDeliveryFee,
   formatListingAddressLines,
@@ -128,6 +129,8 @@ export default async function ZaakPage({ params }: Props) {
                 ) : null}
               </dl>
             </section>
+
+            <ZaakOwnerDeleteSection slug={slug} />
           </div>
 
           <aside className="lg:sticky lg:top-6 lg:self-start">

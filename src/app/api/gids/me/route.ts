@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { revalidateTag } from 'next/cache'
-import { getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
+import { GIDS_SESSION_COOKIE, getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { mapGidsRowToListing, fetchListingRowByIdAdmin } from '@/lib/gids-listings-db'
 
@@ -46,6 +46,6 @@ export async function DELETE() {
   revalidateTag('gids-listings', 'max')
 
   const res = NextResponse.json({ ok: true })
-  res.cookies.set('gids_owner_session', '', { maxAge: 0, path: '/' })
+  res.cookies.set(GIDS_SESSION_COOKIE, '', { maxAge: 0, path: '/', httpOnly: true, sameSite: 'lax' })
   return res
 }

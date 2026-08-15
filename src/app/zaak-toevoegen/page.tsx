@@ -14,6 +14,13 @@ export default function ZaakToevoegenPage() {
           Na registratie staat je zaak meteen online.
         </p>
         <ZaakToevoegenForm />
+        <p className="mt-10 border-t border-gray-200 pt-6 text-sm text-gray-600">
+          Zaak al online en wil je alles verwijderen?{' '}
+          <a href="/login" className="font-semibold text-accent hover:underline">
+            Log in
+          </a>{' '}
+          → beheer → <strong>Verwijder je zaak</strong>.
+        </p>
       </main>
     </>
   )

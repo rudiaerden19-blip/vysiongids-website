@@ -3,20 +3,18 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
+import VerwijderZaakButton from '@/components/VerwijderZaakButton'
 
 type MeResponse = {
   authenticated: boolean
   name?: string
   slug?: string
-  listing?: { orderUrl: string; city: string }
 }
 
 export default function BeheerClient() {
   const router = useRouter()
   const [me, setMe] = useState<MeResponse | null>(null)
   const [loading, setLoading] = useState(true)
-  const [deleting, setDeleting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     fetch('/api/gids/me')
@@ -29,24 +27,6 @@ export default function BeheerClient() {
     await fetch('/api/gids/login', { method: 'DELETE' })
     router.push('/login')
     router.refresh()
-  }
-
-  async function removeListing() {
-    if (!confirm('Zaak definitief uit Vysiongids verwijderen?')) return
-    setDeleting(true)
-    setError(null)
-    try {
-      const res = await fetch('/api/gids/me', { method: 'DELETE' })
-      const data = (await res.json()) as { error?: string }
-      if (!res.ok) {
-        setError(data.error ?? 'Verwijderen mislukt.')
-        return
-      }
-      router.push('/')
-      router.refresh()
-    } finally {
-      setDeleting(false)
-    }
   }
 
   if (loading) return <p className="text-gray-600">Laden…</p>
@@ -62,7 +42,7 @@ export default function BeheerClient() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <p className="text-lg text-gray-800">
         Ingelogd als <strong>{me.name}</strong>
       </p>
@@ -71,7 +51,8 @@ export default function BeheerClient() {
           Publieke pagina bekijken →
         </Link>
       ) : null}
-      <div className="flex flex-wrap gap-3 pt-4">
+
+      <div className="flex flex-wrap gap-3 border-t border-gray-200 pt-6">
         <button
           type="button"
           onClick={() => void logout()}
@@ -79,17 +60,18 @@ export default function BeheerClient() {
         >
           Uitloggen
         </button>
-        <button
-          type="button"
-          onClick={() => void removeListing()}
-          disabled={deleting}
-          className="rounded-lg border border-red-300 bg-red-50 px-5 py-2.5 font-semibold text-red-800 hover:bg-red-100 disabled:opacity-60"
-        >
-          {deleting ? 'Bezig…' : 'Zaak verwijderen'}
-        </button>
       </div>
-      {error ? <p className="text-sm text-red-700">{error}</p> : null}
-      <p className="text-sm text-gray-500">Foto&apos;s en gegevens bewerken volgen in een volgende update.</p>
+
+      <section className="rounded-xl border border-red-200 bg-red-50/50 p-5">
+        <h2 className="text-lg font-bold text-gray-900">Verwijder je zaak</h2>
+        <p className="mt-2 text-sm text-gray-600">
+          Je listing, alle foto&apos;s, reviews en instellingen worden permanent verwijderd. Je zaak is daarna niet meer
+          vindbaar in Vysiongids.
+        </p>
+        <VerwijderZaakButton expectedSlug={me.slug} className="mt-4" />
+      </section>
+
+      <p className="text-sm text-gray-500">Gegevens bewerken volgt in een volgende update.</p>
     </div>
   )
 }
