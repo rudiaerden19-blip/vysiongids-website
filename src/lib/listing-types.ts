@@ -42,6 +42,8 @@ export type Listing = {
   /** Publieke bestel-URL (Vysion shop of eigen site) */
   orderUrl: string
   photoUrl: string
+  /** Alle foto-URL's (sort_order), voor beheer */
+  photoUrls?: string[]
   ratingAvg: number
   ratingCount: number
   deliveryTimeMin?: number

@@ -2,7 +2,17 @@ import { NextResponse } from 'next/server'
 import { revalidateTag } from 'next/cache'
 import { GIDS_SESSION_COOKIE, getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
-import { mapGidsRowToListing, fetchListingRowByIdAdmin } from '@/lib/gids-listings-db'
+import { mapGidsRowToListing, fetchListingRowByIdAdmin, fetchListingByNormalizedNameAdmin } from '@/lib/gids-listings-db'
+import { parseGidsListingFormData } from '@/lib/gids-listing-form-server'
+import { hashGidsPin } from '@/lib/gids-pin'
+import { normalizeGidsBusinessName, slugifyListing } from '@/lib/gids-text'
+import {
+  removeGidsListingPhotoSlot,
+  siteOriginFromRequest,
+  uploadGidsListingPhoto,
+} from '@/lib/gids-listing-photos-server'
+
+export const maxDuration = 60
 
 export async function GET() {
   const listingId = await getGidsOwnerListingIdFromCookies()
@@ -48,4 +58,136 @@ export async function DELETE() {
   const res = NextResponse.json({ ok: true })
   res.cookies.set(GIDS_SESSION_COOKIE, '', { maxAge: 0, path: '/', httpOnly: true, sameSite: 'lax' })
   return res
+}
+
+export async function PATCH(req: Request) {
+  const listingId = await getGidsOwnerListingIdFromCookies()
+  if (!listingId) {
+    return NextResponse.json({ error: 'Niet ingelogd.' }, { status: 401 })
+  }
+
+  const admin = createGidsSupabaseAdmin()
+  if (!admin) {
+    return NextResponse.json({ error: 'Database niet geconfigureerd.' }, { status: 503 })
+  }
+
+  const row = await fetchListingRowByIdAdmin(listingId)
+  if (!row) {
+    return NextResponse.json({ error: 'Zaak niet gevonden.' }, { status: 404 })
+  }
+
+  let form: FormData
+  try {
+    form = await req.formData()
+  } catch {
+    return NextResponse.json({ error: 'Ongeldig formulier.' }, { status: 400 })
+  }
+
+  const parsed = await parseGidsListingFormData(form, { requirePin: false, requireNewPhotos: false })
+  if (!parsed.ok) return NextResponse.json({ error: parsed.error }, { status: parsed.status })
+  const d = parsed.data
+
+  const nameNormalized = normalizeGidsBusinessName(d.name)
+  if (nameNormalized !== row.name_normalized) {
+    const other = await fetchListingByNormalizedNameAdmin(nameNormalized)
+    if (other && other.id !== listingId) {
+      return NextResponse.json({ error: 'Deze zaaknaam is al in gebruik.' }, { status: 409 })
+    }
+  }
+
+  let slug = row.slug
+  if (d.name !== row.name || d.city !== row.city) {
+    slug = slugifyListing(d.name, d.city)
+    const { data: slugHit } = await admin
+      .from('gids_listings')
+      .select('id')
+      .eq('slug', slug)
+      .maybeSingle()
+    if (slugHit && slugHit.id !== listingId) {
+      slug = `${slug}-${Date.now().toString(36).slice(-4)}`
+    }
+  }
+
+  const { data: photoRows } = await admin
+    .from('gids_listing_photos')
+    .select('sort_order, storage_path')
+    .eq('listing_id', listingId)
+
+  const photosBySlot = new Map<number, { storage_path: string }>()
+  for (const p of photoRows ?? []) {
+    photosBySlot.set(p.sort_order, { storage_path: p.storage_path })
+  }
+
+  const origin = siteOriginFromRequest(req)
+
+  try {
+    for (let index = 0; index < 3; index++) {
+      const upload = d.photos.find((p) => p.index === index)
+      if (upload) {
+        await uploadGidsListingPhoto(admin, listingId, index, upload.file, origin)
+        continue
+      }
+      if (d.removePhotoSlots.includes(index)) {
+        const existing = photosBySlot.get(index)
+        if (existing) {
+          await removeGidsListingPhotoSlot(admin, listingId, index, existing.storage_path)
+        }
+      }
+    }
+  } catch (uploadErr) {
+    const message = uploadErr instanceof Error ? uploadErr.message : 'Upload mislukt'
+    console.error('[gids me patch photos]', message)
+    return NextResponse.json({ error: `Foto's opslaan mislukt: ${message}` }, { status: 500 })
+  }
+
+  const { count: photoCount } = await admin
+    .from('gids_listing_photos')
+    .select('id', { count: 'exact', head: true })
+    .eq('listing_id', listingId)
+
+  if (!photoCount || photoCount < 1) {
+    return NextResponse.json({ error: 'Je zaak moet minstens 1 foto hebben.' }, { status: 400 })
+  }
+
+  const updatePayload: Record<string, unknown> = {
+    name: d.name,
+    name_normalized: nameNormalized,
+    slug,
+    type: d.type,
+    city: d.city,
+    postcode: d.postcode,
+    province: d.province,
+    address: d.address,
+    order_url: d.orderUrlFinal,
+    website: d.websiteFinal,
+    phone: d.phone,
+    email: d.email,
+    opening_hours: d.openingHours,
+    closed_days: d.closedDays,
+    hours_by_day: d.hoursByDay,
+    delivery_fee_eur: d.deliveryFeeValue,
+    min_order_eur: d.minOrderValue,
+    delivery_time_min: d.deliveryTimeMinValue,
+    delivery_time_max: d.deliveryTimeMaxValue,
+    updated_at: new Date().toISOString(),
+  }
+
+  if (d.pin) {
+    updatePayload.pin_hash = hashGidsPin(d.pin)
+  }
+
+  const { error: updateErr } = await admin.from('gids_listings').update(updatePayload).eq('id', listingId)
+  if (updateErr) {
+    console.error('[gids me patch]', updateErr.message)
+    return NextResponse.json({ error: 'Opslaan mislukt.' }, { status: 500 })
+  }
+
+  revalidateTag('gids-listings', 'max')
+
+  return NextResponse.json({
+    ok: true,
+    slug,
+    url: `/zaak/${slug}`,
+    slugChanged: slug !== row.slug,
+  })
 }

@@ -4,12 +4,20 @@ import { useMemo, useState } from 'react'
 import {
   DAY_LABEL,
   defaultWeekHoursFormState,
+  hoursByDayToFormState,
   type DayHoursFormState,
   weekFormToHoursByDay,
 } from '@/lib/gids-opening-hours'
+import type { ListingDayHours } from '@/lib/listing-types'
 
-export default function OpeningHoursEditor() {
-  const [days, setDays] = useState<DayHoursFormState[]>(() => defaultWeekHoursFormState())
+type OpeningHoursEditorProps = {
+  initialHoursByDay?: ListingDayHours[]
+}
+
+export default function OpeningHoursEditor({ initialHoursByDay }: OpeningHoursEditorProps) {
+  const [days, setDays] = useState<DayHoursFormState[]>(() =>
+    initialHoursByDay?.length === 7 ? hoursByDayToFormState(initialHoursByDay) : defaultWeekHoursFormState(),
+  )
 
   const payload = useMemo(() => {
     const result = weekFormToHoursByDay(days)

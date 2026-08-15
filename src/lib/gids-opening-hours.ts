@@ -118,4 +118,53 @@ export function closedDaysFromRows(rows: ListingDayHours[]): string | null {
   return closed.length ? closed.join(', ') : null
 }
 
+function parseHoursSlot(slot: string): { from: string; to: string } | null {
+  const m = slot.trim().match(/^(\d{1,2}:\d{2})\s*[–-]\s*(\d{1,2}:\d{2})$/)
+  if (!m) return null
+  const from = normalizeTime(m[1]!)
+  const to = normalizeTime(m[2]!)
+  if (!from || !to) return null
+  return { from, to }
+}
+
+/** Voor beheer: bestaande hours_by_day terug naar form state. */
+export function hoursByDayToFormState(rows: ListingDayHours[]): DayHoursFormState[] {
+  return WEEKDAYS_NL.map((day) => {
+    const row = rows.find((r) => r.day === day)
+    const base: DayHoursFormState = {
+      day,
+      closed: true,
+      shift1From: '10:00',
+      shift1To: '18:00',
+      shift2Enabled: false,
+      shift2From: '',
+      shift2To: '',
+    }
+    if (!row || row.hours.trim().toLowerCase() === 'gesloten') return base
+
+    const parts = row.hours.split(',').map((s) => s.trim())
+    const slot1 = parseHoursSlot(parts[0] ?? '')
+    if (!slot1) return { ...base, closed: false }
+
+    const out: DayHoursFormState = {
+      day,
+      closed: false,
+      shift1From: slot1.from,
+      shift1To: slot1.to,
+      shift2Enabled: false,
+      shift2From: '',
+      shift2To: '',
+    }
+    if (parts.length > 1) {
+      const slot2 = parseHoursSlot(parts[1] ?? '')
+      if (slot2) {
+        out.shift2Enabled = true
+        out.shift2From = slot2.from
+        out.shift2To = slot2.to
+      }
+    }
+    return out
+  })
+}
+
 export { DAY_LABEL }

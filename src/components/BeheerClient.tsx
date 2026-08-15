@@ -4,22 +4,29 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import VerwijderZaakButton from '@/components/VerwijderZaakButton'
+import BeheerEditForm from '@/components/BeheerEditForm'
+import type { Listing } from '@/lib/listing-types'
 
 type MeResponse = {
   authenticated: boolean
   name?: string
   slug?: string
+  listing?: Listing
 }
 
 export default function BeheerClient() {
   const router = useRouter()
   const [me, setMe] = useState<MeResponse | null>(null)
   const [loading, setLoading] = useState(true)
+  const [publicSlug, setPublicSlug] = useState<string | undefined>()
 
   useEffect(() => {
     fetch('/api/gids/me')
       .then((r) => r.json())
-      .then((data: MeResponse) => setMe(data))
+      .then((data: MeResponse) => {
+        setMe(data)
+        setPublicSlug(data.slug)
+      })
       .finally(() => setLoading(false))
   }, [])
 
@@ -30,7 +37,7 @@ export default function BeheerClient() {
   }
 
   if (loading) return <p className="text-gray-600">Laden…</p>
-  if (!me?.authenticated) {
+  if (!me?.authenticated || !me.listing) {
     return (
       <p className="text-gray-600">
         Niet ingelogd.{' '}
@@ -41,16 +48,29 @@ export default function BeheerClient() {
     )
   }
 
+  const slug = publicSlug ?? me.slug
+
   return (
     <div className="space-y-8">
       <p className="text-lg text-gray-800">
         Ingelogd als <strong>{me.name}</strong>
       </p>
-      {me.slug ? (
-        <Link href={`/zaak/${me.slug}`} className="inline-block font-semibold text-accent hover:underline">
+      {slug ? (
+        <Link href={`/zaak/${slug}`} className="inline-block font-semibold text-accent hover:underline">
           Publieke pagina bekijken →
         </Link>
       ) : null}
+
+      <BeheerEditForm
+        key={me.listing.slug + (me.listing.name ?? '')}
+        listing={me.listing}
+        onSaved={async (newSlug) => {
+          setPublicSlug(newSlug)
+          const r = await fetch('/api/gids/me')
+          const data = (await r.json()) as MeResponse
+          if (data.authenticated && data.listing) setMe(data)
+        }}
+      />
 
       <div className="flex flex-wrap gap-3 border-t border-gray-200 pt-6">
         <button
@@ -68,10 +88,8 @@ export default function BeheerClient() {
           Je listing, alle foto&apos;s, reviews en instellingen worden permanent verwijderd. Je zaak is daarna niet meer
           vindbaar in Vysiongids.
         </p>
-        <VerwijderZaakButton expectedSlug={me.slug} className="mt-4" />
+        <VerwijderZaakButton expectedSlug={slug} className="mt-4" />
       </section>
-
-      <p className="text-sm text-gray-500">Gegevens bewerken volgt in een volgende update.</p>
     </div>
   )
 }

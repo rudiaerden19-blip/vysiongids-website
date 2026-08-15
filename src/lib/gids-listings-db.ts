@@ -46,6 +46,7 @@ const LISTING_SELECT = `
 export function mapGidsRowToListing(row: GidsListingRow): Listing {
   const photos = [...(row.gids_listing_photos ?? [])].sort((a, b) => a.sort_order - b.sort_order)
   const photoUrl = photos[0]?.public_url ?? '/images/listings/frituur-1.jpg'
+  const photoUrls = photos.map((p) => p.public_url).filter(Boolean)
 
   return {
     slug: row.slug,
@@ -57,6 +58,7 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
     address: row.address,
     orderUrl: row.order_url,
     photoUrl,
+    photoUrls,
     ratingAvg: Number(row.rating_avg ?? 0),
     ratingCount: Number(row.rating_count ?? 0),
     deliveryTimeMin: row.delivery_time_min ?? undefined,
@@ -130,7 +132,11 @@ export async function fetchListingBySlugFromDb(slug: string): Promise<Listing | 
 export async function fetchListingRowByIdAdmin(id: string): Promise<GidsListingRow | null> {
   const supabase = createGidsSupabaseAdmin()
   if (!supabase) return null
-  const { data, error } = await supabase.from('gids_listings').select(LISTING_SELECT).eq('id', id).maybeSingle()
+  const { data, error } = await supabase
+    .from('gids_listings')
+    .select(`${LISTING_SELECT}, name_normalized`)
+    .eq('id', id)
+    .maybeSingle()
   if (error || !data) return null
   return data as GidsListingRow
 }
