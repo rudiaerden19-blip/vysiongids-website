@@ -158,7 +158,7 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
           ))}
         </select>
       </div>
-      <button type="submit" style={{ ...heroSubmitStyle, alignSelf: 'stretch', width: '100%' }} className="sm:vysiongids-compact-search-submit">
+      <button type="submit" style={{ ...heroSubmitStyle, alignSelf: 'stretch', width: '100%' }}>
         Zoeken
       </button>
     </form>

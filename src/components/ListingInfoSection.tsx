@@ -7,7 +7,7 @@ import {
   listingWebsiteDisplay,
   resolveHoursByDay,
 } from '@/lib/listing-info'
-import { useEffect, useState, type CSSProperties } from 'react'
+import { useEffect, useState } from 'react'
 
 function ContactIcon({ kind }: { kind: 'web' | 'phone' | 'email' }) {
   const common = { width: 18, height: 18, fill: 'none', stroke: '#0e5d82', strokeWidth: 1.8 }
@@ -105,34 +105,6 @@ function OpenStatus({ listing }: { listing: Listing }) {
   )
 }
 
-const infoItemRow: CSSProperties = {
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'flex-start',
-  gap: '0.65rem',
-  marginBottom: '0.85rem',
-  fontSize: '0.9375rem',
-  lineHeight: 1.45,
-  color: '#374151',
-}
-
-const iconBlue: CSSProperties = {
-  display: 'inline-flex',
-  flexShrink: 0,
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '2rem',
-  height: '2rem',
-  borderRadius: '9999px',
-  border: '2px solid #0e5d82',
-  background: '#fff',
-}
-
-const iconRed: CSSProperties = {
-  ...iconBlue,
-  border: '2px solid #9b2743',
-}
-
 export default function ListingInfoSection({ listing }: { listing: Listing }) {
   const hoursRows = resolveHoursByDay(listing)
   const website = listing.website?.trim()
@@ -146,65 +118,29 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
   const amenityList = amenities.length ? amenities : defaultAmenities
 
   return (
-    <section
-      className="vysiongids-zaak-info"
-      style={{
-        marginTop: '2rem',
-        width: '100%',
-        padding: '2rem clamp(1.25rem, 3vw, 2.5rem)',
-        background: '#ececec',
-        boxSizing: 'border-box',
-      }}
-    >
-      <div
-        className="vysiongids-zaak-info-grid"
-        style={{
-          display: 'flex',
-          flexDirection: 'row',
-          flexWrap: 'nowrap',
-          alignItems: 'flex-start',
-          justifyContent: 'space-between',
-          gap: '2.5rem 3rem',
-          width: '100%',
-          maxWidth: '100%',
-        }}
-      >
-        <div className="vysiongids-zaak-info-col" style={{ flex: '1 1 50%', minWidth: 0 }}>
-          <h2
-            className="vysiongids-zaak-info-heading"
-            style={{ margin: '0 0 1rem', fontSize: '1.125rem', fontWeight: 700, color: '#1e3a5f' }}
-          >
-            OPENINGSUREN
-          </h2>
+    <section className="vysiongids-zaak-info">
+      <div className="vysiongids-zaak-info-grid">
+        <div className="vysiongids-zaak-info-col">
+          <h2 className="vysiongids-zaak-info-heading">OPENINGSUREN</h2>
           <OpenStatus listing={listing} />
-          <table
-            className="vysiongids-zaak-hours-table"
-            style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.9375rem', color: '#374151' }}
-          >
+          <table className="vysiongids-zaak-hours-table">
             <tbody>
               {hoursRows.map((row) => (
                 <tr key={row.day}>
-                  <th scope="row" style={{ padding: '0.35rem 1.25rem 0.35rem 0', fontWeight: 400, textAlign: 'left' }}>
-                    {row.day}
-                  </th>
-                  <td style={{ padding: '0.35rem 0', fontWeight: 500, textAlign: 'left' }}>{row.hours}</td>
+                  <th scope="row">{row.day}</th>
+                  <td>{row.hours}</td>
                 </tr>
               ))}
             </tbody>
           </table>
         </div>
 
-        <div className="vysiongids-zaak-info-col" style={{ flex: '1 1 50%', minWidth: 0 }}>
-          <h2
-            className="vysiongids-zaak-info-heading"
-            style={{ margin: '0 0 1rem', fontSize: '1.125rem', fontWeight: 700, color: '#1e3a5f' }}
-          >
-            INFO
-          </h2>
-          <ul className="vysiongids-zaak-info-list" style={{ listStyle: 'none', margin: 0, padding: 0 }}>
+        <div className="vysiongids-zaak-info-col">
+          <h2 className="vysiongids-zaak-info-heading">INFO</h2>
+          <ul className="vysiongids-zaak-info-list">
             {website ? (
-              <li className="vysiongids-zaak-info-item vysiongids-zaak-info-item--contact" style={infoItemRow}>
-                <span className="vysiongids-zaak-info-icon vysiongids-zaak-info-icon--blue" style={iconBlue}>
+              <li className="vysiongids-zaak-info-item vysiongids-zaak-info-item--contact">
+                <span className="vysiongids-zaak-info-icon vysiongids-zaak-info-icon--blue">
                   <ContactIcon kind="web" />
                 </span>
                 <a href={website.startsWith('http') ? website : `https://${website}`} target="_blank" rel="noopener noreferrer">
@@ -213,27 +149,27 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
               </li>
             ) : null}
             {phone ? (
-              <li className="vysiongids-zaak-info-item vysiongids-zaak-info-item--contact" style={infoItemRow}>
-                <span className="vysiongids-zaak-info-icon vysiongids-zaak-info-icon--blue" style={iconBlue}>
+              <li className="vysiongids-zaak-info-item vysiongids-zaak-info-item--contact">
+                <span className="vysiongids-zaak-info-icon vysiongids-zaak-info-icon--blue">
                   <ContactIcon kind="phone" />
                 </span>
                 <a href={`tel:${phone.replace(/\s/g, '')}`}>{phone}</a>
               </li>
             ) : null}
             {email ? (
-              <li className="vysiongids-zaak-info-item vysiongids-zaak-info-item--contact" style={infoItemRow}>
-                <span className="vysiongids-zaak-info-icon vysiongids-zaak-info-icon--blue" style={iconBlue}>
+              <li className="vysiongids-zaak-info-item vysiongids-zaak-info-item--contact">
+                <span className="vysiongids-zaak-info-icon vysiongids-zaak-info-icon--blue">
                   <ContactIcon kind="email" />
                 </span>
                 <a href={`mailto:${email}`}>{email}</a>
               </li>
             ) : null}
             {amenityList.map((id) => (
-              <li key={id} className="vysiongids-zaak-info-item vysiongids-zaak-info-item--amenity" style={infoItemRow}>
-                <span className="vysiongids-zaak-info-icon vysiongids-zaak-info-icon--red" style={iconRed}>
+              <li key={id} className="vysiongids-zaak-info-item vysiongids-zaak-info-item--amenity">
+                <span className="vysiongids-zaak-info-icon vysiongids-zaak-info-icon--red">
                   <AmenityIcon id={id} />
                 </span>
-                <span>{AMENITY_LABELS[id]}</span>
+                <span className="vysiongids-zaak-info-amenity-label">{AMENITY_LABELS[id]}</span>
               </li>
             ))}
             {!website && !phone && !email && amenityList.length === 0 ? (

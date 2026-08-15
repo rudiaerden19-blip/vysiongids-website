@@ -528,25 +528,53 @@ body {
 
 .vysiongids-zaak-info {
   margin-top: 2rem;
-  padding: 2rem clamp(1.25rem, 3vw, 2.5rem);
+  width: 100%;
+  max-width: 100%;
+  padding: 1.25rem 1rem;
   background: #ececec;
   box-sizing: border-box;
+  overflow-x: hidden;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-zaak-info {
+    padding: 2rem clamp(1.25rem, 3vw, 2.5rem);
+  }
 }
 
 .vysiongids-zaak-info-grid {
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 2.5rem 3rem;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 2rem;
   width: 100%;
   max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .vysiongids-zaak-info-grid {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 2.5rem 3rem;
+  }
 }
 
 .vysiongids-zaak-info-col {
-  flex: 1 1 50%;
+  flex: 1 1 auto;
   min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (min-width: 768px) {
+  .vysiongids-zaak-info-col {
+    flex: 1 1 50%;
+  }
 }
 
 .vysiongids-zaak-info-heading {
@@ -557,19 +585,30 @@ body {
   color: #1e3a5f;
 }
 
+.vysiongids-zaak-info-item a,
+.vysiongids-zaak-info-amenity-label {
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .vysiongids-zaak-hours-table {
   width: 100%;
+  max-width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-size: 0.9375rem;
   color: #374151;
 }
 
 .vysiongids-zaak-hours-table th {
-  padding: 0.35rem 1.25rem 0.35rem 0;
+  padding: 0.35rem 0.75rem 0.35rem 0;
   font-weight: 400;
   text-align: left;
   vertical-align: top;
   white-space: nowrap;
+  width: 38%;
 }
 
 .vysiongids-zaak-hours-table td {
@@ -577,6 +616,8 @@ body {
   font-weight: 500;
   text-align: left;
   vertical-align: top;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .vysiongids-zaak-info-list {
@@ -628,26 +669,32 @@ body {
 @media (max-width: 640px) {
   .vysiongids-zaak-hours-table th {
     white-space: normal;
-    padding-right: 0.75rem;
+    padding-right: 0.5rem;
   }
 
   .vysiongids-zaak-info {
     padding: 1.25rem 1rem;
   }
-
-  .vysiongids-zaak-info-grid {
-    flex-direction: column;
-    flex-wrap: wrap;
-  }
-
-  .vysiongids-zaak-info-col {
-    flex: 1 1 100%;
-    width: 100%;
-  }
 }
 
 .vysiongids-zaak-bestel-btn {
   box-sizing: border-box;
+}
+
+.vysiongids-zaak-page {
+  overflow-x: clip;
+  max-width: 100%;
+}
+
+.vysiongids-zaak-title {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  max-width: 100%;
+}
+
+.vysiongids-zaak-page .grid {
+  min-width: 0;
+  max-width: 100%;
 }
 
 .vysiongids-page-wrap {

@@ -43,7 +43,7 @@ export default async function ZaakPage({ params }: Props) {
   return (
     <>
       <SiteHeader />
-      <main className="vysiongids-page-wrap">
+      <main className="vysiongids-page-wrap vysiongids-zaak-page">
         <nav className="mb-4 text-sm text-gray-500">
           <Link href="/" className="hover:text-accent">
             Home
@@ -58,7 +58,7 @@ export default async function ZaakPage({ params }: Props) {
 
         <div className="grid gap-8 lg:grid-cols-[1fr_280px]">
           <div>
-            <h1 className="text-3xl font-bold text-accent sm:text-4xl">{listing.name}</h1>
+            <h1 className="vysiongids-zaak-title text-3xl font-bold text-accent sm:text-4xl">{listing.name}</h1>
             <p className="mt-2 flex items-start gap-2 text-gray-600">
               <span aria-hidden>📍</span>
               <span>
