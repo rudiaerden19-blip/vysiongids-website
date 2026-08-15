@@ -1,5 +1,6 @@
 import SiteHeader from '@/components/SiteHeader'
 import ZaakToevoegenForm from '@/components/ZaakToevoegenForm'
+import ZaakToevoegenIntroGate from '@/components/ZaakToevoegenIntroGate'
 
 export const metadata = { title: 'Zaak toevoegen' }
 
@@ -13,7 +14,9 @@ export default function ZaakToevoegenPage() {
           Unieke zaaknaam, 6-cijferige PIN en alle velden met <span className="vysiongids-form-required">*</span>.
           Na registratie staat je zaak meteen online.
         </p>
-        <ZaakToevoegenForm />
+        <ZaakToevoegenIntroGate>
+          <ZaakToevoegenForm />
+        </ZaakToevoegenIntroGate>
         <p className="mt-10 border-t border-gray-200 pt-6 text-sm text-gray-600">
           Zaak al online en wil je alles verwijderen?{' '}
           <a href="/login" className="font-semibold text-accent hover:underline">

@@ -1152,6 +1152,91 @@ body {
   color: #374151;
 }
 
+.vysiongids-zaak-intro-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  background: rgb(0 0 0 / 0.55);
+}
+
+.vysiongids-zaak-intro-dialog {
+  position: fixed;
+  z-index: 1101;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  box-sizing: border-box;
+  width: min(42rem, calc(100vw - 2rem));
+  max-height: min(88vh, 40rem);
+  display: flex;
+  flex-direction: column;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.35);
+  padding: 1.5rem 1.5rem 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-zaak-intro-dialog {
+    padding: 2rem 2rem 1.5rem;
+  }
+}
+
+.vysiongids-zaak-intro-title {
+  margin: 0;
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #0e5d82;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-zaak-intro-title {
+    font-size: 1.75rem;
+  }
+}
+
+.vysiongids-zaak-intro-body {
+  margin-top: 1rem;
+  overflow-y: auto;
+  flex: 1;
+  min-height: 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: #374151;
+}
+
+.vysiongids-zaak-intro-body ul {
+  margin: 1rem 0;
+  padding-left: 1.25rem;
+}
+
+.vysiongids-zaak-intro-body li {
+  margin-bottom: 0.65rem;
+}
+
+.vysiongids-zaak-intro-actions {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.vysiongids-zaak-intro-btn-primary {
+  display: block;
+  width: 100%;
+  border: none;
+  border-radius: 0.75rem;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.875rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.vysiongids-zaak-intro-btn-primary:hover {
+  filter: brightness(1.05);
+}
+
 @media (max-width: 639px) {
   .vysiongids-listing-panel-body {
     padding: 1rem 1.1rem;
