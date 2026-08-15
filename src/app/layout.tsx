@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import SiteFooter from '@/components/SiteFooter'
+import ScrollToTopOnNavigation from '@/components/ScrollToTopOnNavigation'
 import './globals.css'
 
 const inter = Inter({
@@ -32,6 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}
         suppressHydrationWarning
       >
+        <ScrollToTopOnNavigation />
         {children}
         <SiteFooter />
       </body>

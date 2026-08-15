@@ -61,7 +61,9 @@ function MarkerWithPopup({
   }, [lat, lng])
   return (
     <Marker ref={markerRef} position={[lat, lng]} icon={pinIcon}>
-      <Popup closeButton>{popup}</Popup>
+      <Popup closeButton autoPan={false}>
+        {popup}
+      </Popup>
     </Marker>
   )
 }
