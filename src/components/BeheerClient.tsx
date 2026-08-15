@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import VerwijderZaakButton from '@/components/VerwijderZaakButton'
 import BeheerEditForm from '@/components/BeheerEditForm'
+import ListingOwnerDailyViews from '@/components/ListingOwnerDailyViews'
 import type { Listing } from '@/lib/listing-types'
 
 type MeResponse = {
@@ -60,6 +61,8 @@ export default function BeheerClient() {
           Publieke pagina bekijken →
         </Link>
       ) : null}
+
+      {slug ? <ListingOwnerDailyViews slug={slug} variant="beheer" /> : null}
 
       <BeheerEditForm
         key={me.listing.slug + (me.listing.name ?? '')}

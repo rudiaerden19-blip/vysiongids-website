@@ -96,11 +96,12 @@ export default async function ZaakPage({ params }: Props) {
                 sizes="(max-width: 1024px) 100vw, min(960px, 75vw)"
                 className="object-cover"
               />
+              <ListingTopZaakStamp listing={listingForRating} variant="photo" />
             </div>
 
             <ListingInfoSection listing={listing} />
 
-            <ListingMap listing={listing} />
+            <ListingMap listing={listingForRating} />
 
             <section id="beoordeling" className="mt-8 border-t border-gray-200 pt-8 scroll-mt-24">
               <h2 className="text-lg font-bold text-gray-900">Beoordeling</h2>

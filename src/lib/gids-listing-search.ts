@@ -48,6 +48,7 @@ export type ParsedListingSearchQuery = {
 function normalizeQueryWithTypoFix(raw: string): string {
   let q = normalizeSearchText(raw)
   if (!q) return q
+  if (q === 'alles' || q === 'alle' || q === 'all') return ''
   const tokens = q.split(/\s+/).map((t) => {
     if (t.length > 4 && t.startsWith('f') && !t.startsWith('frit')) {
       const trimmed = t.slice(1)
@@ -75,33 +76,37 @@ export function parseListingSearchQuery(raw: string): ParsedListingSearchQuery {
   if (!qNorm) {
     return { cuisineIds: [], amenityIds: [], freeText: '', strippedPhrases: [] }
   }
+
   const cuisineIds: ListingCuisineId[] = []
   const amenityIds: ListingAmenityId[] = []
   const strippedPhrases: string[] = []
 
-  for (const c of LISTING_CUISINE_TYPES) {
-    const phrases = [
-      c.label,
-      c.label.replace(/\s+keuken$/i, ''),
-      c.id,
-      ...(CUISINE_EXTRA_TERMS[c.id] ?? []),
-    ]
-    for (const phrase of phrases) {
-      if (phraseInQuery(qNorm, phrase)) {
-        if (!cuisineIds.includes(c.id)) cuisineIds.push(c.id)
-        strippedPhrases.push(normalizeSearchText(phrase))
-        break
+  /** Keuken/voorziening alleen bij duidelijke zoekterm (≥3 tekens), geen false positives. */
+  if (qNorm.length >= 3) {
+    for (const c of LISTING_CUISINE_TYPES) {
+      const phrases = [
+        c.label,
+        c.label.replace(/\s+keuken$/i, ''),
+        c.id,
+        ...(CUISINE_EXTRA_TERMS[c.id] ?? []),
+      ]
+      for (const phrase of phrases) {
+        if (phraseInQuery(qNorm, phrase)) {
+          if (!cuisineIds.includes(c.id)) cuisineIds.push(c.id)
+          strippedPhrases.push(normalizeSearchText(phrase))
+          break
+        }
       }
     }
-  }
 
-  for (const a of OWNER_PROFILE_AMENITIES) {
-    const phrases = [a.label, ...(AMENITY_EXTRA_TERMS[a.id] ?? [])]
-    for (const phrase of phrases) {
-      if (phraseInQuery(qNorm, phrase)) {
-        if (!amenityIds.includes(a.id)) amenityIds.push(a.id)
-        strippedPhrases.push(normalizeSearchText(phrase))
-        break
+    for (const a of OWNER_PROFILE_AMENITIES) {
+      const phrases = [a.label, ...(AMENITY_EXTRA_TERMS[a.id] ?? [])]
+      for (const phrase of phrases) {
+        if (phraseInQuery(qNorm, phrase)) {
+          if (!amenityIds.includes(a.id)) amenityIds.push(a.id)
+          strippedPhrases.push(normalizeSearchText(phrase))
+          break
+        }
       }
     }
   }

@@ -10,6 +10,8 @@ type Props = {
   searchParams: Promise<{ q?: string; type?: string; prov?: string }>
 }
 
+export const dynamic = 'force-dynamic'
+
 export default async function ZoekenPage({ searchParams }: Props) {
   const sp = await searchParams
   const results = await searchListings({ q: sp.q, type: sp.type, prov: sp.prov })
@@ -60,8 +62,11 @@ export default async function ZoekenPage({ searchParams }: Props) {
               Geen zaken gevonden. Probeer een andere stad, keukentype (bv. Belgische keuken) of voorziening (bv.
               glutenvrij, parking).
             </p>
-            <Link href="/zoeken" style={{ marginTop: '0.75rem', display: 'inline-block', fontWeight: 600, color: '#0e5d82' }}>
-              Toon alle zaken
+            <Link
+              href={sp.prov?.trim() ? `/zoeken?prov=${encodeURIComponent(sp.prov.trim())}` : '/zoeken'}
+              style={{ marginTop: '0.75rem', display: 'inline-block', fontWeight: 600, color: '#0e5d82' }}
+            >
+              {sp.prov?.trim() ? `Toon alle zaken in ${provLabel ?? sp.prov}` : 'Toon alle zaken'}
             </Link>
           </div>
         ) : (

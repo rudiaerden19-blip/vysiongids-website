@@ -1451,6 +1451,31 @@ body {
   white-space: nowrap;
 }
 
+.vysiongids-beheer-views-card {
+  border-radius: 0.75rem;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  padding: 1rem 1.25rem;
+}
+
+.vysiongids-listing-daily-views--beheer {
+  margin: 0;
+  max-width: none;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-size: 1rem;
+  line-height: 1.45;
+  color: #1e3a5f;
+}
+
+.vysiongids-beheer-views-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.8125rem;
+  color: #64748b;
+}
+
 .vysiongids-listing-open-status.is-open {
   color: #15803d;
 }

@@ -68,6 +68,7 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
 
   const q = searchParams.get('q') ?? ''
   const type = searchParams.get('type') ?? 'all'
+  const prov = searchParams.get('prov') ?? ''
 
   const onSubmit = useCallback(
     (e: FormEvent<HTMLFormElement>) => {
@@ -78,10 +79,11 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
       const params = new URLSearchParams()
       if (nextQ) params.set('q', nextQ)
       if (nextType && nextType !== 'all') params.set('type', nextType)
+      if (prov.trim()) params.set('prov', prov.trim())
       const qs = params.toString()
       router.push(qs ? `/zoeken?${qs}` : '/zoeken')
     },
-    [router],
+    [router, prov],
   )
 
   if (!compact) {

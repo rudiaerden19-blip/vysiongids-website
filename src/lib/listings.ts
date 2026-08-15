@@ -18,11 +18,11 @@ const cachedDbListings = unstable_cache(
 /** Supabase is leidend per slug; JSON vult ontbrekende demo-zaken aan tot volledige seed. */
 async function loadListings(): Promise<Listing[]> {
   const fromDb = await cachedDbListings()
-  if (!fromDb || fromDb.length === 0) return jsonFallback
-
   const bySlug = new Map<string, Listing>()
   for (const listing of jsonFallback) bySlug.set(listing.slug, listing)
-  for (const listing of fromDb) bySlug.set(listing.slug, listing)
+  if (fromDb?.length) {
+    for (const listing of fromDb) bySlug.set(listing.slug, listing)
+  }
   return Array.from(bySlug.values())
 }
 
