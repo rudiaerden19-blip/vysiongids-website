@@ -3,7 +3,8 @@
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
-import { LISTING_TYPES } from '@/lib/listing-types'
+import { LISTING_TYPES, type ListingDayHours } from '@/lib/listing-types'
+import OpeningHoursEditor from '@/components/OpeningHoursEditor'
 
 function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
@@ -68,6 +69,29 @@ export default function ZaakToevoegenForm() {
     setLoading(true)
     const form = e.currentTarget
     const fd = new FormData(form)
+    const hoursRaw = String(fd.get('hoursByDay') ?? '[]')
+    if (hoursRaw === '[]' || hoursRaw === '') {
+      setError('Controleer je openingsuren per dag (tijden en eventueel 2e shift).')
+      setLoading(false)
+      return
+    }
+    try {
+      const rows = JSON.parse(hoursRaw) as ListingDayHours[]
+      if (!Array.isArray(rows) || rows.length !== 7) {
+        setError('Vul openingsuren per dag in.')
+        setLoading(false)
+        return
+      }
+      if (rows.every((r) => r.hours === 'gesloten')) {
+        setError('Minstens één dag moet open zijn.')
+        setLoading(false)
+        return
+      }
+    } catch {
+      setError('Openingsuren ongeldig.')
+      setLoading(false)
+      return
+    }
     try {
       const res = await fetch('/api/gids/register', { method: 'POST', body: fd })
       const data = (await res.json()) as { error?: string; url?: string }
@@ -209,27 +233,13 @@ export default function ZaakToevoegenForm() {
       </div>
 
       <div>
-        <RequiredLabel htmlFor="openingHours">Openingstijden (weergave)</RequiredLabel>
-        <input
-          id="openingHours"
-          name="openingHours"
-          required
-          placeholder="Bv. Ma–Zo 11:00–22:00"
-          className="vysiongids-form-input mt-1"
-        />
-        <p className="mt-1 text-xs text-gray-500">Gebruik voor «Nu open» later per dag in beheer (komt).</p>
-      </div>
-
-      <div>
-        <label className="vysiongids-form-label" htmlFor="closedDays">
-          Gesloten op (optioneel)
-        </label>
-        <input
-          id="closedDays"
-          name="closedDays"
-          placeholder="Bv. Maandag"
-          className="vysiongids-form-input mt-1"
-        />
+        <p className="vysiongids-form-label">
+          Openingstijden per dag
+          <span className="vysiongids-form-required" aria-hidden>
+            *
+          </span>
+        </p>
+        <OpeningHoursEditor />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">

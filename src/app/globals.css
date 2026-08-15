@@ -1042,6 +1042,77 @@ body {
   min-height: 6rem;
 }
 
+.vysiongids-opening-hours {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.vysiongids-opening-hours-day {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  background: #fafafa;
+}
+
+.vysiongids-opening-hours-day-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.vysiongids-opening-hours-day-label {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #374151;
+}
+
+.vysiongids-opening-hours-closed {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  color: #4b5563;
+}
+
+.vysiongids-opening-hours-shifts {
+  margin-top: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.vysiongids-opening-hours-shift {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+}
+
+.vysiongids-opening-hours-shift-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6b7280;
+  min-width: 3.25rem;
+}
+
+.vysiongids-opening-hours-time {
+  width: auto;
+  min-width: 6.5rem;
+  padding: 0.35rem 0.5rem;
+}
+
+.vysiongids-opening-hours-shift2-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  color: #374151;
+}
+
 @media (max-width: 639px) {
   .vysiongids-listing-panel-body {
     padding: 1rem 1.1rem;

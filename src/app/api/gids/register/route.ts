@@ -4,7 +4,9 @@ import { hashGidsPin, isValidGidsPin } from '@/lib/gids-pin'
 import { normalizeGidsBusinessName, slugifyListing } from '@/lib/gids-text'
 import { fetchListingByNormalizedNameAdmin } from '@/lib/gids-listings-db'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
-import { LISTING_TYPES } from '@/lib/listing-types'
+import { LISTING_TYPES, type ListingDayHours } from '@/lib/listing-types'
+import { closedDaysFromRows, summarizeOpeningHours } from '@/lib/gids-opening-hours'
+import { WEEKDAYS_NL } from '@/lib/listing-info'
 
 const VALID_TYPES = LISTING_TYPES.filter((t) => t.id !== 'all').map((t) => t.id)
 const MAX_PHOTO_BYTES = 5 * 1024 * 1024
@@ -40,8 +42,7 @@ export async function POST(req: Request) {
   const phone = String(form.get('phone') ?? '').trim()
   const email = String(form.get('email') ?? '').trim()
   const website = String(form.get('website') ?? '').trim()
-  const openingHours = String(form.get('openingHours') ?? '').trim()
-  const closedDays = String(form.get('closedDays') ?? '').trim() || null
+  const hoursByDayRaw = String(form.get('hoursByDay') ?? '').trim()
   const deliveryFeeRaw = String(form.get('deliveryFeeEur') ?? '').trim()
   const minOrderRaw = String(form.get('minOrderEur') ?? '').trim()
   const deliveryTimeMinRaw = String(form.get('deliveryTimeMin') ?? '').trim()
@@ -73,9 +74,30 @@ export async function POST(req: Request) {
   if (!orderUrl.startsWith('https://')) {
     return NextResponse.json({ error: 'Bestel- of reserveer-URL moet beginnen met https://' }, { status: 400 })
   }
-  if (!openingHours) {
-    return NextResponse.json({ error: 'Openingstijden zijn verplicht.' }, { status: 400 })
+
+  let hoursByDay: ListingDayHours[]
+  try {
+    hoursByDay = JSON.parse(hoursByDayRaw) as ListingDayHours[]
+  } catch {
+    return NextResponse.json({ error: 'Openingsuren ongeldig.' }, { status: 400 })
   }
+  if (!Array.isArray(hoursByDay) || hoursByDay.length !== WEEKDAYS_NL.length) {
+    return NextResponse.json({ error: 'Vul alle dagen in voor openingsuren.' }, { status: 400 })
+  }
+  for (const row of hoursByDay) {
+    if (!WEEKDAYS_NL.includes(row.day as (typeof WEEKDAYS_NL)[number])) {
+      return NextResponse.json({ error: 'Onbekende dag in openingsuren.' }, { status: 400 })
+    }
+    if (!row.hours?.trim()) {
+      return NextResponse.json({ error: 'Elke dag moet uren of «gesloten» hebben.' }, { status: 400 })
+    }
+  }
+  if (hoursByDay.every((r) => r.hours.toLowerCase() === 'gesloten')) {
+    return NextResponse.json({ error: 'Minstens één dag moet open zijn.' }, { status: 400 })
+  }
+
+  const openingHours = summarizeOpeningHours(hoursByDay)
+  const closedDays = closedDaysFromRows(hoursByDay)
   if (!Number.isFinite(deliveryFeeEur) || deliveryFeeEur < 0) {
     return NextResponse.json({ error: 'Vul geldige leveringskosten in (0 = gratis).' }, { status: 400 })
   }
@@ -146,6 +168,7 @@ export async function POST(req: Request) {
       email,
       opening_hours: openingHours,
       closed_days: closedDays,
+      hours_by_day: hoursByDay,
       status: 'published',
       rating_avg: 0,
       rating_count: 0,
