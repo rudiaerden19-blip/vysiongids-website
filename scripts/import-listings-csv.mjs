@@ -53,7 +53,7 @@ const listings = rows.map((line) => {
     address: r.address,
     orderUrl: r.orderUrl,
     photoUrl: r.photoUrl || '/images/placeholder-frituur.svg',
-    ratingAvg: Number(r.ratingAvg || 4.5),
+    ratingAvg: Number(r.ratingAvg || 0),
     ratingCount: Number(r.ratingCount || 0),
     deliveryTimeMin: Number(r.deliveryTimeMin || 20),
     deliveryTimeMax: Number(r.deliveryTimeMax || 40),

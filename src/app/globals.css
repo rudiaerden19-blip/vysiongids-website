@@ -1015,6 +1015,11 @@ body {
   color: #6b7280;
 }
 
+.vysiongids-star-rating--empty .vysiongids-star-rating-count {
+  font-size: 0.875rem;
+  font-style: italic;
+}
+
 .vysiongids-review-star-btn {
   border: 1px solid #d1d5db;
   background: #fff;

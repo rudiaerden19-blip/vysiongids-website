@@ -18,16 +18,20 @@ function starGlyphs(avg: number): string {
 
 export default function ListingStarRating({ slug, avg, count, size = 'sm', linkToReviews = true }: Props) {
   const reviewsHref = `/zaak/${slug}/reviews`
-  const stars = starGlyphs(avg)
+  const hasReviews = count > 0
   const countLabel = count === 1 ? '1 beoordeling' : `${count} beoordelingen`
 
-  const content = (
+  const content = hasReviews ? (
     <span className={`vysiongids-star-rating vysiongids-star-rating--${size}`}>
       <span className="vysiongids-star-rating-stars" aria-hidden>
-        {stars}
+        {starGlyphs(avg)}
       </span>
       <span className="vysiongids-star-rating-avg">{avg.toFixed(1)}</span>
-      <span className="vysiongids-star-rating-count">({count > 0 ? countLabel : 'nog geen reviews'})</span>
+      <span className="vysiongids-star-rating-count">({countLabel})</span>
+    </span>
+  ) : (
+    <span className={`vysiongids-star-rating vysiongids-star-rating--${size} vysiongids-star-rating--empty`}>
+      <span className="vysiongids-star-rating-count">Nog geen reviews</span>
     </span>
   )
 

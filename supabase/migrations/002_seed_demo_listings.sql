@@ -10,7 +10,7 @@ insert into public.gids_listings (
   'Pelt', '3900', 'limburg', 'Siberiëstraat 24', 'https://frituurnolim.ordervysion.com',
   'https://frituurnolim.ordervysion.com', '+32 11 64 12 34', 'info@frituurnolim.be', 'Di–Zo 11:30–22:00', 'Maandag',
   '[{"day":"maandag","hours":"gesloten"},{"day":"dinsdag","hours":"11:30-22:00"},{"day":"woensdag","hours":"11:30-22:00"},{"day":"donderdag","hours":"11:30-22:00"},{"day":"vrijdag","hours":"11:30-22:00"},{"day":"zaterdag","hours":"11:30-22:00"},{"day":"zondag","hours":"11:30-22:00"}]'::jsonb, '["bancontact","wifi","takeaway","delivery"]'::jsonb,
-  4.7, 128, 25, 45, 2.5, 15,
+  0, 0, 25, 45, 2.5, 15,
   true, true, 51.2261485, 5.3776718, 'published'
 ) on conflict (slug) do nothing;
 
@@ -28,7 +28,7 @@ insert into public.gids_listings (
   'Dordrecht', '3311', null, 'Voorstraat 88', 'https://blonkys.ordervysion.com',
   'https://blonkys.ordervysion.com', '+31 78 123 45 67', 'info@blonkys.nl', 'Ma–Zo 11:00–23:00', null,
   '[{"day":"maandag","hours":"11:00-23:00"},{"day":"dinsdag","hours":"11:00-23:00"},{"day":"woensdag","hours":"11:00-23:00"},{"day":"donderdag","hours":"11:00-23:00"},{"day":"vrijdag","hours":"11:00-23:00"},{"day":"zaterdag","hours":"11:00-23:00"},{"day":"zondag","hours":"11:00-23:00"}]'::jsonb, '["bancontact","wifi","takeaway","delivery"]'::jsonb,
-  4.8, 64, 20, 40, null, 20,
+  0, 0, 20, 40, null, 20,
   true, true, 51.813, 4.669, 'published'
 ) on conflict (slug) do nothing;
 
@@ -46,7 +46,7 @@ insert into public.gids_listings (
   'Opglabeek', '3660', 'limburg', 'Torenstraat 12', 'https://barlies.ordervysion.com',
   'https://barlies.ordervysion.com', '+32 11 60 12 00', 'eat@barlies.be', 'Wo–Zo 12:00–22:00', null,
   '[{"day":"maandag","hours":"gesloten"},{"day":"dinsdag","hours":"gesloten"},{"day":"woensdag","hours":"12:00-22:00"},{"day":"donderdag","hours":"17:30-23:00"},{"day":"vrijdag","hours":"17:30-00:00"},{"day":"zaterdag","hours":"12:00-15:00, 17:30-00:00"},{"day":"zondag","hours":"12:00-15:00, 17:30-23:00"}]'::jsonb, '["bancontact","wifi","chef","terrace","wheelchair"]'::jsonb,
-  4.6, 41, 30, 50, 3, 25,
+  0, 0, 30, 50, 3, 25,
   true, true, 51.041, 5.593, 'published'
 ) on conflict (slug) do nothing;
 
@@ -64,7 +64,7 @@ insert into public.gids_listings (
   'Genk', '3600', 'limburg', 'Stationsstraat 12', 'https://www.vysionorder.com',
   'https://www.vysionorder.com', '+32 89 12 34 56', 'genk@vysiongids.be', 'Ma–Zo 11:00–23:00', null,
   '[{"day":"maandag","hours":"11:00-23:00"},{"day":"dinsdag","hours":"11:00-23:00"},{"day":"woensdag","hours":"11:00-23:00"},{"day":"donderdag","hours":"11:00-23:00"},{"day":"vrijdag","hours":"11:00-00:00"},{"day":"zaterdag","hours":"11:00-00:00"},{"day":"zondag","hours":"11:00-23:00"}]'::jsonb, '["bancontact","takeaway","delivery"]'::jsonb,
-  4.4, 89, 15, 35, 2, 12,
+  0, 0, 15, 35, 2, 12,
   true, true, 50.9678, 5.4978, 'published'
 ) on conflict (slug) do nothing;
 
@@ -82,7 +82,7 @@ insert into public.gids_listings (
   'Hasselt', '3500', 'limburg', 'Demostraat 8', 'https://www.vysionorder.com',
   'https://www.vysionorder.com', '+32 11 22 33 44', 'hasselt@vysiongids.be', 'Di–Zo 16:00–22:30', null,
   '[{"day":"maandag","hours":"gesloten"},{"day":"dinsdag","hours":"16:00-22:30"},{"day":"woensdag","hours":"16:00-22:30"},{"day":"donderdag","hours":"16:00-22:30"},{"day":"vrijdag","hours":"16:00-23:00"},{"day":"zaterdag","hours":"16:00-23:00"},{"day":"zondag","hours":"16:00-22:30"}]'::jsonb, '["bancontact","wifi","delivery","takeaway"]'::jsonb,
-  4.5, 210, 20, 45, null, 18,
+  0, 0, 20, 45, null, 18,
   true, true, 50.931, 5.338, 'published'
 ) on conflict (slug) do nothing;
 
@@ -100,7 +100,7 @@ insert into public.gids_listings (
   'Neerpelt', '3910', 'limburg', 'Markt 3', 'https://www.vysionorder.com',
   'https://www.vysionorder.com', '+32 11 66 55 44', null, 'Di–Zo 11:00–21:00', 'Dinsdag',
   '[{"day":"maandag","hours":"11:00-21:00"},{"day":"dinsdag","hours":"gesloten"},{"day":"woensdag","hours":"11:00-21:00"},{"day":"donderdag","hours":"11:00-21:00"},{"day":"vrijdag","hours":"11:00-21:00"},{"day":"zaterdag","hours":"11:00-21:00"},{"day":"zondag","hours":"11:00-21:00"}]'::jsonb, '["bancontact","takeaway","delivery"]'::jsonb,
-  4.3, 56, 20, 35, 1.5, 10,
+  0, 0, 20, 35, 1.5, 10,
   true, true, 51.228, 5.442, 'published'
 ) on conflict (slug) do nothing;
 
