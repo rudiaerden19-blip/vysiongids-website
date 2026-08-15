@@ -232,6 +232,68 @@ export default function ZaakToevoegenForm() {
         />
       </div>
 
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <RequiredLabel htmlFor="deliveryFeeEur">Leveringskosten (€)</RequiredLabel>
+          <input
+            id="deliveryFeeEur"
+            name="deliveryFeeEur"
+            type="number"
+            inputMode="decimal"
+            min={0}
+            step={0.5}
+            required
+            placeholder="0 = gratis"
+            className="vysiongids-form-input mt-1"
+          />
+        </div>
+        <div>
+          <RequiredLabel htmlFor="minOrderEur">Minimum bestelbedrag (€)</RequiredLabel>
+          <input
+            id="minOrderEur"
+            name="minOrderEur"
+            type="number"
+            inputMode="decimal"
+            min={0}
+            step={0.5}
+            required
+            placeholder="Bv. 15"
+            className="vysiongids-form-input mt-1"
+          />
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
+          <RequiredLabel htmlFor="deliveryTimeMin">Levertijd vanaf (min)</RequiredLabel>
+          <input
+            id="deliveryTimeMin"
+            name="deliveryTimeMin"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={180}
+            required
+            placeholder="Bv. 25"
+            className="vysiongids-form-input mt-1"
+          />
+        </div>
+        <div>
+          <RequiredLabel htmlFor="deliveryTimeMax">Levertijd tot (min)</RequiredLabel>
+          <input
+            id="deliveryTimeMax"
+            name="deliveryTimeMax"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={240}
+            required
+            placeholder="Bv. 45"
+            className="vysiongids-form-input mt-1"
+          />
+        </div>
+      </div>
+
       <div>
         <p className="vysiongids-form-label">
           3 foto&apos;s

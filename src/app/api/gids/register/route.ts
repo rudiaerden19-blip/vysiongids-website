@@ -42,6 +42,15 @@ export async function POST(req: Request) {
   const website = String(form.get('website') ?? '').trim()
   const openingHours = String(form.get('openingHours') ?? '').trim()
   const closedDays = String(form.get('closedDays') ?? '').trim() || null
+  const deliveryFeeRaw = String(form.get('deliveryFeeEur') ?? '').trim()
+  const minOrderRaw = String(form.get('minOrderEur') ?? '').trim()
+  const deliveryTimeMinRaw = String(form.get('deliveryTimeMin') ?? '').trim()
+  const deliveryTimeMaxRaw = String(form.get('deliveryTimeMax') ?? '').trim()
+
+  const deliveryFeeEur = deliveryFeeRaw === '' ? NaN : Number(deliveryFeeRaw.replace(',', '.'))
+  const minOrderEur = minOrderRaw === '' ? NaN : Number(minOrderRaw.replace(',', '.'))
+  const deliveryTimeMin = deliveryTimeMinRaw === '' ? NaN : Number.parseInt(deliveryTimeMinRaw, 10)
+  const deliveryTimeMax = deliveryTimeMaxRaw === '' ? NaN : Number.parseInt(deliveryTimeMaxRaw, 10)
 
   if (name.length < 3) return NextResponse.json({ error: 'Vul een volledige zaaknaam in.' }, { status: 400 })
   if (!isValidGidsPin(pin)) return NextResponse.json({ error: 'PIN moet 6 cijfers zijn.' }, { status: 400 })
@@ -66,6 +75,21 @@ export async function POST(req: Request) {
   }
   if (!openingHours) {
     return NextResponse.json({ error: 'Openingstijden zijn verplicht.' }, { status: 400 })
+  }
+  if (!Number.isFinite(deliveryFeeEur) || deliveryFeeEur < 0) {
+    return NextResponse.json({ error: 'Vul geldige leveringskosten in (0 = gratis).' }, { status: 400 })
+  }
+  if (!Number.isFinite(minOrderEur) || minOrderEur < 0) {
+    return NextResponse.json({ error: 'Vul een geldig minimum bestelbedrag in.' }, { status: 400 })
+  }
+  if (!Number.isInteger(deliveryTimeMin) || deliveryTimeMin < 1 || deliveryTimeMin > 180) {
+    return NextResponse.json({ error: 'Levertijd vanaf: kies 1–180 minuten.' }, { status: 400 })
+  }
+  if (!Number.isInteger(deliveryTimeMax) || deliveryTimeMax < 1 || deliveryTimeMax > 240) {
+    return NextResponse.json({ error: 'Levertijd tot: kies 1–240 minuten.' }, { status: 400 })
+  }
+  if (deliveryTimeMax < deliveryTimeMin) {
+    return NextResponse.json({ error: 'Levertijd tot moet minstens gelijk zijn aan vanaf.' }, { status: 400 })
   }
 
   const nameNormalized = normalizeGidsBusinessName(name)
@@ -127,8 +151,10 @@ export async function POST(req: Request) {
       rating_count: 0,
       pickup_enabled: true,
       delivery_enabled: true,
-      delivery_time_min: 25,
-      delivery_time_max: 45,
+      delivery_fee_eur: deliveryFeeEur,
+      min_order_eur: minOrderEur,
+      delivery_time_min: deliveryTimeMin,
+      delivery_time_max: deliveryTimeMax,
     })
     .select('id, slug')
     .single()
