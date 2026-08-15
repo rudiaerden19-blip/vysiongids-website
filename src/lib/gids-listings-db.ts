@@ -77,6 +77,21 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
   }
 }
 
+export async function fetchPublishedListingCountFromDb(): Promise<number> {
+  if (!isGidsSupabaseConfigured()) return 0
+  const supabase = createGidsSupabasePublic()
+  if (!supabase) return 0
+  const { count, error } = await supabase
+    .from('gids_listings')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'published')
+  if (error) {
+    console.error('[gids] count listings:', error.message)
+    return 0
+  }
+  return count ?? 0
+}
+
 export async function fetchPublishedListingsFromDb(): Promise<Listing[] | null> {
   if (!isGidsSupabaseConfigured()) return null
   const supabase = createGidsSupabasePublic()

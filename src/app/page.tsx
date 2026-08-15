@@ -2,12 +2,15 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import SearchForm from '@/components/SearchForm'
+import HomeStatsBar from '@/components/HomeStatsBar'
 import SiteHeader from '@/components/SiteHeader'
+import { getHomePublicStats } from '@/lib/gids-home-stats'
 import { getAllListings, listingsDataSourceLabel } from '@/lib/listings'
 
 export default async function HomePage() {
   const total = (await getAllListings()).length
   const source = await listingsDataSourceLabel()
+  const stats = await getHomePublicStats()
 
   return (
     <>
@@ -95,6 +98,7 @@ export default async function HomePage() {
           </div>
         </section>
       </div>
+      <HomeStatsBar activeZaken={stats.activeZaken} zoekactiesPerDag={stats.zoekactiesPerDag} />
       <main>
         <section className="vysiongids-page-wrap" style={{ paddingTop: '2.5rem', paddingBottom: '2.5rem' }}>
           <div className="flex flex-wrap items-end justify-between gap-4">
