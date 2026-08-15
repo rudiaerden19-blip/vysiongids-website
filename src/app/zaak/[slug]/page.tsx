@@ -72,10 +72,12 @@ export default async function ZaakPage({ params }: Props) {
 
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_min(18rem,22vw)] xl:grid-cols-[minmax(0,1fr)_20rem]">
           <div>
-            <div className="vysiongids-zaak-title-row">
-              <h1 className="vysiongids-zaak-title text-3xl font-bold text-accent sm:text-4xl">{listing.name}</h1>
-              {cuisineLine ? <p className="vysiongids-zaak-title-cuisine">{cuisineLine}</p> : null}
-            </div>
+            <h1 className="vysiongids-zaak-title text-3xl font-bold text-accent sm:text-4xl">
+              {listing.name}
+              {cuisineLine ? (
+                <span className="vysiongids-zaak-title-cuisine-inline"> · {cuisineLine}</span>
+              ) : null}
+            </h1>
             <p className="mt-2 flex items-start gap-2 text-gray-600">
               <span aria-hidden>📍</span>
               <span>

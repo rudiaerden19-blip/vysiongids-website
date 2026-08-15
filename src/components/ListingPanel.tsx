@@ -38,12 +38,12 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
         <div className="vysiongids-listing-panel-body">
           <div className="vysiongids-listing-panel-head">
             <Link href={profileHref} className="vysiongids-listing-panel-title-link">
-              <div className="vysiongids-listing-panel-title-block">
-                <h2 className="vysiongids-listing-panel-title">{listing.name}</h2>
+              <h2 className="vysiongids-listing-panel-title">
+                {listing.name}
                 {cuisineLine ? (
-                  <p className="vysiongids-listing-panel-cuisine">{cuisineLine}</p>
+                  <span className="vysiongids-listing-panel-cuisine-inline"> · {cuisineLine}</span>
                 ) : null}
-              </div>
+              </h2>
             </Link>
             <ListingPanelOpenStatus listing={listing} />
           </div>

@@ -1075,17 +1075,19 @@ body {
   gap: 0.35rem 0.85rem;
 }
 
-.vysiongids-zaak-title-cuisine {
-  margin: 0;
-  font-size: 1rem;
+.vysiongids-zaak-title-cuisine-inline {
+  font-size: 0.55em;
   font-weight: 600;
   line-height: 1.35;
   color: #0e5d82;
+  text-transform: none;
+  letter-spacing: 0;
+  white-space: nowrap;
 }
 
 @media (min-width: 640px) {
-  .vysiongids-zaak-title-cuisine {
-    font-size: 1.125rem;
+  .vysiongids-zaak-title-cuisine-inline {
+    font-size: 0.5em;
   }
 }
 
@@ -1260,30 +1262,20 @@ body {
   color: #111827;
   overflow-wrap: anywhere;
   word-break: break-word;
+  line-height: 1.25;
 }
 
-.vysiongids-listing-panel-title-block {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0.25rem 0.65rem;
-  min-width: 0;
-}
-
-.vysiongids-listing-panel-cuisine {
-  margin: 0;
-  font-size: 0.8125rem;
+.vysiongids-listing-panel-cuisine-inline {
+  font-size: 0.72em;
   font-weight: 600;
-  line-height: 1.35;
-  text-transform: none;
   letter-spacing: 0;
+  text-transform: none;
   color: #0e5d82;
-  white-space: nowrap;
 }
 
 @media (min-width: 640px) {
-  .vysiongids-listing-panel-cuisine {
-    font-size: 0.875rem;
+  .vysiongids-listing-panel-cuisine-inline {
+    font-size: 0.68em;
   }
 }
 
