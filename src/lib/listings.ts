@@ -41,6 +41,33 @@ export function listingPhotoUrls(listing: Listing): string[] {
   return []
 }
 
+/** Homepage «in de kijker»: eerst best beoordeeld, daarna andere gepubliceerde zaken. */
+export async function getFeaturedListings(limit = 4): Promise<Listing[]> {
+  const all = await getAllListings()
+  if (all.length === 0) return []
+
+  const withReviews = [...all]
+    .filter((l) => l.ratingCount > 0)
+    .sort((a, b) => {
+      if (b.ratingAvg !== a.ratingAvg) return b.ratingAvg - a.ratingAvg
+      return b.ratingCount - a.ratingCount
+    })
+
+  const picked = new Set<string>()
+  const out: Listing[] = []
+
+  const add = (listing: Listing) => {
+    if (out.length >= limit || picked.has(listing.slug)) return
+    picked.add(listing.slug)
+    out.push(listing)
+  }
+
+  for (const l of withReviews) add(l)
+  for (const l of all) add(l)
+
+  return out
+}
+
 export function getListingTypeLabel(type: Listing['type']): string {
   return LISTING_TYPES.find((t) => t.id === type)?.label ?? type
 }

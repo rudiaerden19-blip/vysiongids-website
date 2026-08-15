@@ -486,6 +486,63 @@ body {
   color: #6b7280;
 }
 
+.vysiongids-home-featured {
+  background: #fff;
+  padding: 2rem clamp(1rem, 4vw, 2rem) 2.25rem;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.vysiongids-home-featured-inner {
+  max-width: 56rem;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.vysiongids-home-featured-title {
+  margin: 0;
+  text-align: center;
+  font-size: clamp(1.35rem, 3.2vw, 1.75rem);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: #0e5d82;
+  line-height: 1.2;
+}
+
+.vysiongids-home-featured-lead {
+  margin: 0.65rem auto 0;
+  max-width: 36rem;
+  text-align: center;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: #6b7280;
+  line-height: 1.45;
+}
+
+.vysiongids-home-featured-list {
+  list-style: none;
+  margin: 1.5rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.vysiongids-home-featured-more {
+  margin: 1.5rem 0 0;
+  text-align: center;
+}
+
+.vysiongids-home-featured-more-link {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #0e5d82;
+  text-decoration: none;
+}
+
+.vysiongids-home-featured-more-link:hover {
+  text-decoration: underline;
+}
+
 .vysiongids-home-regions {
   background: #fff;
   padding: 2.25rem clamp(1rem, 4vw, 2rem) 2.75rem;

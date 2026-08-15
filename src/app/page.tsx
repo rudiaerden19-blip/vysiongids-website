@@ -2,6 +2,7 @@ import Image from 'next/image'
 import { Suspense } from 'react'
 import SearchForm from '@/components/SearchForm'
 import HomeStatsBar from '@/components/HomeStatsBar'
+import HomeFeaturedListingsSection from '@/components/HomeFeaturedListingsSection'
 import HomeRegionsSection from '@/components/HomeRegionsSection'
 import SiteHeader from '@/components/SiteHeader'
 import { getHomePublicStats } from '@/lib/gids-home-stats'
@@ -96,6 +97,7 @@ export default async function HomePage() {
         </section>
       </div>
       <HomeStatsBar activeZaken={stats.activeZaken} zoekactiesPerDag={stats.zoekactiesPerDag} />
+      <HomeFeaturedListingsSection />
       <HomeRegionsSection />
     </>
   )
