@@ -8,6 +8,7 @@ import { useVoiceSearch } from '@/lib/use-voice-search'
 import { primeSpeechSynthesis, speakDutchAsync, stashVoiceSearchAnnouncement } from '@/lib/speak-dutch'
 import SearchVoiceMicButton from '@/components/SearchVoiceMicButton'
 import type { VoiceNameHint } from '@/lib/voice-search-transcript-fix'
+import { fixVoiceSearchTranscript } from '@/lib/voice-search-transcript-fix'
 
 const fieldLabel: CSSProperties = {
   display: 'block',
@@ -111,19 +112,26 @@ type SearchActionsProps = {
 function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: SearchActionsProps) {
   const router = useRouter()
   const voiceNameHintsRef = useRef<VoiceNameHint[]>([])
+  const hintsLoadRef = useRef<Promise<void> | null>(null)
 
-  useEffect(() => {
-    let cancelled = false
-    void fetch('/api/gids/voice-names', { cache: 'force-cache' })
+  const loadVoiceNameHints = useCallback((): Promise<void> => {
+    if (voiceNameHintsRef.current.length > 0) return Promise.resolve()
+    if (hintsLoadRef.current) return hintsLoadRef.current
+    hintsLoadRef.current = fetch('/api/gids/voice-names', { cache: 'no-store' })
       .then((res) => (res.ok ? res.json() : null))
       .then((data: { hints?: VoiceNameHint[] } | null) => {
-        if (!cancelled && data?.hints?.length) voiceNameHintsRef.current = data.hints
+        if (data?.hints?.length) voiceNameHintsRef.current = data.hints
       })
       .catch(() => {})
-    return () => {
-      cancelled = true
-    }
+      .finally(() => {
+        hintsLoadRef.current = null
+      })
+    return hintsLoadRef.current
   }, [])
+
+  useEffect(() => {
+    void loadVoiceNameHints()
+  }, [loadVoiceNameHints])
 
   const runSearchWithQuery = useCallback(
     async (spoken: string) => {

@@ -47,7 +47,11 @@ export function buildVoiceNameHints(listings: Listing[]): VoiceNameHint[] {
     const norm = normalizeSearchText(token)
     if (norm.length < 4 || STOPWORDS.has(norm) || seen.has(norm)) return
     seen.add(norm)
-    hints.push({ token: norm, replaceWith: replaceWith.trim() || token })
+    let repl = replaceWith.trim() || token
+    if (repl.length <= 24 && /^[a-zà-ü]/.test(repl) && !repl.includes(' ')) {
+      repl = repl.charAt(0).toUpperCase() + repl.slice(1)
+    }
+    hints.push({ token: norm, replaceWith: repl })
   }
 
   for (const listing of listings) {
@@ -62,6 +66,22 @@ export function buildVoiceNameHints(listings: Listing[]): VoiceNameHint[] {
     }
 
     if (listing.city) add(listing.city, listing.city)
+
+    const orderRaw = listing.orderUrl?.trim()
+    if (orderRaw) {
+      try {
+        const host = new URL(orderRaw.includes('://') ? orderRaw : `https://${orderRaw}`).hostname.toLowerCase()
+        const tenant = host.split('.')[0] ?? ''
+        if (tenant.length >= 4) add(tenant, tenant)
+        for (const part of listing.slug.split('-')) {
+          if (part.length >= 4 && tenant.includes(part)) {
+            add(part, part.charAt(0).toUpperCase() + part.slice(1))
+          }
+        }
+      } catch {
+        /* ignore */
+      }
+    }
   }
 
   return hints.sort((a, b) => b.token.length - a.token.length)
@@ -92,6 +112,30 @@ function maxEditDistance(wordLen: number): number {
   return 3
 }
 
+function speechMatchDistance(norm: string, token: string): number {
+  if (norm === token) return 0
+  const d = levenshtein(norm, token)
+  if (d <= maxEditDistance(norm.length)) return d
+
+  // Eind-m valt weg in spraak: «nolin» → Nolim
+  if (
+    norm.length === token.length &&
+    norm.length >= 4 &&
+    norm.slice(0, -1) === token.slice(0, -1) &&
+    norm.endsWith('n') &&
+    token.endsWith('m')
+  ) {
+    return 1
+  }
+
+  // Korte merknaam + ontbrekende letters aan het eind
+  if (token.startsWith(norm) && token.length - norm.length <= 2 && norm.length >= 4) {
+    return token.length - norm.length
+  }
+
+  return 999
+}
+
 function bestHintForWord(word: string, hints: VoiceNameHint[]): VoiceNameHint | null {
   const norm = normalizeSearchText(word)
   if (norm.length < 4 || hints.length === 0) return null
@@ -101,7 +145,7 @@ function bestHintForWord(word: string, hints: VoiceNameHint[]): VoiceNameHint | 
 
   for (const hint of hints) {
     if (hint.token === norm) return hint
-    const d = levenshtein(norm, hint.token)
+    const d = speechMatchDistance(norm, hint.token)
     if (d <= maxEditDistance(norm.length) && d < bestDist) {
       bestDist = d
       best = hint
@@ -112,8 +156,11 @@ function bestHintForWord(word: string, hints: VoiceNameHint[]): VoiceNameHint | 
 
 /** Corrigeer veel voorkomende spraakfouten (bv. «blondies» → Blonkys). */
 export function fixVoiceSearchTranscript(raw: string, hints: VoiceNameHint[]): string {
-  const trimmed = raw.trim()
+  let trimmed = raw.trim()
   if (!trimmed || hints.length === 0) return trimmed
+
+  // «no lim» / «no lin» → één woord voor merknamen
+  trimmed = trimmed.replace(/\bno\s+li[mn]\b/gi, 'nolim')
 
   const parts = trimmed.split(/(\s+)/)
   const out: string[] = []
