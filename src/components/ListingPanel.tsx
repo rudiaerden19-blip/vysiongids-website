@@ -72,9 +72,6 @@ export default function ListingPanel({ listing }: { listing: Listing }) {
             {minOrder ? <span style={{ color: '#6b7280' }}>{minOrder}</span> : null}
           </div>
           <div className="vysiongids-listing-panel-actions">
-            <Link href={profileHref} className="vysiongids-listing-panel-more">
-              Bekijk zaak →
-            </Link>
             <div className="vysiongids-listing-panel-cta-stack">
               <Link href={`${profileHref}#info`} className="vysiongids-listing-action-btn">
                 Info
