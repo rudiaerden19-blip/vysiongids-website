@@ -10,7 +10,7 @@ type Props = {
 
 export default function ReviewSubmitForm({ slug, listingName }: Props) {
   const router = useRouter()
-  const [rating, setRating] = useState(5)
+  const [rating, setRating] = useState(1)
   const [name, setName] = useState('')
   const [body, setBody] = useState('')
   const [error, setError] = useState<string | null>(null)
