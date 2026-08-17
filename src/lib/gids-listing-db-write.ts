@@ -23,6 +23,8 @@ type InsertExtras = {
   slug: string
   nameNormalized: string
   pinHash: string
+  lat?: number | null
+  lng?: number | null
 }
 
 /** Geen `cuisine_type: null` — anders faalt insert als kolom nog niet bestaat. */
@@ -58,6 +60,10 @@ export function buildGidsListingInsertRow(d: ParsedGidsListingForm, extras: Inse
   }
   if (d.cuisineType) row.cuisine_type = d.cuisineType
   if (d.deliveryRadiusKmValue != null) row.delivery_radius_km = d.deliveryRadiusKmValue
+  if (typeof extras.lat === 'number' && typeof extras.lng === 'number') {
+    row.lat = extras.lat
+    row.lng = extras.lng
+  }
   return row
 }
 

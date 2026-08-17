@@ -28,7 +28,7 @@ const ESRI_LABELS =
 function OpenPopupOnLoad({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap()
   useEffect(() => {
-    map.setView([lat, lng], 18)
+    map.setView([lat, lng], 17)
   }, [map, lat, lng])
   return null
 }
@@ -83,7 +83,8 @@ export default function ListingMap({ listing }: ListingMapProps) {
       <div className="vysiongids-listing-map relative mt-3 overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
         <MapContainer
           center={[lat, lng]}
-          zoom={18}
+          zoom={17}
+          maxZoom={18}
           zoomControl={false}
           dragging={false}
           touchZoom={false}
@@ -97,9 +98,10 @@ export default function ListingMap({ listing }: ListingMapProps) {
           <TileLayer
             attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a>'
             url={ESRI_SATELLITE}
-            maxZoom={19}
+            maxZoom={18}
+            maxNativeZoom={18}
           />
-          <TileLayer url={ESRI_LABELS} maxZoom={19} opacity={0.85} />
+          <TileLayer url={ESRI_LABELS} maxZoom={18} maxNativeZoom={18} opacity={0.85} />
           <LockMapView />
           <OpenPopupOnLoad lat={lat} lng={lng} />
           <MarkerWithPopup

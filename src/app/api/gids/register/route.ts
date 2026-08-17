@@ -8,6 +8,7 @@ import { parseGidsListingFormData } from '@/lib/gids-listing-form-server'
 import { buildGidsListingInsertRow, gidsListingSaveErrorMessage } from '@/lib/gids-listing-db-write'
 import { siteOriginFromRequest, uploadGidsListingPhoto, ensureGidsPhotosBucket } from '@/lib/gids-listing-photos-server'
 import { uploadGidsListingMenuPdf } from '@/lib/gids-listing-menu-server'
+import { geocodeListingAddress } from '@/lib/gids-listing-geocode'
 
 export const maxDuration = 60
 
@@ -54,9 +55,23 @@ async function handleRegisterPost(req: Request) {
 
   const pinHash = hashGidsPin(d.pin!)
 
+  const coords = await geocodeListingAddress({
+    address: d.address,
+    postcode: d.postcode,
+    city: d.city,
+  })
+
   const { data: inserted, error: insertErr } = await admin
     .from('gids_listings')
-    .insert(buildGidsListingInsertRow(d, { slug, nameNormalized, pinHash }))
+    .insert(
+      buildGidsListingInsertRow(d, {
+        slug,
+        nameNormalized,
+        pinHash,
+        lat: coords?.lat ?? null,
+        lng: coords?.lng ?? null,
+      }),
+    )
     .select('id, slug')
     .single()
 

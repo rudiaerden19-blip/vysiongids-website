@@ -19,6 +19,7 @@ import {
   removeGidsListingMenuPdfStorage,
   uploadGidsListingMenuPdf,
 } from '@/lib/gids-listing-menu-server'
+import { geocodeListingAddress } from '@/lib/gids-listing-geocode'
 
 export const maxDuration = 60
 
@@ -226,6 +227,16 @@ export async function PATCH(req: Request) {
 
   applyCuisineTypeToUpdatePayload(updatePayload, d.cuisineType)
   applyDeliveryRadiusToUpdatePayload(updatePayload, d.deliveryRadiusKmValue)
+
+  const coords = await geocodeListingAddress({
+    address: d.address,
+    postcode: d.postcode,
+    city: d.city,
+  })
+  if (coords) {
+    updatePayload.lat = coords.lat
+    updatePayload.lng = coords.lng
+  }
 
   const { error: updateErr } = await admin.from('gids_listings').update(updatePayload).eq('id', listingId)
   if (updateErr) {

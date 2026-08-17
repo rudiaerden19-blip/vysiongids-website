@@ -23,6 +23,7 @@ import {
 } from '@/lib/listings'
 import ListingMenuButton from '@/components/ListingMenuButton'
 import { fetchListingIdBySlugAdmin, fetchReviewStatsByListingSlug, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
+import { ensureListingGeocoded } from '@/lib/gids-listing-geocode'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -44,8 +45,9 @@ export async function generateMetadata({ params }: Props) {
 
 export default async function ZaakPage({ params }: Props) {
   const { slug } = await params
-  const listing = await getListingBySlug(slug)
+  let listing = await getListingBySlug(slug)
   if (!listing) notFound()
+  listing = await ensureListingGeocoded(listing)
 
   const cuisineLine = getListingCuisineDisplay(listing.cuisineType)
   const minOrder = formatMinOrder(listing)
