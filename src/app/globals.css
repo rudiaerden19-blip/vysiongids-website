@@ -1318,7 +1318,7 @@ body {
   width: 100%;
   aspect-ratio: 4 / 3;
   flex-shrink: 0;
-  background: #e5e7eb;
+  background: #f3f4f6;
   text-decoration: none;
   overflow: hidden;
 }
@@ -1332,7 +1332,7 @@ body {
 }
 
 .vysiongids-listing-panel-photo img {
-  object-fit: contain !important;
+  object-fit: cover !important;
   object-position: center;
 }
 
