@@ -1244,6 +1244,17 @@ body {
   font-size: 0.875rem;
 }
 
+.vysiongids-zoeken-travel-hint {
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 0.5rem;
+  background: #fffbeb;
+  border: 1px solid #fcd34d;
+  font-size: 0.875rem;
+  color: #78350f;
+  line-height: 1.45;
+}
+
 .vysiongids-listing-panel-travel {
   margin: 0.35rem 0 0;
   display: flex;

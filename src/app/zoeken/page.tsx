@@ -1,15 +1,15 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
-import ListingPanel from '@/components/ListingPanel'
 import NearbySearchHintBanner from '@/components/NearbySearchHintBanner'
 import NearbySearchLocationSync from '@/components/NearbySearchLocationSync'
 import SearchForm from '@/components/SearchForm'
 import SearchResultsNavContextSync from '@/components/SearchResultsNavContextSync'
 import SearchResultsVoiceAnnouncement from '@/components/SearchResultsVoiceAnnouncement'
+import ZoekenResultsList from '@/components/ZoekenResultsList'
 import SiteHeader from '@/components/SiteHeader'
 import { parseListingSearchQuery } from '@/lib/gids-listing-search'
 import { parseNearPointFromSearchParams } from '@/lib/gids-search-url'
-import { listingDistanceKmFrom, searchListings } from '@/lib/listings'
+import { searchListings } from '@/lib/listings'
 import { provinceLabel } from '@/lib/belgium-locations'
 
 type Props = {
@@ -96,16 +96,7 @@ export default async function ZoekenPage({ searchParams }: Props) {
             </Link>
           </div>
         ) : (
-          <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            {results.map((listing) => (
-              <li key={listing.slug}>
-                <ListingPanel
-                  listing={listing}
-                  distanceKm={near ? listingDistanceKmFrom(listing, near) : undefined}
-                />
-              </li>
-            ))}
-          </ul>
+          <ZoekenResultsList listings={results} initialNear={near} />
         )}
       </main>
     </>
