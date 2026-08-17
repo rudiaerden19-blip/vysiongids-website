@@ -1,4 +1,5 @@
 import type { Listing, ListingAmenityId } from '@/lib/listing-types'
+import { normalizeListingInfoExtras } from '@/lib/listing-info-extras'
 import { createGidsSupabaseAdmin, createGidsSupabasePublic, isGidsSupabaseConfigured } from '@/lib/supabase-gids'
 
 type PhotoRow = { sort_order: number; public_url: string }
@@ -38,6 +39,7 @@ export type GidsListingRow = {
   delivery_enabled: boolean | null
   lat: number | null
   lng: number | null
+  info_extras?: unknown
   gids_listing_photos?: PhotoRow[] | null
 }
 
@@ -83,6 +85,7 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
     email: row.email ?? undefined,
     hoursByDay: row.hours_by_day ?? undefined,
     amenities: row.amenities ?? undefined,
+    infoExtras: normalizeListingInfoExtras(row.info_extras),
     lat: row.lat ?? undefined,
     lng: row.lng ?? undefined,
   }

@@ -14,7 +14,13 @@ import {
   removeGidsListingPhotoSlot,
   siteOriginFromRequest,
   uploadGidsListingPhoto,
+  uploadGidsListingSpecialtyPhoto,
 } from '@/lib/gids-listing-photos-server'
+import {
+  buildInfoExtrasPayload,
+  normalizeListingInfoExtras,
+  parseInfoExtrasFromForm,
+} from '@/lib/listing-info-extras'
 import {
   removeGidsListingMenuPdfStorage,
   uploadGidsListingMenuPdf,
@@ -102,8 +108,10 @@ export async function PATCH(req: Request) {
   const d = parsed.data
 
   const needsPhotoUpload = d.photos.length > 0 || d.removePhotoSlots.length > 0
+  const infoExtrasForm = parseInfoExtrasFromForm(form)
+  const needsSpecialtyUpload = infoExtrasForm.specialtyPhotos.length > 0
   const needsMenuUpload = Boolean(d.menuPdfFile) || d.removeMenuPdf
-  if (needsPhotoUpload || needsMenuUpload) {
+  if (needsPhotoUpload || needsMenuUpload || needsSpecialtyUpload) {
     const bucketReady = await ensureGidsPhotosBucket(admin)
     if (!bucketReady.ok) {
       return NextResponse.json({ error: bucketReady.message }, { status: 503 })
@@ -195,6 +203,19 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: message }, { status: 500 })
   }
 
+  const existingExtras = normalizeListingInfoExtras(row.info_extras)
+  let infoExtrasPayload: Record<string, unknown> | null = null
+  try {
+    infoExtrasPayload = (await buildInfoExtrasPayload(
+      infoExtrasForm,
+      existingExtras,
+      (index, file) => uploadGidsListingSpecialtyPhoto(admin, listingId, index, file, origin),
+    )) as Record<string, unknown> | null
+  } catch (infoErr) {
+    const message = infoErr instanceof Error ? infoErr.message : 'INFO opslaan mislukt'
+    return NextResponse.json({ error: message }, { status: 400 })
+  }
+
   const updatePayload: Record<string, unknown> = {
     name: d.name,
     name_normalized: nameNormalized,
@@ -219,6 +240,7 @@ export async function PATCH(req: Request) {
     min_order_eur: d.minOrderValue,
     delivery_time_min: d.deliveryTimeMinValue,
     delivery_time_max: d.deliveryTimeMaxValue,
+    info_extras: infoExtrasPayload,
     updated_at: new Date().toISOString(),
   }
 

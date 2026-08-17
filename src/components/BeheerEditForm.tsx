@@ -11,6 +11,7 @@ import { compressListingPhoto } from '@/lib/compress-listing-photo'
 import DeliveryRadiusKmField from '@/components/DeliveryRadiusKmField'
 import ListingOwnerOptionsFields from '@/components/ListingOwnerOptionsFields'
 import ListingMenuOwnerFields from '@/components/ListingMenuOwnerFields'
+import BeheerInfoExtrasFields from '@/components/BeheerInfoExtrasFields'
 import KitchenTypeSelect from '@/components/KitchenTypeSelect'
 
 function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
@@ -510,6 +511,8 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
         </div>
 
         <ListingOwnerOptionsFields initialAmenities={listing.amenities} />
+
+        <BeheerInfoExtrasFields listing={listing} disabled={loading} />
 
         <button
           type="submit"

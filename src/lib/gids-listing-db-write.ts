@@ -13,6 +13,9 @@ export function gidsListingSaveErrorMessage(message: string | undefined): string
   if (/menu_url|menu_pdf/i.test(message)) {
     return 'Menu kan niet opgeslagen worden: voer in Supabase SQL uit: supabase/migrations/008_gids_listings_menu.sql.'
   }
+  if (/info_extras/i.test(message)) {
+    return 'INFO-blokken kunnen niet opgeslagen worden: voer in Supabase SQL uit: supabase/migrations/011_gids_listings_info_extras.sql'
+  }
   if (/gids_menu_|menu_catalog_active/i.test(message)) {
     return 'Menu-catalogus kan niet opgeslagen worden: voer in Supabase SQL uit: supabase/migrations/009_gids_menu_catalog.sql.'
   }

@@ -2525,3 +2525,193 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* Zaak INFO — specialiteiten, vacature, cadeaubon */
+.vysiongids-zaak-info-extras {
+  margin-top: 2.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.75rem;
+}
+
+.vysiongids-info-kicker {
+  margin: 0 0 0.35rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: #0e5d82;
+}
+
+.vysiongids-info-title {
+  margin: 0 0 1.25rem;
+  font-family: Georgia, 'Times New Roman', serif;
+  font-size: clamp(1.65rem, 3vw, 2.15rem);
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.vysiongids-specialties-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+@media (max-width: 768px) {
+  .vysiongids-specialties-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vysiongids-specialty-card-media {
+  position: relative;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: #e5e7eb;
+}
+
+.vysiongids-specialty-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.vysiongids-specialty-card-placeholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, #d1d5db, #9ca3af);
+}
+
+.vysiongids-specialty-card-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  margin: 0;
+  padding: 0.65rem 0.75rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(transparent, rgb(0 0 0 / 0.75));
+}
+
+.vysiongids-hiring-card {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 1.5rem 1.75rem;
+  border-radius: 1rem;
+  background: #fff;
+  box-shadow: 0 4px 24px rgb(0 0 0 / 0.08);
+  text-align: center;
+}
+
+.vysiongids-hiring-text {
+  margin: 0 0 1.25rem;
+  font-size: 1.0625rem;
+  color: #374151;
+  line-height: 1.5;
+}
+
+.vysiongids-hiring-contact {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.9375rem;
+  color: #4b5563;
+}
+
+.vysiongids-hiring-phone {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  background: #1f2937;
+  color: #fff !important;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.vysiongids-info-block--gift {
+  text-align: center;
+  max-width: 36rem;
+  margin: 0 auto;
+}
+
+.vysiongids-gift-intro {
+  margin: 0 0 1.25rem;
+  font-size: 0.9375rem;
+  color: #4b5563;
+  line-height: 1.55;
+}
+
+.vysiongids-gift-order-btn {
+  display: inline-block;
+  margin-bottom: 1.5rem;
+  padding: 0.65rem 1.5rem;
+  border-radius: 999px;
+  background: #1f2937;
+  color: #fff !important;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.vysiongids-gift-card-preview {
+  position: relative;
+  max-width: 280px;
+  margin: 0 auto;
+  aspect-ratio: 1.6;
+  border-radius: 1rem;
+  background: linear-gradient(145deg, #374151, #111827);
+  color: #fff;
+  padding: 1.25rem;
+  text-align: left;
+  overflow: hidden;
+}
+
+.vysiongids-gift-card-preview::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  right: -15%;
+  width: 55%;
+  height: 55%;
+  border-radius: 50%;
+  border: 2px solid rgb(255 255 255 / 0.12);
+}
+
+.vysiongids-gift-card-label {
+  font-size: 0.75rem;
+  opacity: 0.85;
+}
+
+.vysiongids-gift-card-name {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.vysiongids-gift-card-value-wrap {
+  position: absolute;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  text-align: right;
+}
+
+.vysiongids-gift-card-value-label {
+  display: block;
+  font-size: 0.6875rem;
+  opacity: 0.8;
+}
+
+.vysiongids-gift-card-value {
+  font-size: 1.75rem;
+  font-weight: 800;
+}

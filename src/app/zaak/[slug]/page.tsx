@@ -110,7 +110,7 @@ export default async function ZaakPage({ params }: Props) {
               />
             </div>
 
-            <ListingInfoSection listing={listing} />
+            <ListingInfoSection listing={listingForRating} />
 
             <ListingMap listing={listingForRating} />
 

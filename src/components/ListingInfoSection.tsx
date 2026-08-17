@@ -1,6 +1,7 @@
 'use client'
 
 import ListingAmenityIcon from '@/components/ListingAmenityIcon'
+import ListingInfoExtrasSections from '@/components/ListingInfoExtrasSections'
 import { resolveListingAmenityList } from '@/lib/listing-amenity-list'
 import {
   AMENITY_LABELS,
@@ -130,6 +131,7 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
           </ul>
         </div>
       </div>
+      <ListingInfoExtrasSections listing={listing} />
     </section>
   )
 }

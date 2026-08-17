@@ -1,4 +1,5 @@
 import type { ListingCuisineId } from '@/lib/listing-cuisine-types'
+import type { ListingInfoExtras } from '@/lib/listing-info-extras'
 
 export const LISTING_TYPES = [
   { id: 'all', label: 'Alles' },
@@ -96,6 +97,7 @@ export type Listing = {
   /** Per dag (Resto-stijl); anders afgeleid uit openingHours */
   hoursByDay?: ListingDayHours[]
   amenities?: ListingAmenityId[]
+  infoExtras?: ListingInfoExtras
 }
 
 export type ListingSearchParams = {

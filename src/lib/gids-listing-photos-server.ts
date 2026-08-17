@@ -62,6 +62,27 @@ export async function uploadGidsListingPhoto(
   if (photoErr) throw new Error(photoErr.message)
 }
 
+/** Specialiteiten-foto's (INFO-pagina) — URL staat in info_extras JSON. */
+export async function uploadGidsListingSpecialtyPhoto(
+  admin: SupabaseClient,
+  listingId: string,
+  index: number,
+  file: File,
+  origin: string,
+): Promise<string> {
+  const ext = file.type.includes('png') ? 'png' : file.type.includes('webp') ? 'webp' : 'jpg'
+  const path = `${listingId}/specialty-${index}.${ext}`
+  const buf = Buffer.from(await file.arrayBuffer())
+  const { error: upErr } = await admin.storage.from(GIDS_LISTING_PHOTOS_BUCKET).upload(path, buf, {
+    contentType: file.type,
+    upsert: true,
+  })
+  if (upErr) throw new Error(upErr.message)
+
+  const { data: pub } = admin.storage.from(GIDS_LISTING_PHOTOS_BUCKET).getPublicUrl(path)
+  return pub.publicUrl.startsWith('http') ? pub.publicUrl : `${origin}${pub.publicUrl}`
+}
+
 export async function removeGidsListingPhotoSlot(
   admin: SupabaseClient,
   listingId: string,
