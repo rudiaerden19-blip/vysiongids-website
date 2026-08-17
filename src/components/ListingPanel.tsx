@@ -51,7 +51,6 @@ export default function ListingPanel({
             urls={listingPhotoUrls(listing)}
             alt={listing.name}
             sizes="(max-width: 640px) 100vw, 26rem"
-            objectFit="contain"
           />
         </Link>
         <div className="vysiongids-listing-panel-body">
