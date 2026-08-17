@@ -1332,7 +1332,7 @@ body {
 }
 
 .vysiongids-listing-panel-photo img {
-  object-fit: cover !important;
+  object-fit: contain !important;
   object-position: center;
 }
 
