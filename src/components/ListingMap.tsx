@@ -25,10 +25,12 @@ const ESRI_SATELLITE =
 const ESRI_LABELS =
   'https://server.arcgisonline.com/ArcGIS/rest/services/Reference/World_Boundaries_and_Places/MapServer/tile/{z}/{y}/{x}'
 
+const MAP_ZOOM = 19
+
 function OpenPopupOnLoad({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap()
   useEffect(() => {
-    map.setView([lat, lng], 17)
+    map.setView([lat, lng], MAP_ZOOM)
   }, [map, lat, lng])
   return null
 }
@@ -83,8 +85,8 @@ export default function ListingMap({ listing }: ListingMapProps) {
       <div className="vysiongids-listing-map relative mt-3 overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
         <MapContainer
           center={[lat, lng]}
-          zoom={17}
-          maxZoom={18}
+          zoom={MAP_ZOOM}
+          maxZoom={20}
           zoomControl={false}
           dragging={false}
           touchZoom={false}
@@ -98,10 +100,10 @@ export default function ListingMap({ listing }: ListingMapProps) {
           <TileLayer
             attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a>'
             url={ESRI_SATELLITE}
-            maxZoom={18}
-            maxNativeZoom={18}
+            maxZoom={20}
+            maxNativeZoom={19}
           />
-          <TileLayer url={ESRI_LABELS} maxZoom={18} maxNativeZoom={18} opacity={0.85} />
+          <TileLayer url={ESRI_LABELS} maxZoom={20} maxNativeZoom={19} opacity={0.85} />
           <LockMapView />
           <OpenPopupOnLoad lat={lat} lng={lng} />
           <MarkerWithPopup
