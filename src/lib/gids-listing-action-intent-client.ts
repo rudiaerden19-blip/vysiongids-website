@@ -37,9 +37,18 @@ export async function tryNavigateListingActionIntent(
   return false
 }
 
-export function listingActionSpeechMessage(intent: Exclude<ListingActionIntent, { kind: 'search' }>): string {
+export function listingActionSpeechMessage(intent: ListingActionIntent): string | null {
   if (intent.kind === 'review') {
     return `Ik open de review voor ${intent.listingName}.`
   }
-  return `Ik open bestellen bij ${intent.listingName}.`
+  if (intent.kind === 'order') {
+    return `Ik open bestellen bij ${intent.listingName}.`
+  }
+  if (intent.failedAction === 'order') {
+    return 'Ik vond die zaak niet om te bestellen. Zeg bestel bij, en de volledige zaaknaam.'
+  }
+  if (intent.failedAction === 'review') {
+    return 'Ik vond die zaak niet voor een review.'
+  }
+  return null
 }

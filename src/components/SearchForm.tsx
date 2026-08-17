@@ -17,6 +17,7 @@ import {
   listingActionSpeechMessage,
   tryNavigateListingActionIntent,
 } from '@/lib/gids-listing-action-intent-client'
+import { normalizeVoiceActionQuery } from '@/lib/gids-listing-action-intent'
 
 const fieldLabel: CSSProperties = {
   display: 'block',
@@ -156,7 +157,7 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
   const runSearchWithQuery = useCallback(
     async (spoken: string) => {
       const hints = voiceNameHintsRef.current
-      const trimmed = fixVoiceSearchTranscript(spoken.trim(), hints)
+      const trimmed = fixVoiceSearchTranscript(normalizeVoiceActionQuery(spoken.trim()), hints)
       if (!trimmed) return
       const form = formRef.current
       const type = form ? String(new FormData(form).get('type') ?? 'all') : 'all'
@@ -165,9 +166,19 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
       const intent = await fetchListingActionIntent(trimmed)
       if (intent.kind !== 'search') {
         const message = listingActionSpeechMessage(intent)
-        stashVoiceSearchAnnouncement(message)
-        await speakDutchAsync(message)
+        if (message) {
+          stashVoiceSearchAnnouncement(message)
+          await speakDutchAsync(message)
+        }
         await tryNavigateListingActionIntent(router, trimmed, intent)
+        return
+      }
+      if (intent.failedAction) {
+        const message = listingActionSpeechMessage(intent)
+        if (message) {
+          stashVoiceSearchAnnouncement(message)
+          await speakDutchAsync(message)
+        }
         return
       }
 

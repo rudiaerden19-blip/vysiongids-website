@@ -3,7 +3,7 @@ import { fixVoiceSearchTranscript, type VoiceNameHint, buildVoiceNameHints } fro
 import { normalizeSearchText } from '@/lib/gids-text'
 
 export type ListingActionIntent =
-  | { kind: 'search' }
+  | { kind: 'search'; failedAction?: 'order' | 'review' }
   | { kind: 'review'; slug: string; listingName: string; path: string }
   | { kind: 'order'; slug: string; listingName: string; orderUrl: string }
 
@@ -30,6 +30,40 @@ const FILLER = new Set([
   'mijn',
 ])
 
+/** Spraakherkenning: «bedtel» → bestel, enz. */
+export function normalizeVoiceActionQuery(raw: string): string {
+  return raw
+    .replace(/\bbedtel\b/gi, 'bestel')
+    .replace(/\bpestel\b/gi, 'bestel')
+    .replace(/\bbesteld\b/gi, 'bestel')
+    .replace(/\bbestellen\b/gi, 'bestel')
+    .replace(/\bordere\b/gi, 'order')
+    .replace(/\bordern\b/gi, 'order')
+}
+
+const TYPE_WORDS = new Set([
+  'frituur',
+  'kebab',
+  'pizza',
+  'snack',
+  'snackbar',
+  'restaurant',
+  'resto',
+  'pizzeria',
+  'café',
+  'cafe',
+  'bistro',
+  'traiteur',
+  'broodjeszaak',
+  'sushi',
+  'chinees',
+  'chinese',
+  'sterrenzaak',
+  'eethuis',
+  'grill',
+  'house',
+])
+
 function detectActionKind(qNorm: string): 'review' | 'order' | null {
   if (
     /\b(geef|schrijf|plaats|zet)\s+(een\s+)?review\b/.test(qNorm) ||
@@ -42,6 +76,7 @@ function detectActionKind(qNorm: string): 'review' | 'order' | null {
   }
   if (
     /\b(bestellen|bestel|orderen|order)\b/.test(qNorm) ||
+    /\bbestel\s+bij\b/.test(qNorm) ||
     /\bonline\s+bestellen\b/.test(qNorm) ||
     /\b(iets|eten|food)\s+bestellen\b/.test(qNorm)
   ) {
@@ -59,7 +94,8 @@ function stripActionPhrases(qNorm: string): string {
     .replace(/\bsterren\s+geven\b/g, ' ')
     .replace(/\bonline\s+bestellen\b/g, ' ')
     .replace(/\b(iets|eten|food)\s+bestellen\b/g, ' ')
-    .replace(/\b(bestellen|bestel|orderen|order)\b/g, ' ')
+    .replace(/\b(bestellen|bestel|bedtel|orderen|order)\b/g, ' ')
+    .replace(/^\s*bij\s+|\s+bij\s+/g, ' ')
     .replace(/\s+/g, ' ')
     .trim()
 }
@@ -82,12 +118,27 @@ function listingMatchScore(listing: Listing, nameQuery: string): number {
   }
 
   const qTokens = q.split(/\s+/).filter((w) => w.length >= 3 && !FILLER.has(w))
+  const distinctive = qTokens.filter((w) => !TYPE_WORDS.has(w))
+
   if (qTokens.length > 0) {
     let hits = 0
     for (const t of qTokens) {
       if (name.includes(t) || slugWords.includes(t) || city.includes(t)) hits++
     }
     score += hits * 35
+  }
+
+  if (distinctive.length > 0) {
+    let dHits = 0
+    for (const t of distinctive) {
+      if (name.includes(t) || slugWords.includes(t)) dHits++
+      for (const part of listing.slug.split('-')) {
+        if (part.length >= 4 && (part === t || part.startsWith(t) || t.startsWith(part))) {
+          score += 55
+        }
+      }
+    }
+    if (dHits === distinctive.length) score += 40
   }
 
   if (qTokens.length === 1 && qTokens[0]!.length >= 4) {
@@ -110,12 +161,36 @@ function pickListing(nameQuery: string, listings: Listing[]): Listing | null {
       best = listing
     }
   }
-  return bestScore >= 50 ? best : null
+  if (bestScore >= 50) return best
+
+  const slim = nameQuery
+    .split(/\s+/)
+    .filter((w) => w.length >= 3 && !FILLER.has(w) && !TYPE_WORDS.has(w))
+    .join(' ')
+  if (slim && slim !== nameQuery) {
+    return pickListing(slim, listings)
+  }
+  return bestScore >= 45 ? best : null
+}
+
+export function getListingActionFailureSpeech(raw: string, listings: Listing[]): string | null {
+  const hints: VoiceNameHint[] = buildVoiceNameHints(listings)
+  const fixed = fixVoiceSearchTranscript(normalizeVoiceActionQuery(raw.trim()), hints)
+  const qNorm = normalizeSearchText(fixed)
+  if (!qNorm) return null
+  const kind = detectActionKind(qNorm)
+  if (!kind) return null
+  const nameQuery = stripActionPhrases(qNorm)
+  if (pickListing(nameQuery, listings)) return null
+  if (kind === 'order') {
+    return 'Ik vond die zaak niet om te bestellen. Zeg bestel bij, en de volledige zaaknaam.'
+  }
+  return 'Ik vond die zaak niet voor een review.'
 }
 
 export function resolveListingActionIntent(raw: string, listings: Listing[]): ListingActionIntent {
   const hints: VoiceNameHint[] = buildVoiceNameHints(listings)
-  const fixed = fixVoiceSearchTranscript(raw.trim(), hints)
+  const fixed = fixVoiceSearchTranscript(normalizeVoiceActionQuery(raw.trim()), hints)
   const qNorm = normalizeSearchText(fixed)
   if (!qNorm) return { kind: 'search' }
 
@@ -124,7 +199,7 @@ export function resolveListingActionIntent(raw: string, listings: Listing[]): Li
 
   const nameQuery = stripActionPhrases(qNorm)
   const listing = pickListing(nameQuery, listings)
-  if (!listing) return { kind: 'search' }
+  if (!listing) return { kind: 'search', failedAction: kind }
 
   if (kind === 'review') {
     return {
