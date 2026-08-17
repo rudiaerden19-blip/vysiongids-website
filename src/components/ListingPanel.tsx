@@ -11,7 +11,7 @@ import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
 import { isTopZaakListing } from '@/lib/listing-topzaak'
 import { formatDeliveryFee, formatDeliveryRadius, formatListingAddressLines, formatListingServiceMode, formatMinOrder, listingPhotoUrls } from '@/lib/listings'
 import { formatDistanceKm } from '@/lib/listing-distance'
-import { listingInfoExtrasBadges, resolveListingPanelHiringBanner } from '@/lib/listing-info-extras'
+import { resolveListingPanelHiringBanner } from '@/lib/listing-info-extras'
 import ListingMenuButton from '@/components/ListingMenuButton'
 
 export default function ListingPanel({
@@ -40,7 +40,6 @@ export default function ListingPanel({
 
   const bodyTextSize = compact ? '0.8125rem' : '0.9375rem'
   const showTopZaakStamp = isTopZaakListing(listing)
-  const infoBadges = listingInfoExtrasBadges(listing.infoExtras)
   const hiringBanner = resolveListingPanelHiringBanner(listing.infoExtras)
 
   return (
@@ -80,11 +79,6 @@ export default function ListingPanel({
           <p style={{ margin: 0, fontSize: bodyTextSize, color: '#4b5563' }}>
             {formatListingServiceMode(listing)}
           </p>
-          {infoBadges.length > 0 ? (
-            <p className="vysiongids-listing-panel-info-badges" style={{ margin: '0.25rem 0 0', fontSize: '0.75rem', color: 'var(--accent)' }}>
-              {infoBadges.join(' · ')}
-            </p>
-          ) : null}
           <div className="vysiongids-listing-panel-hours-wrap">
             <ul className="vysiongids-listing-panel-hours">
               {hoursRows.map((row) => (

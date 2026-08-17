@@ -88,14 +88,6 @@ export function listingHasInfoExtras(extras: ListingInfoExtras | undefined): boo
   return false
 }
 
-export function listingInfoExtrasBadges(extras: ListingInfoExtras | undefined): string[] {
-  if (!extras) return []
-  const badges: string[] = []
-  if (extras.specialties?.length) badges.push('Specialiteiten')
-  if (extras.giftCard?.enabled) badges.push('Cadeaubon')
-  return badges
-}
-
 /** Zoekkaart: onderaan tonen als eigenaar vacaturetekst en/of telefoon heeft ingevuld. */
 export function resolveListingPanelHiringBanner(
   extras: ListingInfoExtras | undefined,
