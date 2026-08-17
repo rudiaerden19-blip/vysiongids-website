@@ -62,6 +62,17 @@ Wat overblijft in de zin matcht op **naam, straat, postcode, stad, provincie**, 
 
 Voorbeelden: `frituur dichtbij`, `pizza in de buurt`, `kebab nabij`.
 
+## Acties (review & bestellen)
+
+Herkenning op **naam** (spraakhints + fuzzy, bv. «nolim» → Nolim):
+
+| Intent | Voorbeelden | Actie |
+|--------|-------------|--------|
+| Review | geef review voor frituur nolim, review nolim, beoordeling voor … | `/zaak/{slug}/reviews#schrijven` |
+| Bestellen | nolim bestellen, bestel bij blonkys, order … | **Bestel-URL** van de zaak (nieuw tabblad) |
+
+Geen match op zaaknaam → valt terug op normale zoekresultaten.
+
 ## Regio
 
 - Provincie via site-header / cookie → filter `prov` (los van `q`)

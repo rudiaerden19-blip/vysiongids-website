@@ -12,6 +12,11 @@ import { fixVoiceSearchTranscript } from '@/lib/voice-search-transcript-fix'
 import { parseListingSearchQuery } from '@/lib/gids-listing-search'
 import { getBrowserGeolocation } from '@/lib/browser-geolocation'
 import { appendGidsSearchParams, buildGidsSearchPath } from '@/lib/gids-search-url'
+import {
+  fetchListingActionIntent,
+  listingActionSpeechMessage,
+  tryNavigateListingActionIntent,
+} from '@/lib/gids-listing-action-intent-client'
 
 const fieldLabel: CSSProperties = {
   display: 'block',
@@ -157,6 +162,15 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
       const type = form ? String(new FormData(form).get('type') ?? 'all') : 'all'
       if (qInputRef.current) qInputRef.current.value = trimmed
 
+      const intent = await fetchListingActionIntent(trimmed)
+      if (intent.kind !== 'search') {
+        const message = listingActionSpeechMessage(intent)
+        stashVoiceSearchAnnouncement(message)
+        await speakDutchAsync(message)
+        await tryNavigateListingActionIntent(router, trimmed, intent)
+        return
+      }
+
       let count = 0
       const near = await nearPointForQuery(trimmed)
       try {
@@ -215,6 +229,9 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
       const fd = new FormData(e.currentTarget)
       const nextQ = String(fd.get('q') ?? '').trim()
       const nextType = String(fd.get('type') ?? 'all')
+      if (nextQ && (await tryNavigateListingActionIntent(router, nextQ))) {
+        return
+      }
       const near = await nearPointForQuery(nextQ)
       router.push(buildSearchPath(nextQ, nextType, prov, near))
     },
