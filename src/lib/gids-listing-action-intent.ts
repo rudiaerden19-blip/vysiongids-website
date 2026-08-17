@@ -30,7 +30,7 @@ const FILLER = new Set([
   'mijn',
 ])
 
-/** Spraakherkenning: «bedtel» → bestel, enz. */
+/** Spraakherkenning: veel voorkomende STT-fouten. */
 export function normalizeVoiceActionQuery(raw: string): string {
   return raw
     .replace(/\bbedtel\b/gi, 'bestel')
@@ -39,6 +39,11 @@ export function normalizeVoiceActionQuery(raw: string): string {
     .replace(/\bbestellen\b/gi, 'bestel')
     .replace(/\bordere\b/gi, 'order')
     .replace(/\bordern\b/gi, 'order')
+    .replace(/\brevieuw\b/gi, 'review')
+    .replace(/\brevieww\b/gi, 'review')
+    .replace(/\brevieu\b/gi, 'review')
+    .replace(/\brecensie\b/gi, 'review')
+    .replace(/\bbeoordeel\b/gi, 'beoordeling')
 }
 
 const TYPE_WORDS = new Set([
@@ -91,6 +96,7 @@ function stripActionPhrases(qNorm: string): string {
     .replace(/\breview\s+(voor|van|bij|aan|over)\b/g, ' ')
     .replace(/\b(een\s+)?review\b/g, ' ')
     .replace(/\bbeoordeling(\s+geven|\s+schrijven)?\b/g, ' ')
+    .replace(/\bbeoordeel\b/g, ' ')
     .replace(/\bsterren\s+geven\b/g, ' ')
     .replace(/\bonline\s+bestellen\b/g, ' ')
     .replace(/\b(iets|eten|food)\s+bestellen\b/g, ' ')

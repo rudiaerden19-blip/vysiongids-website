@@ -240,7 +240,8 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
       const fd = new FormData(e.currentTarget)
       const nextQ = String(fd.get('q') ?? '').trim()
       const nextType = String(fd.get('type') ?? 'all')
-      if (nextQ && (await tryNavigateListingActionIntent(router, nextQ))) {
+      const queryForIntent = normalizeVoiceActionQuery(nextQ)
+      if (queryForIntent && (await tryNavigateListingActionIntent(router, queryForIntent))) {
         return
       }
       const near = await nearPointForQuery(nextQ)

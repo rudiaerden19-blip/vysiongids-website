@@ -159,7 +159,11 @@ export function fixVoiceSearchTranscript(raw: string, hints: VoiceNameHint[]): s
   let trimmed = raw.trim()
   if (!trimmed || hints.length === 0) return trimmed
 
-  trimmed = trimmed.replace(/\bbedtel\b/gi, 'bestel').replace(/\bpestel\b/gi, 'bestel')
+  trimmed = trimmed
+    .replace(/\bbedtel\b/gi, 'bestel')
+    .replace(/\bpestel\b/gi, 'bestel')
+    .replace(/\brevieuw\b/gi, 'review')
+    .replace(/\brecensie\b/gi, 'review')
 
   // «no lim» / «no lin» → één woord voor merknamen
   trimmed = trimmed.replace(/\bno\s+li[mn]\b/gi, 'nolim')
