@@ -13,6 +13,7 @@ import ListingOwnerOptionsFields from '@/components/ListingOwnerOptionsFields'
 import ListingMenuOwnerFields from '@/components/ListingMenuOwnerFields'
 import BeheerInfoExtrasFields from '@/components/BeheerInfoExtrasFields'
 import KitchenTypeSelect from '@/components/KitchenTypeSelect'
+import TitleCaseTextInput, { applyTitleCaseFormFields } from '@/components/TitleCaseTextInput'
 
 function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
@@ -124,6 +125,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
     setLoading(true)
     const form = e.currentTarget
     const fd = new FormData(form)
+    applyTitleCaseFormFields(fd, ['name', 'city', 'address'])
     const hoursPayload = hoursPayloadRef.current
     const hoursRaw = hoursPayload.json || String(fd.get('hoursByDay') ?? '[]')
     if (hoursPayload.error) {
@@ -257,7 +259,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
 
         <div>
           <RequiredLabel htmlFor="edit-name">Volledige zaaknaam</RequiredLabel>
-          <input
+          <TitleCaseTextInput
             id="edit-name"
             name="name"
             required
@@ -326,7 +328,13 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
             <RequiredLabel htmlFor="edit-city">Gemeente</RequiredLabel>
-            <input id="edit-city" name="city" required defaultValue={listing.city} className="vysiongids-form-input mt-1" />
+            <TitleCaseTextInput
+              id="edit-city"
+              name="city"
+              required
+              defaultValue={listing.city}
+              className="vysiongids-form-input mt-1"
+            />
           </div>
           <div>
             <RequiredLabel htmlFor="edit-postcode">Postcode</RequiredLabel>
@@ -342,7 +350,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
 
         <div>
           <RequiredLabel htmlFor="edit-address">Straat + nummer</RequiredLabel>
-          <input
+          <TitleCaseTextInput
             id="edit-address"
             name="address"
             required

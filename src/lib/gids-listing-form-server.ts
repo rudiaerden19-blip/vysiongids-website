@@ -8,6 +8,7 @@ import { GIDS_REGISTER_MAX_PHOTO_BYTES, GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } fr
 import { parseOwnerAmenitiesFromForm } from '@/lib/gids-owner-amenities'
 import { isAllowedDeliveryRadiusKm, parseDeliveryRadiusKmFromForm } from '@/lib/listing-delivery-radius'
 import { WEEKDAYS_NL } from '@/lib/listing-info'
+import { formatGidsTitleCase } from '@/lib/gids-text'
 
 const VALID_TYPES = LISTING_TYPES.filter((t) => t.id !== 'all').map((t) => t.id)
 
@@ -48,15 +49,15 @@ export async function parseGidsListingFormData(
   form: FormData,
   opts: { requirePin: boolean; requireNewPhotos: boolean },
 ): Promise<ParseGidsListingFormResult> {
-  const name = String(form.get('name') ?? '').trim()
+  const name = formatGidsTitleCase(String(form.get('name') ?? '').trim())
   const pinRaw = String(form.get('pin') ?? '').trim()
   const newPinRaw = String(form.get('newPin') ?? '').trim()
   const pin = opts.requirePin ? pinRaw : newPinRaw || null
 
   const type = String(form.get('type') ?? '').trim()
-  const city = String(form.get('city') ?? '').trim()
+  const city = formatGidsTitleCase(String(form.get('city') ?? '').trim())
   const postcode = String(form.get('postcode') ?? '').trim()
-  const address = String(form.get('address') ?? '').trim()
+  const address = formatGidsTitleCase(String(form.get('address') ?? '').trim())
   const orderUrl = String(form.get('orderUrl') ?? '').trim()
   const menuUrl = String(form.get('menuUrl') ?? '').trim()
   const province = String(form.get('province') ?? '').trim()

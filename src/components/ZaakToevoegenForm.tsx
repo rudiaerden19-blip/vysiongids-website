@@ -12,6 +12,7 @@ import ListingOwnerOptionsFields from '@/components/ListingOwnerOptionsFields'
 import ListingMenuOwnerFields from '@/components/ListingMenuOwnerFields'
 import DeliveryRadiusKmField from '@/components/DeliveryRadiusKmField'
 import KitchenTypeSelect from '@/components/KitchenTypeSelect'
+import TitleCaseTextInput, { applyTitleCaseFormFields } from '@/components/TitleCaseTextInput'
 
 function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
@@ -95,6 +96,7 @@ export default function ZaakToevoegenForm() {
     setLoading(true)
     const form = e.currentTarget
     const fd = new FormData(form)
+    applyTitleCaseFormFields(fd, ['name', 'city', 'address'])
     const hoursPayload = hoursPayloadRef.current
     const hoursRaw = hoursPayload.json || String(fd.get('hoursByDay') ?? '[]')
     if (hoursPayload.error) {
@@ -231,7 +233,7 @@ export default function ZaakToevoegenForm() {
 
       <div>
         <RequiredLabel htmlFor="name">Volledige zaaknaam (uniek)</RequiredLabel>
-        <input
+        <TitleCaseTextInput
           id="name"
           name="name"
           required
@@ -286,7 +288,7 @@ export default function ZaakToevoegenForm() {
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
           <RequiredLabel htmlFor="city">Gemeente</RequiredLabel>
-          <input id="city" name="city" required className="vysiongids-form-input mt-1" />
+          <TitleCaseTextInput id="city" name="city" required className="vysiongids-form-input mt-1" />
         </div>
         <div>
           <RequiredLabel htmlFor="postcode">Postcode</RequiredLabel>
@@ -296,7 +298,7 @@ export default function ZaakToevoegenForm() {
 
       <div>
         <RequiredLabel htmlFor="address">Straat + nummer</RequiredLabel>
-        <input id="address" name="address" required className="vysiongids-form-input mt-1" />
+        <TitleCaseTextInput id="address" name="address" required className="vysiongids-form-input mt-1" />
       </div>
 
       <div>
