@@ -1244,6 +1244,18 @@ body {
   font-size: 0.875rem;
 }
 
+.vysiongids-listing-panel-travel {
+  margin: 0.35rem 0 0;
+  font-size: 1rem;
+  font-weight: 700;
+  line-height: 1.35;
+  color: var(--accent);
+}
+
+.vysiongids-listing-panel--compact .vysiongids-listing-panel-travel {
+  font-size: 0.9375rem;
+}
+
 .vysiongids-listing-panel-row {
   display: flex;
   flex-direction: column;

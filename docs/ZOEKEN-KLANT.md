@@ -57,7 +57,7 @@ Wat overblijft in de zin matcht op **naam, straat, postcode, stad, provincie**, 
 
 - **dichtbij**, **in de buurt**, **nabij**, **bij mij in de buurt**, …
 - Browser vraagt **locatie** (GPS); resultaten binnen **40 km**, gesorteerd op afstand
-- Op de kaart zie je **afstand** (bv. `2,3 km`)
+- Op de kaart zie je **afstand en rijtijd** (bv. `2,3 km · ca. 6 min`) — schatting op basis van je locatie, geen live Waze-API
 - Weiger je locatie: wel zoeken op type/naam, maar **niet** op afstand gesorteerd — knop «Sta locatie toe» op `/zoeken`
 
 Voorbeelden: `frituur dichtbij`, `pizza in de buurt`, `kebab nabij`.

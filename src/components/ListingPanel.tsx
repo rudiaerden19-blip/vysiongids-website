@@ -10,7 +10,7 @@ import { resolveHoursByDay } from '@/lib/listing-info'
 import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
 import { isTopZaakListing } from '@/lib/listing-topzaak'
 import { formatDeliveryFee, formatDeliveryRadius, formatListingAddressLines, formatListingServiceMode, formatMinOrder, listingPhotoUrls } from '@/lib/listings'
-import { formatDistanceKm } from '@/lib/listing-distance'
+import { formatDistanceAndDriveTime } from '@/lib/listing-distance'
 import { resolveListingPanelHiringBanner } from '@/lib/listing-info-extras'
 import ListingMenuButton from '@/components/ListingMenuButton'
 
@@ -32,7 +32,7 @@ export default function ListingPanel({
     listing.deliveryTimeMin != null && listing.deliveryTimeMax != null
       ? `${listing.deliveryTimeMin}–${listing.deliveryTimeMax} min`
       : null
-  const distanceLabel = typeof distanceKm === 'number' ? formatDistanceKm(distanceKm) : null
+  const travelLabel = typeof distanceKm === 'number' ? formatDistanceAndDriveTime(distanceKm) : null
   const { street, cityLine } = formatListingAddressLines(listing)
   const hoursRows = resolveHoursByDay(listing)
   const profileHref = `/zaak/${listing.slug}`
@@ -79,6 +79,11 @@ export default function ListingPanel({
           <p style={{ margin: 0, fontSize: bodyTextSize, color: '#4b5563' }}>
             {formatListingServiceMode(listing)}
           </p>
+          {travelLabel ? (
+            <p className="vysiongids-listing-panel-travel" aria-label={`${travelLabel} rijden`}>
+              {travelLabel}
+            </p>
+          ) : null}
           <div className="vysiongids-listing-panel-hours-wrap">
             <ul className="vysiongids-listing-panel-hours">
               {hoursRows.map((row) => (
@@ -91,7 +96,6 @@ export default function ListingPanel({
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem 0.85rem', fontSize: bodyTextSize }}>
             <ListingStarRating slug={listing.slug} avg={listing.ratingAvg} count={listing.ratingCount} />
-            {distanceLabel ? <span style={{ fontWeight: 600, color: 'var(--accent)' }}>{distanceLabel}</span> : null}
             {timeLabel ? <span style={{ color: '#6b7280' }}>{timeLabel}</span> : null}
             {deliveryLabel ? <span style={{ fontWeight: 500, color: '#374151' }}>{deliveryLabel}</span> : null}
             {minOrder ? <span style={{ color: '#6b7280' }}>{minOrder}</span> : null}
