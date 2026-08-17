@@ -91,8 +91,29 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
   })
 }
 
+/** Levering tonen alleen als minstens één leveringsveld is ingevuld (niet alleen DB-default). */
+export function listingHasDeliveryInfo(listing: Listing): boolean {
+  if (!listing.deliveryEnabled) return false
+  if (listing.deliveryFeeEur != null) return true
+  if (listing.minOrderEur != null) return true
+  if (listing.deliveryTimeMin != null && listing.deliveryTimeMax != null) return true
+  const km = listing.deliveryRadiusKm
+  if (km != null && km > 0) return true
+  return false
+}
+
+export function formatListingServiceMode(listing: Listing): string {
+  const pickup = listing.pickupEnabled !== false
+  const delivery = listingHasDeliveryInfo(listing)
+  if (pickup && delivery) return 'Afhalen & levering'
+  if (delivery) return 'Levering'
+  return 'Afhalen'
+}
+
 export function formatDeliveryFee(listing: Listing): string | null {
-  if (!listing.deliveryEnabled) return 'Alleen afhalen'
+  if (!listingHasDeliveryInfo(listing)) {
+    return listing.deliveryEnabled ? null : 'Alleen afhalen'
+  }
   if (listing.deliveryFeeEur == null) return null
   if (listing.deliveryFeeEur === 0) return 'Gratis levering'
   return `€${listing.deliveryFeeEur.toFixed(2).replace('.', ',')} levering`

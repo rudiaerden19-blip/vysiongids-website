@@ -9,7 +9,7 @@ import { DAY_LABEL } from '@/lib/gids-opening-hours'
 import { resolveHoursByDay } from '@/lib/listing-info'
 import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
 import { isTopZaakListing } from '@/lib/listing-topzaak'
-import { formatDeliveryFee, formatDeliveryRadius, formatListingAddressLines, formatMinOrder, listingPhotoUrls } from '@/lib/listings'
+import { formatDeliveryFee, formatDeliveryRadius, formatListingAddressLines, formatListingServiceMode, formatMinOrder, listingPhotoUrls } from '@/lib/listings'
 import ListingMenuButton from '@/components/ListingMenuButton'
 
 export default function ListingPanel({ listing, compact }: { listing: Listing; compact?: boolean }) {
@@ -64,11 +64,7 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
             {cityLine}
           </p>
           <p style={{ margin: 0, fontSize: bodyTextSize, color: '#4b5563' }}>
-            {listing.pickupEnabled && listing.deliveryEnabled
-              ? 'Afhalen & levering'
-              : listing.deliveryEnabled
-                ? 'Levering'
-                : 'Afhalen'}
+            {formatListingServiceMode(listing)}
           </p>
           <div className="vysiongids-listing-panel-hours-wrap">
             <ul className="vysiongids-listing-panel-hours">
