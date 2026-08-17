@@ -1223,12 +1223,12 @@ body {
 
 .vysiongids-listing-panel-hiring-text {
   font-weight: 600;
-  color: #0e5d82;
+  color: var(--accent);
 }
 
 .vysiongids-listing-panel-hiring-phone {
   font-weight: 600;
-  color: #0e5d82;
+  color: var(--accent);
   text-decoration: none;
 }
 
@@ -2567,7 +2567,7 @@ body {
   font-size: 0.6875rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  color: #0e5d82;
+  color: var(--accent);
 }
 
 .vysiongids-info-title {
@@ -2575,7 +2575,7 @@ body {
   font-family: Georgia, 'Times New Roman', serif;
   font-size: clamp(1.65rem, 3vw, 2.15rem);
   font-weight: 700;
-  color: #0f172a;
+  color: var(--accent);
 }
 
 .vysiongids-specialties-grid {
@@ -2660,10 +2660,15 @@ body {
   display: inline-block;
   padding: 0.5rem 1.25rem;
   border-radius: 999px;
-  background: #1f2937;
+  background: var(--accent);
   color: #fff !important;
   font-weight: 700;
   text-decoration: none;
+  transition: filter 0.15s ease;
+}
+
+.vysiongids-hiring-phone:hover {
+  filter: brightness(0.95);
 }
 
 .vysiongids-info-block--gift {
@@ -2684,10 +2689,15 @@ body {
   margin-bottom: 1.5rem;
   padding: 0.65rem 1.5rem;
   border-radius: 999px;
-  background: #1f2937;
+  background: var(--accent);
   color: #fff !important;
   font-weight: 600;
   text-decoration: none;
+  transition: filter 0.15s ease;
+}
+
+.vysiongids-gift-order-btn:hover {
+  filter: brightness(0.95);
 }
 
 .vysiongids-gift-card-preview {
@@ -2696,7 +2706,7 @@ body {
   margin: 0 auto;
   aspect-ratio: 1.6;
   border-radius: 1rem;
-  background: linear-gradient(145deg, #374151, #111827);
+  background: linear-gradient(145deg, var(--accent) 0%, #094a68 100%);
   color: #fff;
   padding: 1.25rem;
   text-align: left;

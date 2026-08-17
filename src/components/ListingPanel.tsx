@@ -81,7 +81,7 @@ export default function ListingPanel({
             {formatListingServiceMode(listing)}
           </p>
           {infoBadges.length > 0 ? (
-            <p className="vysiongids-listing-panel-info-badges" style={{ margin: '0.25rem 0 0', fontSize: '0.75rem', color: '#0e5d82' }}>
+            <p className="vysiongids-listing-panel-info-badges" style={{ margin: '0.25rem 0 0', fontSize: '0.75rem', color: 'var(--accent)' }}>
               {infoBadges.join(' · ')}
             </p>
           ) : null}
@@ -97,7 +97,7 @@ export default function ListingPanel({
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem 0.85rem', fontSize: bodyTextSize }}>
             <ListingStarRating slug={listing.slug} avg={listing.ratingAvg} count={listing.ratingCount} />
-            {distanceLabel ? <span style={{ fontWeight: 600, color: '#0e5d82' }}>{distanceLabel}</span> : null}
+            {distanceLabel ? <span style={{ fontWeight: 600, color: 'var(--accent)' }}>{distanceLabel}</span> : null}
             {timeLabel ? <span style={{ color: '#6b7280' }}>{timeLabel}</span> : null}
             {deliveryLabel ? <span style={{ fontWeight: 500, color: '#374151' }}>{deliveryLabel}</span> : null}
             {minOrder ? <span style={{ color: '#6b7280' }}>{minOrder}</span> : null}

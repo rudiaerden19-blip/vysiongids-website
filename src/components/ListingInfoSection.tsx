@@ -13,7 +13,7 @@ import { useEffect, useState } from 'react'
 import type { Listing } from '@/lib/listing-types'
 
 function ContactIcon({ kind }: { kind: 'web' | 'phone' | 'email' }) {
-  const common = { width: 18, height: 18, fill: 'none', stroke: '#0e5d82', strokeWidth: 1.8 }
+  const common = { width: 18, height: 18, fill: 'none', stroke: 'var(--accent)', strokeWidth: 1.8 }
   if (kind === 'web') {
     return (
       <svg viewBox="0 0 24 24" aria-hidden {...common}>
@@ -33,7 +33,7 @@ function ContactIcon({ kind }: { kind: 'web' | 'phone' | 'email' }) {
   return (
     <svg viewBox="0 0 24 24" aria-hidden {...common}>
       <circle cx="12" cy="12" r="9" />
-      <text x="12" y="16" textAnchor="middle" fontSize="11" fill="#0e5d82" stroke="none">
+      <text x="12" y="16" textAnchor="middle" fontSize="11" fill="var(--accent)" stroke="none">
         @
       </text>
     </svg>
