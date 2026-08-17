@@ -9,7 +9,7 @@ import { DAY_LABEL } from '@/lib/gids-opening-hours'
 import { resolveHoursByDay } from '@/lib/listing-info'
 import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
 import { isTopZaakListing } from '@/lib/listing-topzaak'
-import { formatDeliveryFee, formatDeliveryRadius, formatListingAddressLines, formatListingServiceMode, formatMinOrder, listingPhotoUrls } from '@/lib/listings'
+import { formatDeliveryFee, formatDeliveryRadius, formatListingAddressLines, formatListingDeliveryTime, formatListingPickupTime, formatListingServiceMode, formatMinOrder, listingPhotoUrls } from '@/lib/listings'
 import { formatDistanceAndDriveTime } from '@/lib/listing-distance'
 import { listingWazeUrl } from '@/lib/gids-listing-navigation'
 import { resolveListingPanelHiringBanner } from '@/lib/listing-info-extras'
@@ -29,10 +29,8 @@ export default function ListingPanel({
   const minOrder = formatMinOrder(listing)
   const deliveryRadiusLabel = formatDeliveryRadius(listing)
   const deliveryLabel = formatDeliveryFee(listing)
-  const timeLabel =
-    listing.deliveryTimeMin != null && listing.deliveryTimeMax != null
-      ? `${listing.deliveryTimeMin}–${listing.deliveryTimeMax} min`
-      : null
+  const pickupTimeLabel = formatListingPickupTime(listing)
+  const deliveryTimeLabel = formatListingDeliveryTime(listing)
   const travelLabel = typeof distanceKm === 'number' ? formatDistanceAndDriveTime(distanceKm) : null
   const { street, cityLine } = formatListingAddressLines(listing)
   const hoursRows = resolveHoursByDay(listing)
@@ -108,7 +106,8 @@ export default function ListingPanel({
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem 0.85rem', fontSize: bodyTextSize }}>
             <ListingStarRating slug={listing.slug} avg={listing.ratingAvg} count={listing.ratingCount} />
-            {timeLabel ? <span style={{ color: '#6b7280' }}>{timeLabel}</span> : null}
+            {pickupTimeLabel ? <span style={{ color: '#6b7280' }}>{pickupTimeLabel}</span> : null}
+            {deliveryTimeLabel ? <span style={{ color: '#6b7280' }}>{deliveryTimeLabel}</span> : null}
             {deliveryLabel ? <span style={{ fontWeight: 500, color: '#374151' }}>{deliveryLabel}</span> : null}
             {minOrder ? <span style={{ color: '#6b7280' }}>{minOrder}</span> : null}
             {deliveryRadiusLabel ? (

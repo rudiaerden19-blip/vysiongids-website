@@ -240,6 +240,8 @@ export async function PATCH(req: Request) {
     min_order_eur: d.minOrderValue,
     delivery_time_min: d.deliveryTimeMinValue,
     delivery_time_max: d.deliveryTimeMaxValue,
+    pickup_time_min: d.pickupTimeMinValue,
+    pickup_time_max: d.pickupTimeMaxValue,
     info_extras: infoExtrasPayload,
     updated_at: new Date().toISOString(),
   }

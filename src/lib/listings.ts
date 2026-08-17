@@ -148,6 +148,16 @@ export function formatMinOrder(listing: Listing): string | null {
   return `Min. €${listing.minOrderEur.toFixed(2).replace('.', ',')}`
 }
 
+export function formatListingPickupTime(listing: Listing): string | null {
+  if (listing.pickupTimeMin == null || listing.pickupTimeMax == null) return null
+  return `Afhaal ${listing.pickupTimeMin}–${listing.pickupTimeMax} min`
+}
+
+export function formatListingDeliveryTime(listing: Listing): string | null {
+  if (listing.deliveryTimeMin == null || listing.deliveryTimeMax == null) return null
+  return `Levering ${listing.deliveryTimeMin}–${listing.deliveryTimeMax} min`
+}
+
 export function formatDeliveryRadius(listing: Listing): string | null {
   const km = formatDeliveryRadiusKm(listing.deliveryRadiusKm)
   if (!km) return null

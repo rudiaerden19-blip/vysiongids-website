@@ -404,6 +404,39 @@ export default function ZaakToevoegenForm() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
+          <label className="vysiongids-form-label" htmlFor="pickupTimeMin">
+            Afhaaltijd vanaf (min)
+          </label>
+          <input
+            id="pickupTimeMin"
+            name="pickupTimeMin"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={180}
+            placeholder="Bv. 10"
+            className="vysiongids-form-input mt-1"
+          />
+        </div>
+        <div>
+          <label className="vysiongids-form-label" htmlFor="pickupTimeMax">
+            Afhaaltijd tot (min)
+          </label>
+          <input
+            id="pickupTimeMax"
+            name="pickupTimeMax"
+            type="number"
+            inputMode="numeric"
+            min={1}
+            max={240}
+            placeholder="Bv. 20"
+            className="vysiongids-form-input mt-1"
+          />
+        </div>
+      </div>
+
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div>
           <label className="vysiongids-form-label" htmlFor="deliveryTimeMin">
             Levertijd vanaf (min)
           </label>

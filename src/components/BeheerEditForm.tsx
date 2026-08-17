@@ -464,6 +464,39 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
+            <label className="vysiongids-form-label" htmlFor="edit-pickupTimeMin">
+              Afhaaltijd vanaf (min)
+            </label>
+            <input
+              id="edit-pickupTimeMin"
+              name="pickupTimeMin"
+              type="number"
+              min={1}
+              max={180}
+              defaultValue={listing.pickupTimeMin ?? ''}
+              placeholder="Bv. 10"
+              className="vysiongids-form-input mt-1"
+            />
+          </div>
+          <div>
+            <label className="vysiongids-form-label" htmlFor="edit-pickupTimeMax">
+              Afhaaltijd tot (min)
+            </label>
+            <input
+              id="edit-pickupTimeMax"
+              name="pickupTimeMax"
+              type="number"
+              min={1}
+              max={240}
+              defaultValue={listing.pickupTimeMax ?? ''}
+              placeholder="Bv. 20"
+              className="vysiongids-form-input mt-1"
+            />
+          </div>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <div>
             <label className="vysiongids-form-label" htmlFor="edit-deliveryTimeMin">
               Levertijd vanaf (min)
             </label>

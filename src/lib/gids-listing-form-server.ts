@@ -34,6 +34,8 @@ export type ParsedGidsListingForm = {
   minOrderValue: number | null
   deliveryTimeMinValue: number | null
   deliveryTimeMaxValue: number | null
+  pickupTimeMinValue: number | null
+  pickupTimeMaxValue: number | null
   deliveryRadiusKmValue: number | null
   photos: { index: number; file: File }[]
   removePhotoSlots: number[]
@@ -69,12 +71,16 @@ export async function parseGidsListingFormData(
   const minOrderRaw = String(form.get('minOrderEur') ?? '').trim()
   const deliveryTimeMinRaw = String(form.get('deliveryTimeMin') ?? '').trim()
   const deliveryTimeMaxRaw = String(form.get('deliveryTimeMax') ?? '').trim()
+  const pickupTimeMinRaw = String(form.get('pickupTimeMin') ?? '').trim()
+  const pickupTimeMaxRaw = String(form.get('pickupTimeMax') ?? '').trim()
   const deliveryRadiusKmRaw = String(form.get('deliveryRadiusKm') ?? '').trim()
 
   const deliveryFeeEur = deliveryFeeRaw === '' ? NaN : Number(deliveryFeeRaw.replace(',', '.'))
   const minOrderEur = minOrderRaw === '' ? NaN : Number(minOrderRaw.replace(',', '.'))
   const deliveryTimeMin = deliveryTimeMinRaw === '' ? NaN : Number.parseInt(deliveryTimeMinRaw, 10)
   const deliveryTimeMax = deliveryTimeMaxRaw === '' ? NaN : Number.parseInt(deliveryTimeMaxRaw, 10)
+  const pickupTimeMin = pickupTimeMinRaw === '' ? NaN : Number.parseInt(pickupTimeMinRaw, 10)
+  const pickupTimeMax = pickupTimeMaxRaw === '' ? NaN : Number.parseInt(pickupTimeMaxRaw, 10)
 
   if (name.length < 3) return { ok: false, error: 'Vul een volledige zaaknaam in.', status: 400 }
   if (opts.requirePin) {
@@ -203,6 +209,31 @@ export async function parseGidsListingFormData(
     return { ok: false, error: 'Levertijd tot moet minstens gelijk zijn aan vanaf.', status: 400 }
   }
 
+  let pickupTimeMinValue: number | null = null
+  let pickupTimeMaxValue: number | null = null
+  if (pickupTimeMinRaw !== '') {
+    if (!Number.isInteger(pickupTimeMin) || pickupTimeMin < 1 || pickupTimeMin > 180) {
+      return { ok: false, error: 'Afhaaltijd vanaf: kies 1–180 minuten.', status: 400 }
+    }
+    pickupTimeMinValue = pickupTimeMin
+  }
+  if (pickupTimeMaxRaw !== '') {
+    if (!Number.isInteger(pickupTimeMax) || pickupTimeMax < 1 || pickupTimeMax > 240) {
+      return { ok: false, error: 'Afhaaltijd tot: kies 1–240 minuten.', status: 400 }
+    }
+    pickupTimeMaxValue = pickupTimeMax
+  }
+  if ((pickupTimeMinValue == null) !== (pickupTimeMaxValue == null)) {
+    return { ok: false, error: 'Vul beide afhaaltijden in of laat beide leeg.', status: 400 }
+  }
+  if (
+    pickupTimeMinValue != null &&
+    pickupTimeMaxValue != null &&
+    pickupTimeMaxValue < pickupTimeMinValue
+  ) {
+    return { ok: false, error: 'Afhaaltijd tot moet minstens gelijk zijn aan vanaf.', status: 400 }
+  }
+
   let deliveryRadiusKmValue: number | null = null
   if (deliveryRadiusKmRaw !== '') {
     const parsedRadius = parseDeliveryRadiusKmFromForm(deliveryRadiusKmRaw)
@@ -282,6 +313,8 @@ export async function parseGidsListingFormData(
       minOrderValue,
       deliveryTimeMinValue,
       deliveryTimeMaxValue,
+      pickupTimeMinValue,
+      pickupTimeMaxValue,
       deliveryRadiusKmValue,
       photos,
       removePhotoSlots,

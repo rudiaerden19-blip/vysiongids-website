@@ -142,6 +142,14 @@ export default async function ZaakPage({ params }: Props) {
             <section className="mt-8 border-t border-gray-200 pt-8">
               <h2 className="text-lg font-bold text-gray-900">Bestellen</h2>
               <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
+                {listing.pickupTimeMin != null && listing.pickupTimeMax != null ? (
+                  <div>
+                    <dt className="font-semibold text-gray-500">Afhaaltijd</dt>
+                    <dd>
+                      {listing.pickupTimeMin}–{listing.pickupTimeMax} min
+                    </dd>
+                  </div>
+                ) : null}
                 {listing.deliveryTimeMin != null && listing.deliveryTimeMax != null ? (
                   <div>
                     <dt className="font-semibold text-gray-500">Levertijd</dt>

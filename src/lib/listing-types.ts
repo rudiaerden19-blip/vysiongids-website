@@ -77,6 +77,8 @@ export type Listing = {
   ratingCount: number
   deliveryTimeMin?: number
   deliveryTimeMax?: number
+  pickupTimeMin?: number
+  pickupTimeMax?: number
   /** Max. leverafstand in km */
   deliveryRadiusKm?: number | null
   deliveryFeeEur: number | null
