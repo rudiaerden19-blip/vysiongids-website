@@ -1,22 +1,48 @@
 'use client'
 
 import { formatGidsTitleCase } from '@/lib/gids-text'
-import type { InputHTMLAttributes } from 'react'
+import { useCallback, useState, type InputHTMLAttributes, type KeyboardEvent } from 'react'
 
-type Props = InputHTMLAttributes<HTMLInputElement>
+type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue'> & {
+  defaultValue?: string
+}
 
-/** Tekstveld: bij verlaten van het veld automatisch hoofdletters per woord. */
-export default function TitleCaseTextInput({ onBlur, ...props }: Props) {
+/** Tekstveld: hoofdletters per woord (spatie/enter, blur, en bij opslaan). */
+export default function TitleCaseTextInput({
+  defaultValue,
+  onBlur,
+  onChange,
+  onKeyUp,
+  ...props
+}: Props) {
+  const [value, setValue] = useState(() => String(defaultValue ?? ''))
+
+  const applyFormat = useCallback((raw: string) => {
+    const formatted = formatGidsTitleCase(raw)
+    setValue(formatted)
+    return formatted
+  }, [])
+
   return (
     <input
       {...props}
+      value={value}
+      autoCapitalize="words"
+      autoCorrect="off"
+      spellCheck={props.spellCheck ?? false}
+      onChange={(e) => {
+        setValue(e.target.value)
+        onChange?.(e)
+      }}
       onBlur={(e) => {
-        const formatted = formatGidsTitleCase(e.currentTarget.value)
-        if (formatted !== e.currentTarget.value) {
-          e.currentTarget.value = formatted
-          e.currentTarget.dispatchEvent(new Event('input', { bubbles: true }))
-        }
+        applyFormat(e.target.value)
         onBlur?.(e)
+      }}
+      onKeyUp={(e: KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === ' ' || e.key === 'Enter') {
+          applyFormat(e.currentTarget.value)
+        }
+        onKeyUp?.(e)
       }}
     />
   )

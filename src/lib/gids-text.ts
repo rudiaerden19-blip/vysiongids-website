@@ -10,21 +10,29 @@ export function normalizeGidsBusinessName(name: string): string {
 
 const TITLE_CASE_LOWER_WORDS = new Set(['de', 'het', 'een', 'van', 'der', 'den', 'te', 'op', 'in', 'en', 'du', 'la'])
 
+function isDutchApostropheParticle(word: string): boolean {
+  return /^'[a-z]{1,3}$/i.test(word.trim())
+}
+
 function titleCaseWordSegment(segment: string, forceCapital: boolean): string {
   if (!segment) return segment
   if (/^\d+$/.test(segment)) return segment
   const lower = segment.toLowerCase()
   if (!forceCapital && TITLE_CASE_LOWER_WORDS.has(lower)) return lower
-  return lower.charAt(0).toUpperCase() + lower.slice(1)
+  if (isDutchApostropheParticle(lower)) return lower
+  const letterIdx = lower.search(/[a-zà-ÿ]/)
+  if (letterIdx < 0) return lower
+  return lower.slice(0, letterIdx) + lower.charAt(letterIdx).toUpperCase() + lower.slice(letterIdx + 1)
 }
 
 /** Weergavenaam / adres: elk woord met hoofdletter (behalve kleine voorzetsels midden in de zin). */
 export function formatGidsTitleCase(input: string): string {
-  const trimmed = input.trim().replace(/\s+/g, ' ')
-  if (!trimmed) return trimmed
+  const trimmed = input.replace(/\s+/g, ' ')
+  if (!trimmed.trim()) return trimmed
   return trimmed
     .split(' ')
     .map((word, wordIndex) => {
+      if (isDutchApostropheParticle(word)) return word.toLowerCase()
       const forceFirst = wordIndex === 0
       return word
         .split('-')
