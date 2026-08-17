@@ -1607,38 +1607,51 @@ body {
 
 .vysiongids-beheer-views-card {
   border-radius: 1rem;
-  border: 2px solid #0e5d82;
+  border: 2px solid var(--accent);
   background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
   padding: 1.35rem 1.5rem;
   box-shadow: 0 4px 14px rgb(14 93 130 / 0.12);
 }
 
 .vysiongids-beheer-views-kicker {
-  margin: 0 0 0.35rem;
+  margin: 0 0 0.75rem;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
-  color: #0e5d82;
+  color: var(--accent);
 }
 
-.vysiongids-listing-daily-views--beheer {
+.vysiongids-beheer-views-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.vysiongids-beheer-views-line {
   margin: 0;
-  max-width: none;
-  padding: 0;
-  border: none;
-  background: transparent;
-  text-align: left;
-  font-size: 1.125rem;
+  font-size: 1.0625rem;
   font-weight: 600;
   line-height: 1.4;
   color: #0f172a;
 }
 
+.vysiongids-beheer-views-line-label {
+  display: inline-block;
+  min-width: 6.5rem;
+  color: #374151;
+  font-weight: 600;
+}
+
+.vysiongids-beheer-views-line-suffix {
+  font-weight: 600;
+  color: #0f172a;
+}
+
 .vysiongids-beheer-views-card .vysiongids-listing-daily-views-count {
-  font-size: 1.75rem;
+  font-size: 1.35rem;
   font-weight: 800;
-  color: #0e5d82;
+  color: var(--accent);
 }
 
 .vysiongids-beheer-views-hint {
