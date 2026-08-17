@@ -83,7 +83,7 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem 0.85rem', fontSize: bodyTextSize }}>
             <ListingStarRating slug={listing.slug} avg={listing.ratingAvg} count={listing.ratingCount} />
             {timeLabel ? <span style={{ color: '#6b7280' }}>{timeLabel}</span> : null}
-            <span style={{ fontWeight: 500, color: '#374151' }}>{deliveryLabel}</span>
+            {deliveryLabel ? <span style={{ fontWeight: 500, color: '#374151' }}>{deliveryLabel}</span> : null}
             {minOrder ? <span style={{ color: '#6b7280' }}>{minOrder}</span> : null}
             {deliveryRadiusLabel ? (
               <span style={{ color: '#6b7280' }}>{deliveryRadiusLabel}</span>

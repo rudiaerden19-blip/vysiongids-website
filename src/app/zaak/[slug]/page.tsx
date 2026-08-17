@@ -51,6 +51,7 @@ export default async function ZaakPage({ params }: Props) {
 
   const cuisineLine = getListingCuisineDisplay(listing.cuisineType)
   const minOrder = formatMinOrder(listing)
+  const deliveryFeeLabel = formatDeliveryFee(listing)
   const deliveryRadiusLabel = formatDeliveryRadius(listing)
   const { street, cityLine } = formatListingAddressLines(listing)
   const reviews = (await fetchReviewsByListingSlug(slug, 5)) ?? []
@@ -149,10 +150,12 @@ export default async function ZaakPage({ params }: Props) {
                     </dd>
                   </div>
                 ) : null}
-                <div>
-                  <dt className="font-semibold text-gray-500">Bezorging</dt>
-                  <dd>{formatDeliveryFee(listing)}</dd>
-                </div>
+                {deliveryFeeLabel ? (
+                  <div>
+                    <dt className="font-semibold text-gray-500">Bezorging</dt>
+                    <dd>{deliveryFeeLabel}</dd>
+                  </div>
+                ) : null}
                 {minOrder ? (
                   <div>
                     <dt className="font-semibold text-gray-500">Minimum</dt>

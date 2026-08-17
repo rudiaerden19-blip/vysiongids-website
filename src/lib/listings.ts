@@ -91,9 +91,10 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
   })
 }
 
-export function formatDeliveryFee(listing: Listing): string {
+export function formatDeliveryFee(listing: Listing): string | null {
   if (!listing.deliveryEnabled) return 'Alleen afhalen'
-  if (listing.deliveryFeeEur === null || listing.deliveryFeeEur === 0) return 'Gratis levering'
+  if (listing.deliveryFeeEur == null) return null
+  if (listing.deliveryFeeEur === 0) return 'Gratis levering'
   return `€${listing.deliveryFeeEur.toFixed(2).replace('.', ',')} levering`
 }
 
