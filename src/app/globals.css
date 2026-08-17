@@ -554,12 +554,11 @@ body {
 
 @media (min-width: 640px) {
   .vysiongids-listing-panel--compact .vysiongids-listing-panel-photo {
-    width: min(34%, 16.5rem);
-    min-width: 11rem;
-    max-width: 16.5rem;
-    aspect-ratio: 4 / 3;
-    min-height: 0;
-    align-self: flex-start;
+    width: 100%;
+    max-width: none;
+    aspect-ratio: auto;
+    min-height: 100%;
+    align-self: stretch;
   }
 
   .vysiongids-listing-panel--compact .vysiongids-listing-panel-body {
@@ -1318,9 +1317,6 @@ body {
   display: block;
   width: 100%;
   aspect-ratio: 4 / 3;
-  flex: 0 0 auto;
-  align-self: flex-start;
-  height: auto;
   flex-shrink: 0;
   background: #f3f4f6;
   text-decoration: none;
@@ -2528,7 +2524,7 @@ body {
   .vysiongids-listing-panel-row {
     display: grid;
     grid-template-columns: min(42%, 26rem) minmax(0, 1fr);
-    align-items: start;
+    align-items: stretch;
     column-gap: 0;
   }
 
@@ -2538,8 +2534,10 @@ body {
     width: 100%;
     min-width: 0;
     max-width: none;
-    aspect-ratio: 4 / 3;
-    height: auto;
+    aspect-ratio: auto;
+    height: 100%;
+    min-height: 100%;
+    align-self: stretch;
   }
 
   .vysiongids-listing-panel-body {
