@@ -53,6 +53,15 @@ Wat overblijft in de zin matcht op **naam, straat, postcode, stad, provincie**, 
 - `Pelt`, `Hasselt`, `3910`, `Fabrieksstraat`
 - zaaknaam of deel ervan (spraak: hints via `/api/gids/voice-names`)
 
+## Dichtbij (locatie)
+
+- **dichtbij**, **in de buurt**, **nabij**, **bij mij in de buurt**, …
+- Browser vraagt **locatie** (GPS); resultaten binnen **40 km**, gesorteerd op afstand
+- Op de kaart zie je **afstand** (bv. `2,3 km`)
+- Weiger je locatie: wel zoeken op type/naam, maar **niet** op afstand gesorteerd — knop «Sta locatie toe» op `/zoeken`
+
+Voorbeelden: `frituur dichtbij`, `pizza in de buurt`, `kebab nabij`.
+
 ## Regio
 
 - Provincie via site-header / cookie → filter `prov` (los van `q`)

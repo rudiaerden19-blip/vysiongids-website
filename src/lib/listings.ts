@@ -4,6 +4,7 @@ import { LISTING_TYPES } from '@/lib/listing-types'
 import { fetchListingBySlugFromDb, fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
 import { normalizeSearchText } from '@/lib/gids-text'
 import { parseListingSearchQuery, listingMatchesParsedSearch } from '@/lib/gids-listing-search'
+import { distanceKmBetween } from '@/lib/listing-distance'
 import { formatDeliveryRadiusKm } from '@/lib/listing-delivery-radius'
 import { unstable_cache } from 'next/cache'
 
@@ -74,14 +75,14 @@ export function getListingTypeLabel(type: Listing['type']): string {
   return LISTING_TYPES.find((t) => t.id === type)?.label ?? type
 }
 
-/** Zoek op stad, postcode, naam, adres, keukentype of voorzieningen (query `q`). Filter op zaaktype / provincie. */
+/** Zoek op stad, postcode, naam, keukentype of voorzieningen (query `q`). Filter op zaaktype / provincie. */
 export async function searchListings(params: ListingSearchParams): Promise<Listing[]> {
   const listings = await loadListings()
   const parsed = parseListingSearchQuery(params.q ?? '')
   const type = (params.type ?? 'all') as ListingTypeId
   const prov = normalizeSearchText(params.prov ?? '')
 
-  return listings.filter((listing) => {
+  let results = listings.filter((listing) => {
     if (type !== 'all' && listing.type !== type) return false
     if (prov) {
       const listingProv = normalizeSearchText(listing.province ?? '')
@@ -89,6 +90,28 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
     }
     return listingMatchesParsedSearch(listing, parsed)
   })
+
+  const nearLat = params.nearLat
+  const nearLng = params.nearLng
+  if (parsed.nearby && typeof nearLat === 'number' && typeof nearLng === 'number') {
+    const from = { lat: nearLat, lng: nearLng }
+    const maxKm = params.nearMaxKm ?? 40
+    results = results
+      .map((listing) => ({
+        listing,
+        km: distanceKmBetween(from, getListingCoordinates(listing)),
+      }))
+      .filter(({ km }) => km <= maxKm)
+      .sort((a, b) => a.km - b.km)
+      .map(({ listing }) => listing)
+  }
+
+  return results
+}
+
+/** Afstand tot zaak (km) vanaf een punt — voor weergave op zoekresultaten. */
+export function listingDistanceKmFrom(listing: Listing, from: { lat: number; lng: number }): number {
+  return distanceKmBetween(from, getListingCoordinates(listing))
 }
 
 /** Levering tonen alleen als minstens één leveringsveld is ingevuld (niet alleen DB-default). */

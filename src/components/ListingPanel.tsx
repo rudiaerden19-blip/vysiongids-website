@@ -10,9 +10,19 @@ import { resolveHoursByDay } from '@/lib/listing-info'
 import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
 import { isTopZaakListing } from '@/lib/listing-topzaak'
 import { formatDeliveryFee, formatDeliveryRadius, formatListingAddressLines, formatListingServiceMode, formatMinOrder, listingPhotoUrls } from '@/lib/listings'
+import { formatDistanceKm } from '@/lib/listing-distance'
 import ListingMenuButton from '@/components/ListingMenuButton'
 
-export default function ListingPanel({ listing, compact }: { listing: Listing; compact?: boolean }) {
+export default function ListingPanel({
+  listing,
+  compact,
+  distanceKm,
+}: {
+  listing: Listing
+  compact?: boolean
+  /** Afstand van zoeker (km), bij «dichtbij»-zoeken */
+  distanceKm?: number
+}) {
   const cuisineLine = getListingCuisineDisplay(listing.cuisineType)
   const minOrder = formatMinOrder(listing)
   const deliveryRadiusLabel = formatDeliveryRadius(listing)
@@ -21,6 +31,7 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
     listing.deliveryTimeMin != null && listing.deliveryTimeMax != null
       ? `${listing.deliveryTimeMin}–${listing.deliveryTimeMax} min`
       : null
+  const distanceLabel = typeof distanceKm === 'number' ? formatDistanceKm(distanceKm) : null
   const { street, cityLine } = formatListingAddressLines(listing)
   const hoursRows = resolveHoursByDay(listing)
   const profileHref = `/zaak/${listing.slug}`
@@ -78,6 +89,7 @@ export default function ListingPanel({ listing, compact }: { listing: Listing; c
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem 0.85rem', fontSize: bodyTextSize }}>
             <ListingStarRating slug={listing.slug} avg={listing.ratingAvg} count={listing.ratingCount} />
+            {distanceLabel ? <span style={{ fontWeight: 600, color: '#0e5d82' }}>{distanceLabel}</span> : null}
             {timeLabel ? <span style={{ color: '#6b7280' }}>{timeLabel}</span> : null}
             {deliveryLabel ? <span style={{ fontWeight: 500, color: '#374151' }}>{deliveryLabel}</span> : null}
             {minOrder ? <span style={{ color: '#6b7280' }}>{minOrder}</span> : null}

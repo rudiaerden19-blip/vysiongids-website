@@ -9,6 +9,9 @@ import { primeSpeechSynthesis, speakDutchAsync, stashVoiceSearchAnnouncement } f
 import SearchVoiceMicButton from '@/components/SearchVoiceMicButton'
 import type { VoiceNameHint } from '@/lib/voice-search-transcript-fix'
 import { fixVoiceSearchTranscript } from '@/lib/voice-search-transcript-fix'
+import { parseListingSearchQuery } from '@/lib/gids-listing-search'
+import { getBrowserGeolocation } from '@/lib/browser-geolocation'
+import { appendGidsSearchParams, buildGidsSearchPath } from '@/lib/gids-search-url'
 
 const fieldLabel: CSSProperties = {
   display: 'block',
@@ -81,20 +84,32 @@ const heroSubmitStyle: CSSProperties = {
   width: '100%',
 }
 
-function buildSearchPath(nextQ: string, nextType: string, prov: string) {
-  const params = new URLSearchParams()
-  if (nextQ) params.set('q', nextQ)
-  if (nextType && nextType !== 'all') params.set('type', nextType)
-  if (prov.trim()) params.set('prov', prov.trim())
-  const qs = params.toString()
-  return qs ? `/zoeken?${qs}` : '/zoeken'
+function buildSearchPath(
+  nextQ: string,
+  nextType: string,
+  prov: string,
+  near?: { lat: number; lng: number } | null,
+) {
+  return buildGidsSearchPath({ q: nextQ, type: nextType, prov, near })
 }
 
-async function fetchSearchCount(q: string, type: string, prov: string): Promise<number> {
+async function nearPointForQuery(q: string): Promise<{ lat: number; lng: number } | undefined> {
+  if (!parseListingSearchQuery(q).nearby) return undefined
+  try {
+    return await getBrowserGeolocation()
+  } catch {
+    return undefined
+  }
+}
+
+async function fetchSearchCount(
+  q: string,
+  type: string,
+  prov: string,
+  near?: { lat: number; lng: number },
+): Promise<number> {
   const params = new URLSearchParams()
-  if (q) params.set('q', q)
-  if (type && type !== 'all') params.set('type', type)
-  if (prov.trim()) params.set('prov', prov.trim())
+  appendGidsSearchParams(params, { q, type, prov, near: near ?? null })
   const res = await fetch(`/api/gids/search?${params.toString()}`, { cache: 'no-store' })
   if (!res.ok) return 0
   const data = (await res.json()) as { count?: number }
@@ -143,8 +158,9 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
       if (qInputRef.current) qInputRef.current.value = trimmed
 
       let count = 0
+      const near = await nearPointForQuery(trimmed)
       try {
-        count = await fetchSearchCount(trimmed, type, prov)
+        count = await fetchSearchCount(trimmed, type, prov, near)
       } catch {
         count = 0
       }
@@ -152,7 +168,7 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
       const message = buildSearchResultsSpeechMessage({ count })
       stashVoiceSearchAnnouncement(message)
       await speakDutchAsync(message)
-      router.push(buildSearchPath(trimmed, type, prov))
+      router.push(buildSearchPath(trimmed, type, prov, near))
     },
     [formRef, prov, qInputRef, router],
   )
@@ -194,12 +210,13 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
   const prov = searchParams.get('prov') ?? ''
 
   const onSubmit = useCallback(
-    (e: FormEvent<HTMLFormElement>) => {
+    async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault()
       const fd = new FormData(e.currentTarget)
       const nextQ = String(fd.get('q') ?? '').trim()
       const nextType = String(fd.get('type') ?? 'all')
-      router.push(buildSearchPath(nextQ, nextType, prov))
+      const near = await nearPointForQuery(nextQ)
+      router.push(buildSearchPath(nextQ, nextType, prov, near))
     },
     [router, prov],
   )
@@ -217,7 +234,7 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
             name="q"
             type="search"
             defaultValue={q}
-            placeholder="Bv. pizzeria in Pelt, frituur, naam van de zaak — of inspreken ↓"
+            placeholder="Bv. frituur dichtbij, pizzeria in Pelt — of inspreken ↓"
             autoComplete="off"
             style={heroFieldInput}
           />

@@ -1,26 +1,40 @@
 import Link from 'next/link'
 import { Suspense } from 'react'
 import ListingPanel from '@/components/ListingPanel'
+import NearbySearchHintBanner from '@/components/NearbySearchHintBanner'
+import NearbySearchLocationSync from '@/components/NearbySearchLocationSync'
 import SearchForm from '@/components/SearchForm'
 import SearchResultsVoiceAnnouncement from '@/components/SearchResultsVoiceAnnouncement'
 import SiteHeader from '@/components/SiteHeader'
-import { searchListings } from '@/lib/listings'
+import { parseListingSearchQuery } from '@/lib/gids-listing-search'
+import { parseNearPointFromSearchParams } from '@/lib/gids-search-url'
+import { listingDistanceKmFrom, searchListings } from '@/lib/listings'
 import { provinceLabel } from '@/lib/belgium-locations'
 
 type Props = {
-  searchParams: Promise<{ q?: string; type?: string; prov?: string }>
+  searchParams: Promise<{ q?: string; type?: string; prov?: string; nearLat?: string; nearLng?: string }>
 }
 
 export const dynamic = 'force-dynamic'
 
 export default async function ZoekenPage({ searchParams }: Props) {
   const sp = await searchParams
-  const results = await searchListings({ q: sp.q, type: sp.type, prov: sp.prov })
+  const near = parseNearPointFromSearchParams(sp)
+  const results = await searchListings({
+    q: sp.q,
+    type: sp.type,
+    prov: sp.prov,
+    nearLat: near?.lat,
+    nearLng: near?.lng,
+  })
 
+  const parsedQ = parseListingSearchQuery(sp.q ?? '')
   const qLabel = sp.q?.trim()
   const provLabel = sp.prov?.trim() ? provinceLabel(sp.prov) : null
   const title = qLabel
-    ? `Zaken in «${qLabel}»`
+    ? parsedQ.nearby && near
+      ? `Dichtbij${parsedQ.freeText ? ` · ${parsedQ.freeText}` : ''}`
+      : `Zaken in «${qLabel}»`
     : provLabel
       ? `Zaken in ${provLabel}`
       : 'Alle zaken'
@@ -44,6 +58,8 @@ export default async function ZoekenPage({ searchParams }: Props) {
         </p>
 
         <Suspense fallback={null}>
+          <NearbySearchLocationSync />
+          <NearbySearchHintBanner />
           <SearchResultsVoiceAnnouncement />
         </Suspense>
 
@@ -78,7 +94,10 @@ export default async function ZoekenPage({ searchParams }: Props) {
           <ul style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {results.map((listing) => (
               <li key={listing.slug}>
-                <ListingPanel listing={listing} />
+                <ListingPanel
+                  listing={listing}
+                  distanceKm={near ? listingDistanceKmFrom(listing, near) : undefined}
+                />
               </li>
             ))}
           </ul>

@@ -86,6 +86,18 @@ const OPEN_NOW_PHRASES = [
 
 const GRATIS_LEVERING_PHRASES = ['gratis levering', 'geen leveringskosten', 'free delivery', 'gratis bezorging']
 
+const NEARBY_PHRASES = [
+  'dichtbij',
+  'dicht bij',
+  'in de buurt',
+  'bij mij in de buurt',
+  'in mijn buurt',
+  'nearby',
+  'close by',
+  'in de nabijheid',
+  'nabij',
+]
+
 const QUERY_STOPWORDS = new Set([
   'met',
   'in',
@@ -117,6 +129,7 @@ export type ParsedListingSearchQuery = {
   typeIds: ListingTypeSearchId[]
   openNow: boolean
   freeDelivery: boolean
+  nearby: boolean
   /** Resttekst na verwijderen van herkende termen (stad, naam, …) */
   freeText: string
   strippedPhrases: string[]
@@ -187,6 +200,7 @@ export function parseListingSearchQuery(raw: string): ParsedListingSearchQuery {
       typeIds: [],
       openNow: false,
       freeDelivery: false,
+      nearby: false,
       freeText: '',
       strippedPhrases: [],
     }
@@ -198,6 +212,15 @@ export function parseListingSearchQuery(raw: string): ParsedListingSearchQuery {
   const strippedPhrases: string[] = []
   let openNow = false
   let freeDelivery = false
+  let nearby = false
+
+  for (const phrase of NEARBY_PHRASES) {
+    if (phraseInQuery(qNorm, phrase)) {
+      nearby = true
+      strippedPhrases.push(normalizeSearchText(phrase))
+      break
+    }
+  }
 
   for (const phrase of GRATIS_LEVERING_PHRASES) {
     if (phraseInQuery(qNorm, phrase)) {
@@ -272,6 +295,7 @@ export function parseListingSearchQuery(raw: string): ParsedListingSearchQuery {
     typeIds,
     openNow,
     freeDelivery,
+    nearby,
     freeText,
     strippedPhrases,
   }

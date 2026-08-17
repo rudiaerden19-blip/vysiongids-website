@@ -8,7 +8,15 @@ export async function GET(request: Request) {
   const q = searchParams.get('q') ?? undefined
   const type = searchParams.get('type') ?? undefined
   const prov = searchParams.get('prov') ?? undefined
+  const nearLat = Number(searchParams.get('nearLat'))
+  const nearLng = Number(searchParams.get('nearLng'))
 
-  const results = await searchListings({ q, type, prov })
+  const results = await searchListings({
+    q,
+    type,
+    prov,
+    nearLat: Number.isFinite(nearLat) ? nearLat : undefined,
+    nearLng: Number.isFinite(nearLng) ? nearLng : undefined,
+  })
   return NextResponse.json({ count: results.length })
 }

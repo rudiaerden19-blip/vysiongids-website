@@ -102,4 +102,9 @@ export type ListingSearchParams = {
   q?: string
   type?: string
   prov?: string
+  /** WGS84 — voor «dichtbij»-sorteer/filter */
+  nearLat?: number
+  nearLng?: number
+  /** Max. afstand bij nearby (km), default 40 */
+  nearMaxKm?: number
 }
