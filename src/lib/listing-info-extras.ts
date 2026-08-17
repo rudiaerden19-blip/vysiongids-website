@@ -1,4 +1,5 @@
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
+import { normalizeListingScheduleExtras, parseScheduleExtrasJson } from '@/lib/listing-schedule-extras'
 
 export type ListingSpecialtyItem = {
   caption: string
@@ -18,6 +19,7 @@ export type ListingInfoExtras = {
     orderUrl?: string
     valueEur?: number | null
   }
+  schedule?: import('@/lib/listing-schedule-extras').ListingScheduleExtras
 }
 
 const MAX_SPECIALTIES = 3
@@ -77,6 +79,9 @@ export function normalizeListingInfoExtras(raw: unknown): ListingInfoExtras | un
     }
   }
 
+  const schedule = normalizeListingScheduleExtras(o.schedule)
+  if (schedule) out.schedule = schedule
+
   return Object.keys(out).length ? out : undefined
 }
 
@@ -119,6 +124,8 @@ export type ParsedInfoExtrasForm = {
   giftValueEur: number | null
   specialtyPhotos: { index: number; file: File }[]
   removeSpecialtyPhoto: boolean[]
+  scheduleExtrasJson: string
+  scheduleExtras?: ReturnType<typeof parseScheduleExtrasJson>
 }
 
 export function parseInfoExtrasFromForm(form: FormData): ParsedInfoExtrasForm {
@@ -152,6 +159,8 @@ export function parseInfoExtrasFromForm(form: FormData): ParsedInfoExtrasForm {
     })(),
     specialtyPhotos,
     removeSpecialtyPhoto,
+    scheduleExtrasJson: String(form.get('scheduleExtras') ?? ''),
+    scheduleExtras: parseScheduleExtrasJson(String(form.get('scheduleExtras') ?? '')),
   }
 }
 
@@ -200,6 +209,12 @@ export async function buildInfoExtrasPayload(
       orderUrl: orderUrl || undefined,
       valueEur: parsed.giftValueEur,
     }
+  }
+
+  if (parsed.scheduleExtrasJson.trim()) {
+    if (parsed.scheduleExtras) payload.schedule = parsed.scheduleExtras
+  } else if (existing?.schedule) {
+    payload.schedule = existing.schedule
   }
 
   return Object.keys(payload).length ? payload : null

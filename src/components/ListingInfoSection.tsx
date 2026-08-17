@@ -63,6 +63,7 @@ function OpenStatus({ listing }: { listing: Listing }) {
 
 export default function ListingInfoSection({ listing }: { listing: Listing }) {
   const hoursRows = resolveHoursByDay(listing)
+  const schedule = listing.infoExtras?.schedule
   const website = listing.website?.trim()
   const phone = listing.phone?.trim()
   const email = listing.email?.trim()
@@ -84,6 +85,12 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
               ))}
             </tbody>
           </table>
+          {schedule?.annualLeave?.length ? (
+            <p className="mt-3 text-sm text-gray-600">
+              <span className="font-semibold text-gray-800">Gesloten wegens verlof: </span>
+              {schedule.annualLeave.map((r) => `${r.from} t/m ${r.to}`).join(' · ')}
+            </p>
+          ) : null}
         </div>
 
         <div className="vysiongids-zaak-info-col">

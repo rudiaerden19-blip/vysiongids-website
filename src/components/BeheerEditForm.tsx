@@ -5,6 +5,7 @@ import { useCallback, useRef, useState } from 'react'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
 import { LISTING_TYPES, type Listing, type ListingDayHours } from '@/lib/listing-types'
 import OpeningHoursEditor, { type OpeningHoursPayload } from '@/components/OpeningHoursEditor'
+import OpeningScheduleExtrasEditor from '@/components/OpeningScheduleExtrasEditor'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
 import { GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
 import { compressListingPhoto } from '@/lib/compress-listing-photo'
@@ -439,6 +440,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
             </span>
           </p>
           <OpeningHoursEditor initialHoursByDay={hoursInitial} onPayloadChange={onHoursPayloadChange} />
+          <OpeningScheduleExtrasEditor initial={listing.infoExtras?.schedule} />
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">

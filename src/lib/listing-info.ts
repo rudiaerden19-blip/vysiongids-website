@@ -1,4 +1,9 @@
 import type { Listing, ListingAmenityId, ListingDayHours, ListingWeekday } from '@/lib/listing-types'
+import {
+  brusselsCalendarDate,
+  holidayChoiceForDate,
+  isDateInAnnualLeave,
+} from '@/lib/listing-schedule-extras'
 
 export const WEEKDAYS_NL: ListingWeekday[] = [
   'maandag',
@@ -114,6 +119,36 @@ function formatMinutesAsTime(mins: number): string {
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 }
 
+function weekdayNlForIsoDate(iso: string): ListingWeekday | null {
+  const parts = iso.split('-').map(Number)
+  if (parts.length !== 3 || parts.some((n) => !Number.isFinite(n))) return null
+  const [y, m, d] = parts
+  const noon = new Date(Date.UTC(y!, m! - 1, d!, 12, 0, 0))
+  const weekday = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Brussels',
+    weekday: 'long',
+  })
+    .format(noon)
+    .toLowerCase()
+  return DAY_MAP[weekday] ?? null
+}
+
+function brusselsDateWithOffset(now: Date, offsetDays: number): string {
+  const shifted = new Date(now.getTime() + offsetDays * 86_400_000)
+  return brusselsCalendarDate(shifted)
+}
+
+function listingSchedule(listing: Listing) {
+  return listing.infoExtras?.schedule
+}
+
+function isCalendarDayClosedForListing(listing: Listing, isoDate: string): boolean {
+  const schedule = listingSchedule(listing)
+  if (isDateInAnnualLeave(isoDate, schedule)) return true
+  if (holidayChoiceForDate(isoDate, schedule) === 'closed') return true
+  return false
+}
+
 function dayLabelForOffset(offset: number, day: ListingWeekday): string {
   if (offset === 0) return 'vandaag'
   if (offset === 1) return 'morgen'
@@ -128,8 +163,12 @@ function findNextOpeningSlot(
   if (!ctx) return null
   const hours = resolveHoursByDay(listing)
 
-  for (let offset = 0; offset < 7; offset++) {
-    const day = WEEKDAYS_NL[(ctx.dayIndex + offset) % 7]
+  for (let offset = 0; offset < 14; offset++) {
+    const isoDate = brusselsDateWithOffset(now, offset)
+    if (isCalendarDayClosedForListing(listing, isoDate)) continue
+
+    const day = weekdayNlForIsoDate(isoDate)
+    if (!day) continue
     const row = hours.find((r) => r.day === day)
     if (!row) continue
     const slots = parseSlots(row.hours).sort((a, b) => a.start - b.start)
@@ -151,6 +190,10 @@ export type ListingOpenStatus = {
 
 /** Tekst voor zoeklijst / badges: «Nu open» of «Opent woensdag om 12:00». */
 export function getListingOpenStatus(listing: Listing, now = new Date()): ListingOpenStatus {
+  const today = brusselsCalendarDate(now)
+  if (isDateInAnnualLeave(today, listingSchedule(listing))) {
+    return { isOpen: false, label: 'Gesloten (verlof)' }
+  }
   if (isListingOpenNow(listing, now)) {
     return { isOpen: true, label: 'Nu open' }
   }
@@ -161,10 +204,13 @@ export function getListingOpenStatus(listing: Listing, now = new Date()): Listin
   return { isOpen: false, label: 'Momenteel gesloten' }
 }
 
-/** Europe/Brussels — vereenvoudigd open-check voor demo */
+/** Europe/Brussels — open-check met verlof/feestdagen */
 export function isListingOpenNow(listing: Listing, now = new Date()): boolean {
   const ctx = brusselsNow(now)
   if (!ctx) return false
+
+  const today = brusselsCalendarDate(now)
+  if (isCalendarDayClosedForListing(listing, today)) return false
 
   const row = resolveHoursByDay(listing).find((r) => r.day === ctx.dayNl)
   if (!row) return false
