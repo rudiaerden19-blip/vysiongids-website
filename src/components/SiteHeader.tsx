@@ -55,7 +55,7 @@ function HeaderNavLinks({ onNavigate, className }: { onNavigate?: () => void; cl
         <HeaderLanguagePicker compact />
       </span>
       <Link href="/zaak-toevoegen" className="vysiongids-header-nav-cta" onClick={onNavigate}>
-        Zaak toevoegen
+        Jouw zaak toevoegen
       </Link>
     </nav>
   )
