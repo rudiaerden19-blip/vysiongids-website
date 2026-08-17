@@ -41,6 +41,7 @@ function EditPhotoField({
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [fileLabel, setFileLabel] = useState<string | null>(null)
+  const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null)
   const id = `photo${index}`
 
   return (
@@ -48,7 +49,14 @@ function EditPhotoField({
       <label className="vysiongids-photo-pick-label" htmlFor={id}>
         Foto {index + 1}
       </label>
-      {existingUrl && !fileLabel ? (
+      {localPreviewUrl ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={localPreviewUrl}
+          alt=""
+          className="mt-1 h-24 w-full max-w-[200px] rounded-lg border border-gray-200 object-cover"
+        />
+      ) : existingUrl && !fileLabel ? (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={existingUrl}
@@ -67,6 +75,8 @@ function EditPhotoField({
         onChange={(e) => {
           const f = e.target.files?.[0]
           setFileLabel(f ? f.name : null)
+          if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl)
+          setLocalPreviewUrl(f ? URL.createObjectURL(f) : null)
           if (f) onRemoveChange(false)
         }}
       />
@@ -80,7 +90,7 @@ function EditPhotoField({
         {existingUrl ? 'Vervang foto' : 'Kies bestand'}
       </button>
       <p className="vysiongids-photo-pick-hint" aria-live="polite">
-        {fileLabel ?? (existingUrl ? 'Huidige foto blijft staan' : 'Geen foto')}
+        {fileLabel ? 'Nieuwe foto — klik Opslaan om te publiceren' : existingUrl ? 'Huidige foto' : 'Geen foto'}
       </p>
       {existingUrl ? (
         <label className="mt-2 flex items-center gap-2 text-sm text-gray-700">

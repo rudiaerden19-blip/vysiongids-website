@@ -38,17 +38,30 @@ export async function uploadGidsListingPhoto(
   file: File,
   origin: string,
 ): Promise<void> {
+  const { data: existingRow } = await admin
+    .from('gids_listing_photos')
+    .select('storage_path')
+    .eq('listing_id', listingId)
+    .eq('sort_order', index)
+    .maybeSingle()
+
+  if (existingRow?.storage_path) {
+    await admin.storage.from(GIDS_LISTING_PHOTOS_BUCKET).remove([existingRow.storage_path])
+  }
+
   const ext = file.type.includes('png') ? 'png' : file.type.includes('webp') ? 'webp' : 'jpg'
-  const path = `${listingId}/${index}.${ext}`
+  const version = Date.now().toString(36)
+  const path = `${listingId}/${index}-${version}.${ext}`
   const buf = Buffer.from(await file.arrayBuffer())
   const { error: upErr } = await admin.storage.from(GIDS_LISTING_PHOTOS_BUCKET).upload(path, buf, {
     contentType: file.type,
-    upsert: true,
+    upsert: false,
   })
   if (upErr) throw new Error(upErr.message)
 
   const { data: pub } = admin.storage.from(GIDS_LISTING_PHOTOS_BUCKET).getPublicUrl(path)
-  const publicUrl = pub.publicUrl.startsWith('http') ? pub.publicUrl : `${origin}${pub.publicUrl}`
+  const publicUrlBase = pub.publicUrl.startsWith('http') ? pub.publicUrl : `${origin}${pub.publicUrl}`
+  const publicUrl = `${publicUrlBase}${publicUrlBase.includes('?') ? '&' : '?'}v=${Date.now()}`
 
   const { error: delErr } = await admin.from('gids_listing_photos').delete().eq('listing_id', listingId).eq('sort_order', index)
   if (delErr) throw new Error(delErr.message)
