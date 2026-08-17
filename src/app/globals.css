@@ -1318,7 +1318,7 @@ body {
   width: 100%;
   aspect-ratio: 4 / 3;
   flex-shrink: 0;
-  background: #f3f4f6;
+  background: #1f2937;
   text-decoration: none;
   overflow: hidden;
 }
@@ -1333,7 +1333,7 @@ body {
 
 .vysiongids-listing-panel-photo img {
   object-fit: cover !important;
-  object-position: center;
+  object-position: center 42%;
 }
 
 .vysiongids-voice-result-banner {
@@ -1424,8 +1424,8 @@ body {
 }
 
 .vysiongids-zaak-gallery img {
-  object-fit: contain !important;
-  object-position: center;
+  object-fit: cover !important;
+  object-position: center 42%;
 }
 
 .vysiongids-listing-photo-slider {
@@ -2538,7 +2538,7 @@ body {
 @media (min-width: 640px) {
   .vysiongids-listing-panel-row {
     display: grid;
-    grid-template-columns: min(42%, 26rem) minmax(0, 1fr);
+    grid-template-columns: min(48%, 30rem) minmax(0, 1fr);
     align-items: stretch;
     column-gap: 0;
   }

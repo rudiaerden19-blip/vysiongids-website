@@ -48,7 +48,7 @@ export default function ListingPanel({
           <ListingPhotoSlider
             urls={listingPhotoUrls(listing)}
             alt={listing.name}
-            sizes="(max-width: 640px) 100vw, 26rem"
+            sizes="(max-width: 640px) 100vw, 30rem"
           />
         </Link>
         <div className="vysiongids-listing-panel-body">
