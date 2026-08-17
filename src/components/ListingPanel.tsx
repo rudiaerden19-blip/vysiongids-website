@@ -11,7 +11,7 @@ import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
 import { isTopZaakListing } from '@/lib/listing-topzaak'
 import { formatDeliveryFee, formatDeliveryRadius, formatListingAddressLines, formatListingServiceMode, formatMinOrder, listingPhotoUrls } from '@/lib/listings'
 import { formatDistanceKm } from '@/lib/listing-distance'
-import { listingInfoExtrasBadges } from '@/lib/listing-info-extras'
+import { listingInfoExtrasBadges, resolveListingPanelHiringBanner } from '@/lib/listing-info-extras'
 import ListingMenuButton from '@/components/ListingMenuButton'
 
 export default function ListingPanel({
@@ -41,6 +41,7 @@ export default function ListingPanel({
   const bodyTextSize = compact ? '0.8125rem' : '0.9375rem'
   const showTopZaakStamp = isTopZaakListing(listing)
   const infoBadges = listingInfoExtrasBadges(listing.infoExtras)
+  const hiringBanner = resolveListingPanelHiringBanner(listing.infoExtras)
 
   return (
     <article className={`vysiongids-listing-panel${compact ? ' vysiongids-listing-panel--compact' : ''}`}>
@@ -126,6 +127,19 @@ export default function ListingPanel({
           </div>
         </div>
       </div>
+      {hiringBanner ? (
+        <div className="vysiongids-listing-panel-hiring">
+          <span className="vysiongids-listing-panel-hiring-text">{hiringBanner.message}</span>
+          {hiringBanner.phone ? (
+            <a
+              href={`tel:${hiringBanner.phone.replace(/\s/g, '')}`}
+              className="vysiongids-listing-panel-hiring-phone"
+            >
+              {hiringBanner.phone}
+            </a>
+          ) : null}
+        </div>
+      ) : null}
     </article>
   )
 }

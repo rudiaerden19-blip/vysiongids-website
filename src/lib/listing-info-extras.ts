@@ -92,9 +92,28 @@ export function listingInfoExtrasBadges(extras: ListingInfoExtras | undefined): 
   if (!extras) return []
   const badges: string[] = []
   if (extras.specialties?.length) badges.push('Specialiteiten')
-  if (extras.hiring?.enabled) badges.push('Vacature')
   if (extras.giftCard?.enabled) badges.push('Cadeaubon')
   return badges
+}
+
+/** Zoekkaart: onderaan tonen als eigenaar vacaturetekst en/of telefoon heeft ingevuld. */
+export function resolveListingPanelHiringBanner(
+  extras: ListingInfoExtras | undefined,
+): { message: string; phone?: string } | null {
+  const h = extras?.hiring
+  if (!h?.enabled) return null
+  const text = h.text?.trim() ?? ''
+  const phone = h.phone?.trim() ?? ''
+  if (!text && !phone) return null
+
+  let message = text
+  if (message && !/^wij zoeken\b/i.test(message)) {
+    message = `Wij zoeken ${message.charAt(0).toLowerCase()}${message.slice(1)}`
+  } else if (!message) {
+    message = 'Wij zoeken personeel'
+  }
+
+  return { message, ...(phone ? { phone } : {}) }
 }
 
 export type ParsedInfoExtrasForm = {

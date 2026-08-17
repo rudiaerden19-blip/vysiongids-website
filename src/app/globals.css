@@ -1208,6 +1208,34 @@ body {
   box-shadow: 0 4px 14px rgb(0 0 0 / 0.08);
 }
 
+.vysiongids-listing-panel-hiring {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.75rem;
+  padding: 0.55rem 1rem;
+  border-top: 1px solid #e5e7eb;
+  background: #f3f4f6;
+  font-size: 0.8125rem;
+  line-height: 1.4;
+  color: #374151;
+}
+
+.vysiongids-listing-panel-hiring-text {
+  font-weight: 600;
+  color: #0e5d82;
+}
+
+.vysiongids-listing-panel-hiring-phone {
+  font-weight: 600;
+  color: #0e5d82;
+  text-decoration: none;
+}
+
+.vysiongids-listing-panel-hiring-phone:hover {
+  text-decoration: underline;
+}
+
 .vysiongids-listing-panel-row {
   display: flex;
   flex-direction: column;
