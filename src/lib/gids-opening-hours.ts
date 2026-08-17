@@ -52,6 +52,15 @@ function slotString(from: string, to: string): string {
   return `${from}–${to}`
 }
 
+function shift2Counts(state: DayHoursFormState): 'off' | 'empty' | 'partial' | 'full' {
+  if (!state.shift2Enabled) return 'off'
+  const from2 = normalizeTime(state.shift2From)
+  const to2 = normalizeTime(state.shift2To)
+  if (!from2 && !to2) return 'empty'
+  if (!from2 || !to2) return 'partial'
+  return 'full'
+}
+
 export function dayFormStateToHoursRow(state: DayHoursFormState): ListingDayHours | { error: string } {
   if (state.closed) {
     return { day: state.day, hours: 'gesloten' }
@@ -68,12 +77,15 @@ export function dayFormStateToHoursRow(state: DayHoursFormState): ListingDayHour
 
   let hours = slotString(from1, to1)
 
-  if (state.shift2Enabled) {
-    const from2 = normalizeTime(state.shift2From)
-    const to2 = normalizeTime(state.shift2To)
-    if (!from2 || !to2) {
-      return { error: `${DAY_LABEL[state.day]}: vul shift 2 van en tot in, of vink «2e shift» uit.` }
+  const shift2 = shift2Counts(state)
+  if (shift2 === 'partial') {
+    return {
+      error: `${DAY_LABEL[state.day]}: vul shift 2 volledig in, of vink «2e shift» uit.`,
     }
+  }
+  if (shift2 === 'full') {
+    const from2 = normalizeTime(state.shift2From)!
+    const to2 = normalizeTime(state.shift2To)!
     if (from2 === to2) {
       return { error: `${DAY_LABEL[state.day]}: shift 2 — «van» en «tot» mogen niet gelijk zijn.` }
     }
@@ -81,7 +93,9 @@ export function dayFormStateToHoursRow(state: DayHoursFormState): ListingDayHour
     const start1 = toMinutes(from1)
     const shift1SameCalendarDay = end1 > start1
     if (shift1SameCalendarDay && toMinutes(from2) < end1) {
-      return { error: `${DAY_LABEL[state.day]}: shift 2 moet na het einde van shift 1 beginnen.` }
+      return {
+        error: `${DAY_LABEL[state.day]}: 2e shift valt binnen shift 1 — één shift volstaat, of vink «2e shift» uit.`,
+      }
     }
     hours = `${hours}, ${slotString(from2, to2)}`
   }

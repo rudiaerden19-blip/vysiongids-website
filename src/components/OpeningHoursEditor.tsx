@@ -41,6 +41,26 @@ export default function OpeningHoursEditor({ initialHoursByDay, onPayloadChange 
     setDays((prev) => prev.map((d, i) => (i === index ? { ...d, ...patch } : d)))
   }
 
+  function setDayClosed(index: number, closed: boolean) {
+    if (closed) {
+      updateDay(index, { closed: true, shift2Enabled: false, shift2From: '', shift2To: '' })
+      return
+    }
+    updateDay(index, { closed: false })
+  }
+
+  function setShift2Enabled(index: number, day: DayHoursFormState, enabled: boolean) {
+    if (!enabled) {
+      updateDay(index, { shift2Enabled: false, shift2From: '', shift2To: '' })
+      return
+    }
+    updateDay(index, {
+      shift2Enabled: true,
+      shift2From: day.shift2From.trim() || '17:00',
+      shift2To: day.shift2To.trim() || '22:00',
+    })
+  }
+
   return (
     <div className="vysiongids-opening-hours">
       <input type="hidden" name="hoursByDay" value={payload.json} readOnly />
@@ -52,7 +72,7 @@ export default function OpeningHoursEditor({ initialHoursByDay, onPayloadChange 
               <input
                 type="checkbox"
                 checked={day.closed}
-                onChange={(e) => updateDay(index, { closed: e.target.checked })}
+                onChange={(e) => setDayClosed(index, e.target.checked)}
               />
               Gesloten
             </label>
@@ -81,7 +101,7 @@ export default function OpeningHoursEditor({ initialHoursByDay, onPayloadChange 
                 <input
                   type="checkbox"
                   checked={day.shift2Enabled}
-                  onChange={(e) => updateDay(index, { shift2Enabled: e.target.checked })}
+                  onChange={(e) => setShift2Enabled(index, day, e.target.checked)}
                 />
                 2e shift (van – tot)
               </label>
