@@ -52,10 +52,10 @@ export default function GidsLoginForm() {
           required
           autoComplete="organization"
           className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
-          placeholder="Bv. Frituur 't Patatje"
+          placeholder="Bv. Nini-Burger"
         />
         <p className="mt-1 text-xs text-gray-500">
-          Hoofdletters maakt niet uit. PIN = de 6 cijfers die je koos bij «Zaak toevoegen» (niet 000000).
+          Exact zoals in de gids (meervoud/enkelvoud maakt meestal niet uit). PIN = de 6 cijfers van bij registratie.
         </p>
       </div>
       <div>

@@ -11,6 +11,7 @@ type Props = {
   sizes: string
   className?: string
   priority?: boolean
+  objectFit?: 'cover' | 'contain'
 }
 
 export default function ListingPhoto({
@@ -19,6 +20,7 @@ export default function ListingPhoto({
   sizes,
   className,
   priority,
+  objectFit = 'cover',
 }: Props) {
   const [currentSrc, setCurrentSrc] = useState(src || FALLBACK)
   const isRemote = currentSrc.startsWith('http://') || currentSrc.startsWith('https://')
@@ -36,7 +38,7 @@ export default function ListingPhoto({
       priority={priority}
       unoptimized={isRemote}
       className={className}
-      style={{ objectFit: 'cover' }}
+      style={{ objectFit, objectPosition: 'center' }}
       onError={() => {
         if (currentSrc !== FALLBACK) setCurrentSrc(FALLBACK)
       }}

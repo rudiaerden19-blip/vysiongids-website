@@ -16,6 +16,7 @@ type Props = {
   showControls?: boolean
   /** Automatisch wisselen (alleen zaakpagina) */
   autoPlay?: boolean
+  objectFit?: 'cover' | 'contain'
 }
 
 function uniqueUrls(urls: string[]): string[] {
@@ -36,6 +37,7 @@ export default function ListingPhotoSlider({
   priority,
   showControls = false,
   autoPlay = false,
+  objectFit = 'cover',
 }: Props) {
   const slides = useMemo(() => uniqueUrls(urls), [urls])
   const [index, setIndex] = useState(0)
@@ -83,7 +85,7 @@ export default function ListingPhotoSlider({
 
   if (total === 0) {
     return (
-      <ListingPhoto src="" alt={alt} sizes={sizes} className={className} priority={priority} />
+      <ListingPhoto src="" alt={alt} sizes={sizes} className={className} priority={priority} objectFit={objectFit} />
     )
   }
 
@@ -95,6 +97,7 @@ export default function ListingPhotoSlider({
         sizes={sizes}
         className={className}
         priority={priority}
+        objectFit={objectFit}
       />
     )
   }
@@ -107,6 +110,7 @@ export default function ListingPhotoSlider({
         sizes={sizes}
         className={className}
         priority={priority}
+        objectFit={objectFit}
       />
     )
   }
@@ -126,6 +130,7 @@ export default function ListingPhotoSlider({
           sizes={sizes}
           className={className}
           priority={priority && index === 0}
+          objectFit={objectFit}
         />
       </div>
 

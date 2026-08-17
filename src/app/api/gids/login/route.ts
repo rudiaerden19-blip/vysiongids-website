@@ -24,11 +24,23 @@ export async function POST(req: Request) {
 
   const row = await fetchListingByLoginNameAdmin(name)
   if (!row || !row.pin_hash) {
-    return NextResponse.json({ error: 'Onbekende zaak of verkeerde PIN.' }, { status: 401 })
+    return NextResponse.json(
+      {
+        error:
+          'Geen zaak gevonden met deze naam. Gebruik de exacte naam zoals in de gids (bv. Nini-Burger, niet Nini-Burgers).',
+      },
+      { status: 401 },
+    )
   }
 
   if (!verifyGidsPin(pin, row.pin_hash)) {
-    return NextResponse.json({ error: 'Onbekende zaak of verkeerde PIN.' }, { status: 401 })
+    return NextResponse.json(
+      {
+        error:
+          'Verkeerde PIN. Vul de 6 cijfers in die je koos bij «Zaak toevoegen» (niet een standaardcode zoals 123456).',
+      },
+      { status: 401 },
+    )
   }
 
   const token = signGidsSession(row.id)

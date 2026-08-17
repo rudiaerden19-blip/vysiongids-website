@@ -9,11 +9,41 @@ export function normalizeGidsBusinessName(name: string): string {
     .trim()
 }
 
+/** Extra lookup-keys voor veelgemaakte typo's (meervoud/enkelvoud op laatste segment). */
+function gidsBusinessNamePluralVariants(base: string): string[] {
+  const variants: string[] = []
+  const push = (v: string) => {
+    if (v && v !== base) variants.push(v)
+  }
+
+  if (base.endsWith('s') && base.length > 2) {
+    push(base.slice(0, -1))
+  } else {
+    push(`${base}s`)
+  }
+
+  const hyphenIdx = base.lastIndexOf('-')
+  if (hyphenIdx > 0) {
+    const prefix = base.slice(0, hyphenIdx + 1)
+    const last = base.slice(hyphenIdx + 1)
+    if (last.endsWith('s') && last.length > 2) {
+      push(prefix + last.slice(0, -1))
+    } else if (last && !last.endsWith('s')) {
+      push(prefix + last + 's')
+    }
+  }
+
+  return variants
+}
+
 /** Login/lookup: DB kan oude apostrof-varianten hebben (’ vs '). */
 export function gidsBusinessNameLookupKeys(rawName: string): string[] {
   const base = normalizeGidsBusinessName(rawName)
   if (!base) return []
   const keys = new Set<string>([base])
+  for (const v of gidsBusinessNamePluralVariants(base)) {
+    keys.add(v)
+  }
   if (base.includes("'")) {
     keys.add(base.replace(/'/g, '\u2019'))
     keys.add(base.replace(/'/g, '\u2018'))

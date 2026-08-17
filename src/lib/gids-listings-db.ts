@@ -166,11 +166,40 @@ export async function fetchListingByNormalizedNameAdmin(nameNormalized: string):
   return data as GidsListingRow
 }
 
+export async function fetchListingBySlugAdmin(slug: string): Promise<GidsListingRow | null> {
+  const supabase = createGidsSupabaseAdmin()
+  if (!supabase) return null
+  const key = slug.trim().toLowerCase()
+  if (!key) return null
+  const { data, error } = await supabase
+    .from('gids_listings')
+    .select('id, name, name_normalized, pin_hash, slug')
+    .eq('slug', key)
+    .maybeSingle()
+  if (error || !data) return null
+  return data as GidsListingRow
+}
+
 export async function fetchListingByLoginNameAdmin(rawName: string): Promise<GidsListingRow | null> {
   const keys = gidsBusinessNameLookupKeys(rawName)
   for (const key of keys) {
     const row = await fetchListingByNormalizedNameAdmin(key)
     if (row) return row
   }
+
+  const slugLike = rawName
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/-+/g, '-')
+    .replace(/^-+|-+$/g, '')
+  if (slugLike.length >= 3 && slugLike.includes('-')) {
+    const bySlug = await fetchListingBySlugAdmin(slugLike)
+    if (bySlug) return bySlug
+  }
+
   return null
 }
