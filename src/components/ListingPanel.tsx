@@ -64,11 +64,27 @@ export default function ListingPanel({
               </h2>
             </Link>
             <div
-              className={`vysiongids-listing-panel-status-col${showTopZaakStamp ? ' vysiongids-listing-panel-status-col--topzaak' : ''}`}
+              className={`vysiongids-listing-panel-status-col${showTopZaakStamp ? ' vysiongids-listing-panel-status-col--topzaak' : ''}${travelLabel ? ' vysiongids-listing-panel-status-col--has-travel' : ''}`}
             >
               <ListingPanelOpenStatus listing={listing} />
               {showTopZaakStamp ? (
                 <ListingTopZaakStamp listing={listing} variant="underOpen" />
+              ) : null}
+              {travelLabel ? (
+                <div
+                  className="vysiongids-listing-panel-travel vysiongids-listing-panel-travel--under-status"
+                  aria-label={`${travelLabel} rijden`}
+                >
+                  <span>{travelLabel}</span>
+                  <a
+                    href={listingWazeUrl(listing)}
+                    className="vysiongids-listing-panel-waze-link"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    Waze
+                  </a>
+                </div>
               ) : null}
             </div>
           </div>
@@ -80,19 +96,6 @@ export default function ListingPanel({
           <p style={{ margin: 0, fontSize: bodyTextSize, color: '#4b5563' }}>
             {formatListingServiceMode(listing)}
           </p>
-          {travelLabel ? (
-            <p className="vysiongids-listing-panel-travel" aria-label={`${travelLabel} rijden`}>
-              <span>{travelLabel}</span>
-              <a
-                href={listingWazeUrl(listing)}
-                className="vysiongids-listing-panel-waze-link"
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                Waze
-              </a>
-            </p>
-          ) : null}
           <div className="vysiongids-listing-panel-hours-wrap">
             <ul className="vysiongids-listing-panel-hours">
               {hoursRows.map((row) => (

@@ -44,8 +44,8 @@ export default function ZoekenResultsList({ listings, initialNear }: Props) {
     <>
       {!near && geoDenied ? (
         <p className="vysiongids-zoeken-travel-hint" role="status">
-          Sta locatie toe in je browser om op elke kaart <strong>km</strong> en <strong>rijtijd</strong> te zien (onder
-          het adres, met knop Waze).
+          Sta locatie toe in je browser om op elke kaart <strong>km</strong> en <strong>rijtijd</strong> te zien (rechts
+          onder «Opent …» / «Nu open», met knop Waze).
         </p>
       ) : null}
       <ul

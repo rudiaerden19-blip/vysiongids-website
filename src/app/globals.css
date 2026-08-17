@@ -1283,8 +1283,26 @@ body {
   filter: brightness(0.95);
 }
 
-.vysiongids-listing-panel--compact .vysiongids-listing-panel-travel {
-  font-size: 0.9375rem;
+.vysiongids-listing-panel-travel--under-status {
+  margin: 0.4rem 0 0;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.35rem;
+  font-size: 0.8125rem;
+  text-align: right;
+}
+
+.vysiongids-listing-panel-status-col--has-travel {
+  max-width: 12.5rem;
+}
+
+.vysiongids-listing-panel-status-col--topzaak.vysiongids-listing-panel-status-col--has-travel {
+  width: auto;
+  max-width: 12.5rem;
+}
+
+.vysiongids-listing-panel--compact .vysiongids-listing-panel-travel--under-status {
+  font-size: 0.75rem;
 }
 
 .vysiongids-listing-panel-row {
@@ -1616,7 +1634,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 0;
+  gap: 0.25rem;
 }
 
 .vysiongids-listing-panel-status-col--topzaak {
