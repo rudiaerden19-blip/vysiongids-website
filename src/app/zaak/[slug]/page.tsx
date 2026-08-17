@@ -98,7 +98,7 @@ export default async function ZaakPage({ params }: Props) {
               </div>
             ) : null}
 
-            <div className="relative mt-6 aspect-[16/9] overflow-hidden rounded-2xl bg-gray-100">
+            <div className="vysiongids-zaak-gallery relative mt-6 aspect-[4/3] overflow-hidden rounded-2xl bg-gray-200 sm:aspect-[16/10]">
               <ListingPhotoSlider
                 urls={listingPhotoUrls(listing)}
                 alt={listing.name}
@@ -106,7 +106,7 @@ export default async function ZaakPage({ params }: Props) {
                 showControls
                 autoPlay
                 sizes="(max-width: 1024px) 100vw, min(960px, 75vw)"
-                className="object-cover"
+                objectFit="contain"
               />
             </div>
 
