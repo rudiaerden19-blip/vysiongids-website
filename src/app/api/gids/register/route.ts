@@ -116,6 +116,7 @@ async function handleRegisterPost(req: Request) {
 
   try {
     revalidateTag('gids-listings', 'max')
+    revalidatePath('/')
     revalidatePath('/zoeken')
     revalidatePath(`/zaak/${inserted.slug}`)
   } catch (revalidateErr) {

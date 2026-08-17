@@ -67,6 +67,7 @@ export async function DELETE() {
   }
 
   revalidateTag('gids-listings', 'max')
+  revalidatePath('/')
 
   const res = NextResponse.json({ ok: true })
   res.cookies.set(GIDS_SESSION_COOKIE, '', { maxAge: 0, path: '/', httpOnly: true, sameSite: 'lax' })

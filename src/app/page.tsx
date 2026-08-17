@@ -7,6 +7,8 @@ import HomeRegionsSection from '@/components/HomeRegionsSection'
 import SiteHeader from '@/components/SiteHeader'
 import { getHomePublicStats } from '@/lib/gids-home-stats'
 
+export const revalidate = 0
+
 export default async function HomePage() {
   const stats = await getHomePublicStats()
 
