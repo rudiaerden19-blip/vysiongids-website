@@ -1246,10 +1246,30 @@ body {
 
 .vysiongids-listing-panel-travel {
   margin: 0.35rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 0.85rem;
   font-size: 1rem;
   font-weight: 700;
   line-height: 1.35;
   color: var(--accent);
+}
+
+.vysiongids-listing-panel-waze-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.65rem;
+  border-radius: 999px;
+  background: #33ccff;
+  color: #0d1621 !important;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.vysiongids-listing-panel-waze-link:hover {
+  filter: brightness(0.95);
 }
 
 .vysiongids-listing-panel--compact .vysiongids-listing-panel-travel {

@@ -2,17 +2,19 @@
 
 import { useRouter, useSearchParams } from 'next/navigation'
 import { getBrowserGeolocation } from '@/lib/browser-geolocation'
+import { parseListingSearchQuery } from '@/lib/gids-listing-search'
 import {
   buildGidsSearchPath,
   parseNearPointFromSearchParams,
-  searchQueryWantsNearby,
+  searchQueryWantsGeolocation,
 } from '@/lib/gids-search-url'
 
 export default function NearbySearchHintBanner() {
   const searchParams = useSearchParams()
   const router = useRouter()
   const q = searchParams.get('q') ?? ''
-  const wantsNearby = searchQueryWantsNearby(q)
+  const parsed = parseListingSearchQuery(q)
+  const wantsGeo = searchQueryWantsGeolocation(q)
   const hasNear = Boolean(
     parseNearPointFromSearchParams({
       nearLat: searchParams.get('nearLat') ?? undefined,
@@ -20,7 +22,9 @@ export default function NearbySearchHintBanner() {
     }),
   )
 
-  if (!wantsNearby || hasNear) return null
+  if (!wantsGeo || hasNear) return null
+
+  const label = parsed.openNow && !parsed.nearby ? '«Nu open» in de buurt' : '«Dichtbij»'
 
   return (
     <p
@@ -35,12 +39,12 @@ export default function NearbySearchHintBanner() {
         fontSize: '0.9375rem',
       }}
     >
-      Voor «dichtbij» hebben we je locatie nodig.{' '}
+      Voor {label} hebben we je locatie nodig.{' '}
       <button
         type="button"
         style={{
           fontWeight: 600,
-          color: '#0e5d82',
+          color: 'var(--accent)',
           textDecoration: 'underline',
           background: 'none',
           border: 'none',

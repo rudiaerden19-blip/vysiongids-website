@@ -96,6 +96,9 @@ const NEARBY_PHRASES = [
   'close by',
   'in de nabijheid',
   'nabij',
+  'dichtstbij',
+  'dichtstbijzijnde',
+  'dichtst bij',
 ]
 
 const QUERY_STOPWORDS = new Set([

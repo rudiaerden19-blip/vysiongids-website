@@ -1,11 +1,16 @@
 import type { Listing } from '@/lib/listing-types'
 import { fixVoiceSearchTranscript, type VoiceNameHint, buildVoiceNameHints } from '@/lib/voice-search-transcript-fix'
 import { normalizeSearchText } from '@/lib/gids-text'
+import { parseListingSearchQuery } from '@/lib/gids-listing-search'
+import { listingWazeUrl } from '@/lib/gids-listing-navigation'
+import { searchListings } from '@/lib/listings'
 
 export type ListingActionIntent =
-  | { kind: 'search'; failedAction?: 'order' | 'review' }
+  | { kind: 'search'; failedAction?: 'order' | 'review' | 'navigate' }
   | { kind: 'review'; slug: string; listingName: string; path: string }
   | { kind: 'order'; slug: string; listingName: string; orderUrl: string }
+  | { kind: 'navigate'; slug: string; listingName: string; wazeUrl: string }
+  | { kind: 'navigate_followup' }
 
 const FILLER = new Set([
   'de',
@@ -44,6 +49,35 @@ export function normalizeVoiceActionQuery(raw: string): string {
     .replace(/\brevieu\b/gi, 'review')
     .replace(/\brecensie\b/gi, 'review')
     .replace(/\bbeoordeel\b/gi, 'beoordeling')
+    .replace(/\bways\b/gi, 'waze')
+    .replace(/\bweys\b/gi, 'waze')
+    .replace(/\bwaaze\b/gi, 'waze')
+}
+
+function isNavigateFollowupOnly(qNorm: string): boolean {
+  const t = qNorm.trim()
+  if (!t) return false
+  return /^(waze(\s+er)?(\s+(naar|toe|naartoe))?|navigeer(\s+er)?(\s+(naar|toe|naartoe))?|rij\s+er(\s+(naar|toe|naartoe))?|start\s+waze)$/.test(
+    t,
+  )
+}
+
+function queryImpliesNavigate(qNorm: string): boolean {
+  return (
+    /\bwaze\b/.test(qNorm) ||
+    /\bnavigeer\b/.test(qNorm) ||
+    /\brij\s+naar\b/.test(qNorm) ||
+    /\broute\s+naar\b/.test(qNorm) ||
+    /\bgps\s+naar\b/.test(qNorm)
+  )
+}
+
+function detectActionKind(qNorm: string): 'review' | 'order' | 'navigate' | 'navigate_followup' | null {
+  if (isNavigateFollowupOnly(qNorm)) return 'navigate_followup'
+  if (queryImpliesNavigate(qNorm)) return 'navigate'
+  const ro = detectActionKindReviewOrder(qNorm)
+  if (ro) return ro
+  return null
 }
 
 const TYPE_WORDS = new Set([
@@ -69,7 +103,7 @@ const TYPE_WORDS = new Set([
   'house',
 ])
 
-function detectActionKind(qNorm: string): 'review' | 'order' | null {
+function detectActionKindReviewOrder(qNorm: string): 'review' | 'order' | null {
   if (
     /\b(geef|schrijf|plaats|zet)\s+(een\s+)?review\b/.test(qNorm) ||
     /\breview\s+(voor|van|bij|aan|over)\b/.test(qNorm) ||
@@ -90,8 +124,21 @@ function detectActionKind(qNorm: string): 'review' | 'order' | null {
   return null
 }
 
-function stripActionPhrases(qNorm: string): string {
+function stripNavigatePhrases(qNorm: string): string {
   return qNorm
+    .replace(/\bwaze(\s+er)?(\s+(naar|toe|naartoe))?\b/g, ' ')
+    .replace(/\bnavigeer(\s+er)?(\s+(naar|toe|naartoe))?\b/g, ' ')
+    .replace(/\b(start\s+)?waze\b/g, ' ')
+    .replace(/\brij\s+naar\b/g, ' ')
+    .replace(/\broute\s+naar\b/g, ' ')
+    .replace(/\bgps\s+naar\b/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
+function stripActionPhrases(qNorm: string): string {
+  let out = stripNavigatePhrases(qNorm)
+  return out
     .replace(/\b(geef|schrijf|plaats|zet)\s+(een\s+)?review\b/g, ' ')
     .replace(/\breview\s+(voor|van|bij|aan|over)\b/g, ' ')
     .replace(/\b(een\s+)?review\b/g, ' ')
@@ -179,6 +226,40 @@ function pickListing(nameQuery: string, listings: Listing[]): Listing | null {
   return bestScore >= 45 ? best : null
 }
 
+function navigateIntentForListing(listing: Listing): ListingActionIntent {
+  return {
+    kind: 'navigate',
+    slug: listing.slug,
+    listingName: listing.name,
+    wazeUrl: listingWazeUrl(listing),
+  }
+}
+
+async function pickListingForNavigateSearch(
+  searchQuery: string,
+  near?: { lat: number; lng: number },
+): Promise<Listing | null> {
+  const trimmed = searchQuery.trim()
+  const parsed = parseListingSearchQuery(trimmed)
+  const needsNear = parsed.nearby || parsed.openNow
+  if (needsNear && !near) return null
+  const results = await searchListings({
+    q: trimmed || undefined,
+    nearLat: near?.lat,
+    nearLng: near?.lng,
+  })
+  return results[0] ?? null
+}
+
+export function voiceQueryNeedsGeolocation(raw: string): boolean {
+  const qNorm = normalizeSearchText(normalizeVoiceActionQuery(raw.trim()))
+  if (!qNorm) return false
+  const parsed = parseListingSearchQuery(qNorm)
+  if (parsed.nearby || parsed.openNow) return true
+  const kind = detectActionKind(qNorm)
+  return kind === 'navigate' || kind === 'navigate_followup'
+}
+
 export function getListingActionFailureSpeech(raw: string, listings: Listing[]): string | null {
   const hints: VoiceNameHint[] = buildVoiceNameHints(listings)
   const fixed = fixVoiceSearchTranscript(normalizeVoiceActionQuery(raw.trim()), hints)
@@ -191,6 +272,9 @@ export function getListingActionFailureSpeech(raw: string, listings: Listing[]):
   if (kind === 'order') {
     return 'Ik vond die zaak niet om te bestellen. Zeg bestel bij, en de volledige zaaknaam.'
   }
+  if (kind === 'navigate') {
+    return 'Ik vond geen zaak om naartoe te rijden. Sta locatie toe of zoek eerst een zaak dichtbij.'
+  }
   return 'Ik vond die zaak niet voor een review.'
 }
 
@@ -202,8 +286,64 @@ export function resolveListingActionIntent(raw: string, listings: Listing[]): Li
 
   const kind = detectActionKind(qNorm)
   if (!kind) return { kind: 'search' }
+  if (kind === 'navigate_followup') return { kind: 'navigate_followup' }
+  if (kind === 'navigate') return { kind: 'search', failedAction: 'navigate' }
 
   const nameQuery = stripActionPhrases(qNorm)
+  const listing = pickListing(nameQuery, listings)
+  if (!listing) return { kind: 'search', failedAction: kind }
+
+  if (kind === 'review') {
+    return {
+      kind: 'review',
+      slug: listing.slug,
+      listingName: listing.name,
+      path: `/zaak/${listing.slug}/reviews#schrijven`,
+    }
+  }
+
+  const orderUrl = listing.orderUrl?.trim()
+  if (!orderUrl) {
+    return {
+      kind: 'order',
+      slug: listing.slug,
+      listingName: listing.name,
+      orderUrl: `/zaak/${listing.slug}`,
+    }
+  }
+
+  return {
+    kind: 'order',
+    slug: listing.slug,
+    listingName: listing.name,
+    orderUrl: orderUrl.includes('://') ? orderUrl : `https://${orderUrl}`,
+  }
+}
+
+export async function resolveListingActionIntentAsync(
+  raw: string,
+  listings: Listing[],
+  near?: { lat: number; lng: number },
+): Promise<ListingActionIntent> {
+  const hints: VoiceNameHint[] = buildVoiceNameHints(listings)
+  const fixed = fixVoiceSearchTranscript(normalizeVoiceActionQuery(raw.trim()), hints)
+  const qNorm = normalizeSearchText(fixed)
+  if (!qNorm) return { kind: 'search' }
+
+  const kind = detectActionKind(qNorm)
+  if (!kind) return { kind: 'search' }
+  if (kind === 'navigate_followup') return { kind: 'navigate_followup' }
+
+  const nameQuery = stripActionPhrases(qNorm)
+
+  if (kind === 'navigate') {
+    const byName = nameQuery ? pickListing(nameQuery, listings) : null
+    if (byName) return navigateIntentForListing(byName)
+    const fromSearch = await pickListingForNavigateSearch(nameQuery || qNorm, near)
+    if (fromSearch) return navigateIntentForListing(fromSearch)
+    return { kind: 'search', failedAction: 'navigate' }
+  }
+
   const listing = pickListing(nameQuery, listings)
   if (!listing) return { kind: 'search', failedAction: kind }
 

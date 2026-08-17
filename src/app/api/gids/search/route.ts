@@ -18,5 +18,9 @@ export async function GET(request: Request) {
     nearLat: Number.isFinite(nearLat) ? nearLat : undefined,
     nearLng: Number.isFinite(nearLng) ? nearLng : undefined,
   })
-  return NextResponse.json({ count: results.length })
+  const top = results[0]
+  return NextResponse.json({
+    count: results.length,
+    top: top ? { slug: top.slug, name: top.name } : null,
+  })
 }

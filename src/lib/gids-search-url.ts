@@ -20,6 +20,12 @@ export function searchQueryWantsNearby(q: string | undefined): boolean {
   return parseListingSearchQuery(q ?? '').nearby
 }
 
+/** Locatie voor afstand op kaarten: «dichtbij» of «nu open». */
+export function searchQueryWantsGeolocation(q: string | undefined): boolean {
+  const parsed = parseListingSearchQuery(q ?? '')
+  return parsed.nearby || parsed.openNow
+}
+
 export function appendGidsSearchParams(
   params: URLSearchParams,
   input: { q?: string; type?: string; prov?: string; near?: { lat: number; lng: number } | null },

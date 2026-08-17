@@ -4,6 +4,7 @@ import ListingPanel from '@/components/ListingPanel'
 import NearbySearchHintBanner from '@/components/NearbySearchHintBanner'
 import NearbySearchLocationSync from '@/components/NearbySearchLocationSync'
 import SearchForm from '@/components/SearchForm'
+import SearchResultsNavContextSync from '@/components/SearchResultsNavContextSync'
 import SearchResultsVoiceAnnouncement from '@/components/SearchResultsVoiceAnnouncement'
 import SiteHeader from '@/components/SiteHeader'
 import { parseListingSearchQuery } from '@/lib/gids-listing-search'
@@ -61,6 +62,10 @@ export default async function ZoekenPage({ searchParams }: Props) {
           <NearbySearchLocationSync />
           <NearbySearchHintBanner />
           <SearchResultsVoiceAnnouncement />
+          <SearchResultsNavContextSync
+            listings={results.map((l) => ({ slug: l.slug, name: l.name }))}
+            query={sp.q}
+          />
         </Suspense>
 
         <Suspense fallback={null}>

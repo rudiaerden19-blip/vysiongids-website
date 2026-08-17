@@ -11,6 +11,7 @@ import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
 import { isTopZaakListing } from '@/lib/listing-topzaak'
 import { formatDeliveryFee, formatDeliveryRadius, formatListingAddressLines, formatListingServiceMode, formatMinOrder, listingPhotoUrls } from '@/lib/listings'
 import { formatDistanceAndDriveTime } from '@/lib/listing-distance'
+import { listingWazeUrl } from '@/lib/gids-listing-navigation'
 import { resolveListingPanelHiringBanner } from '@/lib/listing-info-extras'
 import ListingMenuButton from '@/components/ListingMenuButton'
 
@@ -81,7 +82,15 @@ export default function ListingPanel({
           </p>
           {travelLabel ? (
             <p className="vysiongids-listing-panel-travel" aria-label={`${travelLabel} rijden`}>
-              {travelLabel}
+              <span>{travelLabel}</span>
+              <a
+                href={listingWazeUrl(listing)}
+                className="vysiongids-listing-panel-waze-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Waze
+              </a>
             </p>
           ) : null}
           <div className="vysiongids-listing-panel-hours-wrap">

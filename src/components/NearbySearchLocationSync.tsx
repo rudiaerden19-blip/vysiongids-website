@@ -3,9 +3,9 @@
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useRef } from 'react'
 import { getBrowserGeolocation } from '@/lib/browser-geolocation'
-import { buildGidsSearchPath, parseNearPointFromSearchParams, searchQueryWantsNearby } from '@/lib/gids-search-url'
+import { buildGidsSearchPath, parseNearPointFromSearchParams, searchQueryWantsGeolocation } from '@/lib/gids-search-url'
 
-/** Vraag locatie en vul nearLat/nearLng in de URL als de zoekterm «dichtbij» bedoelt. */
+/** Vraag locatie en vul nearLat/nearLng in de URL bij «dichtbij» of «nu open». */
 export default function NearbySearchLocationSync() {
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -14,7 +14,7 @@ export default function NearbySearchLocationSync() {
   useEffect(() => {
     if (triedRef.current) return
     const q = searchParams.get('q') ?? ''
-    if (!searchQueryWantsNearby(q)) return
+    if (!searchQueryWantsGeolocation(q)) return
     if (parseNearPointFromSearchParams({
       nearLat: searchParams.get('nearLat') ?? undefined,
       nearLng: searchParams.get('nearLng') ?? undefined,

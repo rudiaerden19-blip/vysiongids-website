@@ -93,7 +93,8 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
 
   const nearLat = params.nearLat
   const nearLng = params.nearLng
-  if (parsed.nearby && typeof nearLat === 'number' && typeof nearLng === 'number') {
+  const hasNearPoint = typeof nearLat === 'number' && typeof nearLng === 'number'
+  if (hasNearPoint && (parsed.nearby || parsed.openNow)) {
     const from = { lat: nearLat, lng: nearLng }
     const maxKm = params.nearMaxKm ?? 40
     results = results

@@ -11,13 +11,14 @@ import type { VoiceNameHint } from '@/lib/voice-search-transcript-fix'
 import { fixVoiceSearchTranscript } from '@/lib/voice-search-transcript-fix'
 import { parseListingSearchQuery } from '@/lib/gids-listing-search'
 import { getBrowserGeolocation } from '@/lib/browser-geolocation'
-import { appendGidsSearchParams, buildGidsSearchPath } from '@/lib/gids-search-url'
+import { appendGidsSearchParams, buildGidsSearchPath, searchQueryWantsGeolocation } from '@/lib/gids-search-url'
 import {
   fetchListingActionIntent,
   listingActionSpeechMessage,
   tryNavigateListingActionIntent,
 } from '@/lib/gids-listing-action-intent-client'
-import { normalizeVoiceActionQuery } from '@/lib/gids-listing-action-intent'
+import { normalizeVoiceActionQuery, voiceQueryNeedsGeolocation } from '@/lib/gids-listing-action-intent'
+import { saveGidsNavTarget } from '@/lib/gids-nav-session'
 
 const fieldLabel: CSSProperties = {
   display: 'block',
@@ -100,7 +101,10 @@ function buildSearchPath(
 }
 
 async function nearPointForQuery(q: string): Promise<{ lat: number; lng: number } | undefined> {
-  if (!parseListingSearchQuery(q).nearby) return undefined
+  const normalized = normalizeVoiceActionQuery(q.trim())
+  if (!searchQueryWantsGeolocation(normalized) && !voiceQueryNeedsGeolocation(normalized)) {
+    return undefined
+  }
   try {
     return await getBrowserGeolocation()
   } catch {
@@ -108,18 +112,21 @@ async function nearPointForQuery(q: string): Promise<{ lat: number; lng: number 
   }
 }
 
-async function fetchSearchCount(
+async function fetchSearchSummary(
   q: string,
   type: string,
   prov: string,
   near?: { lat: number; lng: number },
-): Promise<number> {
+): Promise<{ count: number; top: { slug: string; name: string } | null }> {
   const params = new URLSearchParams()
   appendGidsSearchParams(params, { q, type, prov, near: near ?? null })
   const res = await fetch(`/api/gids/search?${params.toString()}`, { cache: 'no-store' })
-  if (!res.ok) return 0
-  const data = (await res.json()) as { count?: number }
-  return typeof data.count === 'number' ? data.count : 0
+  if (!res.ok) return { count: 0, top: null }
+  const data = (await res.json()) as { count?: number; top?: { slug: string; name: string } | null }
+  return {
+    count: typeof data.count === 'number' ? data.count : 0,
+    top: data.top ?? null,
+  }
 }
 
 type SearchActionsProps = {
@@ -163,14 +170,16 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
       const type = form ? String(new FormData(form).get('type') ?? 'all') : 'all'
       if (qInputRef.current) qInputRef.current.value = trimmed
 
-      const intent = await fetchListingActionIntent(trimmed)
+      const near = await nearPointForQuery(trimmed)
+
+      const intent = await fetchListingActionIntent(trimmed, near)
       if (intent.kind !== 'search') {
         const message = listingActionSpeechMessage(intent)
         if (message) {
           stashVoiceSearchAnnouncement(message)
           await speakDutchAsync(message)
         }
-        await tryNavigateListingActionIntent(router, trimmed, intent)
+        await tryNavigateListingActionIntent(router, trimmed, intent, near)
         return
       }
       if (intent.failedAction) {
@@ -179,18 +188,23 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
           stashVoiceSearchAnnouncement(message)
           await speakDutchAsync(message)
         }
+        if (intent.failedAction === 'navigate') return
         return
       }
 
       let count = 0
-      const near = await nearPointForQuery(trimmed)
+      let top: { slug: string; name: string } | null = null
       try {
-        count = await fetchSearchCount(trimmed, type, prov, near)
+        const summary = await fetchSearchSummary(trimmed, type, prov, near)
+        count = summary.count
+        top = summary.top
       } catch {
         count = 0
       }
 
-      const message = buildSearchResultsSpeechMessage({ count })
+      if (top) saveGidsNavTarget(top, trimmed)
+
+      const message = buildSearchResultsSpeechMessage({ count, topName: top?.name })
       stashVoiceSearchAnnouncement(message)
       await speakDutchAsync(message)
       router.push(buildSearchPath(trimmed, type, prov, near))
@@ -241,10 +255,13 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
       const nextQ = String(fd.get('q') ?? '').trim()
       const nextType = String(fd.get('type') ?? 'all')
       const queryForIntent = normalizeVoiceActionQuery(nextQ)
-      if (queryForIntent && (await tryNavigateListingActionIntent(router, queryForIntent))) {
+      const near = await nearPointForQuery(nextQ)
+      if (
+        queryForIntent &&
+        (await tryNavigateListingActionIntent(router, queryForIntent, undefined, near))
+      ) {
         return
       }
-      const near = await nearPointForQuery(nextQ)
       router.push(buildSearchPath(nextQ, nextType, prov, near))
     },
     [router, prov],

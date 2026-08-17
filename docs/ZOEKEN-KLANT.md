@@ -57,7 +57,9 @@ Wat overblijft in de zin matcht op **naam, straat, postcode, stad, provincie**, 
 
 - **dichtbij**, **in de buurt**, **nabij**, **bij mij in de buurt**, …
 - Browser vraagt **locatie** (GPS); resultaten binnen **40 km**, gesorteerd op afstand
+- Ook bij **«nu open»** (zonder «dichtbij») wordt locatie gevraagd om open zaken **in de buurt** te sorteren
 - Op de kaart zie je **afstand en rijtijd** (bv. `2,3 km · ca. 6 min`) — schatting op basis van je locatie, geen live Waze-API
+- Knop **Waze** op elke kaart zodra locatie actief is
 - Weiger je locatie: wel zoeken op type/naam, maar **niet** op afstand gesorteerd — knop «Sta locatie toe» op `/zoeken`
 
 Voorbeelden: `frituur dichtbij`, `pizza in de buurt`, `kebab nabij`.
@@ -72,6 +74,16 @@ Herkenning op **naam** (spraakhints + fuzzy, bv. «nolim» → Nolim):
 | Bestellen | nolim bestellen, bestel bij blonkys, order … | **Bestel-URL** van de zaak (nieuw tabblad) |
 
 Geen match op zaaknaam → valt terug op normale zoekresultaten.
+
+## Waze & rijden (spraak)
+
+| Intent | Voorbeelden | Actie |
+|--------|-------------|--------|
+| Zoeken + onthouden | frituur dichtbij nu open | Resultaten + TTS; **bovenste zaak** wordt onthouden (~30 min) |
+| Waze (vervolg) | waze er naartoe, navigeer er naartoe | **Waze-app** naar laatst gevonden / bovenste zaak |
+| Waze (één zin) | waze naar dichtstbijzijnde open frituur | Zoeken op locatie + meteen Waze naar #1 |
+
+Locatie is nodig voor dichtbij, nu open in de buurt, en Waze-zoeken. Rijtijd op kaarten is een **schatting**; Waze berekent de echte route.
 
 ## Regio
 
