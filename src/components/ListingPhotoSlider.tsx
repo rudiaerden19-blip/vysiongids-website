@@ -12,8 +12,10 @@ type Props = {
   sizes: string
   className?: string
   priority?: boolean
-  /** Pijltjes op zaakpagina; zoekkaart = alleen automatisch */
+  /** Pijltjes op zaakpagina */
   showControls?: boolean
+  /** Automatisch wisselen (alleen zaakpagina) */
+  autoPlay?: boolean
 }
 
 function uniqueUrls(urls: string[]): string[] {
@@ -33,6 +35,7 @@ export default function ListingPhotoSlider({
   className,
   priority,
   showControls = false,
+  autoPlay = false,
 }: Props) {
   const slides = useMemo(() => uniqueUrls(urls), [urls])
   const [index, setIndex] = useState(0)
@@ -65,13 +68,13 @@ export default function ListingPhotoSlider({
   const goNext = useCallback(() => advance(1), [advance])
 
   useEffect(() => {
-    if (total <= 1) return
+    if (!autoPlay || total <= 1) return
     const id = window.setInterval(goNext, SLIDE_MS)
     return () => {
       window.clearInterval(id)
       clearFadeTimeout()
     }
-  }, [goNext, clearFadeTimeout, total])
+  }, [autoPlay, goNext, clearFadeTimeout, total])
 
   useEffect(() => {
     setIndex(0)
@@ -85,6 +88,18 @@ export default function ListingPhotoSlider({
   }
 
   if (total === 1) {
+    return (
+      <ListingPhoto
+        src={slides[0]!}
+        alt={alt}
+        sizes={sizes}
+        className={className}
+        priority={priority}
+      />
+    )
+  }
+
+  if (!autoPlay && !showControls) {
     return (
       <ListingPhoto
         src={slides[0]!}

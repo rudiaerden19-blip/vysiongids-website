@@ -246,6 +246,7 @@ export async function PATCH(req: Request) {
   }
 
   revalidateTag('gids-listings', 'max')
+  revalidatePath('/')
   revalidatePath('/zoeken')
   revalidatePath(`/zaak/${slug}`)
   revalidatePath(`/zaak/${slug}/menu`)

@@ -103,6 +103,7 @@ export default async function ZaakPage({ params }: Props) {
                 alt={listing.name}
                 priority
                 showControls
+                autoPlay
                 sizes="(max-width: 1024px) 100vw, min(960px, 75vw)"
                 className="object-cover"
               />
