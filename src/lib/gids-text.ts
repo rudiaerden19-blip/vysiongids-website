@@ -4,8 +4,21 @@ export function normalizeGidsBusinessName(name: string): string {
     .toLowerCase()
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[\u2018\u2019\u201B\u0060\u02BC]/g, "'")
     .replace(/\s+/g, ' ')
     .trim()
+}
+
+/** Login/lookup: DB kan oude apostrof-varianten hebben (’ vs '). */
+export function gidsBusinessNameLookupKeys(rawName: string): string[] {
+  const base = normalizeGidsBusinessName(rawName)
+  if (!base) return []
+  const keys = new Set<string>([base])
+  if (base.includes("'")) {
+    keys.add(base.replace(/'/g, '\u2019'))
+    keys.add(base.replace(/'/g, '\u2018'))
+  }
+  return [...keys]
 }
 
 const TITLE_CASE_LOWER_WORDS = new Set(['de', 'het', 'een', 'van', 'der', 'den', 'te', 'op', 'in', 'en', 'du', 'la'])

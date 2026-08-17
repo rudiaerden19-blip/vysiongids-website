@@ -1,5 +1,6 @@
 import type { Listing, ListingAmenityId } from '@/lib/listing-types'
 import { normalizeListingInfoExtras } from '@/lib/listing-info-extras'
+import { gidsBusinessNameLookupKeys } from '@/lib/gids-text'
 import { createGidsSupabaseAdmin, createGidsSupabasePublic, isGidsSupabaseConfigured } from '@/lib/supabase-gids'
 
 type PhotoRow = { sort_order: number; public_url: string }
@@ -163,4 +164,13 @@ export async function fetchListingByNormalizedNameAdmin(nameNormalized: string):
     .maybeSingle()
   if (error || !data) return null
   return data as GidsListingRow
+}
+
+export async function fetchListingByLoginNameAdmin(rawName: string): Promise<GidsListingRow | null> {
+  const keys = gidsBusinessNameLookupKeys(rawName)
+  for (const key of keys) {
+    const row = await fetchListingByNormalizedNameAdmin(key)
+    if (row) return row
+  }
+  return null
 }

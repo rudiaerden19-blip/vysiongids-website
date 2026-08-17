@@ -3,6 +3,7 @@
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
+import TitleCaseTextInput from '@/components/TitleCaseTextInput'
 
 export default function GidsLoginForm() {
   const router = useRouter()
@@ -14,8 +15,8 @@ export default function GidsLoginForm() {
     setError(null)
     setLoading(true)
     const fd = new FormData(e.currentTarget)
-    const name = String(fd.get('name') ?? '')
-    const pin = String(fd.get('pin') ?? '')
+    const name = String(fd.get('name') ?? '').trim()
+    const pin = String(fd.get('pin') ?? '').trim()
     try {
       const res = await fetch('/api/gids/login', {
         method: 'POST',
@@ -43,9 +44,19 @@ export default function GidsLoginForm() {
       ) : null}
       <div>
         <label className="block text-sm font-semibold text-gray-700" htmlFor="name">
-          Zaaknaam (exact zoals in de gids)
+          Zaaknaam (zoals bij registratie)
         </label>
-        <input id="name" name="name" required className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2" />
+        <TitleCaseTextInput
+          id="name"
+          name="name"
+          required
+          autoComplete="organization"
+          className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2"
+          placeholder="Bv. Frituur 't Patatje"
+        />
+        <p className="mt-1 text-xs text-gray-500">
+          Hoofdletters maakt niet uit. PIN = de 6 cijfers die je koos bij «Zaak toevoegen» (niet 000000).
+        </p>
       </div>
       <div>
         <label className="block text-sm font-semibold text-gray-700" htmlFor="pin">

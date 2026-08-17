@@ -1,8 +1,7 @@
 import { NextResponse } from 'next/server'
 import { revalidateTag } from 'next/cache'
 import { verifyGidsPin } from '@/lib/gids-pin'
-import { normalizeGidsBusinessName } from '@/lib/gids-text'
-import { fetchListingByNormalizedNameAdmin } from '@/lib/gids-listings-db'
+import { fetchListingByLoginNameAdmin } from '@/lib/gids-listings-db'
 import {
   GIDS_SESSION_COOKIE,
   gidsSessionCookieOptions,
@@ -23,7 +22,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Vul zaaknaam en PIN in.' }, { status: 400 })
   }
 
-  const row = await fetchListingByNormalizedNameAdmin(normalizeGidsBusinessName(name))
+  const row = await fetchListingByLoginNameAdmin(name)
   if (!row || !row.pin_hash) {
     return NextResponse.json({ error: 'Onbekende zaak of verkeerde PIN.' }, { status: 401 })
   }
