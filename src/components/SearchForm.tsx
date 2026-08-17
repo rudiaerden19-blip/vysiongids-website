@@ -9,7 +9,6 @@ import { primeSpeechSynthesis, speakDutchAsync, stashVoiceSearchAnnouncement } f
 import SearchVoiceMicButton from '@/components/SearchVoiceMicButton'
 import type { VoiceNameHint } from '@/lib/voice-search-transcript-fix'
 import { fixVoiceSearchTranscript } from '@/lib/voice-search-transcript-fix'
-import { parseListingSearchQuery } from '@/lib/gids-listing-search'
 import { getBrowserGeolocation } from '@/lib/browser-geolocation'
 import { appendGidsSearchParams, buildGidsSearchPath, searchQueryWantsGeolocation } from '@/lib/gids-search-url'
 import {
