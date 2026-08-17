@@ -9,6 +9,7 @@ import { normalizeHttpsUrl } from '@/lib/normalize-url'
 import { GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
 import { compressListingPhoto } from '@/lib/compress-listing-photo'
 import ListingOwnerOptionsFields from '@/components/ListingOwnerOptionsFields'
+import BeheerInfoExtrasFields from '@/components/BeheerInfoExtrasFields'
 import ListingMenuOwnerFields from '@/components/ListingMenuOwnerFields'
 import DeliveryRadiusKmField from '@/components/DeliveryRadiusKmField'
 import KitchenTypeSelect from '@/components/KitchenTypeSelect'
@@ -454,6 +455,8 @@ export default function ZaakToevoegenForm() {
       </div>
 
       <ListingOwnerOptionsFields />
+
+      <BeheerInfoExtrasFields disabled={loading} />
 
       <button
         type="submit"

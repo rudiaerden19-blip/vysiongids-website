@@ -58,12 +58,12 @@ function SpecialtyPhotoField({
 }
 
 type Props = {
-  listing: Listing
+  listing?: Listing
   disabled?: boolean
 }
 
 export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
-  const extras = listing.infoExtras
+  const extras = listing?.infoExtras
   const specialties = extras?.specialties ?? []
   const [removeSpecialty, setRemoveSpecialty] = useState<[boolean, boolean, boolean]>([false, false, false])
 

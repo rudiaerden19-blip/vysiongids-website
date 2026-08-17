@@ -6,9 +6,13 @@ import { fetchListingByNormalizedNameAdmin } from '@/lib/gids-listings-db'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { parseGidsListingFormData } from '@/lib/gids-listing-form-server'
 import { buildGidsListingInsertRow, gidsListingSaveErrorMessage } from '@/lib/gids-listing-db-write'
-import { siteOriginFromRequest, uploadGidsListingPhoto, ensureGidsPhotosBucket } from '@/lib/gids-listing-photos-server'
+import { siteOriginFromRequest, uploadGidsListingPhoto, uploadGidsListingSpecialtyPhoto, ensureGidsPhotosBucket } from '@/lib/gids-listing-photos-server'
 import { uploadGidsListingMenuPdf } from '@/lib/gids-listing-menu-server'
 import { geocodeListingAddress } from '@/lib/gids-listing-geocode'
+import {
+  buildInfoExtrasPayload,
+  parseInfoExtrasFromForm,
+} from '@/lib/listing-info-extras'
 
 export const maxDuration = 60
 
@@ -111,6 +115,32 @@ async function handleRegisterPost(req: Request) {
       console.error('[gids menu upload]', message)
       await admin.from('gids_listings').delete().eq('id', inserted.id)
       return NextResponse.json({ error: message }, { status: 500 })
+    }
+  }
+
+  const infoExtrasForm = parseInfoExtrasFromForm(form)
+  let infoExtrasPayload: Record<string, unknown> | null = null
+  try {
+    infoExtrasPayload = (await buildInfoExtrasPayload(
+      infoExtrasForm,
+      undefined,
+      (index, file) => uploadGidsListingSpecialtyPhoto(admin, inserted.id, index, file, origin),
+    )) as Record<string, unknown> | null
+  } catch (infoErr) {
+    const message = infoErr instanceof Error ? infoErr.message : 'INFO-blokken opslaan mislukt'
+    await admin.from('gids_listings').delete().eq('id', inserted.id)
+    return NextResponse.json({ error: message }, { status: 400 })
+  }
+
+  if (infoExtrasPayload) {
+    const { error: extrasErr } = await admin
+      .from('gids_listings')
+      .update({ info_extras: infoExtrasPayload })
+      .eq('id', inserted.id)
+    if (extrasErr) {
+      console.error('[gids register info_extras]', extrasErr.message)
+      await admin.from('gids_listings').delete().eq('id', inserted.id)
+      return NextResponse.json({ error: gidsListingSaveErrorMessage(extrasErr.message) }, { status: 500 })
     }
   }
 
