@@ -47,7 +47,7 @@ export function buildGidsListingInsertRow(d: ParsedGidsListingForm, extras: Inse
     opening_hours: d.openingHours,
     closed_days: d.closedDays,
     hours_by_day: d.hoursByDay,
-    amenities: d.ownerAmenities.length ? (d.ownerAmenities as ListingAmenityId[]) : null,
+    amenities: d.ownerAmenities as ListingAmenityId[],
     status: 'published',
     rating_avg: 0,
     rating_count: 0,

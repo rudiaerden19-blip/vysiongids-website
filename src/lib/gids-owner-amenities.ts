@@ -32,10 +32,9 @@ export function parseOwnerAmenitiesFromForm(form: FormData): ListingAmenityId[] 
 export function mergeListingAmenitiesWithOwnerChoices(
   existing: ListingAmenityId[] | null | undefined,
   ownerSelected: ListingAmenityId[],
-): ListingAmenityId[] | null {
+): ListingAmenityId[] {
   const kept = (existing ?? []).filter((id) => !OWNER_IDS.has(id) && id !== 'wheelchair')
-  const merged = [...kept, ...ownerSelected]
-  return merged.length ? merged : null
+  return [...kept, ...ownerSelected]
 }
 
 export function ownerAmenitiesFromListing(amenities: ListingAmenityId[] | undefined): Set<ListingAmenityId> {

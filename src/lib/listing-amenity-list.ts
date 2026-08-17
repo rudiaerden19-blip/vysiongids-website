@@ -1,15 +1,14 @@
 import type { Listing, ListingAmenityId } from '@/lib/listing-types'
 import { listingHasDeliveryInfo } from '@/lib/listings'
 
-/** Amenities voor weergave (incl. afhalen/levering uit vlaggen indien niet expliciet gezet). */
+/** Amenities voor klantkaarten / INFO — alleen opgeslagen keuzes, geen auto take-away/levering. */
 export function resolveListingAmenityList(listing: Listing): ListingAmenityId[] {
-  const amenities = listing.amenities ?? []
-  const defaultAmenities: ListingAmenityId[] = []
-  if (listing.pickupEnabled) defaultAmenities.push('takeaway')
-  if (listingHasDeliveryInfo(listing)) defaultAmenities.push('delivery')
-  if (amenities.length > 0) {
-    const merged = [...amenities, ...defaultAmenities.filter((d) => !amenities.includes(d))]
-    return listingHasDeliveryInfo(listing) ? merged : merged.filter((a) => a !== 'delivery')
+  const stored = listing.amenities
+  if (stored != null) {
+    return stored.filter((id) => id !== 'delivery' || listingHasDeliveryInfo(listing))
   }
-  return defaultAmenities
+  const fallback: ListingAmenityId[] = []
+  if (listing.pickupEnabled !== false) fallback.push('takeaway')
+  if (listingHasDeliveryInfo(listing)) fallback.push('delivery')
+  return fallback
 }
