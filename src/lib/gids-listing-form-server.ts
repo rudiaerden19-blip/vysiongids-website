@@ -20,8 +20,8 @@ export type ParsedGidsListingForm = {
   address: string
   province: string
   phone: string | null
-  email: string
-  websiteFinal: string
+  email: string | null
+  websiteFinal: string | null
   orderUrlFinal: string
   menuUrlFinal: string | null
   menuPdfFile: File | null
@@ -89,15 +89,18 @@ export async function parseGidsListingFormData(
   if (!city || !postcode || !address) {
     return { ok: false, error: 'Adres, postcode en gemeente zijn verplicht.', status: 400 }
   }
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return { ok: false, error: 'Vul een geldig e-mailadres in.', status: 400 }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    return { ok: false, error: 'Vul een geldig e-mailadres in, of laat het veld leeg.', status: 400 }
   }
 
-  const websiteNorm = normalizeHttpsUrl(website)
-  if (!websiteNorm.ok) return { ok: false, error: `Website: ${websiteNorm.message}`, status: 400 }
-  const websiteFinal = websiteNorm.url
+  let websiteFinal: string | null = null
+  if (website) {
+    const websiteNorm = normalizeHttpsUrl(website)
+    if (!websiteNorm.ok) return { ok: false, error: `Website: ${websiteNorm.message}`, status: 400 }
+    websiteFinal = websiteNorm.url
+  }
 
-  let orderUrlFinal = websiteFinal
+  let orderUrlFinal = websiteFinal ?? ''
   if (orderUrl) {
     const orderUrlNorm = normalizeHttpsUrl(orderUrl)
     if (!orderUrlNorm.ok) {
@@ -265,7 +268,7 @@ export async function parseGidsListingFormData(
       address,
       province,
       phone: phone || null,
-      email,
+      email: email || null,
       websiteFinal,
       orderUrlFinal,
       menuUrlFinal,

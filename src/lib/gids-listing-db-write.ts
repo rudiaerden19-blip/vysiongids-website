@@ -37,7 +37,7 @@ export function buildGidsListingInsertRow(d: ParsedGidsListingForm, extras: Inse
     postcode: d.postcode,
     province: d.province,
     address: d.address,
-    order_url: d.orderUrlFinal,
+    order_url: d.orderUrlFinal || '',
     menu_url: d.menuUrlFinal,
     website: d.websiteFinal,
     phone: d.phone,

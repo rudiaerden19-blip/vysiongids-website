@@ -139,13 +139,17 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
     const websiteRaw = String(fd.get('website') ?? '').trim()
     const orderUrlRaw = String(fd.get('orderUrl') ?? '').trim()
     const menuUrlRaw = String(fd.get('menuUrl') ?? '').trim()
-    const websiteNorm = normalizeHttpsUrl(websiteRaw)
-    if (!websiteNorm.ok) {
-      setError(`Website: ${websiteNorm.message}`)
-      setLoading(false)
-      return
+    if (websiteRaw) {
+      const websiteNorm = normalizeHttpsUrl(websiteRaw)
+      if (!websiteNorm.ok) {
+        setError(`Website: ${websiteNorm.message}`)
+        setLoading(false)
+        return
+      }
+      fd.set('website', websiteNorm.url)
+    } else {
+      fd.set('website', '')
     }
-    fd.set('website', websiteNorm.url)
     if (orderUrlRaw) {
       const orderUrlNorm = normalizeHttpsUrl(orderUrlRaw)
       if (!orderUrlNorm.ok) {
@@ -361,26 +365,28 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
         </div>
 
         <div>
-          <RequiredLabel htmlFor="edit-email">E-mail</RequiredLabel>
+          <label className="vysiongids-form-label" htmlFor="edit-email">
+            E-mail
+          </label>
           <input
             id="edit-email"
             name="email"
             type="email"
-            required
             defaultValue={listing.email ?? ''}
             className="vysiongids-form-input mt-1"
           />
         </div>
 
         <div>
-          <RequiredLabel htmlFor="edit-website">Website</RequiredLabel>
+          <label className="vysiongids-form-label" htmlFor="edit-website">
+            Website
+          </label>
           <input
             id="edit-website"
             name="website"
             type="text"
-            required
             defaultValue={listing.website ?? ''}
-            placeholder="jouwzaak.be"
+            placeholder="jouwzaak.be (optioneel)"
             className="vysiongids-form-input mt-1"
           />
         </div>

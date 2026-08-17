@@ -110,13 +110,17 @@ export default function ZaakToevoegenForm() {
 
     const websiteRaw = String(fd.get('website') ?? '').trim()
     const orderUrlRaw = String(fd.get('orderUrl') ?? '').trim()
-    const websiteNorm = normalizeHttpsUrl(websiteRaw)
-    if (!websiteNorm.ok) {
-      setError(`Website: ${websiteNorm.message}`)
-      setLoading(false)
-      return
+    if (websiteRaw) {
+      const websiteNorm = normalizeHttpsUrl(websiteRaw)
+      if (!websiteNorm.ok) {
+        setError(`Website: ${websiteNorm.message}`)
+        setLoading(false)
+        return
+      }
+      fd.set('website', websiteNorm.url)
+    } else {
+      fd.set('website', '')
     }
-    fd.set('website', websiteNorm.url)
     if (orderUrlRaw) {
       const orderUrlNorm = normalizeHttpsUrl(orderUrlRaw)
       if (!orderUrlNorm.ok) {
@@ -310,20 +314,23 @@ export default function ZaakToevoegenForm() {
       </div>
 
       <div>
-        <RequiredLabel htmlFor="email">E-mail</RequiredLabel>
-        <input id="email" name="email" type="email" required autoComplete="email" className="vysiongids-form-input mt-1" />
+        <label className="vysiongids-form-label" htmlFor="email">
+          E-mail
+        </label>
+        <input id="email" name="email" type="email" autoComplete="email" className="vysiongids-form-input mt-1" />
       </div>
 
       <div>
-        <RequiredLabel htmlFor="website">Website</RequiredLabel>
+        <label className="vysiongids-form-label" htmlFor="website">
+          Website
+        </label>
         <input
           id="website"
           name="website"
           type="text"
           inputMode="url"
           autoComplete="url"
-          required
-          placeholder="jouwzaak.be of https://jouwzaak.be"
+          placeholder="jouwzaak.be of https://jouwzaak.be (optioneel)"
           className="vysiongids-form-input mt-1"
         />
         <p className="mt-1 text-xs text-gray-500">https:// mag weg — wij vullen dat automatisch aan.</p>
