@@ -35,8 +35,10 @@ export function defaultWeekHoursFormState(): DayHoursFormState[] {
 
 function normalizeTime(t: string): string | null {
   const trimmed = t.trim()
-  if (!/^\d{1,2}:\d{2}$/.test(trimmed)) return null
-  const [h, m] = trimmed.split(':').map(Number)
+  const match = trimmed.match(/^(\d{1,2}):(\d{2})(?::\d{2})?$/)
+  if (!match) return null
+  const h = Number(match[1])
+  const m = Number(match[2])
   if (h < 0 || h > 23 || m < 0 || m > 59) return null
   return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}`
 }
@@ -60,8 +62,8 @@ export function dayFormStateToHoursRow(state: DayHoursFormState): ListingDayHour
   if (!from1 || !to1) {
     return { error: `${DAY_LABEL[state.day]}: vul shift 1 van en tot in (uu:mm).` }
   }
-  if (toMinutes(to1) <= toMinutes(from1)) {
-    return { error: `${DAY_LABEL[state.day]}: shift 1 — «tot» moet na «van» liggen.` }
+  if (from1 === to1) {
+    return { error: `${DAY_LABEL[state.day]}: shift 1 — «van» en «tot» mogen niet gelijk zijn.` }
   }
 
   let hours = slotString(from1, to1)
@@ -70,13 +72,16 @@ export function dayFormStateToHoursRow(state: DayHoursFormState): ListingDayHour
     const from2 = normalizeTime(state.shift2From)
     const to2 = normalizeTime(state.shift2To)
     if (!from2 || !to2) {
-      return { error: `${DAY_LABEL[state.day]}: vul shift 2 van en tot in.` }
+      return { error: `${DAY_LABEL[state.day]}: vul shift 2 van en tot in, of vink «2e shift» uit.` }
     }
-    if (toMinutes(to2) <= toMinutes(from2)) {
-      return { error: `${DAY_LABEL[state.day]}: shift 2 — «tot» moet na «van» liggen.` }
+    if (from2 === to2) {
+      return { error: `${DAY_LABEL[state.day]}: shift 2 — «van» en «tot» mogen niet gelijk zijn.` }
     }
-    if (toMinutes(from2) < toMinutes(to1)) {
-      return { error: `${DAY_LABEL[state.day]}: shift 2 moet na shift 1 beginnen.` }
+    const end1 = toMinutes(to1)
+    const start1 = toMinutes(from1)
+    const shift1SameCalendarDay = end1 > start1
+    if (shift1SameCalendarDay && toMinutes(from2) < end1) {
+      return { error: `${DAY_LABEL[state.day]}: shift 2 moet na het einde van shift 1 beginnen.` }
     }
     hours = `${hours}, ${slotString(from2, to2)}`
   }

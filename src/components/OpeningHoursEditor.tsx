@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState } from 'react'
+import { useLayoutEffect, useMemo, useState } from 'react'
 import {
   DAY_LABEL,
   defaultWeekHoursFormState,
@@ -10,11 +10,17 @@ import {
 } from '@/lib/gids-opening-hours'
 import type { ListingDayHours } from '@/lib/listing-types'
 
-type OpeningHoursEditorProps = {
-  initialHoursByDay?: ListingDayHours[]
+export type OpeningHoursPayload = {
+  json: string
+  error: string | null
 }
 
-export default function OpeningHoursEditor({ initialHoursByDay }: OpeningHoursEditorProps) {
+type OpeningHoursEditorProps = {
+  initialHoursByDay?: ListingDayHours[]
+  onPayloadChange?: (payload: OpeningHoursPayload) => void
+}
+
+export default function OpeningHoursEditor({ initialHoursByDay, onPayloadChange }: OpeningHoursEditorProps) {
   const [days, setDays] = useState<DayHoursFormState[]>(() =>
     initialHoursByDay?.length === 7 ? hoursByDayToFormState(initialHoursByDay) : defaultWeekHoursFormState(),
   )
@@ -26,6 +32,10 @@ export default function OpeningHoursEditor({ initialHoursByDay }: OpeningHoursEd
     }
     return { json: JSON.stringify(result.rows), error: null as string | null }
   }, [days])
+
+  useLayoutEffect(() => {
+    onPayloadChange?.(payload)
+  }, [payload, onPayloadChange])
 
   function updateDay(index: number, patch: Partial<DayHoursFormState>) {
     setDays((prev) => prev.map((d, i) => (i === index ? { ...d, ...patch } : d)))
@@ -100,7 +110,7 @@ export default function OpeningHoursEditor({ initialHoursByDay }: OpeningHoursEd
         </div>
       ))}
       {payload.error ? (
-        <p className="mt-2 text-sm text-amber-800" role="status">
+        <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm font-medium text-amber-950" role="alert">
           {payload.error}
         </p>
       ) : (

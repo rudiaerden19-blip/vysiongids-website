@@ -1,10 +1,10 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
 import { LISTING_TYPES, type ListingDayHours } from '@/lib/listing-types'
-import OpeningHoursEditor from '@/components/OpeningHoursEditor'
+import OpeningHoursEditor, { type OpeningHoursPayload } from '@/components/OpeningHoursEditor'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
 import { GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
 import { compressListingPhoto } from '@/lib/compress-listing-photo'
@@ -83,6 +83,11 @@ export default function ZaakToevoegenForm() {
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [loadingHint, setLoadingHint] = useState<string | null>(null)
+  const hoursPayloadRef = useRef<OpeningHoursPayload>({ json: '[]', error: null })
+
+  const onHoursPayloadChange = useCallback((payload: OpeningHoursPayload) => {
+    hoursPayloadRef.current = payload
+  }, [])
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -90,7 +95,13 @@ export default function ZaakToevoegenForm() {
     setLoading(true)
     const form = e.currentTarget
     const fd = new FormData(form)
-    const hoursRaw = String(fd.get('hoursByDay') ?? '[]')
+    const hoursPayload = hoursPayloadRef.current
+    const hoursRaw = hoursPayload.json || String(fd.get('hoursByDay') ?? '[]')
+    if (hoursPayload.error) {
+      setError(hoursPayload.error)
+      setLoading(false)
+      return
+    }
     if (hoursRaw === '[]' || hoursRaw === '') {
       setError('Controleer je openingsuren per dag (tijden en eventueel 2e shift).')
       setLoading(false)
@@ -345,7 +356,7 @@ export default function ZaakToevoegenForm() {
             *
           </span>
         </p>
-        <OpeningHoursEditor />
+        <OpeningHoursEditor onPayloadChange={onHoursPayloadChange} />
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
