@@ -24,6 +24,8 @@ export const PROTECTED_SEARCH_VOCABULARY = new Set([
   'cafe',
   'dichtbij',
   'antwerpen',
+  'lier',
+  'turnhout',
   'mechelen',
   'gent',
   'hasselt',

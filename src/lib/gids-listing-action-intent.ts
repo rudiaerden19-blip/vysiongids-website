@@ -2,6 +2,7 @@ import type { Listing } from '@/lib/listing-types'
 import { fixVoiceSearchTranscript, type VoiceNameHint, buildVoiceNameHints } from '@/lib/voice-search-transcript-fix'
 import { normalizeSearchText } from '@/lib/gids-text'
 import { parseListingSearchQuery } from '@/lib/gids-listing-search'
+import { listingMatchesSearchLocation } from '@/lib/gids-search-locations'
 import { listingWazeUrl } from '@/lib/gids-listing-navigation'
 import { searchListings } from '@/lib/listings'
 
@@ -205,10 +206,17 @@ function listingMatchScore(listing: Listing, nameQuery: string): number {
 }
 
 function pickListing(nameQuery: string, listings: Listing[]): Listing | null {
+  const parsed = parseListingSearchQuery(nameQuery)
+  let pool = listings
+  if (parsed.locationKeys.length > 0) {
+    pool = listings.filter((l) => listingMatchesSearchLocation(l, parsed.locationKeys))
+  }
+  const nameOnly = parsed.freeText.trim() || nameQuery
+
   let best: Listing | null = null
   let bestScore = 0
-  for (const listing of listings) {
-    const score = listingMatchScore(listing, nameQuery)
+  for (const listing of pool) {
+    const score = listingMatchScore(listing, nameOnly)
     if (score > bestScore) {
       bestScore = score
       best = listing
@@ -216,12 +224,12 @@ function pickListing(nameQuery: string, listings: Listing[]): Listing | null {
   }
   if (bestScore >= 50) return best
 
-  const slim = nameQuery
+  const slim = nameOnly
     .split(/\s+/)
     .filter((w) => w.length >= 3 && !FILLER.has(w) && !TYPE_WORDS.has(w))
     .join(' ')
-  if (slim && slim !== nameQuery) {
-    return pickListing(slim, listings)
+  if (slim && slim !== nameOnly) {
+    return pickListing(slim, pool)
   }
   return bestScore >= 45 ? best : null
 }

@@ -56,6 +56,7 @@ export function buildVoiceNameHints(listings: Listing[]): VoiceNameHint[] {
   }
 
   for (const listing of listings) {
+    addElierSpeechHints(listing, add)
     add(listing.name, listing.name)
 
     for (const word of listing.name.split(/\s+/)) {
@@ -86,6 +87,27 @@ export function buildVoiceNameHints(listings: Listing[]): VoiceNameHint[] {
   }
 
   return hints.sort((a, b) => b.token.length - a.token.length)
+}
+
+/** STT zegt vaak «staf lier» i.p.v. Stafelier / De Stafelier. */
+function addElierSpeechHints(listing: Listing, add: (token: string, replaceWith: string) => void) {
+  const replaceWith = listing.name.trim()
+  if (!replaceWith) return
+
+  const sources = [
+    normalizeSearchText(listing.name),
+    ...listing.slug.split('-').map((p) => normalizeSearchText(p)),
+  ]
+
+  for (const src of sources) {
+    const m = src.match(/^(.*?)([a-z]{3,})elier$/)
+    if (!m) continue
+    const prefix = (m[1] ?? '').trim()
+    const stem = m[2] ?? ''
+    if (stem.length < 3) continue
+    const spoken = prefix ? `${prefix} ${stem} lier` : `${stem} lier`
+    add(spoken, replaceWith)
+  }
 }
 
 function levenshtein(a: string, b: string): number {
@@ -168,6 +190,12 @@ export function fixVoiceSearchTranscript(raw: string, hints: VoiceNameHint[]): s
 
   // «no lim» / «no lin» → één woord voor merknamen
   trimmed = trimmed.replace(/\bno\s+li[mn]\b/gi, 'nolim')
+
+  const fullNorm = normalizeSearchText(trimmed)
+  if (fullNorm.length >= 4) {
+    const exact = hints.find((h) => h.token === fullNorm)
+    if (exact) return exact.replaceWith
+  }
 
   const parts = trimmed.split(/(\s+)/)
   const out: string[] = []

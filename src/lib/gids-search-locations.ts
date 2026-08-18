@@ -15,6 +15,10 @@ const CITY_ALIASES: Record<string, string[]> = {
   hasselt: ['haselt'],
   genk: ['genck'],
   pelt: ['overpelt', 'neerpelt'],
+  lier: ['lier'],
+  turnhout: ['turnhout'],
+  dendermonde: ['dendermonde', 'termonde'],
+  'sint niklaas': ['sint niklaas', 'sint-niklaas', 'san niklaas'],
 }
 
 export type SearchLocationKey = string

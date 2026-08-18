@@ -11,8 +11,17 @@ export const BELGIUM_CITIES = [
   { label: 'Aalst', q: 'Aalst' },
   { label: 'Mechelen', q: 'Mechelen' },
   { label: 'Leuven', q: 'Leuven' },
+  { label: 'Lier', q: 'Lier' },
+  { label: 'Turnhout', q: 'Turnhout' },
+  { label: 'Geel', q: 'Geel' },
+  { label: 'Mol', q: 'Mol' },
+  { label: 'Dendermonde', q: 'Dendermonde' },
+  { label: 'Sint-Niklaas', q: 'Sint-Niklaas' },
   { label: 'Pelt', q: 'Pelt' },
   { label: 'Genk', q: 'Genk' },
+  { label: 'Lommel', q: 'Lommel' },
+  { label: 'Overpelt', q: 'Overpelt' },
+  { label: 'Neerpelt', q: 'Neerpelt' },
 ] as const
 
 export const BELGIUM_PROVINCES = [
