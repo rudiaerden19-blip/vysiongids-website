@@ -81,11 +81,13 @@ export function getListingTypeLabel(type: Listing['type']): string {
 export async function searchListings(params: ListingSearchParams): Promise<Listing[]> {
   const listings = await loadListings()
   const parsed = parseListingSearchQuery(params.q ?? '')
-  const type = (params.type ?? 'all') as ListingTypeId
   const prov = normalizeSearchText(params.prov ?? '')
 
   let results = listings.filter((listing) => {
-    if (type !== 'all' && listing.type !== type) return false
+    const formType = (params.type ?? 'all') as ListingTypeId
+    if (formType !== 'all' && parsed.typeIds.length === 0 && listing.type !== formType) {
+      return false
+    }
     if (prov) {
       const listingProv = normalizeSearchText(listing.province ?? '')
       if (!listingProv || listingProv !== prov) return false

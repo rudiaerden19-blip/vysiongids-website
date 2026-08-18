@@ -6,6 +6,10 @@ import { LISTING_CUISINE_TYPES } from '@/lib/listing-cuisine-types'
 import { OWNER_PROFILE_AMENITIES, ownerAmenitiesFromListing } from '@/lib/gids-owner-amenities'
 import { isListingOpenNow } from '@/lib/listing-info'
 import { normalizeSearchText } from '@/lib/gids-text'
+import {
+  extractSearchLocationsFromQuery,
+  listingMatchesSearchLocation,
+} from '@/lib/gids-search-locations'
 
 /** Extra zoektermen naast het formulierlabel (typo’s, synoniemen, spraak). */
 const AMENITY_EXTRA_TERMS: Partial<Record<ListingAmenityId, string[]>> = {
@@ -133,6 +137,8 @@ export type ParsedListingSearchQuery = {
   openNow: boolean
   freeDelivery: boolean
   nearby: boolean
+  /** Herkende stad/provincie (naam, slug) */
+  locationKeys: string[]
   /** Resttekst na verwijderen van herkende termen (stad, naam, …) */
   freeText: string
   strippedPhrases: string[]
@@ -204,6 +210,7 @@ export function parseListingSearchQuery(raw: string): ParsedListingSearchQuery {
       openNow: false,
       freeDelivery: false,
       nearby: false,
+      locationKeys: [],
       freeText: '',
       strippedPhrases: [],
     }
@@ -282,6 +289,8 @@ export function parseListingSearchQuery(raw: string): ParsedListingSearchQuery {
   }
 
   let freeText = stripPhrasesFromQuery(qNorm, strippedPhrases)
+  const { locationKeys, rest: afterLocation } = extractSearchLocationsFromQuery(freeText)
+  freeText = afterLocation
   freeText = freeText
     .split(/\s+/)
     .filter((w) => w.length >= 2 && !QUERY_STOPWORDS.has(w))
@@ -299,6 +308,7 @@ export function parseListingSearchQuery(raw: string): ParsedListingSearchQuery {
     openNow,
     freeDelivery,
     nearby,
+    locationKeys,
     freeText,
     strippedPhrases,
   }
@@ -335,13 +345,36 @@ export function listingMatchesTextSearch(listing: Listing, freeText: string): bo
   if (!q) return true
   const haystack = listingSearchHaystack(listing)
   if (haystack.includes(q)) return true
-  return q.split(/\s+/).every((part) => part.length >= 2 && haystack.includes(part))
+  return q.split(/\s+/).every((part) => {
+    if (part.length < 2) return true
+    if (/^\d{4}$/.test(part)) {
+      return (listing.postcode?.trim().slice(0, 4) ?? '') === part
+    }
+    return haystack.includes(part)
+  })
+}
+
+function listingMatchesTypeIds(listing: Listing, typeIds: ListingTypeSearchId[]): boolean {
+  if (typeIds.length === 0) return true
+  if (typeIds.includes(listing.type)) return true
+  const hay = listingSearchHaystack(listing)
+  for (const typeId of typeIds) {
+    const entry = LISTING_TYPE_SEARCH.find((e) => e.type === typeId)
+    if (!entry) continue
+    for (const phrase of entry.phrases) {
+      const p = normalizeSearchText(phrase)
+      if (p.length >= 3 && hay.includes(p)) return true
+    }
+  }
+  return false
 }
 
 export function listingMatchesParsedSearch(listing: Listing, parsed: ParsedListingSearchQuery): boolean {
   if (parsed.openNow && !isListingOpenNow(listing)) return false
 
-  if (parsed.typeIds.length > 0 && !parsed.typeIds.includes(listing.type)) return false
+  if (!listingMatchesTypeIds(listing, parsed.typeIds)) return false
+
+  if (!listingMatchesSearchLocation(listing, parsed.locationKeys)) return false
 
   if (parsed.cuisineIds.length > 0) {
     if (!listing.cuisineType || !parsed.cuisineIds.includes(listing.cuisineType)) return false
