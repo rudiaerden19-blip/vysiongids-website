@@ -6,7 +6,7 @@ import { normalizeSearchText } from '@/lib/gids-text'
 import { parseListingSearchQuery, listingMatchesParsedSearch } from '@/lib/gids-listing-search'
 import { distanceKmBetween } from '@/lib/listing-distance'
 import { formatDeliveryRadiusKm } from '@/lib/listing-delivery-radius'
-import { ensureListingGeocoded } from '@/lib/gids-listing-geocode'
+import { ensureListingGeocoded, geocodeListingsForSearchResults } from '@/lib/gids-listing-geocode'
 import { unstable_cache } from 'next/cache'
 
 const jsonFallback = listingsJson as Listing[]
@@ -92,19 +92,18 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
     return listingMatchesParsedSearch(listing, parsed)
   })
 
+  results = await geocodeListingsForSearchResults(results)
+
   const nearLat = params.nearLat
   const nearLng = params.nearLng
   const hasNearPoint = typeof nearLat === 'number' && typeof nearLng === 'number'
-  if (hasNearPoint) {
-    results = await Promise.all(results.map((listing) => ensureListingGeocoded(listing)))
-  }
   if (hasNearPoint && (parsed.nearby || parsed.openNow)) {
     const from = { lat: nearLat, lng: nearLng }
     const maxKm = params.nearMaxKm ?? 40
     results = results
       .map((listing) => ({
         listing,
-        km: distanceKmBetween(from, getListingCoordinates(listing)),
+        km: listingDistanceKmFrom(listing, from) ?? Infinity,
       }))
       .filter(({ km }) => km <= maxKm)
       .sort((a, b) => a.km - b.km)
@@ -114,9 +113,22 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
   return results
 }
 
-/** Afstand tot zaak (km) vanaf een punt — voor weergave op zoekresultaten. */
-export function listingDistanceKmFrom(listing: Listing, from: { lat: number; lng: number }): number {
-  return distanceKmBetween(from, getListingCoordinates(listing))
+/** Alleen echte DB-coördinaten voor afstand (geen Brussel-fallback). */
+export function listingCoordinatesForDistance(listing: Listing): { lat: number; lng: number } | null {
+  if (typeof listing.lat === 'number' && typeof listing.lng === 'number') {
+    return { lat: listing.lat, lng: listing.lng }
+  }
+  return null
+}
+
+/** Afstand tot zaak (km) vanaf een punt — null als zaak nog geen lat/lng heeft. */
+export function listingDistanceKmFrom(
+  listing: Listing,
+  from: { lat: number; lng: number },
+): number | null {
+  const to = listingCoordinatesForDistance(listing)
+  if (!to) return null
+  return distanceKmBetween(from, to)
 }
 
 /** Levering tonen alleen als minstens één leveringsveld is ingevuld (niet alleen DB-default). */
@@ -228,15 +240,6 @@ export function getListingCoordinates(listing: Listing): { lat: number; lng: num
   const hit = CITY_COORDS[key]
   if (hit) return hit
   return { lat: 50.85, lng: 4.35 }
-}
-
-/** Geen betrouwbare coördinaten → afstand niet tonen (voorkomt valse «83 km» naar Brussel-fallback). */
-export function listingHasReliableCoordinates(listing: Listing): boolean {
-  if (typeof listing.lat === 'number' && typeof listing.lng === 'number') return true
-  const pc = listing.postcode?.trim().slice(0, 4)
-  if (pc && POSTCODE_COORDS[pc]) return true
-  const key = normalizeSearchText(listing.city)
-  return Boolean(CITY_COORDS[key])
 }
 
 export async function listingsDataSourceLabel(): Promise<'supabase' | 'json' | 'mixed'> {

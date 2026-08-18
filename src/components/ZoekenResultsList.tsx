@@ -4,26 +4,20 @@ import { useEffect, useMemo, useState } from 'react'
 import ListingPanel from '@/components/ListingPanel'
 import type { Listing } from '@/lib/listing-types'
 import { getBrowserGeolocation } from '@/lib/browser-geolocation'
-import { listingDistanceKmFrom, listingHasReliableCoordinates } from '@/lib/listings'
+import { listingDistanceKmFrom } from '@/lib/listings'
 
 type Props = {
   listings: Listing[]
   initialNear: { lat: number; lng: number } | null
-  /** Alleen GPS/km bij «dichtbij» / «nu open» of nearLat in URL */
-  allowGeolocation?: boolean
 }
 
-export default function ZoekenResultsList({ listings, initialNear, allowGeolocation = false }: Props) {
+export default function ZoekenResultsList({ listings, initialNear }: Props) {
   const [near, setNear] = useState<{ lat: number; lng: number } | null>(initialNear)
   const [geoDenied, setGeoDenied] = useState(false)
 
   useEffect(() => {
     if (initialNear) {
       setNear(initialNear)
-      return
-    }
-    if (!allowGeolocation) {
-      setNear(null)
       return
     }
     let cancelled = false
@@ -37,13 +31,15 @@ export default function ZoekenResultsList({ listings, initialNear, allowGeolocat
     return () => {
       cancelled = true
     }
-  }, [initialNear, allowGeolocation])
+  }, [initialNear])
 
   const sorted = useMemo(() => {
     if (!near) return listings
-    return [...listings].sort(
-      (a, b) => listingDistanceKmFrom(a, near) - listingDistanceKmFrom(b, near),
-    )
+    return [...listings].sort((a, b) => {
+      const ka = listingDistanceKmFrom(a, near) ?? Infinity
+      const kb = listingDistanceKmFrom(b, near) ?? Infinity
+      return ka - kb
+    })
   }, [listings, near])
 
   return (
@@ -57,18 +53,14 @@ export default function ZoekenResultsList({ listings, initialNear, allowGeolocat
       <ul
         style={{ listStyle: 'none', margin: 0, padding: 0, display: 'flex', flexDirection: 'column', gap: '1.25rem' }}
       >
-        {sorted.map((listing) => (
-          <li key={listing.slug}>
-            <ListingPanel
-              listing={listing}
-              distanceKm={
-                near && listingHasReliableCoordinates(listing)
-                  ? listingDistanceKmFrom(listing, near)
-                  : undefined
-              }
-            />
-          </li>
-        ))}
+        {sorted.map((listing) => {
+          const distanceKm = near ? listingDistanceKmFrom(listing, near) : undefined
+          return (
+            <li key={listing.slug}>
+              <ListingPanel listing={listing} distanceKm={distanceKm ?? undefined} />
+            </li>
+          )
+        })}
       </ul>
     </>
   )

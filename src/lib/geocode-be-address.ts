@@ -19,6 +19,20 @@ export async function geocodeBelgiumAddress(parts: {
   const q = buildQuery(parts)
   if (!parts.address.trim() || !parts.city.trim()) return null
 
+  return fetchNominatim(q)
+}
+
+/** Gemeente/postcode als volledig adres niet resolveert (alle tenants, geen handmatige lijst). */
+export async function geocodeBelgiumPostcodeCity(parts: {
+  postcode: string
+  city: string
+}): Promise<GeocodedPoint | null> {
+  const cityLine = `${parts.postcode.trim()} ${parts.city.trim()}`.trim()
+  if (!parts.city.trim()) return null
+  return fetchNominatim(`${cityLine}, België`)
+}
+
+async function fetchNominatim(q: string): Promise<GeocodedPoint | null> {
   const url = new URL(NOMINATIM)
   url.searchParams.set('format', 'json')
   url.searchParams.set('limit', '1')
