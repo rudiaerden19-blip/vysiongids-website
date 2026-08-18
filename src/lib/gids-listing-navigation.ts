@@ -1,5 +1,5 @@
 import type { Listing } from '@/lib/listing-types'
-import { formatListingAddress, getListingCoordinates } from '@/lib/listings'
+import { formatListingAddress, getListingCoordinates, listingCoordinatesForDistance } from '@/lib/listings'
 
 export function listingGoogleMapsUrl(listing: Listing): string {
   const q = formatListingAddress(listing)
@@ -7,7 +7,7 @@ export function listingGoogleMapsUrl(listing: Listing): string {
 }
 
 export function listingWazeUrl(listing: Listing): string {
-  const { lat, lng } = getListingCoordinates(listing)
+  const { lat, lng } = listingCoordinatesForDistance(listing) ?? getListingCoordinates(listing)
   const q = formatListingAddress(listing)
   return `https://www.waze.com/ul?ll=${lat},${lng}&navigate=yes&q=${encodeURIComponent(q)}`
 }

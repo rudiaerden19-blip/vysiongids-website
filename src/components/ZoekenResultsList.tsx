@@ -3,7 +3,10 @@
 import { useEffect, useMemo, useState } from 'react'
 import ListingPanel from '@/components/ListingPanel'
 import type { Listing } from '@/lib/listing-types'
-import { getBrowserGeolocation } from '@/lib/browser-geolocation'
+import {
+  getBrowserGeolocation,
+  MAX_GEO_ACCURACY_M_FOR_DISTANCE,
+} from '@/lib/browser-geolocation'
 import { listingDistanceKmFrom } from '@/lib/listings'
 
 type Props = {
@@ -14,6 +17,7 @@ type Props = {
 export default function ZoekenResultsList({ listings, initialNear }: Props) {
   const [near, setNear] = useState<{ lat: number; lng: number } | null>(initialNear)
   const [geoDenied, setGeoDenied] = useState(false)
+  const [geoTooCoarse, setGeoTooCoarse] = useState(false)
 
   useEffect(() => {
     if (initialNear) {
@@ -23,7 +27,13 @@ export default function ZoekenResultsList({ listings, initialNear }: Props) {
     let cancelled = false
     void getBrowserGeolocation()
       .then((point) => {
-        if (!cancelled) setNear(point)
+        if (cancelled) return
+        if (point.accuracyM > MAX_GEO_ACCURACY_M_FOR_DISTANCE) {
+          setGeoTooCoarse(true)
+          setNear(null)
+          return
+        }
+        setNear({ lat: point.lat, lng: point.lng })
       })
       .catch(() => {
         if (!cancelled) setGeoDenied(true)
@@ -48,6 +58,12 @@ export default function ZoekenResultsList({ listings, initialNear }: Props) {
         <p className="vysiongids-zoeken-travel-hint" role="status">
           Sta locatie toe in je browser om op elke kaart <strong>km</strong> en <strong>rijtijd</strong> te zien (rechts
           onder «Opent …» / «Nu open», met knop Waze).
+        </p>
+      ) : null}
+      {!near && geoTooCoarse ? (
+        <p className="vysiongids-zoeken-travel-hint" role="status">
+          Je locatie is te onnauwkeurig (vaak op desktop). Gebruik een telefoon met GPS, of tik op <strong>Waze</strong>{' '}
+          op de kaart voor de echte route.
         </p>
       ) : null}
       <ul
