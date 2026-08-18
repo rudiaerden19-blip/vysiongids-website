@@ -1,14 +1,15 @@
 import { fetchPublishedListingCountFromDb } from '@/lib/gids-listings-db'
-import { actieveZakenDisplay, zoekactiesPerDagDisplay } from '@/lib/gids-public-stats'
-
-/** Demo-seed in 002 (Blonkys + Bar Lies) telt niet boven basis 430; elke extra zaak +1. */
-const DEMO_SEED_LISTING_COUNT = 2
+import { getAllListings } from '@/lib/listings'
+import { zoekactiesPerDagDisplay } from '@/lib/gids-public-stats'
 
 export async function getHomePublicStats() {
-  const dbCount = await fetchPublishedListingCountFromDb()
-  const extra = Math.max(0, dbCount - DEMO_SEED_LISTING_COUNT)
+  let activeZaken = await fetchPublishedListingCountFromDb()
+  if (activeZaken <= 0) {
+    const all = await getAllListings()
+    activeZaken = all.length
+  }
   return {
-    activeZaken: actieveZakenDisplay(extra),
+    activeZaken,
     zoekactiesPerDag: zoekactiesPerDagDisplay(),
   }
 }

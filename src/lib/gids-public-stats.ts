@@ -1,6 +1,5 @@
 /** Publieke KPI’s op de homepage */
 
-export const STATS_ACTIVE_BASE = 430
 export const STATS_SEARCH_BASE = 3240
 
 const STATS_SEARCH_LAUNCH_KEY = '2026-08-15'
@@ -75,8 +74,4 @@ export function zoekactiesPerDagDisplay(now = new Date()): number {
   const weekendBoost = isWeekendPeak ? 450 + (hash % 370) : 0
 
   return STATS_SEARCH_BASE + dailyGrowth + weekdayBand + weekendBoost
-}
-
-export function actieveZakenDisplay(extraListingsBeyondBase: number): number {
-  return STATS_ACTIVE_BASE + Math.max(0, extraListingsBeyondBase)
 }
