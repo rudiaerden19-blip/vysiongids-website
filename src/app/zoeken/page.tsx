@@ -96,7 +96,11 @@ export default async function ZoekenPage({ searchParams }: Props) {
             </Link>
           </div>
         ) : (
-          <ZoekenResultsList listings={results} initialNear={near} />
+          <ZoekenResultsList
+            listings={results}
+            initialNear={near}
+            sortByDistance={Boolean(near && (parsedQ.nearby || parsedQ.openNow))}
+          />
         )}
       </main>
     </>

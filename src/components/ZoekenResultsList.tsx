@@ -8,11 +8,14 @@ import {
   MAX_GEO_ACCURACY_M_FOR_DISTANCE,
 } from '@/lib/browser-geolocation'
 import { listingStoredCoordsAreFallback } from '@/lib/listing-geo-fallback'
+import { compareListingsByName } from '@/lib/listing-alphabetical-sort'
 import { listingCoordinatesForDistance, listingDistanceKmFrom } from '@/lib/listings'
 
 type Props = {
   listings: Listing[]
   initialNear: { lat: number; lng: number } | null
+  /** Alleen bij «dichtbij» / «nu open» op afstand; anders alfabetisch op zaaknaam. */
+  sortByDistance?: boolean
 }
 
 type TravelLeg = { km: number; minutes: number }
@@ -21,7 +24,7 @@ function listingNeedsClientGeocode(listing: Listing): boolean {
   return listingStoredCoordsAreFallback(listing)
 }
 
-export default function ZoekenResultsList({ listings, initialNear }: Props) {
+export default function ZoekenResultsList({ listings, initialNear, sortByDistance = false }: Props) {
   const [rows, setRows] = useState(listings)
   const [near, setNear] = useState<{ lat: number; lng: number } | null>(initialNear)
   const [geoDenied, setGeoDenied] = useState(false)
@@ -140,15 +143,17 @@ export default function ZoekenResultsList({ listings, initialNear }: Props) {
   }, [near, coordKey, rows])
 
   const sorted = useMemo(() => {
-    if (!near) return rows
-    return [...rows].sort((a, b) => {
-      const roadA = roadBySlug[a.slug]?.km
-      const roadB = roadBySlug[b.slug]?.km
-      const ka = roadA ?? listingDistanceKmFrom(a, near) ?? Infinity
-      const kb = roadB ?? listingDistanceKmFrom(b, near) ?? Infinity
-      return ka - kb
-    })
-  }, [rows, near, roadBySlug])
+    if (sortByDistance && near) {
+      return [...rows].sort((a, b) => {
+        const roadA = roadBySlug[a.slug]?.km
+        const roadB = roadBySlug[b.slug]?.km
+        const ka = roadA ?? listingDistanceKmFrom(a, near) ?? Infinity
+        const kb = roadB ?? listingDistanceKmFrom(b, near) ?? Infinity
+        return ka - kb
+      })
+    }
+    return [...rows].sort(compareListingsByName)
+  }, [rows, near, roadBySlug, sortByDistance])
 
   return (
     <>

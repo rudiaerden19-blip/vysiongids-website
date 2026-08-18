@@ -5,6 +5,7 @@ import { fetchListingBySlugFromDb, fetchPublishedListingsFromDb } from '@/lib/gi
 import { normalizeSearchText } from '@/lib/gids-text'
 import { parseListingSearchQuery, listingMatchesParsedSearch } from '@/lib/gids-listing-search'
 import { distanceKmBetween } from '@/lib/listing-distance'
+import { compareListingsByName } from '@/lib/listing-alphabetical-sort'
 import { formatDeliveryRadiusKm } from '@/lib/listing-delivery-radius'
 import { getListingFallbackCoordinates } from '@/lib/listing-geo-fallback'
 import { unstable_cache } from 'next/cache'
@@ -106,6 +107,8 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
       .filter(({ km }) => km <= maxKm)
       .sort((a, b) => a.km - b.km)
       .map(({ listing }) => listing)
+  } else {
+    results.sort(compareListingsByName)
   }
 
   return results
