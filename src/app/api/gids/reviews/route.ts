@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { fetchListingIdBySlugAdmin, fetchReviewsByListingSlug, insertReviewAdmin } from '@/lib/gids-reviews-db'
+import { formatGidsTitleCase, formatReviewCommentText } from '@/lib/gids-text'
 
 export async function GET(req: Request) {
   const slug = new URL(req.url).searchParams.get('slug')?.trim()
@@ -24,8 +25,9 @@ export async function POST(req: Request) {
 
   const slug = String(body.slug ?? '').trim()
   const rating = Number(body.rating)
-  const comment = String(body.body ?? '').trim()
-  const reviewerName = body.reviewerName ? String(body.reviewerName).trim().slice(0, 80) : null
+  const comment = formatReviewCommentText(String(body.body ?? '').trim())
+  const reviewerNameRaw = body.reviewerName ? String(body.reviewerName).trim().slice(0, 80) : ''
+  const reviewerName = reviewerNameRaw ? formatGidsTitleCase(reviewerNameRaw) : null
 
   if (!slug) return NextResponse.json({ error: 'Zaak ontbreekt.' }, { status: 400 })
   if (!Number.isInteger(rating) || rating < 1 || rating > 5) {

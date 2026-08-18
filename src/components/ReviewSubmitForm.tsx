@@ -1,5 +1,6 @@
 'use client'
 
+import { formatGidsTitleCase, formatReviewCommentText } from '@/lib/gids-text'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
@@ -21,11 +22,15 @@ export default function ReviewSubmitForm({ slug, listingName }: Props) {
     e.preventDefault()
     setError(null)
     setLoading(true)
+    const reviewerName = name.trim() ? formatGidsTitleCase(name.trim()) : undefined
+    const reviewBody = formatReviewCommentText(body.trim())
+    setName(reviewerName ?? '')
+    setBody(reviewBody)
     try {
       const res = await fetch('/api/gids/reviews', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ slug, rating, reviewerName: name.trim() || undefined, body: body.trim() }),
+        body: JSON.stringify({ slug, rating, reviewerName, body: reviewBody }),
       })
       const data = (await res.json()) as { error?: string; ok?: boolean }
       if (!res.ok) {
@@ -84,9 +89,11 @@ export default function ReviewSubmitForm({ slug, listingName }: Props) {
           id="reviewerName"
           value={name}
           onChange={(e) => setName(e.target.value)}
+          onBlur={() => setName((v) => (v.trim() ? formatGidsTitleCase(v) : v))}
           maxLength={80}
           className="vysiongids-form-input mt-1"
           autoComplete="name"
+          autoCapitalize="words"
         />
       </div>
 
@@ -105,8 +112,10 @@ export default function ReviewSubmitForm({ slug, listingName }: Props) {
           rows={4}
           value={body}
           onChange={(e) => setBody(e.target.value)}
+          onBlur={() => setBody((v) => (v.trim() ? formatReviewCommentText(v) : v))}
           className="vysiongids-form-input mt-1 resize-y"
           placeholder="Vertel kort wat je goed of minder vond…"
+          autoCapitalize="sentences"
         />
       </div>
 

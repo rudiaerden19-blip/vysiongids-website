@@ -85,6 +85,14 @@ export function formatGidsTitleCase(input: string): string {
     .join(' ')
 }
 
+/** Reviewtekst: start met hoofdletter; ook na punt/vraagteken/uitroepteken. */
+export function formatReviewCommentText(input: string): string {
+  const trimmed = input.replace(/\s+/g, ' ').trim()
+  if (!trimmed) return trimmed
+  const first = trimmed.replace(/^(\s*)(\S)/, (_, sp, ch) => `${sp}${ch.toUpperCase()}`)
+  return first.replace(/([.!?…]\s+)([a-zà-ü])/g, (_, sep, ch) => `${sep}${ch.toUpperCase()}`)
+}
+
 export function slugifyListing(name: string, city: string): string {
   const raw = normalizeGidsBusinessName(`${name}-${city}`)
     .replace(/[^a-z0-9]+/g, '-')
