@@ -39,7 +39,7 @@ export function formatDriveMinutes(minutes: number): string {
 }
 
 /** Voor zoekkaarten: «2,3 km · ca. 6 min». */
-export function formatDistanceAndDriveTime(straightLineKm: number): string {
-  const mins = estimateDriveMinutesFromDistanceKm(straightLineKm)
+export function formatDistanceAndDriveTime(straightLineKm: number, driveMinutes?: number): string {
+  const mins = driveMinutes ?? estimateDriveMinutesFromDistanceKm(straightLineKm)
   return `${formatDistanceKm(straightLineKm)} · ca. ${formatDriveMinutes(mins)}`
 }

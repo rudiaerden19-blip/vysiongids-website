@@ -27,17 +27,18 @@ export async function geocodeBelgiumStreetAddress(parts: {
   address: string
   postcode: string
   city: string
+  name?: string
 }): Promise<GeocodedPoint | null> {
   if (!parts.address.trim() || !parts.city.trim()) return null
+
+  const photon = await geocodeBelgiumAddressViaPhoton(parts)
+  if (photon) return photon
 
   const structured = await fetchNominatimStructured(parts)
   if (structured) return structured
 
   const q = buildQuery(parts)
-  const freeText = await fetchNominatim(q)
-  if (freeText) return freeText
-
-  return geocodeBelgiumAddressViaPhoton(parts)
+  return fetchNominatim(q)
 }
 
 /** @deprecated gebruik geocodeBelgiumStreetAddress */
@@ -130,8 +131,10 @@ async function geocodeBelgiumAddressViaPhoton(parts: {
   address: string
   postcode: string
   city: string
+  name?: string
 }): Promise<GeocodedPoint | null> {
-  const q = buildQuery(parts)
+  const nameBit = parts.name?.trim()
+  const q = [nameBit, buildQuery(parts)].filter(Boolean).join(', ')
   const url = new URL(PHOTON)
   url.searchParams.set('q', q)
   url.searchParams.set('limit', '8')
@@ -161,6 +164,13 @@ async function geocodeBelgiumAddressViaPhoton(parts: {
   }
 }
 
+function municipalityKeysCompatible(want: string, got: string): boolean {
+  if (!want || !got) return true
+  if (want === got) return true
+  if (got.includes(want) || want.includes(got)) return true
+  return false
+}
+
 function scorePhotonHit(
   feature: PhotonFeature,
   wantPc: string,
@@ -172,11 +182,11 @@ function scorePhotonHit(
   const gotPc = p.postcode ? postcodeKey(p.postcode) : ''
   if (wantPc && gotPc && gotPc !== wantPc) return 0
   const gotCity = p.city ? cityKey(p.city) : ''
-  if (wantCity && gotCity && gotCity !== wantCity) return 0
+  if (wantCity && gotCity && !municipalityKeysCompatible(wantCity, gotCity)) return 0
 
   let score = 10
   if (wantPc && gotPc === wantPc) score += 40
-  if (wantCity && gotCity === wantCity) score += 30
+  if (wantCity && gotCity && municipalityKeysCompatible(wantCity, gotCity)) score += 30
   if (p.housenumber) score += 25
   if (p.street && streetNeedle.includes(normalizeSearchText(p.street))) score += 20
   if (p.osm_key === 'amenity' || p.type === 'house') score += 15

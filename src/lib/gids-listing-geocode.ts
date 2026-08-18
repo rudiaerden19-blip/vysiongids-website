@@ -1,17 +1,19 @@
 import type { Listing } from '@/lib/listing-types'
 import { geocodeBelgiumStreetAddress } from '@/lib/geocode-be-address'
 import { distanceKmBetween } from '@/lib/listing-distance'
+import { listingStoredCoordsAreFallback } from '@/lib/listing-geo-fallback'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 
-const SEARCH_GEOCODE_BATCH = 15
-/** Bestaande DB-pin dicht bij verkeerd postcode-centrum → opnieuw geocoden. */
+const SEARCH_GEOCODE_BATCH = 20
 const REFRESH_DRIFT_KM = 0.35
+const GEOCODE_CONCURRENCY = 4
 
-/** Zet lat/lng op basis van straat+postcode+gemeente (Nominatim / Photon). */
+/** Zet lat/lng op basis van straat+postcode+gemeente (Photon / Nominatim). */
 export async function geocodeListingAddress(parts: {
   address: string
   postcode: string
   city: string
+  name?: string
 }) {
   return geocodeBelgiumStreetAddress(parts)
 }
@@ -39,32 +41,29 @@ export async function ensureListingGeocoded(listing: Listing): Promise<Listing> 
     address: listing.address,
     postcode: listing.postcode,
     city: listing.city,
+    name: listing.name,
   })
   if (!streetCoords) return listing
 
-  if (!listingNeedsGeocodeRefresh(listing, streetCoords)) {
-    return listing
-  }
+  const mustUpdate =
+    listingStoredCoordsAreFallback(listing) || listingNeedsGeocodeRefresh(listing, streetCoords)
+  if (!mustUpdate) return listing
 
   return persistListingCoords(listing, streetCoords)
 }
 
-/** Zoekresultaten: straat-geocode voor zichtbare zaken (batch, sequentieel i.v.m. rate limits). */
+/** Zoekresultaten: straat-geocode voor zichtbare zaken. */
 export async function geocodeListingsForSearchResults(listings: Listing[]): Promise<Listing[]> {
   if (listings.length === 0) return listings
 
   const batch = listings.slice(0, SEARCH_GEOCODE_BATCH)
   const bySlug = new Map<string, Listing>()
 
-  for (const listing of batch) {
-    const updated = await ensureListingGeocoded(listing)
-    bySlug.set(listing.slug, updated)
-    await sleep(220)
+  for (let i = 0; i < batch.length; i += GEOCODE_CONCURRENCY) {
+    const chunk = batch.slice(i, i + GEOCODE_CONCURRENCY)
+    const updated = await Promise.all(chunk.map((l) => ensureListingGeocoded(l)))
+    for (const row of updated) bySlug.set(row.slug, row)
   }
 
   return listings.map((l) => bySlug.get(l.slug) ?? l)
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms))
 }

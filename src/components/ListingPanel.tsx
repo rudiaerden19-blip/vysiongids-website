@@ -19,11 +19,14 @@ export default function ListingPanel({
   listing,
   compact,
   distanceKm,
+  driveMinutes,
 }: {
   listing: Listing
   compact?: boolean
   /** Afstand van zoeker (km), bij «dichtbij»-zoeken */
   distanceKm?: number
+  /** Rijtijd via routing (OSRM); anders geschat uit km. */
+  driveMinutes?: number
 }) {
   const cuisineLine = getListingCuisineDisplay(listing.cuisineType)
   const minOrder = formatMinOrder(listing)
@@ -31,7 +34,8 @@ export default function ListingPanel({
   const deliveryLabel = formatDeliveryFee(listing)
   const pickupTimeLabel = formatListingPickupTime(listing)
   const deliveryTimeLabel = formatListingDeliveryTime(listing)
-  const travelLabel = typeof distanceKm === 'number' ? formatDistanceAndDriveTime(distanceKm) : null
+  const travelLabel =
+    typeof distanceKm === 'number' ? formatDistanceAndDriveTime(distanceKm, driveMinutes) : null
   const { street, cityLine } = formatListingAddressLines(listing)
   const hoursRows = resolveHoursByDay(listing)
   const profileHref = `/zaak/${listing.slug}`
