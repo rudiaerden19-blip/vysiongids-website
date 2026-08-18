@@ -24,7 +24,7 @@ const DAY_LABEL: Record<ListingWeekday, string> = {
 export function defaultWeekHoursFormState(): DayHoursFormState[] {
   return WEEKDAYS_NL.map((day) => ({
     day,
-    closed: day === 'maandag',
+    closed: false,
     shift1From: '10:00',
     shift1To: '18:00',
     shift2Enabled: false,
