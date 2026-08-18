@@ -10,6 +10,7 @@ import {
   extractSearchLocationsFromQuery,
   listingMatchesSearchLocation,
 } from '@/lib/gids-search-locations'
+import { canonicalizeSearchToken } from '@/lib/gids-search-vocabulary'
 
 /** Extra zoektermen naast het formulierlabel (typo’s, synoniemen, spraak). */
 const AMENITY_EXTRA_TERMS: Partial<Record<ListingAmenityId, string[]>> = {
@@ -62,7 +63,7 @@ const CUISINE_EXTRA_TERMS: Partial<Record<ListingCuisineId, string[]>> = {
 type ListingTypeSearchId = Exclude<ListingTypeId, 'all'>
 
 const LISTING_TYPE_SEARCH: Array<{ type: ListingTypeSearchId; phrases: string[] }> = [
-  { type: 'frituur', phrases: ['frituur', 'friet', 'friture', 'frieten', 'frituurzaak'] },
+  { type: 'frituur', phrases: ['frituur', 'friet', 'frites', 'friture', 'frieten', 'frituurzaak'] },
   { type: 'kebab', phrases: ['kebab', 'kebap', 'doner', 'döner', 'durum'] },
   { type: 'pizza', phrases: ['pizza', 'pizzas'] },
   { type: 'snack', phrases: ['snack', 'snackbar', 'snack bar'] },
@@ -149,10 +150,8 @@ function normalizeQueryWithTypoFix(raw: string): string {
   if (!q) return q
   if (q === 'alles' || q === 'alle' || q === 'all') return ''
   const tokens = q.split(/\s+/).map((t) => {
-    if (t.length > 4 && t.startsWith('f') && !t.startsWith('frit')) {
-      const trimmed = t.slice(1)
-      if (trimmed.length >= 4) return trimmed
-    }
+    const canon = canonicalizeSearchToken(t)
+    if (canon !== t) return canon
     return t
   })
   return tokens.join(' ')
@@ -162,11 +161,15 @@ function phraseInQuery(qNorm: string, phrase: string): boolean {
   if (!qNorm) return false
   const p = normalizeSearchText(phrase)
   if (p.length < 3) return false
-  if (qNorm.includes(p)) return true
-  if (p.includes(' ')) return false
-  return qNorm.split(/\s+/).some((w) => {
+  if (p.includes(' ')) return qNorm.includes(p)
+  const words = qNorm.split(/\s+/).filter(Boolean)
+  return words.some((w) => {
     if (!w) return false
-    return w === p || w.startsWith(p) || (w.length >= 3 && p.startsWith(w))
+    if (w === p) return true
+    if (w.startsWith(`${p}-`)) return true
+    if (p.length >= 5 && w.startsWith(p)) return true
+    if (w.length >= 5 && p.startsWith(w)) return true
+    return false
   })
 }
 
@@ -175,7 +178,12 @@ function stripPhrasesFromQuery(qNorm: string, phrases: string[]): string {
   for (const phrase of [...new Set(phrases)].sort((a, b) => b.length - a.length)) {
     const p = normalizeSearchText(phrase)
     if (p.length < 3) continue
-    out = out.split(p).join(' ')
+    if (p.includes(' ')) {
+      out = out.split(p).join(' ')
+      continue
+    }
+    const re = new RegExp(`(^|\\s)${p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?=\\s|$)`, 'g')
+    out = out.replace(re, ' ')
   }
   return out.replace(/\s+/g, ' ').trim()
 }

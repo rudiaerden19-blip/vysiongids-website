@@ -1,4 +1,5 @@
 import type { Listing } from '@/lib/listing-types'
+import { PROTECTED_SEARCH_VOCABULARY } from '@/lib/gids-search-vocabulary'
 import { normalizeSearchText } from '@/lib/gids-text'
 
 export type VoiceNameHint = {
@@ -179,6 +180,11 @@ export function fixVoiceSearchTranscript(raw: string, hints: VoiceNameHint[]): s
     const cleaned = part.replace(/^[^a-zA-Z0-9à-üÀ-Ü']+|[^a-zA-Z0-9à-üÀ-Ü']+$/g, '')
     const edgeStart = part.slice(0, part.indexOf(cleaned) || 0)
     const edgeEnd = part.slice(edgeStart.length + cleaned.length)
+    const cleanedNorm = normalizeSearchText(cleaned)
+    if (PROTECTED_SEARCH_VOCABULARY.has(cleanedNorm)) {
+      out.push(part)
+      continue
+    }
     const hint = bestHintForWord(cleaned, hints)
     if (hint && normalizeSearchText(cleaned) !== hint.token) {
       out.push(`${edgeStart}${hint.replaceWith}${edgeEnd}`)
