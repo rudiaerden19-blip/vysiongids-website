@@ -16,7 +16,7 @@ type Props = {
   searchParams: Promise<{ q?: string; type?: string; prov?: string; nearLat?: string; nearLng?: string }>
 }
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export default async function ZoekenPage({ searchParams }: Props) {
   const sp = await searchParams

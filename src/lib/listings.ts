@@ -7,7 +7,6 @@ import { parseListingSearchQuery, listingMatchesParsedSearch } from '@/lib/gids-
 import { distanceKmBetween } from '@/lib/listing-distance'
 import { formatDeliveryRadiusKm } from '@/lib/listing-delivery-radius'
 import { getListingFallbackCoordinates } from '@/lib/listing-geo-fallback'
-import { ensureListingGeocoded, geocodeListingsForSearchResults } from '@/lib/gids-listing-geocode'
 import { unstable_cache } from 'next/cache'
 
 const jsonFallback = listingsJson as Listing[]
@@ -92,8 +91,6 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
     }
     return listingMatchesParsedSearch(listing, parsed)
   })
-
-  results = await geocodeListingsForSearchResults(results)
 
   const nearLat = params.nearLat
   const nearLng = params.nearLng

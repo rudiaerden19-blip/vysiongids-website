@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import { after } from 'next/server'
 import ListingStarRating from '@/components/ListingStarRating'
 import ReviewList from '@/components/ReviewList'
 import ReviewSubmitForm from '@/components/ReviewSubmitForm'
@@ -23,7 +24,7 @@ import {
 } from '@/lib/listings'
 import ListingMenuButton from '@/components/ListingMenuButton'
 import { fetchListingIdBySlugAdmin, fetchReviewStatsByListingSlug, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
-import { ensureListingGeocoded } from '@/lib/gids-listing-geocode'
+import { ensureListingGeocoded, listingNeedsBackgroundGeocode } from '@/lib/gids-listing-geocode'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -47,7 +48,12 @@ export default async function ZaakPage({ params }: Props) {
   const { slug } = await params
   let listing = await getListingBySlug(slug)
   if (!listing) notFound()
-  listing = await ensureListingGeocoded(listing)
+  if (listingNeedsBackgroundGeocode(listing)) {
+    const snapshot = listing
+    after(() => {
+      void ensureListingGeocoded(snapshot)
+    })
+  }
 
   const cuisineLine = getListingCuisineDisplay(listing.cuisineType)
   const minOrder = formatMinOrder(listing)

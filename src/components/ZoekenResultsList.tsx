@@ -7,6 +7,7 @@ import {
   getBrowserGeolocation,
   MAX_GEO_ACCURACY_M_FOR_DISTANCE,
 } from '@/lib/browser-geolocation'
+import { listingStoredCoordsAreFallback } from '@/lib/listing-geo-fallback'
 import { listingCoordinatesForDistance, listingDistanceKmFrom } from '@/lib/listings'
 
 type Props = {
@@ -16,11 +17,20 @@ type Props = {
 
 type TravelLeg = { km: number; minutes: number }
 
+function listingNeedsClientGeocode(listing: Listing): boolean {
+  return listingStoredCoordsAreFallback(listing)
+}
+
 export default function ZoekenResultsList({ listings, initialNear }: Props) {
+  const [rows, setRows] = useState(listings)
   const [near, setNear] = useState<{ lat: number; lng: number } | null>(initialNear)
   const [geoDenied, setGeoDenied] = useState(false)
   const [geoTooCoarse, setGeoTooCoarse] = useState(false)
   const [roadBySlug, setRoadBySlug] = useState<Record<string, TravelLeg>>({})
+
+  useEffect(() => {
+    setRows(listings)
+  }, [listings])
 
   useEffect(() => {
     if (initialNear) {
@@ -47,55 +57,98 @@ export default function ZoekenResultsList({ listings, initialNear }: Props) {
   }, [initialNear])
 
   useEffect(() => {
+    const slugs = listings.filter(listingNeedsClientGeocode).map((l) => l.slug).slice(0, 6)
+    if (slugs.length === 0) return
+
+    let cancelled = false
+    const timer = window.setTimeout(() => {
+      void fetch('/api/gids/geocode-listings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ slugs }),
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: { updates?: Array<{ slug: string; lat: number; lng: number }> } | null) => {
+          if (cancelled || !data?.updates?.length) return
+          const bySlug = new Map(data.updates.map((u) => [u.slug, u]))
+          setRows((prev) =>
+            prev.map((l) => {
+              const u = bySlug.get(l.slug)
+              return u ? { ...l, lat: u.lat, lng: u.lng } : l
+            }),
+          )
+        })
+        .catch(() => {})
+    }, 400)
+
+    return () => {
+      cancelled = true
+      window.clearTimeout(timer)
+    }
+  }, [listings])
+
+  const coordKey = useMemo(
+    () =>
+      rows
+        .map((l) => {
+          const c = listingCoordinatesForDistance(l)
+          return c ? `${l.slug}:${c.lat.toFixed(4)},${c.lng.toFixed(4)}` : l.slug
+        })
+        .join('|'),
+    [rows],
+  )
+
+  useEffect(() => {
     if (!near) {
       setRoadBySlug({})
       return
     }
-    const withCoords = listings
+    const withCoords = rows
       .map((listing) => ({ listing, coords: listingCoordinatesForDistance(listing) }))
       .filter((row): row is { listing: Listing; coords: { lat: number; lng: number } } => row.coords != null)
     if (withCoords.length === 0) return
 
     let cancelled = false
-    void fetch('/api/gids/driving-distances', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        from: near,
-        destinations: withCoords.map((row) => row.coords),
-      }),
-    })
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data: { legs?: Array<{ km: number; minutes: number } | null> } | null) => {
-        if (cancelled || !data?.legs) return
-        const next: Record<string, TravelLeg> = {}
-        withCoords.forEach((row, i) => {
-          const leg = data.legs?.[i]
-          if (leg && Number.isFinite(leg.km)) {
-            next[row.listing.slug] = { km: leg.km, minutes: leg.minutes }
-          }
+    const timer = window.setTimeout(() => {
+      void fetch('/api/gids/driving-distances', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          from: near,
+          destinations: withCoords.map((row) => row.coords),
+        }),
+      })
+        .then((res) => (res.ok ? res.json() : null))
+        .then((data: { legs?: Array<{ km: number; minutes: number } | null> } | null) => {
+          if (cancelled || !data?.legs) return
+          const next: Record<string, TravelLeg> = {}
+          withCoords.forEach((row, i) => {
+            const leg = data.legs?.[i]
+            if (leg && Number.isFinite(leg.km)) {
+              next[row.listing.slug] = { km: leg.km, minutes: leg.minutes }
+            }
+          })
+          setRoadBySlug(next)
         })
-        setRoadBySlug(next)
-      })
-      .catch(() => {
-        /* hemelsbreed blijft fallback */
-      })
+        .catch(() => {})
+    }, 500)
 
     return () => {
       cancelled = true
+      window.clearTimeout(timer)
     }
-  }, [near, listings])
+  }, [near, coordKey, rows])
 
   const sorted = useMemo(() => {
-    if (!near) return listings
-    return [...listings].sort((a, b) => {
+    if (!near) return rows
+    return [...rows].sort((a, b) => {
       const roadA = roadBySlug[a.slug]?.km
       const roadB = roadBySlug[b.slug]?.km
       const ka = roadA ?? listingDistanceKmFrom(a, near) ?? Infinity
       const kb = roadB ?? listingDistanceKmFrom(b, near) ?? Infinity
       return ka - kb
     })
-  }, [listings, near, roadBySlug])
+  }, [rows, near, roadBySlug])
 
   return (
     <>

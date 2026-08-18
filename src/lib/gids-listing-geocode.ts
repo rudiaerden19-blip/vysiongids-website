@@ -4,9 +4,7 @@ import { distanceKmBetween } from '@/lib/listing-distance'
 import { listingStoredCoordsAreFallback } from '@/lib/listing-geo-fallback'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 
-const SEARCH_GEOCODE_BATCH = 20
 const REFRESH_DRIFT_KM = 0.35
-const GEOCODE_CONCURRENCY = 4
 
 /** Zet lat/lng op basis van straat+postcode+gemeente (Photon / Nominatim). */
 export async function geocodeListingAddress(parts: {
@@ -37,6 +35,14 @@ function listingNeedsGeocodeRefresh(listing: Listing, streetCoords: { lat: numbe
 
 /** Geocoden en opslaan; corrigeert ook oude «postcode-centrum»-pins in de DB. */
 export async function ensureListingGeocoded(listing: Listing): Promise<Listing> {
+  if (
+    typeof listing.lat === 'number' &&
+    typeof listing.lng === 'number' &&
+    !listingStoredCoordsAreFallback(listing)
+  ) {
+    return listing
+  }
+
   const streetCoords = await geocodeBelgiumStreetAddress({
     address: listing.address,
     postcode: listing.postcode,
@@ -52,18 +58,6 @@ export async function ensureListingGeocoded(listing: Listing): Promise<Listing> 
   return persistListingCoords(listing, streetCoords)
 }
 
-/** Zoekresultaten: straat-geocode voor zichtbare zaken. */
-export async function geocodeListingsForSearchResults(listings: Listing[]): Promise<Listing[]> {
-  if (listings.length === 0) return listings
-
-  const batch = listings.slice(0, SEARCH_GEOCODE_BATCH)
-  const bySlug = new Map<string, Listing>()
-
-  for (let i = 0; i < batch.length; i += GEOCODE_CONCURRENCY) {
-    const chunk = batch.slice(i, i + GEOCODE_CONCURRENCY)
-    const updated = await Promise.all(chunk.map((l) => ensureListingGeocoded(l)))
-    for (const row of updated) bySlug.set(row.slug, row)
-  }
-
-  return listings.map((l) => bySlug.get(l.slug) ?? l)
+export function listingNeedsBackgroundGeocode(listing: Listing): boolean {
+  return listingStoredCoordsAreFallback(listing)
 }
