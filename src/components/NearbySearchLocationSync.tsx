@@ -12,13 +12,25 @@ export default function NearbySearchLocationSync() {
   const triedRef = useRef(false)
 
   useEffect(() => {
-    if (triedRef.current) return
     const q = searchParams.get('q') ?? ''
-    if (!searchQueryWantsGeolocation(q)) return
-    if (parseNearPointFromSearchParams({
+    const hasNear = parseNearPointFromSearchParams({
       nearLat: searchParams.get('nearLat') ?? undefined,
       nearLng: searchParams.get('nearLng') ?? undefined,
-    })) {
+    })
+    if (hasNear && !searchQueryWantsGeolocation(q)) {
+      router.replace(
+        buildGidsSearchPath({
+          q,
+          type: searchParams.get('type') ?? undefined,
+          prov: searchParams.get('prov') ?? undefined,
+          near: null,
+        }),
+      )
+      return
+    }
+    if (triedRef.current) return
+    if (!searchQueryWantsGeolocation(q)) return
+    if (hasNear) {
       return
     }
     triedRef.current = true

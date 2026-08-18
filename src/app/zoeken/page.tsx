@@ -8,7 +8,7 @@ import SearchResultsVoiceAnnouncement from '@/components/SearchResultsVoiceAnnou
 import ZoekenResultsList from '@/components/ZoekenResultsList'
 import SiteHeader from '@/components/SiteHeader'
 import { parseListingSearchQuery } from '@/lib/gids-listing-search'
-import { parseNearPointFromSearchParams } from '@/lib/gids-search-url'
+import { parseNearPointFromSearchParams, searchQueryWantsGeolocation } from '@/lib/gids-search-url'
 import { searchListings } from '@/lib/listings'
 import { provinceLabel } from '@/lib/belgium-locations'
 
@@ -21,6 +21,7 @@ export const dynamic = 'force-dynamic'
 export default async function ZoekenPage({ searchParams }: Props) {
   const sp = await searchParams
   const near = parseNearPointFromSearchParams(sp)
+  const geoSearch = searchQueryWantsGeolocation(sp.q)
   const results = await searchListings({
     q: sp.q,
     type: sp.type,
@@ -96,7 +97,11 @@ export default async function ZoekenPage({ searchParams }: Props) {
             </Link>
           </div>
         ) : (
-          <ZoekenResultsList listings={results} initialNear={near} />
+          <ZoekenResultsList
+            listings={results}
+            initialNear={near}
+            allowGeolocation={geoSearch || Boolean(near)}
+          />
         )}
       </main>
     </>

@@ -4,20 +4,26 @@ import { useEffect, useMemo, useState } from 'react'
 import ListingPanel from '@/components/ListingPanel'
 import type { Listing } from '@/lib/listing-types'
 import { getBrowserGeolocation } from '@/lib/browser-geolocation'
-import { listingDistanceKmFrom } from '@/lib/listings'
+import { listingDistanceKmFrom, listingHasReliableCoordinates } from '@/lib/listings'
 
 type Props = {
   listings: Listing[]
   initialNear: { lat: number; lng: number } | null
+  /** Alleen GPS/km bij «dichtbij» / «nu open» of nearLat in URL */
+  allowGeolocation?: boolean
 }
 
-export default function ZoekenResultsList({ listings, initialNear }: Props) {
+export default function ZoekenResultsList({ listings, initialNear, allowGeolocation = false }: Props) {
   const [near, setNear] = useState<{ lat: number; lng: number } | null>(initialNear)
   const [geoDenied, setGeoDenied] = useState(false)
 
   useEffect(() => {
     if (initialNear) {
       setNear(initialNear)
+      return
+    }
+    if (!allowGeolocation) {
+      setNear(null)
       return
     }
     let cancelled = false
@@ -31,7 +37,7 @@ export default function ZoekenResultsList({ listings, initialNear }: Props) {
     return () => {
       cancelled = true
     }
-  }, [initialNear])
+  }, [initialNear, allowGeolocation])
 
   const sorted = useMemo(() => {
     if (!near) return listings
@@ -55,7 +61,11 @@ export default function ZoekenResultsList({ listings, initialNear }: Props) {
           <li key={listing.slug}>
             <ListingPanel
               listing={listing}
-              distanceKm={near ? listingDistanceKmFrom(listing, near) : undefined}
+              distanceKm={
+                near && listingHasReliableCoordinates(listing)
+                  ? listingDistanceKmFrom(listing, near)
+                  : undefined
+              }
             />
           </li>
         ))}

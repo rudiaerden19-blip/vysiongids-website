@@ -6,6 +6,7 @@ import { normalizeSearchText } from '@/lib/gids-text'
 import { parseListingSearchQuery, listingMatchesParsedSearch } from '@/lib/gids-listing-search'
 import { distanceKmBetween } from '@/lib/listing-distance'
 import { formatDeliveryRadiusKm } from '@/lib/listing-delivery-radius'
+import { ensureListingGeocoded } from '@/lib/gids-listing-geocode'
 import { unstable_cache } from 'next/cache'
 
 const jsonFallback = listingsJson as Listing[]
@@ -94,6 +95,9 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
   const nearLat = params.nearLat
   const nearLng = params.nearLng
   const hasNearPoint = typeof nearLat === 'number' && typeof nearLng === 'number'
+  if (hasNearPoint) {
+    results = await Promise.all(results.map((listing) => ensureListingGeocoded(listing)))
+  }
   if (hasNearPoint && (parsed.nearby || parsed.openNow)) {
     const from = { lat: nearLat, lng: nearLng }
     const maxKm = params.nearMaxKm ?? 40
@@ -181,10 +185,23 @@ export function formatOpeningHours(listing: Listing): string {
 const CITY_COORDS: Record<string, { lat: number; lng: number }> = {
   pelt: { lat: 51.225, lng: 5.437 },
   neerpelt: { lat: 51.228, lng: 5.442 },
+  lommel: { lat: 51.2307, lng: 5.3076 },
+  overpelt: { lat: 51.213, lng: 5.415 },
   genk: { lat: 50.965, lng: 5.497 },
   hasselt: { lat: 50.931, lng: 5.338 },
   opglabeek: { lat: 51.041, lng: 5.593 },
   dordrecht: { lat: 51.813, lng: 4.673 },
+}
+
+/** Gemeentecentrum op basis van postcode (4 cijfers) als lat/lng ontbreekt in DB. */
+const POSTCODE_COORDS: Record<string, { lat: number; lng: number }> = {
+  '3900': { lat: 51.225, lng: 5.437 },
+  '3910': { lat: 51.228, lng: 5.442 },
+  '3920': { lat: 51.2307, lng: 5.3076 },
+  '3930': { lat: 51.213, lng: 5.415 },
+  '3600': { lat: 50.965, lng: 5.497 },
+  '3500': { lat: 50.931, lng: 5.338 },
+  '3660': { lat: 51.041, lng: 5.593 },
 }
 
 export function formatListingAddress(listing: Listing): string {
@@ -205,10 +222,21 @@ export function getListingCoordinates(listing: Listing): { lat: number; lng: num
   if (typeof listing.lat === 'number' && typeof listing.lng === 'number') {
     return { lat: listing.lat, lng: listing.lng }
   }
+  const pc = listing.postcode?.trim().slice(0, 4)
+  if (pc && POSTCODE_COORDS[pc]) return POSTCODE_COORDS[pc]!
   const key = normalizeSearchText(listing.city)
   const hit = CITY_COORDS[key]
   if (hit) return hit
   return { lat: 50.85, lng: 4.35 }
+}
+
+/** Geen betrouwbare coördinaten → afstand niet tonen (voorkomt valse «83 km» naar Brussel-fallback). */
+export function listingHasReliableCoordinates(listing: Listing): boolean {
+  if (typeof listing.lat === 'number' && typeof listing.lng === 'number') return true
+  const pc = listing.postcode?.trim().slice(0, 4)
+  if (pc && POSTCODE_COORDS[pc]) return true
+  const key = normalizeSearchText(listing.city)
+  return Boolean(CITY_COORDS[key])
 }
 
 export async function listingsDataSourceLabel(): Promise<'supabase' | 'json' | 'mixed'> {

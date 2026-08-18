@@ -10,7 +10,7 @@ export function getBrowserGeolocation(): Promise<{ lat: number; lng: number }> {
         resolve({ lat: pos.coords.latitude, lng: pos.coords.longitude })
       },
       (err) => reject(err),
-      { enableHighAccuracy: false, timeout: 12_000, maximumAge: 120_000 },
+      { enableHighAccuracy: true, timeout: 15_000, maximumAge: 60_000 },
     )
   })
 }
