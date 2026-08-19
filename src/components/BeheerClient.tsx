@@ -53,6 +53,15 @@ export default function BeheerClient() {
 
   return (
     <div className="space-y-8">
+      <div className="vysiongids-beheer-quick-nav">
+        <Link href="/jobs" className="vysiongids-beheer-quick-nav-btn">
+          Jobs
+        </Link>
+        <Link href="/zoekertjes" className="vysiongids-beheer-quick-nav-btn">
+          Zoekertjes
+        </Link>
+      </div>
+
       {slug ? <ListingOwnerDailyViews slug={slug} variant="beheer" /> : null}
 
       <p className="text-lg text-gray-800">
