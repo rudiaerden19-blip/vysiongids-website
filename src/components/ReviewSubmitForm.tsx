@@ -11,7 +11,7 @@ type Props = {
 
 export default function ReviewSubmitForm({ slug, listingName }: Props) {
   const router = useRouter()
-  const [rating, setRating] = useState(1)
+  const [rating, setRating] = useState<number | null>(null)
   const [name, setName] = useState('')
   const [body, setBody] = useState('')
   const [error, setError] = useState<string | null>(null)
@@ -21,6 +21,10 @@ export default function ReviewSubmitForm({ slug, listingName }: Props) {
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError(null)
+    if (rating == null) {
+      setError('Kies eerst je score: tik op 1 tot 5 sterren.')
+      return
+    }
     setLoading(true)
     const reviewerName = name.trim() ? formatGidsTitleCase(name.trim()) : undefined
     const reviewBody = formatReviewCommentText(body.trim())
@@ -63,22 +67,26 @@ export default function ReviewSubmitForm({ slug, listingName }: Props) {
             *
           </span>
         </legend>
-        <div className="mt-2 flex flex-wrap gap-2">
+        <p className="mt-1 text-sm text-gray-600">Kies 1 tot 5 sterren vóór je publiceert.</p>
+        <div className="mt-2 flex flex-wrap items-center gap-2">
           {[1, 2, 3, 4, 5].map((n) => (
             <button
               key={n}
               type="button"
-              className={`vysiongids-review-star-btn ${rating >= n ? 'is-active' : ''}`}
+              className={`vysiongids-review-star-btn ${rating != null && rating >= n ? 'is-active' : ''}`}
               aria-label={`${n} sterren`}
-              aria-pressed={rating >= n}
+              aria-pressed={rating != null && rating >= n}
               onClick={() => setRating(n)}
             >
               ★
             </button>
           ))}
-          <span className="self-center text-sm font-semibold text-gray-700">{rating} / 5</span>
+          {rating != null ? (
+            <span className="self-center text-sm font-semibold text-gray-700">{rating} / 5</span>
+          ) : (
+            <span className="self-center text-sm font-medium text-amber-800">Nog geen score gekozen</span>
+          )}
         </div>
-        <input type="hidden" name="rating" value={rating} />
       </fieldset>
 
       <div>
@@ -127,7 +135,7 @@ export default function ReviewSubmitForm({ slug, listingName }: Props) {
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={loading || rating == null || body.trim().length < 10}
         className="rounded-xl bg-accent px-8 py-3 font-bold text-white hover:bg-accent/90 disabled:opacity-60"
       >
         {loading ? 'Bezig…' : 'Review plaatsen'}

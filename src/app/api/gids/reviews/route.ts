@@ -24,7 +24,10 @@ export async function POST(req: Request) {
   }
 
   const slug = String(body.slug ?? '').trim()
-  const rating = Number(body.rating)
+  if (body.rating == null || typeof body.rating !== 'number') {
+    return NextResponse.json({ error: 'Kies eerst je score: 1 tot 5 sterren.' }, { status: 400 })
+  }
+  const rating = body.rating
   const comment = formatReviewCommentText(String(body.body ?? '').trim())
   const reviewerNameRaw = body.reviewerName ? String(body.reviewerName).trim().slice(0, 80) : ''
   const reviewerName = reviewerNameRaw ? formatGidsTitleCase(reviewerNameRaw) : null
