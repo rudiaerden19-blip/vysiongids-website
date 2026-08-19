@@ -1229,6 +1229,11 @@ body {
   min-width: 0;
 }
 
+.vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-inner {
+  position: relative;
+  flex-wrap: nowrap;
+}
+
 .vysiongids-listing-panel-hiring-copy {
   display: flex;
   flex: 1 1 12rem;
@@ -1240,6 +1245,16 @@ body {
   text-align: left;
 }
 
+.vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-copy {
+  flex: 1 1 auto;
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+  padding-left: 9rem;
+  padding-right: 9rem;
+  box-sizing: border-box;
+}
+
 .vysiongids-listing-panel-hiring-btn-wrap {
   flex: 0 0 auto;
   display: flex;
@@ -1248,6 +1263,16 @@ body {
   width: 100%;
   max-width: 8.5rem;
   margin-left: auto;
+}
+
+.vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-btn-wrap {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8.5rem;
+  max-width: 8.5rem;
+  margin-left: 0;
 }
 
 .vysiongids-listing-panel-hiring--empty {
