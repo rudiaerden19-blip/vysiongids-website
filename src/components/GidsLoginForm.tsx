@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import TitleCaseTextInput from '@/components/TitleCaseTextInput'
+import { writeGidsMeBootstrap, type GidsMeClientPayload } from '@/lib/gids-me-bootstrap'
 
 export default function GidsLoginForm() {
   const router = useRouter()
@@ -23,10 +24,17 @@ export default function GidsLoginForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, pin }),
       })
-      const data = (await res.json()) as { error?: string; slug?: string }
+      const data = (await res.json()) as {
+        error?: string
+        slug?: string
+        me?: GidsMeClientPayload
+      }
       if (!res.ok) {
         setError(data.error ?? 'Inloggen mislukt.')
         return
+      }
+      if (data.me?.authenticated && data.me.listing) {
+        writeGidsMeBootstrap(data.me)
       }
       router.push('/beheer')
       router.refresh()
