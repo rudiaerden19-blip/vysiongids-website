@@ -12,7 +12,7 @@ import { isTopZaakListing } from '@/lib/listing-topzaak'
 import { formatDeliveryFee, formatDeliveryRadius, formatListingAddressLines, formatListingDeliveryTime, formatListingPickupTime, formatListingServiceMode, formatMinOrder, listingPhotoUrls } from '@/lib/listings'
 import { formatDistanceAndDriveTime } from '@/lib/listing-distance'
 import { listingWazeUrl } from '@/lib/gids-listing-navigation'
-import { resolveListingPanelHiringBanner } from '@/lib/listing-info-extras'
+import { resolveListingPanelHiring } from '@/lib/listing-info-extras'
 import ListingMenuButton from '@/components/ListingMenuButton'
 
 export default function ListingPanel({
@@ -43,7 +43,8 @@ export default function ListingPanel({
 
   const bodyTextSize = compact ? '0.8125rem' : '0.9375rem'
   const showTopZaakStamp = isTopZaakListing(listing)
-  const hiringBanner = resolveListingPanelHiringBanner(listing.infoExtras)
+  const hiring = resolveListingPanelHiring(listing.infoExtras)
+  const hiringProfileHref = `${profileHref}#vacature`
 
   return (
     <article className={`vysiongids-listing-panel${compact ? ' vysiongids-listing-panel--compact' : ''}`}>
@@ -140,19 +141,24 @@ export default function ListingPanel({
           </div>
         </div>
       </div>
-      {hiringBanner ? (
-        <div className="vysiongids-listing-panel-hiring">
-          <span className="vysiongids-listing-panel-hiring-text">{hiringBanner.message}</span>
-          {hiringBanner.phone ? (
-            <a
-              href={`tel:${hiringBanner.phone.replace(/\s/g, '')}`}
-              className="vysiongids-listing-panel-hiring-phone"
-            >
-              {hiringBanner.phone}
-            </a>
-          ) : null}
-        </div>
-      ) : null}
+      <div
+        className={`vysiongids-listing-panel-hiring${hiring.active ? ' vysiongids-listing-panel-hiring--active' : ' vysiongids-listing-panel-hiring--empty'}`}
+      >
+        <span className="vysiongids-listing-panel-hiring-text">{hiring.message}</span>
+        {hiring.active && hiring.phone ? (
+          <a
+            href={`tel:${hiring.phone.replace(/\s/g, '')}`}
+            className="vysiongids-listing-panel-hiring-phone"
+          >
+            {hiring.phone}
+          </a>
+        ) : null}
+        {hiring.active ? (
+          <Link href={hiringProfileHref} className="vysiongids-listing-panel-hiring-btn">
+            Soliciteren
+          </Link>
+        ) : null}
+      </div>
     </article>
   )
 }

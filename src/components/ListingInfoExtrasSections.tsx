@@ -1,5 +1,6 @@
 import type { Listing } from '@/lib/listing-types'
 import { listingHasInfoExtras } from '@/lib/listing-info-extras'
+import { hiringJobTypeLabels } from '@/lib/listing-hiring'
 
 type Props = {
   listing: Listing
@@ -11,6 +12,7 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
 
   const specialties = extras?.specialties?.filter((s) => s.caption || s.imageUrl) ?? []
   const hiring = extras?.hiring?.enabled ? extras.hiring : null
+  const hiringTypeLabels = hiring ? hiringJobTypeLabels(hiring.jobTypes) : []
   const gift = extras?.giftCard?.enabled ? extras.giftCard : null
   const giftValue =
     gift?.valueEur != null && Number.isFinite(gift.valueEur)
@@ -42,10 +44,13 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
       ) : null}
 
       {hiring ? (
-        <section className="vysiongids-info-block vysiongids-info-block--hiring">
+        <section id="vacature" className="vysiongids-info-block vysiongids-info-block--hiring">
           <p className="vysiongids-info-kicker">KOM BIJ ONS TEAM</p>
           <h2 className="vysiongids-info-title">Wij zoeken personeel</h2>
           <div className="vysiongids-hiring-card">
+            {hiringTypeLabels.length ? (
+              <p className="vysiongids-hiring-types">{hiringTypeLabels.join(' · ')}</p>
+            ) : null}
             {hiring.text ? <p className="vysiongids-hiring-text">{hiring.text}</p> : null}
             {hiring.phone ? (
               <div className="vysiongids-hiring-contact">

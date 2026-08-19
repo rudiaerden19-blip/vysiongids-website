@@ -2,6 +2,7 @@
 
 import { useRef, useState } from 'react'
 import type { Listing } from '@/lib/listing-types'
+import { HIRING_JOB_TYPES } from '@/lib/listing-hiring'
 
 function SpecialtyPhotoField({
   index,
@@ -113,16 +114,38 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
 
       <div className="mt-8">
         <h3 className="text-base font-semibold text-gray-900">Wij zoeken personeel</h3>
+        <p className="text-xs text-gray-500">
+          De blauwe balk onderaan elke zoekkaart is altijd zichtbaar. Vul hier je vacature in om «Soliciteren» te tonen.
+        </p>
         <label className="mt-2 flex items-center gap-2 text-sm">
           <input type="checkbox" name="infoHiringEnabled" defaultChecked={extras?.hiring?.enabled} disabled={disabled} />
-          Vacature tonen op INFO
+          Vacature actief (zoekkaart + INFO)
+        </label>
+        <p className="mt-3 text-sm font-medium text-gray-800">Type contract / functie</p>
+        <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
+          {HIRING_JOB_TYPES.map((type) => (
+            <label key={type.id} className="flex items-center gap-2 text-sm">
+              <input
+                type="checkbox"
+                name="infoHiringJobType"
+                value={type.id}
+                defaultChecked={extras?.hiring?.jobTypes?.includes(type.id)}
+                disabled={disabled}
+              />
+              {type.label}
+            </label>
+          ))}
+        </div>
+        <label className="vysiongids-form-label mt-3 text-sm" htmlFor="infoHiringText">
+          Vacaturetekst
         </label>
         <textarea
+          id="infoHiringText"
           name="infoHiringText"
           rows={3}
           defaultValue={extras?.hiring?.text ?? ''}
           disabled={disabled}
-          className="vysiongids-form-input mt-2 w-full text-sm"
+          className="vysiongids-form-input mt-1 w-full text-sm"
           placeholder="Bv. Wij zoeken dringend een keukenhulp"
         />
         <label className="vysiongids-form-label mt-2 text-sm" htmlFor="infoHiringPhone">

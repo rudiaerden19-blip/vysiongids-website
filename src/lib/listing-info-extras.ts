@@ -1,3 +1,10 @@
+import {
+  formatListingHiringPanelMessage,
+  LISTING_PANEL_HIRING_EMPTY_MESSAGE,
+  listingHiringIsActive,
+  normalizeHiringJobTypes,
+  type HiringJobTypeId,
+} from '@/lib/listing-hiring'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
 import { normalizeListingScheduleExtras, parseScheduleExtrasJson } from '@/lib/listing-schedule-extras'
 
@@ -12,6 +19,7 @@ export type ListingInfoExtras = {
     enabled: boolean
     text?: string
     phone?: string
+    jobTypes?: HiringJobTypeId[]
   }
   giftCard?: {
     enabled: boolean
@@ -50,8 +58,14 @@ export function normalizeListingInfoExtras(raw: unknown): ListingInfoExtras | un
     if (h.enabled === true) {
       const text = String(h.text ?? '').trim()
       const phone = String(h.phone ?? '').trim()
-      if (text || phone) {
-        out.hiring = { enabled: true, text: text || undefined, phone: phone || undefined }
+      const jobTypes = normalizeHiringJobTypes(h.jobTypes)
+      if (text || phone || jobTypes.length) {
+        out.hiring = {
+          enabled: true,
+          text: text || undefined,
+          phone: phone || undefined,
+          ...(jobTypes.length ? { jobTypes } : {}),
+        }
       }
     }
   }
@@ -93,24 +107,31 @@ export function listingHasInfoExtras(extras: ListingInfoExtras | undefined): boo
   return false
 }
 
-/** Zoekkaart: onderaan tonen als eigenaar vacaturetekst en/of telefoon heeft ingevuld. */
+/** Zoekkaart: vacaturebalk altijd zichtbaar; knop alleen bij actieve vacature. */
+export function resolveListingPanelHiring(extras: ListingInfoExtras | undefined): {
+  active: boolean
+  message: string
+  phone?: string
+} {
+  const h = extras?.hiring
+  if (h && listingHiringIsActive(h)) {
+    const phone = h.phone?.trim() ?? ''
+    return {
+      active: true,
+      message: formatListingHiringPanelMessage(h),
+      ...(phone ? { phone } : {}),
+    }
+  }
+  return { active: false, message: LISTING_PANEL_HIRING_EMPTY_MESSAGE }
+}
+
+/** @deprecated Gebruik resolveListingPanelHiring */
 export function resolveListingPanelHiringBanner(
   extras: ListingInfoExtras | undefined,
 ): { message: string; phone?: string } | null {
-  const h = extras?.hiring
-  if (!h?.enabled) return null
-  const text = h.text?.trim() ?? ''
-  const phone = h.phone?.trim() ?? ''
-  if (!text && !phone) return null
-
-  let message = text
-  if (message && !/^wij zoeken\b/i.test(message)) {
-    message = `Wij zoeken ${message.charAt(0).toLowerCase()}${message.slice(1)}`
-  } else if (!message) {
-    message = 'Wij zoeken personeel'
-  }
-
-  return { message, ...(phone ? { phone } : {}) }
+  const state = resolveListingPanelHiring(extras)
+  if (!state.active) return null
+  return { message: state.message, ...(state.phone ? { phone: state.phone } : {}) }
 }
 
 export type ParsedInfoExtrasForm = {
@@ -118,6 +139,7 @@ export type ParsedInfoExtrasForm = {
   hiringEnabled: boolean
   hiringText: string
   hiringPhone: string
+  hiringJobTypes: HiringJobTypeId[]
   giftEnabled: boolean
   giftIntro: string
   giftOrderUrl: string
@@ -148,6 +170,7 @@ export function parseInfoExtrasFromForm(form: FormData): ParsedInfoExtrasForm {
     hiringEnabled: form.get('infoHiringEnabled') === 'on',
     hiringText: String(form.get('infoHiringText') ?? '').trim().slice(0, 500),
     hiringPhone: String(form.get('infoHiringPhone') ?? '').trim().slice(0, 40),
+    hiringJobTypes: normalizeHiringJobTypes(form.getAll('infoHiringJobType')),
     giftEnabled: form.get('infoGiftEnabled') === 'on',
     giftIntro: String(form.get('infoGiftIntro') ?? '').trim().slice(0, 500),
     giftOrderUrl: String(form.get('infoGiftOrderUrl') ?? '').trim(),
@@ -188,11 +211,15 @@ export async function buildInfoExtrasPayload(
   const payload: ListingInfoExtras = {}
   if (specialties.length) payload.specialties = specialties
 
-  if (parsed.hiringEnabled && (parsed.hiringText || parsed.hiringPhone)) {
+  if (
+    parsed.hiringEnabled &&
+    (parsed.hiringText || parsed.hiringPhone || parsed.hiringJobTypes.length)
+  ) {
     payload.hiring = {
       enabled: true,
       text: parsed.hiringText || undefined,
       phone: parsed.hiringPhone || undefined,
+      ...(parsed.hiringJobTypes.length ? { jobTypes: parsed.hiringJobTypes } : {}),
     }
   }
 
