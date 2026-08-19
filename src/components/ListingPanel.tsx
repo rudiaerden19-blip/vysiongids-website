@@ -137,29 +137,29 @@ export default function ListingPanel({
                 Geef review
               </Link>
               <ListingMenuButton listing={listing} className="vysiongids-listing-action-btn" />
+              <div
+                className={`vysiongids-listing-panel-hiring vysiongids-listing-panel-hiring--cta${hiring.active ? ' vysiongids-listing-panel-hiring--active' : ' vysiongids-listing-panel-hiring--empty'}`}
+              >
+                <div className="vysiongids-listing-panel-hiring-copy">
+                  <span className="vysiongids-listing-panel-hiring-text">{hiring.message}</span>
+                  {hiring.active && hiring.phone ? (
+                    <a
+                      href={`tel:${hiring.phone.replace(/\s/g, '')}`}
+                      className="vysiongids-listing-panel-hiring-phone"
+                    >
+                      {hiring.phone}
+                    </a>
+                  ) : null}
+                </div>
+                {hiring.active ? (
+                  <Link href={hiringProfileHref} className="vysiongids-listing-panel-hiring-btn">
+                    Soliciteren
+                  </Link>
+                ) : null}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-      <div
-        className={`vysiongids-listing-panel-hiring${hiring.active ? ' vysiongids-listing-panel-hiring--active' : ' vysiongids-listing-panel-hiring--empty'}`}
-      >
-        <div className="vysiongids-listing-panel-hiring-copy">
-          <span className="vysiongids-listing-panel-hiring-text">{hiring.message}</span>
-          {hiring.active && hiring.phone ? (
-            <a
-              href={`tel:${hiring.phone.replace(/\s/g, '')}`}
-              className="vysiongids-listing-panel-hiring-phone"
-            >
-              {hiring.phone}
-            </a>
-          ) : null}
-        </div>
-        {hiring.active ? (
-          <Link href={hiringProfileHref} className="vysiongids-listing-panel-hiring-btn">
-            Soliciteren
-          </Link>
-        ) : null}
       </div>
     </article>
   )

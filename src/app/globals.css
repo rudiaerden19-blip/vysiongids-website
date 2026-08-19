@@ -1257,35 +1257,76 @@ body {
 @keyframes vysiongids-soliciteren-blink {
   0%,
   100% {
-    background-color: #0e5d82;
-    color: #fff !important;
+    background-color: #fff;
+    color: #0e5d82;
   }
   50% {
-    background-color: #fff;
-    color: #0e5d82 !important;
+    background-color: #0e5d82;
+    color: #fff;
   }
 }
 
-.vysiongids-listing-action-btn--soliciteren {
-  animation: vysiongids-soliciteren-blink 1.35s ease-in-out infinite;
-  border: 2px solid #0e5d82;
+.vysiongids-listing-panel-hiring-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 10.5rem;
+  padding: 0.45rem 1.25rem;
+  border-radius: 0.5rem;
+  border: 2px solid #fff;
+  background-color: #fff;
+  color: #0e5d82;
+  font-size: 0.9375rem;
   font-weight: 700;
-  background-color: #0e5d82;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
+  animation: vysiongids-soliciteren-blink 1.35s ease-in-out infinite;
 }
 
-.vysiongids-listing-action-btn--soliciteren:hover {
-  filter: none;
+.vysiongids-listing-panel-hiring-btn:hover {
   animation-play-state: paused;
   background-color: #fff !important;
   color: #0e5d82 !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .vysiongids-listing-action-btn--soliciteren {
+  .vysiongids-listing-panel-hiring-btn {
     animation: none;
-    background-color: #0e5d82;
-    color: #fff !important;
+    background-color: #fff;
+    color: #0e5d82;
   }
+}
+
+.vysiongids-listing-panel-hiring--cta {
+  width: 100%;
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  padding: 0.55rem 0.65rem 0.65rem;
+  font-size: 0.8125rem;
+}
+
+.vysiongids-listing-panel-hiring--cta .vysiongids-listing-panel-hiring-copy {
+  font-size: inherit;
+}
+
+.vysiongids-listing-panel-hiring--cta .vysiongids-listing-panel-hiring-btn {
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  border-radius: 0.5rem;
+  font-size: 1rem;
+  padding: 0.65rem 1rem;
+  margin-top: 0.15rem;
+}
+
+.vysiongids-listing-panel--compact .vysiongids-listing-panel-hiring--cta {
+  font-size: 0.75rem;
+}
+
+.vysiongids-listing-panel--compact .vysiongids-listing-panel-hiring--cta .vysiongids-listing-panel-hiring-btn {
+  font-size: 0.875rem;
+  padding: 0.55rem 0.85rem;
 }
 
 .vysiongids-listing-panel--compact .vysiongids-listing-panel-hiring {
