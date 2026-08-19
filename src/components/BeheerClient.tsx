@@ -56,11 +56,11 @@ export default function BeheerClient() {
   return (
     <div className="space-y-8">
       <div className="vysiongids-beheer-quick-nav">
-        <Link href="/jobs" className="vysiongids-beheer-quick-nav-btn">
-          Jobs
+        <Link href="#vacature-beheer" className="vysiongids-beheer-quick-nav-btn">
+          Vacature plaatsen
         </Link>
         <Link href="/zoekertjes" className="vysiongids-beheer-quick-nav-btn">
-          Zoekertjes
+          Zoekertje plaatsen
         </Link>
       </div>
 
