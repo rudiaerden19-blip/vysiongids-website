@@ -4,14 +4,12 @@ import ListingStarRating from '@/components/ListingStarRating'
 import ReviewList from '@/components/ReviewList'
 import ReviewSubmitForm from '@/components/ReviewSubmitForm'
 import SiteHeader from '@/components/SiteHeader'
-import { fetchListingIdBySlugAdmin, fetchReviewStatsByListingSlug, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
+import { fetchListingIdBySlugAdmin, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
 import { formatListingAddressLines, getListingBySlug, getListingTypeLabel } from '@/lib/listings'
 
 type Props = { params: Promise<{ slug: string }> }
 
-export const dynamic = 'force-dynamic'
 export const dynamicParams = true
-
 export const revalidate = 60
 
 export async function generateMetadata({ params }: Props) {
@@ -29,11 +27,12 @@ export default async function ZaakReviewsPage({ params }: Props) {
   const listing = await getListingBySlug(slug)
   if (!listing) notFound()
 
-  const reviews = (await fetchReviewsByListingSlug(slug)) ?? []
-  const reviewStats = await fetchReviewStatsByListingSlug(slug)
-  const ratingCount = reviewStats?.count ?? listing.ratingCount
-  const ratingAvg = reviewStats && reviewStats.count > 0 ? reviewStats.avg : listing.ratingAvg
-  const canSubmit = Boolean(await fetchListingIdBySlugAdmin(slug))
+  const [reviews, canSubmit] = await Promise.all([
+    fetchReviewsByListingSlug(slug).then((r) => r ?? []),
+    fetchListingIdBySlugAdmin(slug).then(Boolean),
+  ])
+  const ratingCount = listing.ratingCount
+  const ratingAvg = listing.ratingAvg
   const { cityLine } = formatListingAddressLines(listing)
   const typeLabel = getListingTypeLabel(listing.type)
 

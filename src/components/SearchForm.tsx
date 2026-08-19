@@ -119,7 +119,7 @@ async function fetchSearchSummary(
 ): Promise<{ count: number; top: { slug: string; name: string } | null }> {
   const params = new URLSearchParams()
   appendGidsSearchParams(params, { q, type, prov, near: near ?? null })
-  const res = await fetch(`/api/gids/search?${params.toString()}`, { cache: 'no-store' })
+  const res = await fetch(`/api/gids/search?${params.toString()}`)
   if (!res.ok) return { count: 0, top: null }
   const data = (await res.json()) as { count?: number; top?: { slug: string; name: string } | null }
   return {
@@ -144,7 +144,7 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
   const loadVoiceNameHints = useCallback((): Promise<void> => {
     if (voiceNameHintsRef.current.length > 0) return Promise.resolve()
     if (hintsLoadRef.current) return hintsLoadRef.current
-    hintsLoadRef.current = fetch('/api/gids/voice-names', { cache: 'no-store' })
+    hintsLoadRef.current = fetch('/api/gids/voice-names')
       .then((res) => (res.ok ? res.json() : null))
       .then((data: { hints?: VoiceNameHint[] } | null) => {
         if (data?.hints?.length) voiceNameHintsRef.current = data.hints
@@ -156,12 +156,9 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
     return hintsLoadRef.current
   }, [])
 
-  useEffect(() => {
-    void loadVoiceNameHints()
-  }, [loadVoiceNameHints])
-
   const runSearchWithQuery = useCallback(
     async (spoken: string) => {
+      await loadVoiceNameHints()
       const hints = voiceNameHintsRef.current
       const trimmed = fixVoiceSearchTranscript(normalizeVoiceActionQuery(spoken.trim()), hints)
       if (!trimmed) return
@@ -208,7 +205,7 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
       await speakDutchAsync(message)
       router.push(buildSearchPath(trimmed, type, prov, near))
     },
-    [formRef, prov, qInputRef, router],
+    [formRef, loadVoiceNameHints, prov, qInputRef, router],
   )
 
   const { listening, supported, startListen } = useVoiceSearch(runSearchWithQuery, {

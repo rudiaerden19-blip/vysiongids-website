@@ -9,7 +9,7 @@ import {
 } from '@/lib/browser-geolocation'
 import { listingStoredCoordsAreFallback } from '@/lib/listing-geo-fallback'
 import { compareListingsByName } from '@/lib/listing-alphabetical-sort'
-import { listingCoordinatesForDistance, listingDistanceKmFrom } from '@/lib/listings'
+import { listingCoordinatesForDistance, listingDistanceKmFrom } from '@/lib/listing-display'
 
 type Props = {
   listings: Listing[]
@@ -60,7 +60,7 @@ export default function ZoekenResultsList({ listings, initialNear, sortByDistanc
   }, [initialNear])
 
   useEffect(() => {
-    const slugs = listings.filter(listingNeedsClientGeocode).map((l) => l.slug).slice(0, 6)
+    const slugs = listings.filter(listingNeedsClientGeocode).map((l) => l.slug).slice(0, 3)
     if (slugs.length === 0) return
 
     let cancelled = false
@@ -82,7 +82,7 @@ export default function ZoekenResultsList({ listings, initialNear, sortByDistanc
           )
         })
         .catch(() => {})
-    }, 400)
+    }, 2500)
 
     return () => {
       cancelled = true
@@ -111,6 +111,16 @@ export default function ZoekenResultsList({ listings, initialNear, sortByDistanc
       .filter((row): row is { listing: Listing; coords: { lat: number; lng: number } } => row.coords != null)
     if (withCoords.length === 0) return
 
+    const osrmCandidates = near
+      ? [...withCoords]
+          .sort((a, b) => {
+            const ka = listingDistanceKmFrom(a.listing, near) ?? Infinity
+            const kb = listingDistanceKmFrom(b.listing, near) ?? Infinity
+            return ka - kb
+          })
+          .slice(0, 12)
+      : withCoords.slice(0, 12)
+
     let cancelled = false
     const timer = window.setTimeout(() => {
       void fetch('/api/gids/driving-distances', {
@@ -118,14 +128,14 @@ export default function ZoekenResultsList({ listings, initialNear, sortByDistanc
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           from: near,
-          destinations: withCoords.map((row) => row.coords),
+          destinations: osrmCandidates.map((row) => row.coords),
         }),
       })
         .then((res) => (res.ok ? res.json() : null))
         .then((data: { legs?: Array<{ km: number; minutes: number } | null> } | null) => {
           if (cancelled || !data?.legs) return
           const next: Record<string, TravelLeg> = {}
-          withCoords.forEach((row, i) => {
+          osrmCandidates.forEach((row, i) => {
             const leg = data.legs?.[i]
             if (leg && Number.isFinite(leg.km)) {
               next[row.listing.slug] = { km: leg.km, minutes: leg.minutes }

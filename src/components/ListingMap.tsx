@@ -5,7 +5,7 @@ import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import type { Listing } from '@/lib/listing-types'
-import { formatListingAddressLines, getListingCoordinates } from '@/lib/listings'
+import { formatListingAddressLines, getListingCoordinates } from '@/lib/listing-display'
 import ListingNavigationButtons from '@/components/ListingNavigationButtons'
 import ListingTopZaakStamp from '@/components/ListingTopZaakStamp'
 

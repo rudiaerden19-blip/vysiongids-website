@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { searchListings } from '@/lib/listings'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
@@ -19,8 +19,15 @@ export async function GET(request: Request) {
     nearLng: Number.isFinite(nearLng) ? nearLng : undefined,
   })
   const top = results[0]
-  return NextResponse.json({
-    count: results.length,
-    top: top ? { slug: top.slug, name: top.name } : null,
-  })
+  return NextResponse.json(
+    {
+      count: results.length,
+      top: top ? { slug: top.slug, name: top.name } : null,
+    },
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120',
+      },
+    },
+  )
 }

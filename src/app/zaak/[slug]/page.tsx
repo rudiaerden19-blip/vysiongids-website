@@ -23,13 +23,12 @@ import {
   listingPhotoUrls,
 } from '@/lib/listings'
 import ListingMenuButton from '@/components/ListingMenuButton'
-import { fetchListingIdBySlugAdmin, fetchReviewStatsByListingSlug, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
+import { fetchListingIdBySlugAdmin, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
 import { ensureListingGeocoded, listingNeedsBackgroundGeocode } from '@/lib/gids-listing-geocode'
 
 type Props = { params: Promise<{ slug: string }> }
 
-/** Nieuwe zaken na registratie: altijd server-side ophalen (geen 404 op onbekende slug). */
-export const dynamic = 'force-dynamic'
+/** Nieuwe slugs via dynamicParams; listing-cache invalideert via tag gids-listings. */
 export const dynamicParams = true
 
 export const revalidate = 60
@@ -60,12 +59,11 @@ export default async function ZaakPage({ params }: Props) {
   const deliveryFeeLabel = formatDeliveryFee(listing)
   const deliveryRadiusLabel = formatDeliveryRadius(listing)
   const { street, cityLine } = formatListingAddressLines(listing)
-  const reviews = (await fetchReviewsByListingSlug(slug, 5)) ?? []
-  const reviewStats = await fetchReviewStatsByListingSlug(slug)
-  const ratingCount = reviewStats?.count ?? listing.ratingCount
-  const ratingAvg = reviewStats && reviewStats.count > 0 ? reviewStats.avg : listing.ratingAvg
-  const listingForRating = { ...listing, ratingAvg, ratingCount }
-  const canSubmitReview = Boolean(await fetchListingIdBySlugAdmin(slug))
+  const [reviews, canSubmitReview] = await Promise.all([
+    fetchReviewsByListingSlug(slug, 5).then((r) => r ?? []),
+    fetchListingIdBySlugAdmin(slug).then(Boolean),
+  ])
+  const listingForRating = listing
   const reviewsHref = `/zaak/${slug}/reviews`
 
   return (
@@ -122,7 +120,7 @@ export default async function ZaakPage({ params }: Props) {
             <section id="beoordeling" className="mt-8 border-t border-gray-200 pt-8 scroll-mt-24">
               <h2 className="text-lg font-bold text-gray-900">Beoordeling</h2>
               <div className="mt-3">
-                <ListingStarRating slug={slug} avg={ratingAvg} count={ratingCount} size="md" />
+                <ListingStarRating slug={slug} avg={listingForRating.ratingAvg} count={listingForRating.ratingCount} size="md" />
               </div>
               {reviews.length > 0 ? (
                 <div className="mt-4">

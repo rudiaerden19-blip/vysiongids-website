@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { resolveListingActionIntentAsync } from '@/lib/gids-listing-action-intent'
 import { getAllListings } from '@/lib/listings'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 60
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url)
