@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
-import { revalidateTag } from 'next/cache'
 import { verifyGidsPin } from '@/lib/gids-pin'
-import { fetchListingByLoginNameAdmin, fetchListingRowByIdAdmin, mapGidsRowToListing } from '@/lib/gids-listings-db'
+import { fetchListingByLoginNameAdmin } from '@/lib/gids-listings-db'
 import {
   GIDS_SESSION_COOKIE,
   gidsSessionCookieOptions,
@@ -54,21 +53,7 @@ export async function POST(req: Request) {
     )
   }
 
-  const fullRow = await fetchListingRowByIdAdmin(row.id)
-  const listing = fullRow ? mapGidsRowToListing(fullRow) : undefined
-
-  const res = NextResponse.json({
-    ok: true,
-    slug: row.slug,
-    name: row.name,
-    me: {
-      authenticated: true,
-      listingId: row.id,
-      slug: listing?.slug ?? row.slug,
-      name: listing?.name ?? row.name,
-      ...(listing ? { listing } : {}),
-    },
-  })
+  const res = NextResponse.json({ ok: true, slug: row.slug, name: row.name })
   res.cookies.set(GIDS_SESSION_COOKIE, token, gidsSessionCookieOptions())
   return res
 }
