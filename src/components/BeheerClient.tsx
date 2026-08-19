@@ -6,6 +6,10 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import VerwijderZaakButton from '@/components/VerwijderZaakButton'
 import ListingOwnerDailyViews from '@/components/ListingOwnerDailyViews'
+import {
+  clearGidsBeheerLoginHint,
+  readGidsBeheerLoginHint,
+} from '@/lib/gids-beheer-login-hint'
 import type { Listing } from '@/lib/listing-types'
 
 const BeheerEditForm = dynamic(() => import('@/components/BeheerEditForm'), {
@@ -34,41 +38,70 @@ function BeheerQuickNav() {
 
 export default function BeheerClient() {
   const router = useRouter()
-  const [me, setMe] = useState<MeResponse | null>(null)
-  const [loading, setLoading] = useState(true)
-  const [publicSlug, setPublicSlug] = useState<string | undefined>()
+  const loginHint = readGidsBeheerLoginHint()
+  const [me, setMe] = useState<MeResponse | null>(
+    loginHint
+      ? { authenticated: true, name: loginHint.name, slug: loginHint.slug }
+      : null,
+  )
+  const [listing, setListing] = useState<Listing | null>(null)
+  const [sessionReady, setSessionReady] = useState(Boolean(loginHint))
+  const [listingLoading, setListingLoading] = useState(true)
+  const [publicSlug, setPublicSlug] = useState<string | undefined>(loginHint?.slug)
 
   useEffect(() => {
     const controller = new AbortController()
-    fetch('/api/gids/me', { signal: controller.signal, credentials: 'same-origin' })
-      .then((r) => r.json())
-      .then((data: MeResponse) => {
-        setMe(data)
-        setPublicSlug(data.slug)
-      })
-      .catch((err: unknown) => {
+    const signal = controller.signal
+
+    void (async () => {
+      try {
+        const briefRes = await fetch('/api/gids/me?brief=1', { signal, credentials: 'same-origin' })
+        const brief = (await briefRes.json()) as MeResponse
+        setMe((prev) => ({ ...prev, ...brief }))
+        if (brief.slug) setPublicSlug(brief.slug)
+        if (brief.authenticated) clearGidsBeheerLoginHint()
+        setSessionReady(true)
+
+        if (!brief.authenticated) {
+          setListingLoading(false)
+          return
+        }
+
+        const fullRes = await fetch('/api/gids/me', { signal, credentials: 'same-origin' })
+        const full = (await fullRes.json()) as MeResponse
+        if (full.authenticated && full.listing) {
+          setListing(full.listing)
+          setMe(full)
+          if (full.slug) setPublicSlug(full.slug)
+        }
+      } catch (err: unknown) {
         if (err instanceof DOMException && err.name === 'AbortError') return
         setMe({ authenticated: false })
-      })
-      .finally(() => setLoading(false))
+        setSessionReady(true)
+      } finally {
+        setListingLoading(false)
+      }
+    })()
+
     return () => controller.abort()
   }, [])
 
   async function logout() {
+    clearGidsBeheerLoginHint()
     await fetch('/api/gids/login', { method: 'DELETE' })
     router.push('/login')
   }
 
-  if (loading) {
+  if (!sessionReady && !loginHint) {
     return (
       <div className="space-y-8">
         <BeheerQuickNav />
-        <p className="text-gray-600">Je zaak laden…</p>
+        <p className="text-gray-600">Bezig met laden…</p>
       </div>
     )
   }
 
-  if (!me?.authenticated || !me.listing) {
+  if (!me?.authenticated) {
     return (
       <div className="space-y-8">
         <BeheerQuickNav />
@@ -113,16 +146,25 @@ export default function BeheerClient() {
         </Link>
       </div>
 
-      <BeheerEditForm
-        key={me.listing.slug + (me.listing.name ?? '')}
-        listing={me.listing}
-        onSaved={async (newSlug) => {
-          setPublicSlug(newSlug)
-          const r = await fetch('/api/gids/me')
-          const data = (await r.json()) as MeResponse
-          if (data.authenticated && data.listing) setMe(data)
-        }}
-      />
+      {listing ? (
+        <BeheerEditForm
+          key={listing.slug + (listing.name ?? '')}
+          listing={listing}
+          onSaved={async (newSlug) => {
+            setPublicSlug(newSlug)
+            const r = await fetch('/api/gids/me')
+            const data = (await r.json()) as MeResponse
+            if (data.authenticated && data.listing) {
+              setMe(data)
+              setListing(data.listing)
+            }
+          }}
+        />
+      ) : listingLoading ? (
+        <p className="text-gray-600">Je gegevens laden…</p>
+      ) : (
+        <p className="text-red-700">Gegevens laden mislukt. Vernieuw de pagina.</p>
+      )}
 
       <div className="flex flex-wrap gap-3 border-t border-gray-200 pt-6">
         <button
@@ -134,14 +176,16 @@ export default function BeheerClient() {
         </button>
       </div>
 
-      <section className="rounded-xl border border-red-200 bg-red-50/50 p-5">
-        <h2 className="text-lg font-bold text-gray-900">Verwijder je zaak</h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Je listing, alle foto&apos;s, reviews en instellingen worden permanent verwijderd. Je zaak is daarna niet meer
-          vindbaar in Vysiongids.
-        </p>
-        <VerwijderZaakButton expectedSlug={slug} className="mt-4" />
-      </section>
+      {listing && slug ? (
+        <section className="rounded-xl border border-red-200 bg-red-50/50 p-5">
+          <h2 className="text-lg font-bold text-gray-900">Verwijder je zaak</h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Je listing, alle foto&apos;s, reviews en instellingen worden permanent verwijderd. Je zaak is daarna niet meer
+            vindbaar in Vysiongids.
+          </p>
+          <VerwijderZaakButton expectedSlug={slug} className="mt-4" />
+        </section>
+      ) : null}
     </div>
   )
 }

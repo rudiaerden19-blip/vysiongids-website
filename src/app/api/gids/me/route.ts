@@ -2,7 +2,12 @@ import { NextResponse } from 'next/server'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { GIDS_SESSION_COOKIE, getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
-import { mapGidsRowToListing, fetchListingRowByIdAdmin, fetchListingByNormalizedNameAdmin } from '@/lib/gids-listings-db'
+import {
+  mapGidsRowToListing,
+  fetchListingRowByIdAdmin,
+  fetchListingSessionByIdAdmin,
+  fetchListingByNormalizedNameAdmin,
+} from '@/lib/gids-listings-db'
 import { parseGidsListingFormData } from '@/lib/gids-listing-form-server'
 import { mergeListingAmenitiesWithOwnerChoices } from '@/lib/gids-owner-amenities'
 import { applyCuisineTypeToUpdatePayload, applyDeliveryRadiusToUpdatePayload, gidsListingSaveErrorMessage } from '@/lib/gids-listing-db-write'
@@ -29,9 +34,21 @@ import { geocodeListingAddress } from '@/lib/gids-listing-geocode'
 
 export const maxDuration = 60
 
-export async function GET() {
+export async function GET(req: Request) {
   const listingId = await getGidsOwnerListingIdFromCookies()
   if (!listingId) return NextResponse.json({ authenticated: false })
+
+  const brief = new URL(req.url).searchParams.get('brief') === '1'
+  if (brief) {
+    const session = await fetchListingSessionByIdAdmin(listingId)
+    if (!session) return NextResponse.json({ authenticated: false })
+    return NextResponse.json({
+      authenticated: true,
+      listingId: session.id,
+      slug: session.slug,
+      name: session.name,
+    })
+  }
 
   const row = await fetchListingRowByIdAdmin(listingId)
   if (!row) return NextResponse.json({ authenticated: false })

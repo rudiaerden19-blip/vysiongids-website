@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import TitleCaseTextInput from '@/components/TitleCaseTextInput'
+import { storeGidsBeheerLoginHint } from '@/lib/gids-beheer-login-hint'
 
 export default function GidsLoginForm() {
   const router = useRouter()
@@ -23,11 +24,15 @@ export default function GidsLoginForm() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, pin }),
       })
-      const data = (await res.json()) as { error?: string; slug?: string }
+      const data = (await res.json()) as { error?: string; slug?: string; name?: string }
       if (!res.ok) {
         setError(data.error ?? 'Inloggen mislukt.')
         return
       }
+      if (data.slug && data.name) {
+        storeGidsBeheerLoginHint(data.slug, data.name)
+      }
+      router.prefetch('/beheer')
       router.push('/beheer')
     } catch {
       setError('Netwerkfout.')

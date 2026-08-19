@@ -7,7 +7,7 @@ export function useGidsOwnerSlug(): { ownerSlug: string | null; authChecked: boo
   const [authChecked, setAuthChecked] = useState(false)
 
   useEffect(() => {
-    fetch('/api/gids/me')
+    fetch('/api/gids/me?brief=1')
       .then((r) => r.json())
       .then((data: { authenticated?: boolean; slug?: string }) => {
         if (data.authenticated && data.slug) setOwnerSlug(data.slug)

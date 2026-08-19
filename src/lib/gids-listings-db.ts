@@ -158,6 +158,21 @@ export async function fetchListingRowByIdAdmin(id: string): Promise<GidsListingR
   return data as GidsListingRow
 }
 
+/** Snelle sessie-check voor beheer (geen foto-join). */
+export async function fetchListingSessionByIdAdmin(
+  id: string,
+): Promise<{ id: string; slug: string; name: string } | null> {
+  const supabase = createGidsSupabaseAdmin()
+  if (!supabase) return null
+  const { data, error } = await supabase
+    .from('gids_listings')
+    .select('id, slug, name')
+    .eq('id', id)
+    .maybeSingle()
+  if (error || !data) return null
+  return data as { id: string; slug: string; name: string }
+}
+
 export async function fetchListingByNormalizedNameAdmin(nameNormalized: string): Promise<GidsListingRow | null> {
   const supabase = createGidsSupabaseAdmin()
   if (!supabase) return null
