@@ -186,8 +186,8 @@ export async function fetchListingBySlugAdmin(slug: string): Promise<GidsListing
 
 export async function fetchListingByLoginNameAdmin(rawName: string): Promise<GidsListingRow | null> {
   const keys = gidsBusinessNameLookupKeys(rawName)
-  for (const key of keys) {
-    const row = await fetchListingByNormalizedNameAdmin(key)
+  const normalizedHits = await Promise.all(keys.map((key) => fetchListingByNormalizedNameAdmin(key)))
+  for (const row of normalizedHits) {
     if (row) return row
   }
 

@@ -6,14 +6,9 @@ import { useEffect, useState } from 'react'
 import VerwijderZaakButton from '@/components/VerwijderZaakButton'
 import BeheerEditForm from '@/components/BeheerEditForm'
 import ListingOwnerDailyViews from '@/components/ListingOwnerDailyViews'
-import type { Listing } from '@/lib/listing-types'
+import { readGidsMeBootstrap, type GidsMeClientPayload } from '@/lib/gids-me-bootstrap'
 
-type MeResponse = {
-  authenticated: boolean
-  name?: string
-  slug?: string
-  listing?: Listing
-}
+type MeResponse = GidsMeClientPayload
 
 export default function BeheerClient() {
   const router = useRouter()
@@ -22,6 +17,13 @@ export default function BeheerClient() {
   const [publicSlug, setPublicSlug] = useState<string | undefined>()
 
   useEffect(() => {
+    const boot = readGidsMeBootstrap()
+    if (boot?.authenticated && boot.listing) {
+      setMe(boot)
+      setPublicSlug(boot.slug)
+      setLoading(false)
+    }
+
     fetch('/api/gids/me')
       .then((r) => r.json())
       .then((data: MeResponse) => {
@@ -37,7 +39,7 @@ export default function BeheerClient() {
     router.refresh()
   }
 
-  if (loading) return <p className="text-gray-600">Laden…</p>
+  if (loading && !me?.listing) return <p className="text-gray-600">Laden…</p>
   if (!me?.authenticated || !me.listing) {
     return (
       <p className="text-gray-600">

@@ -27,8 +27,39 @@ function ViewStatLine({ label, value }: { label: string; value: number }) {
   )
 }
 
+function BeheerViewsCard({ slug }: { slug: string }) {
+  const [stats, setStats] = useState<ListingOwnerViewStats>(() => listingOwnerViewStats(slug))
+
+  useEffect(() => {
+    const refresh = () => setStats(listingOwnerViewStats(slug))
+    refresh()
+    const id = window.setInterval(refresh, REFRESH_MS)
+    return () => window.clearInterval(id)
+  }, [slug])
+
+  return (
+    <div className="vysiongids-beheer-views-card">
+      <p className="vysiongids-beheer-views-kicker">Weergaves in Vysiongids</p>
+      <div className="vysiongids-beheer-views-stats" aria-live="polite">
+        <ViewStatLine label="Vandaag" value={stats.today} />
+        <ViewStatLine label="Deze week" value={stats.week} />
+        <ViewStatLine label="Deze maand" value={stats.month} />
+      </div>
+      <p className="vysiongids-beheer-views-hint">Alleen zichtbaar in beheer — klanten zien dit niet.</p>
+    </div>
+  )
+}
+
 /** Alleen voor ingelogde zaakhouder van deze slug — niet zichtbaar voor bezoekers. */
 export default function ListingOwnerDailyViews({ slug, className, variant = 'card' }: Props) {
+  if (variant === 'beheer') {
+    return <BeheerViewsCard slug={slug} />
+  }
+
+  return <ListingOwnerDailyViewsPublic slug={slug} className={className} />
+}
+
+function ListingOwnerDailyViewsPublic({ slug, className }: { slug: string; className?: string }) {
   const { ownerSlug, authChecked } = useGidsOwnerSlug()
   const [stats, setStats] = useState<ListingOwnerViewStats>(() => listingOwnerViewStats(slug))
 
@@ -41,20 +72,6 @@ export default function ListingOwnerDailyViews({ slug, className, variant = 'car
   }, [ownerSlug, slug])
 
   if (!authChecked || ownerSlug !== slug) return null
-
-  if (variant === 'beheer') {
-    return (
-      <div className="vysiongids-beheer-views-card">
-        <p className="vysiongids-beheer-views-kicker">Weergaves in Vysiongids</p>
-        <div className="vysiongids-beheer-views-stats" aria-live="polite">
-          <ViewStatLine label="Vandaag" value={stats.today} />
-          <ViewStatLine label="Deze week" value={stats.week} />
-          <ViewStatLine label="Deze maand" value={stats.month} />
-        </div>
-        <p className="vysiongids-beheer-views-hint">Alleen zichtbaar in beheer — klanten zien dit niet.</p>
-      </div>
-    )
-  }
 
   const views = stats.today
   const variantClass = 'vysiongids-listing-daily-views'
