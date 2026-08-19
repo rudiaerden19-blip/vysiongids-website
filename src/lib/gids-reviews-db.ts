@@ -164,3 +164,44 @@ export async function insertReviewAdmin(input: {
 
   return { ok: true, id: data.id as string }
 }
+
+/** Verwijder reviews voor gegeven slugs (max. rating = drempel). Herberekent rating via DB-trigger. */
+export async function deleteReviewsForListingSlugsAdmin(
+  slugs: string[],
+  options?: { maxRating?: number },
+): Promise<{ deleted: number; slugs: string[] } | { ok: false; error: string }> {
+  const supabase = createGidsSupabaseAdmin()
+  if (!supabase) return { ok: false, error: 'Database niet geconfigureerd.' }
+
+  const maxRating = options?.maxRating ?? 1
+  const uniqueSlugs = [...new Set(slugs.map((s) => s.trim()).filter(Boolean))]
+  if (uniqueSlugs.length === 0) return { deleted: 0, slugs: [] }
+
+  const { data: listings, error: listErr } = await supabase
+    .from('gids_listings')
+    .select('id, slug')
+    .in('slug', uniqueSlugs)
+
+  if (listErr) {
+    console.error('[gids] purge reviews listings:', listErr.message)
+    return { ok: false, error: 'Zaken ophalen mislukt.' }
+  }
+
+  const ids = (listings ?? []).map((r) => r.id as string)
+  if (ids.length === 0) return { deleted: 0, slugs: [] }
+
+  const { data: deletedRows, error: delErr } = await supabase
+    .from('gids_reviews')
+    .delete()
+    .in('listing_id', ids)
+    .lte('rating', maxRating)
+    .select('id')
+
+  if (delErr) {
+    console.error('[gids] purge reviews delete:', delErr.message)
+    return { ok: false, error: 'Reviews verwijderen mislukt.' }
+  }
+
+  const deleted = deletedRows?.length ?? 0
+  return { deleted, slugs: (listings ?? []).map((l) => l.slug as string) }
+}
