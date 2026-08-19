@@ -137,6 +137,14 @@ export default function ListingPanel({
                 Geef review
               </Link>
               <ListingMenuButton listing={listing} className="vysiongids-listing-action-btn" />
+              {hiring.active ? (
+                <Link
+                  href={hiringProfileHref}
+                  className="vysiongids-listing-action-btn vysiongids-listing-action-btn--soliciteren"
+                >
+                  Soliciteren
+                </Link>
+              ) : null}
             </div>
           </div>
         </div>
@@ -152,11 +160,6 @@ export default function ListingPanel({
           >
             {hiring.phone}
           </a>
-        ) : null}
-        {hiring.active ? (
-          <Link href={hiringProfileHref} className="vysiongids-listing-panel-hiring-btn">
-            Soliciteren
-          </Link>
         ) : null}
       </div>
     </article>

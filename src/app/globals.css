@@ -1246,23 +1246,38 @@ body {
   opacity: 0.92;
 }
 
-.vysiongids-listing-panel-hiring-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.35rem 0.85rem;
-  border-radius: 9999px;
-  background: #fff;
-  color: #0e5d82;
-  font-size: 0.8125rem;
-  font-weight: 700;
-  text-decoration: none;
-  white-space: nowrap;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.12);
+@keyframes vysiongids-soliciteren-blink {
+  0%,
+  100% {
+    background-color: #0e5d82;
+    color: #fff !important;
+  }
+  50% {
+    background-color: #fff;
+    color: #0e5d82 !important;
+  }
 }
 
-.vysiongids-listing-panel-hiring-btn:hover {
-  background: #f0f9ff;
+.vysiongids-listing-action-btn--soliciteren {
+  animation: vysiongids-soliciteren-blink 1.35s ease-in-out infinite;
+  border: 2px solid #0e5d82;
+  font-weight: 700;
+  background-color: #0e5d82;
+}
+
+.vysiongids-listing-action-btn--soliciteren:hover {
+  filter: none;
+  animation-play-state: paused;
+  background-color: #fff !important;
+  color: #0e5d82 !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vysiongids-listing-action-btn--soliciteren {
+    animation: none;
+    background-color: #0e5d82;
+    color: #fff !important;
+  }
 }
 
 .vysiongids-listing-panel--compact .vysiongids-listing-panel-hiring {
