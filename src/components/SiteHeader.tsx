@@ -42,8 +42,11 @@ function setRegionCookie(slug: ProvinceSlug) {
 function HeaderNavLinks({ onNavigate, className }: { onNavigate?: () => void; className?: string }) {
   return (
     <nav className={className ?? 'vysiongids-header-nav'} aria-label="Hoofdmenu">
-      <Link href="/sterrenzaken" onClick={onNavigate}>
-        Sterrenzaken
+      <Link href="/jobs" onClick={onNavigate}>
+        Jobs
+      </Link>
+      <Link href="/zoekertjes" onClick={onNavigate}>
+        Zoekertjes
       </Link>
       <Link href="/leveranciers" onClick={onNavigate}>
         Leveranciers

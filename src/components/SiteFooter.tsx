@@ -74,7 +74,10 @@ export default function SiteFooter() {
                 <Link href="/zoeken">Horeca per stad</Link>
               </li>
               <li>
-                <Link href="/sterrenzaken">Sterrenzaken</Link>
+                <Link href="/jobs">Jobs</Link>
+              </li>
+              <li>
+                <Link href="/zoekertjes">Zoekertjes</Link>
               </li>
             </ul>
           </div>
