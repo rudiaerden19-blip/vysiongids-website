@@ -45,9 +45,6 @@ function HeaderNavLinks({ onNavigate, className }: { onNavigate?: () => void; cl
       <Link href="/sterrenzaken" onClick={onNavigate}>
         Sterrenzaken
       </Link>
-      <Link href="/cadeaubonnen" onClick={onNavigate}>
-        Cadeaubonnen
-      </Link>
       <Link href="/leveranciers" onClick={onNavigate}>
         Leveranciers
       </Link>

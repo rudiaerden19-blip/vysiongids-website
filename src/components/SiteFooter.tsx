@@ -76,9 +76,6 @@ export default function SiteFooter() {
               <li>
                 <Link href="/sterrenzaken">Sterrenzaken</Link>
               </li>
-              <li>
-                <Link href="/cadeaubonnen">Cadeaubonnen</Link>
-              </li>
             </ul>
           </div>
 
