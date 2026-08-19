@@ -147,14 +147,6 @@ export default function ListingPanel({
         <div className="vysiongids-listing-panel-hiring-inner">
           <div className="vysiongids-listing-panel-hiring-copy">
             <span className="vysiongids-listing-panel-hiring-text">{hiring.message}</span>
-            {hiring.active && hiring.phone ? (
-              <a
-                href={`tel:${hiring.phone.replace(/\s/g, '')}`}
-                className="vysiongids-listing-panel-hiring-phone"
-              >
-                {hiring.phone}
-              </a>
-            ) : null}
           </div>
           {hiring.active ? (
             <div className="vysiongids-listing-panel-hiring-btn-wrap">

@@ -1229,11 +1229,6 @@ body {
   min-width: 0;
 }
 
-.vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-inner {
-  position: relative;
-  flex-wrap: nowrap;
-}
-
 .vysiongids-listing-panel-hiring-copy {
   display: flex;
   flex: 1 1 12rem;
@@ -1243,16 +1238,6 @@ body {
   gap: 0.35rem 0.85rem;
   min-width: 0;
   text-align: left;
-}
-
-.vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-copy {
-  flex: 1 1 auto;
-  width: 100%;
-  justify-content: center;
-  text-align: center;
-  padding-left: 9rem;
-  padding-right: 9rem;
-  box-sizing: border-box;
 }
 
 .vysiongids-listing-panel-hiring-btn-wrap {
@@ -1265,14 +1250,58 @@ body {
   margin-left: auto;
 }
 
+.vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-inner {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 0.75rem;
+  row-gap: 0.5rem;
+}
+
+.vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-copy {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  flex: none;
+  width: auto;
+  justify-content: center;
+  text-align: center;
+  padding-left: 9.25rem;
+  padding-right: 9.25rem;
+  box-sizing: border-box;
+}
+
 .vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-btn-wrap {
-  position: absolute;
-  right: 0;
-  top: 50%;
-  transform: translateY(-50%);
+  position: static;
+  transform: none;
+  grid-column: 2;
+  grid-row: 1;
+  justify-self: end;
+  align-self: center;
   width: 8.5rem;
   max-width: 8.5rem;
   margin-left: 0;
+  z-index: 1;
+}
+
+@media (max-width: 639px) {
+  .vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-copy {
+    grid-column: 1;
+    grid-row: 1;
+    padding-left: 0.25rem;
+    padding-right: 0.25rem;
+  }
+
+  .vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-btn-wrap {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: center;
+    width: 100%;
+    max-width: 8.5rem;
+  }
 }
 
 .vysiongids-listing-panel-hiring--empty {
@@ -2675,42 +2704,21 @@ body {
   }
 
   .vysiongids-listing-panel-hiring {
-    display: grid;
-    grid-template-columns: min(48%, 30rem) minmax(0, 1fr);
-    padding: 0.65rem 1.75rem 0.65rem 0;
+    padding: 0.65rem 1.75rem;
   }
 
   .vysiongids-listing-panel-hiring-inner {
-    grid-column: 2;
-    padding-left: 1.75rem;
-    flex-wrap: nowrap;
-  }
-
-  .vysiongids-listing-panel-hiring-btn-wrap {
-    width: 8.5rem;
-    max-width: none;
-    margin-left: auto;
-    flex-shrink: 0;
+    width: 100%;
   }
 
   .vysiongids-listing-panel-hiring--empty .vysiongids-listing-panel-hiring-inner {
-    grid-column: 1 / -1;
-    padding-left: 1.75rem;
+    padding-left: 0;
     padding-right: 0;
   }
 
   .vysiongids-listing-panel--compact .vysiongids-listing-panel-hiring {
-    grid-template-columns: min(34%, 16.5rem) minmax(0, 1fr);
     padding-right: 1rem;
-  }
-
-  .vysiongids-listing-panel--compact .vysiongids-listing-panel-hiring-inner {
     padding-left: 1rem;
-  }
-
-  .vysiongids-listing-panel--compact .vysiongids-listing-panel-hiring--empty .vysiongids-listing-panel-hiring-inner {
-    padding-left: 1rem;
-    padding-right: 1rem;
   }
 }
 
