@@ -1211,11 +1211,6 @@ body {
 }
 
 .vysiongids-listing-panel-hiring {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 0.5rem 1rem;
   padding: 0.65rem 1rem;
   border-top: none;
   background: #0e5d82;
@@ -1223,6 +1218,15 @@ body {
   font-weight: 600;
   line-height: 1.35;
   color: #fff;
+}
+
+.vysiongids-listing-panel-hiring-inner {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1rem;
+  min-width: 0;
 }
 
 .vysiongids-listing-panel-hiring-copy {
@@ -1236,9 +1240,22 @@ body {
   text-align: left;
 }
 
-.vysiongids-listing-panel-hiring--empty {
+.vysiongids-listing-panel-hiring-btn-wrap {
+  flex: 0 0 auto;
+  display: flex;
   justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 8.5rem;
+  margin-left: auto;
+}
+
+.vysiongids-listing-panel-hiring--empty {
   font-weight: 500;
+}
+
+.vysiongids-listing-panel-hiring--empty .vysiongids-listing-panel-hiring-inner {
+  justify-content: center;
 }
 
 .vysiongids-listing-panel-hiring--empty .vysiongids-listing-panel-hiring-copy {
@@ -1280,7 +1297,6 @@ body {
   flex: 0 0 auto;
   align-items: center;
   justify-content: center;
-  margin-left: auto;
   padding: 0.45rem 1.1rem;
   border-radius: 0.5rem;
   border: 2px solid #fff;
@@ -2631,6 +2647,45 @@ body {
 
   .vysiongids-listing-panel--compact .vysiongids-listing-panel-row {
     grid-template-columns: min(34%, 16.5rem) minmax(0, 1fr);
+  }
+
+  .vysiongids-listing-panel-hiring {
+    display: grid;
+    grid-template-columns: min(48%, 30rem) minmax(0, 1fr);
+    padding: 0.65rem 1.75rem 0.65rem 0;
+  }
+
+  .vysiongids-listing-panel-hiring-inner {
+    grid-column: 2;
+    padding-left: 1.75rem;
+    flex-wrap: nowrap;
+  }
+
+  .vysiongids-listing-panel-hiring-btn-wrap {
+    width: 8.5rem;
+    max-width: none;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+
+  .vysiongids-listing-panel-hiring--empty .vysiongids-listing-panel-hiring-inner {
+    grid-column: 1 / -1;
+    padding-left: 1.75rem;
+    padding-right: 0;
+  }
+
+  .vysiongids-listing-panel--compact .vysiongids-listing-panel-hiring {
+    grid-template-columns: min(34%, 16.5rem) minmax(0, 1fr);
+    padding-right: 1rem;
+  }
+
+  .vysiongids-listing-panel--compact .vysiongids-listing-panel-hiring-inner {
+    padding-left: 1rem;
+  }
+
+  .vysiongids-listing-panel--compact .vysiongids-listing-panel-hiring--empty .vysiongids-listing-panel-hiring-inner {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
 
