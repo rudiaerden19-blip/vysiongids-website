@@ -1212,11 +1212,11 @@ body {
 
 .vysiongids-listing-panel-hiring {
   display: flex;
-  flex-wrap: wrap;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 0.35rem 0.85rem;
-  padding: 0.65rem 1rem;
+  gap: 0.55rem;
+  padding: 0.65rem 1rem 0.75rem;
   border-top: none;
   background: #0e5d82;
   font-size: 0.9375rem;
@@ -1224,6 +1224,14 @@ body {
   line-height: 1.35;
   text-align: center;
   color: #fff;
+}
+
+.vysiongids-listing-panel-hiring-copy {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.35rem 0.85rem;
 }
 
 .vysiongids-listing-panel-hiring--empty {

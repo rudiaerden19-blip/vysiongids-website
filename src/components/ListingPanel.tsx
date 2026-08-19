@@ -137,14 +137,6 @@ export default function ListingPanel({
                 Geef review
               </Link>
               <ListingMenuButton listing={listing} className="vysiongids-listing-action-btn" />
-              {hiring.active ? (
-                <Link
-                  href={hiringProfileHref}
-                  className="vysiongids-listing-action-btn vysiongids-listing-action-btn--soliciteren"
-                >
-                  Soliciteren
-                </Link>
-              ) : null}
             </div>
           </div>
         </div>
@@ -152,14 +144,21 @@ export default function ListingPanel({
       <div
         className={`vysiongids-listing-panel-hiring${hiring.active ? ' vysiongids-listing-panel-hiring--active' : ' vysiongids-listing-panel-hiring--empty'}`}
       >
-        <span className="vysiongids-listing-panel-hiring-text">{hiring.message}</span>
-        {hiring.active && hiring.phone ? (
-          <a
-            href={`tel:${hiring.phone.replace(/\s/g, '')}`}
-            className="vysiongids-listing-panel-hiring-phone"
-          >
-            {hiring.phone}
-          </a>
+        <div className="vysiongids-listing-panel-hiring-copy">
+          <span className="vysiongids-listing-panel-hiring-text">{hiring.message}</span>
+          {hiring.active && hiring.phone ? (
+            <a
+              href={`tel:${hiring.phone.replace(/\s/g, '')}`}
+              className="vysiongids-listing-panel-hiring-phone"
+            >
+              {hiring.phone}
+            </a>
+          ) : null}
+        </div>
+        {hiring.active ? (
+          <Link href={hiringProfileHref} className="vysiongids-listing-panel-hiring-btn">
+            Soliciteren
+          </Link>
         ) : null}
       </div>
     </article>
