@@ -187,7 +187,11 @@ export default async function ZaakPage({ params }: Props) {
 
           <aside className="lg:sticky lg:top-6 lg:self-start">
             <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5 shadow-sm">
-              <p className="text-sm text-gray-600">Bestel rechtstreeks bij deze zaak — geen commissie via Vysiongids.</p>
+              <p className="text-sm text-gray-600">
+                Bestel rechtstreeks bij deze zaak
+                <br />
+                geen commissie via Vysiongids.
+              </p>
               <div className="vysiongids-zaak-sidebar-cta mt-4">
                 <a href="#info" className="vysiongids-zaak-action-btn">
                   Info
