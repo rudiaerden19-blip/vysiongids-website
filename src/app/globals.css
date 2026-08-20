@@ -3617,6 +3617,20 @@ body {
 }
 
 /* Zoekertjes — popup wizard + overzicht */
+.vysiongids-zoekertje-modal-panel .vysiongids-job-modal-title,
+.vysiongids-zoekertje-modal-fields .vysiongids-form-label,
+.vysiongids-zoekertje-modal-fields .vysiongids-zoekertje-primary-btn,
+.vysiongids-zoekertje-modal-actions .vysiongids-zoekertje-primary-btn,
+.vysiongids-zoekertje-modal-actions .vysiongids-job-card-btn,
+.vysiongids-zoekertje-modal-panel .mt-3.text-sm.text-red-700,
+.vysiongids-zoekertje-modal-fields > p.font-semibold,
+.vysiongids-zoekertje-modal-fields > p.font-bold,
+.vysiongids-zoekertje-modal-fields .text-xs.text-gray-500,
+.vysiongids-zoekertje-photo-add span,
+.vysiongids-zoekertje-modal-fields button.text-xs.font-semibold {
+  text-transform: capitalize;
+}
+
 .vysiongids-zoekertje-modal-panel {
   width: min(100%, 32rem);
   max-height: min(92vh, 44rem);

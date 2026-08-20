@@ -131,7 +131,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
       setCategory(guess)
       if (!title) setTitle(titleHint.trim().slice(0, GIDS_ZOEKERTJE_TITLE_MAX))
     } else {
-      setError('Geen categorie herkend — kies er zelf één.')
+      setError('Geen Categorie Herkend — Kies Er Zelf Één.')
     }
   }
 
@@ -160,16 +160,16 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
 
   function validateStep(s: Step): string | null {
     if (s === 1) {
-      if (!category) return 'Kies een categorie.'
+      if (!category) return 'Kies Een Categorie.'
       return null
     }
     if (s === 3) {
-      if (!title.trim()) return 'Titel is verplicht.'
-      if (!description.trim()) return 'Beschrijving is verplicht.'
+      if (!title.trim()) return 'Titel Is Verplicht.'
+      if (!description.trim()) return 'Beschrijving Is Verplicht.'
       return null
     }
     if (s === 5) {
-      if (!priceClass) return 'Kies een prijsklasse.'
+      if (!priceClass) return 'Kies Een Prijsklasse.'
       return null
     }
     return null
@@ -254,7 +254,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
         </button>
         <div className="vysiongids-premium-modal-scroll">
           <p className="vysiongids-job-modal-kicker">
-            Zoekertje · stap {step}/5
+            Zoekertje · Stap {step}/5
             {categoryLabel ? ` · ${categoryLabel}` : ''}
           </p>
           <h2 id={titleId} className="vysiongids-job-modal-title">
@@ -282,7 +282,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
                     value={titleHint}
                     onChange={(e) => setTitleHint(e.target.value)}
                     className="vysiongids-form-input w-full text-sm"
-                    placeholder="bv. oven, friteuse, barkrukken…"
+                    placeholder="Bijv. Oven, Friteuse, Barkrukken…"
                   />
                   <button type="button" className="vysiongids-zoekertje-primary-btn" onClick={onVindCategorie}>
                     Vind categorie
@@ -365,7 +365,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
             <div className="vysiongids-zoekertje-modal-fields mt-4 space-y-4">
               <div>
                 <label className="vysiongids-form-label text-sm" htmlFor="zoekertjeTitle">
-                  Titel (verplicht)
+                  Titel (Verplicht)
                 </label>
                 <input
                   id="zoekertjeTitle"
@@ -382,7 +382,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
               </div>
               <div>
                 <label className="vysiongids-form-label text-sm" htmlFor="zoekertjeDesc">
-                  Beschrijving (verplicht)
+                  Beschrijving (Verplicht)
                 </label>
                 <textarea
                   id="zoekertjeDesc"
@@ -430,7 +430,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
                   value={itemType}
                   onChange={(e) => setItemType(e.target.value)}
                   className="vysiongids-form-input mt-1 w-full text-sm"
-                  placeholder="bv. Oven"
+                  placeholder="Bijv. Oven"
                 />
               </div>
               <div>
@@ -494,7 +494,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
               disabled={submitting || loadingEdit}
               onClick={() => void onPlaatsen()}
             >
-              {submitting ? 'Even geduld…' : editId ? 'Opslaan' : 'Plaats zoekertje'}
+              {submitting ? 'Even Geduld…' : editId ? 'Opslaan' : 'Plaats Zoekertje'}
             </button>
           )}
         </div>

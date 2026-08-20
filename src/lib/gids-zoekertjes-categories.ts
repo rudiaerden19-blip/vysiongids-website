@@ -1,14 +1,14 @@
 export const ZOEKERTJES_CATEGORIES = [
   { id: 'keukenapparatuur', label: 'Keukenapparatuur' },
-  { id: 'meubilair', label: 'Meubilair & inrichting' },
-  { id: 'servies-glas', label: 'Servies & glaswerk' },
-  { id: 'kleding-uniform', label: 'Kleding & uniform' },
-  { id: 'overige-horeca', label: 'Overige horeca' },
+  { id: 'meubilair', label: 'Meubilair & Inrichting' },
+  { id: 'servies-glas', label: 'Servies & Glaswerk' },
+  { id: 'kleding-uniform', label: 'Kleding & Uniform' },
+  { id: 'overige-horeca', label: 'Overige Horeca' },
 ] as const
 
 export type ZoekertjeCategoryId = (typeof ZOEKERTJES_CATEGORIES)[number]['id']
 
-export const ZOEKERTJES_CONDITIONS = ['Nieuw', 'Zo goed als nieuw', 'Gebruikt', 'Zichtbare gebruikssporen'] as const
+export const ZOEKERTJES_CONDITIONS = ['Nieuw', 'Zo Goed Als Nieuw', 'Gebruikt', 'Zichtbare Gebruikssporen'] as const
 
 export const ZOEKERTJES_KINDS = ['Te koop', 'Te ruil', 'Gezocht'] as const
 
@@ -20,7 +20,7 @@ export const ZOEKERTJES_PRICE_CLASSES = [
   '€50 – €100',
   '€100 – €250',
   '€250 – €500',
-  '€500 of meer',
+  '€500 Of Meer',
 ] as const
 
 const TITLE_HINTS: { pattern: RegExp; category: ZoekertjeCategoryId }[] = [
