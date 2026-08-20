@@ -92,7 +92,9 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
               {schedule.annualLeave.map((r) => `${r.from} t/m ${r.to}`).join(' · ')}
             </p>
           ) : null}
-          <ListingZaakQr slug={listing.slug} listingName={listing.name} />
+          <div className="vysiongids-zaak-info-qr-wrap">
+            <ListingZaakQr slug={listing.slug} listingName={listing.name} />
+          </div>
         </div>
 
         <div className="vysiongids-zaak-info-col">
