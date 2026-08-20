@@ -47,6 +47,10 @@ body {
 }
 
 /* Zaakpagina: kaart vast — pagina scrollt, kaart niet pannen/zoomen */
+.vysiongids-listing-map-iframe {
+  min-height: min(420px, 55vh);
+}
+
 .vysiongids-listing-map .leaflet-container {
   touch-action: pan-y;
   cursor: default;

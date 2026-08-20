@@ -31,7 +31,8 @@ type Props = { params: Promise<{ slug: string }> }
 /** Nieuwe slugs via dynamicParams; listing-cache invalideert via tag gids-listings. */
 export const dynamicParams = true
 
-export const revalidate = 60
+/** Geocode + kaart altijd vers (geen ISR met oude lat/lng). */
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
@@ -205,7 +206,7 @@ export default async function ZaakPage({ params }: Props) {
               </div>
               <div className="mt-4 border-t border-gray-200 pt-4">
                 <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Route</p>
-                <ListingNavigationButtons listing={listing} compact />
+                <ListingNavigationButtons listing={listing} compact mapPin={mapPin} />
               </div>
             </div>
           </aside>

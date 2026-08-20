@@ -6,11 +6,12 @@ export { listingGoogleMapsUrl, listingWazeUrl }
 type NavProps = {
   listing: Listing
   compact?: boolean
+  mapPin?: { lat: number; lng: number } | null
 }
 
-export default function ListingNavigationButtons({ listing, compact }: NavProps) {
+export default function ListingNavigationButtons({ listing, compact, mapPin }: NavProps) {
   const google = listingGoogleMapsUrl(listing)
-  const waze = listingWazeUrl(listing)
+  const waze = listingWazeUrl(listing, mapPin)
   const stack = compact ? 'flex flex-col gap-2' : 'flex flex-col gap-2 sm:flex-row sm:flex-wrap'
   const btn =
     'inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 transition hover:border-accent hover:text-accent'
