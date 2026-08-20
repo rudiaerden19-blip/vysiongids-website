@@ -222,7 +222,11 @@ export default function ZaakToevoegenForm() {
   const types = LISTING_TYPES.filter((t) => t.id !== 'all')
 
   return (
-    <form onSubmit={onSubmit} noValidate className="vysiongids-zaak-form mt-8 space-y-5">
+    <form
+      onSubmit={onSubmit}
+      noValidate
+      className="vysiongids-zaak-form vysiongids-surface-card mt-8 space-y-5 rounded-xl bg-white p-5 sm:p-6"
+    >
       <p className="text-sm text-gray-600">
         Velden met <span className="vysiongids-form-required" aria-hidden>*</span> zijn verplicht.
       </p>
