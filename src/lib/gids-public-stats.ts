@@ -1,5 +1,7 @@
 /** Publieke KPI’s op de homepage */
 
+export const STATS_ACTIVE_ONDERNEMERS_FLOOR = 284
+
 export const STATS_SEARCH_BASE = 3240
 
 const STATS_SEARCH_LAUNCH_KEY = '2026-08-15'
