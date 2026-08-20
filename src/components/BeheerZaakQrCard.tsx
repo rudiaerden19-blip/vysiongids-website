@@ -23,7 +23,7 @@ export default function BeheerZaakQrCard({ slug, listingName }: Props) {
       width: 280,
       margin: 2,
       errorCorrectionLevel: 'M',
-      color: { dark: '#0e5d82', light: '#ffffff' },
+      color: { dark: '#000000', light: '#ffffff' },
     }).catch(() => {
       setError('QR-code kon niet worden gemaakt.')
     })
