@@ -133,7 +133,7 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
             ) : null}
             {amenityList.map((id) => (
               <li key={id} className="vysiongids-zaak-info-item vysiongids-zaak-info-item--amenity">
-                <span className="vysiongids-zaak-info-icon vysiongids-zaak-info-icon--red">
+                <span className="vysiongids-zaak-info-icon vysiongids-zaak-info-icon--blue">
                   <ListingAmenityIcon id={id} />
                 </span>
                 <span className="vysiongids-zaak-info-amenity-label">{AMENITY_LABELS[id]}</span>

@@ -1,7 +1,7 @@
 import type { ListingAmenityId } from '@/lib/listing-types'
 
 export default function ListingAmenityIcon({ id }: { id: ListingAmenityId }) {
-  const stroke = '#9b2743'
+  const stroke = 'var(--accent)'
   const props = { width: 18, height: 18, fill: 'none', stroke, strokeWidth: 1.8 }
   switch (id) {
     case 'bancontact':

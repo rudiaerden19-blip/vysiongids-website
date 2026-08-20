@@ -1162,10 +1162,6 @@ body {
   border-color: #0e5d82;
 }
 
-.vysiongids-zaak-info-icon--red {
-  border-color: #9b2743;
-}
-
 @media (max-width: 640px) {
   .vysiongids-zaak-hours-table th {
     white-space: normal;
@@ -1831,7 +1827,7 @@ body {
   width: 2rem;
   height: 2rem;
   border-radius: 9999px;
-  border: 2px solid #9b2743;
+  border: 2px solid #0e5d82;
   background: #fff;
 }
 
