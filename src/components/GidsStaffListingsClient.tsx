@@ -166,15 +166,20 @@ export default function GidsStaffListingsClient() {
       <form
         onSubmit={(e) => void onLogin(e)}
         className="mx-auto max-w-sm space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+        autoComplete="off"
+        data-1p-ignore
+        data-lpignore="true"
       >
         <h2 className="text-lg font-bold text-gray-900">Medewerkerslogin</h2>
-        <label className="block text-sm font-medium text-gray-800" htmlFor="staffPassword">
-          Wachtwoord
+        <label className="block text-sm font-medium text-gray-800" htmlFor="staffAccessKey">
+          Toegangscode
         </label>
         <input
-          id="staffPassword"
+          id="staffAccessKey"
+          name="vysiongids-staff-access"
           type="password"
-          autoComplete="current-password"
+          autoComplete="one-time-code"
+          inputMode="text"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           className="vysiongids-form-input w-full"
