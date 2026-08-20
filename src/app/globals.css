@@ -3945,11 +3945,11 @@ body {
 }
 
 .vysiongids-zoekertje-card {
-  border: 1px solid #e5e7eb;
+  border: 2px solid var(--accent);
   border-radius: 0.85rem;
   overflow: hidden;
   background: #fff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+  box-shadow: 0 4px 18px rgb(14 93 130 / 0.1);
 }
 
 .vysiongids-zoekertje-card--browse {
@@ -3957,17 +3957,14 @@ body {
   flex-direction: column;
   width: 100%;
   padding: 0;
-  border: 1px solid #e5e7eb;
   border-radius: 0.75rem;
   overflow: hidden;
   background: #fff;
-  box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
-  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  transition: box-shadow 0.15s ease;
 }
 
 .vysiongids-zoekertje-card--browse:hover {
-  border-color: rgb(14 93 130 / 0.35);
-  box-shadow: 0 4px 14px rgb(14 93 130 / 0.12);
+  box-shadow: 0 6px 22px rgb(14 93 130 / 0.18);
 }
 
 .vysiongids-zoekertje-card-photo-hit,
