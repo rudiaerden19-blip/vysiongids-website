@@ -1,12 +1,10 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import ZoekertjeDetailModal from '@/components/ZoekertjeDetailModal'
 import { zoekertjeCategoryLabel } from '@/lib/gids-zoekertjes-categories'
 import { formatGidsZoekertjePriceDisplay } from '@/lib/gids-zoekertjes-price'
-import {
-  normalizeZoekertjeDescriptionInput,
-  normalizeZoekertjeTitleInput,
-} from '@/lib/gids-zoekertjes-text'
+import { normalizeZoekertjeTitleInput } from '@/lib/gids-zoekertjes-text'
 import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
 
@@ -16,6 +14,8 @@ export default function ZoekertjesPageClient() {
   const [setupRequired, setSetupRequired] = useState(false)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [loading, setLoading] = useState(true)
+  const [detailOpen, setDetailOpen] = useState(false)
+  const [selected, setSelected] = useState<GidsZoekertje | null>(null)
 
   const loadList = useCallback(async () => {
     setLoading(true)
@@ -46,6 +46,16 @@ export default function ZoekertjesPageClient() {
     void loadList()
   }, [loadList])
 
+  function openDetail(z: GidsZoekertje) {
+    setSelected(z)
+    setDetailOpen(true)
+  }
+
+  function closeDetail() {
+    setDetailOpen(false)
+    setSelected(null)
+  }
+
   return (
     <>
       <p style={{ margin: '0 0 1.25rem', maxWidth: '40rem', color: '#4b5563', lineHeight: 1.6 }}>
@@ -71,33 +81,42 @@ export default function ZoekertjesPageClient() {
         </p>
       ) : null}
 
-      <ul className="vysiongids-zoekertjes-grid">
+      <ul className="vysiongids-zoekertjes-grid vysiongids-zoekertjes-grid--browse">
         {zoekertjes.map((z) => {
           const thumb = z.photos[0]?.publicUrl
+          const price = formatGidsZoekertjePriceDisplay(z.price)
           return (
-            <li key={z.id} className="vysiongids-zoekertje-card">
-              {thumb ? (
-                <div className="vysiongids-zoekertje-card-media">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={thumb} alt="" />
+            <li key={z.id}>
+              <button type="button" className="vysiongids-zoekertje-card vysiongids-zoekertje-card--browse" onClick={() => openDetail(z)}>
+                {thumb ? (
+                  <div className="vysiongids-zoekertje-card-media vysiongids-zoekertje-card-media--browse">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={thumb} alt="" />
+                  </div>
+                ) : (
+                  <div className="vysiongids-zoekertje-card-media vysiongids-zoekertje-card-media--browse vysiongids-zoekertje-card-media--empty">
+                    Geen Foto
+                  </div>
+                )}
+                <div className="vysiongids-zoekertje-card-body vysiongids-zoekertje-card-body--browse">
+                  <p className="vysiongids-zoekertje-card-price">{price}</p>
+                  <h2 className="vysiongids-zoekertje-card-title vysiongids-zoekertje-card-title--browse">
+                    {normalizeZoekertjeTitleInput(z.title)}
+                  </h2>
+                  <p className="vysiongids-zoekertje-card-tags vysiongids-zoekertje-card-tags--browse">
+                    {zoekertjeCategoryLabel(z.category)}
+                  </p>
+                  <p className="vysiongids-zoekertje-card-meta">
+                    {z.listingName} · {z.listingCity}
+                  </p>
                 </div>
-              ) : (
-                <div className="vysiongids-zoekertje-card-media vysiongids-zoekertje-card-media--empty">Geen foto</div>
-              )}
-              <div className="vysiongids-zoekertje-card-body">
-                <p className="vysiongids-zoekertje-card-meta">
-                  {z.listingName} · {z.listingCity}
-                </p>
-                <h2 className="vysiongids-zoekertje-card-title">{normalizeZoekertjeTitleInput(z.title)}</h2>
-                <p className="vysiongids-zoekertje-card-tags">
-                  {zoekertjeCategoryLabel(z.category)} · {formatGidsZoekertjePriceDisplay(z.price)}
-                </p>
-                <p className="vysiongids-zoekertje-card-desc">{normalizeZoekertjeDescriptionInput(z.description)}</p>
-              </div>
+              </button>
             </li>
           )
         })}
       </ul>
+
+      <ZoekertjeDetailModal zoekertje={selected} open={detailOpen} onClose={closeDetail} />
     </>
   )
 }
