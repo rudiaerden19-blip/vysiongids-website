@@ -2944,6 +2944,175 @@ body {
   text-align: center;
 }
 
+.vysiongids-hiring-card-title {
+  margin: 0 0 0.5rem;
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.25;
+}
+
+.vysiongids-hiring-contact-btns {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
+}
+
+.vysiongids-hiring-email {
+  background: #fff !important;
+  color: var(--accent) !important;
+  border: 2px solid var(--accent);
+}
+
+.vysiongids-hiring-email:hover {
+  background: rgb(14 93 130 / 0.06) !important;
+}
+
+.vysiongids-jobs-page-title {
+  margin: 0 0 0.75rem;
+  font-size: clamp(1.5rem, 3vw, 2rem);
+  font-weight: 700;
+  color: #111827;
+}
+
+.vysiongids-jobs-page-lead {
+  margin: 0 0 1.5rem;
+  max-width: 40rem;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.vysiongids-jobs-empty {
+  margin: 0;
+  color: #6b7280;
+}
+
+.vysiongids-jobs-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-jobs-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  .vysiongids-jobs-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.vysiongids-job-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: 1.25rem 1.35rem;
+  border-radius: 1rem;
+  border: 1px solid #e5e7eb;
+  background: #fff;
+  box-shadow: 0 2px 12px rgb(0 0 0 / 0.05);
+}
+
+.vysiongids-job-card-header {
+  margin-bottom: 0.75rem;
+}
+
+.vysiongids-job-card-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.125rem;
+  font-weight: 800;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.vysiongids-job-card-zaak {
+  margin: 0;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.vysiongids-job-card-zaak-link {
+  font-weight: 600;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.vysiongids-job-card-zaak-link:hover {
+  text-decoration: underline;
+}
+
+.vysiongids-job-card-meta {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.vysiongids-job-card-types {
+  margin: 0.5rem 0 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.vysiongids-job-card-text {
+  flex: 1;
+  margin: 0;
+  font-size: 0.9375rem;
+  color: #374151;
+  line-height: 1.55;
+  white-space: pre-wrap;
+}
+
+.vysiongids-job-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.15rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.vysiongids-job-card-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0.45rem 1.15rem;
+  border-radius: 999px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  text-decoration: none;
+  transition: filter 0.15s ease, background 0.15s ease;
+}
+
+.vysiongids-job-card-btn--email {
+  border: 2px solid var(--accent);
+  background: #fff;
+  color: var(--accent);
+}
+
+.vysiongids-job-card-btn--email:hover {
+  background: rgb(14 93 130 / 0.06);
+}
+
+.vysiongids-job-card-btn--phone {
+  background: var(--accent);
+  color: #fff;
+}
+
+.vysiongids-job-card-btn--phone:hover {
+  filter: brightness(0.95);
+}
+
 .vysiongids-hiring-types {
   margin: 0 0 0.75rem;
   font-size: 0.875rem;

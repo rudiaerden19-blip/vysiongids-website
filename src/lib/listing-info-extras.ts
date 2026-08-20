@@ -17,8 +17,10 @@ export type ListingInfoExtras = {
   specialties?: ListingSpecialtyItem[]
   hiring?: {
     enabled: boolean
+    title?: string
     text?: string
     phone?: string
+    email?: string
     jobTypes?: HiringJobTypeId[]
   }
   giftCard?: {
@@ -56,14 +58,18 @@ export function normalizeListingInfoExtras(raw: unknown): ListingInfoExtras | un
   if (o.hiring && typeof o.hiring === 'object') {
     const h = o.hiring as Record<string, unknown>
     if (h.enabled === true) {
+      const title = String(h.title ?? '').trim()
       const text = String(h.text ?? '').trim()
       const phone = String(h.phone ?? '').trim()
+      const email = String(h.email ?? '').trim()
       const jobTypes = normalizeHiringJobTypes(h.jobTypes)
-      if (text || phone || jobTypes.length) {
+      if (title || text || phone || email || jobTypes.length) {
         out.hiring = {
           enabled: true,
+          title: title || undefined,
           text: text || undefined,
           phone: phone || undefined,
+          email: email || undefined,
           ...(jobTypes.length ? { jobTypes } : {}),
         }
       }
@@ -137,8 +143,10 @@ export function resolveListingPanelHiringBanner(
 export type ParsedInfoExtrasForm = {
   specialties: ListingSpecialtyItem[]
   hiringEnabled: boolean
+  hiringTitle: string
   hiringText: string
   hiringPhone: string
+  hiringEmail: string
   hiringJobTypes: HiringJobTypeId[]
   giftEnabled: boolean
   giftIntro: string
@@ -168,8 +176,10 @@ export function parseInfoExtrasFromForm(form: FormData): ParsedInfoExtrasForm {
   return {
     specialties,
     hiringEnabled: form.get('infoHiringEnabled') === 'on',
+    hiringTitle: String(form.get('infoHiringTitle') ?? '').trim().slice(0, 120),
     hiringText: String(form.get('infoHiringText') ?? '').trim().slice(0, 500),
     hiringPhone: String(form.get('infoHiringPhone') ?? '').trim().slice(0, 40),
+    hiringEmail: String(form.get('infoHiringEmail') ?? '').trim().slice(0, 120),
     hiringJobTypes: normalizeHiringJobTypes(form.getAll('infoHiringJobType')),
     giftEnabled: form.get('infoGiftEnabled') === 'on',
     giftIntro: String(form.get('infoGiftIntro') ?? '').trim().slice(0, 500),
@@ -213,12 +223,18 @@ export async function buildInfoExtrasPayload(
 
   if (
     parsed.hiringEnabled &&
-    (parsed.hiringText || parsed.hiringPhone || parsed.hiringJobTypes.length)
+    (parsed.hiringTitle ||
+      parsed.hiringText ||
+      parsed.hiringPhone ||
+      parsed.hiringEmail ||
+      parsed.hiringJobTypes.length)
   ) {
     payload.hiring = {
       enabled: true,
+      title: parsed.hiringTitle || undefined,
       text: parsed.hiringText || undefined,
       phone: parsed.hiringPhone || undefined,
+      email: parsed.hiringEmail || undefined,
       ...(parsed.hiringJobTypes.length ? { jobTypes: parsed.hiringJobTypes } : {}),
     }
   }

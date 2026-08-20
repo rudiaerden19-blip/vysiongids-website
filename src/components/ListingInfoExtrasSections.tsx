@@ -48,16 +48,34 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
           <p className="vysiongids-info-kicker">KOM BIJ ONS TEAM</p>
           <h2 className="vysiongids-info-title">Wij zoeken personeel</h2>
           <div className="vysiongids-hiring-card">
-            {hiringTypeLabels.length ? (
+            <h3 className="vysiongids-hiring-card-title">
+              {hiring.title?.trim() || (hiringTypeLabels.length ? `${hiringTypeLabels.join(' · ')} gezocht` : 'Vacature')}
+            </h3>
+            {hiringTypeLabels.length && hiring.title?.trim() ? (
               <p className="vysiongids-hiring-types">{hiringTypeLabels.join(' · ')}</p>
             ) : null}
             {hiring.text ? <p className="vysiongids-hiring-text">{hiring.text}</p> : null}
-            {hiring.phone ? (
+            {hiring.email || hiring.phone || listing.email || listing.phone ? (
               <div className="vysiongids-hiring-contact">
                 <span>Interesse? Neem contact op:</span>
-                <a href={`tel:${hiring.phone.replace(/\s/g, '')}`} className="vysiongids-hiring-phone">
-                  {hiring.phone}
-                </a>
+                <div className="vysiongids-hiring-contact-btns">
+                  {(hiring.email?.trim() || listing.email?.trim()) ? (
+                    <a
+                      href={`mailto:${encodeURIComponent((hiring.email?.trim() || listing.email) ?? '')}?subject=${encodeURIComponent(`Sollicitatie — ${listing.name}`)}`}
+                      className="vysiongids-hiring-phone vysiongids-hiring-email"
+                    >
+                      E-mail
+                    </a>
+                  ) : null}
+                  {(hiring.phone?.trim() || listing.phone?.trim()) ? (
+                    <a
+                      href={`tel:${(hiring.phone || listing.phone || '').replace(/\s/g, '')}`}
+                      className="vysiongids-hiring-phone"
+                    >
+                      Telefoon
+                    </a>
+                  ) : null}
+                </div>
               </div>
             ) : null}
           </div>

@@ -136,30 +136,60 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
             </label>
           ))}
         </div>
+        <label className="vysiongids-form-label mt-3 text-sm" htmlFor="infoHiringTitle">
+          Titel vacature (Jobs-pagina)
+        </label>
+        <input
+          id="infoHiringTitle"
+          name="infoHiringTitle"
+          type="text"
+          defaultValue={extras?.hiring?.title ?? ''}
+          disabled={disabled}
+          className="vysiongids-form-input mt-1 w-full max-w-md text-sm"
+          placeholder="Bv. Flexi gevraagd"
+        />
         <label className="vysiongids-form-label mt-3 text-sm" htmlFor="infoHiringText">
-          Vacaturetekst
+          Omschrijving
         </label>
         <textarea
           id="infoHiringText"
           name="infoHiringText"
-          rows={3}
+          rows={4}
           defaultValue={extras?.hiring?.text ?? ''}
           disabled={disabled}
           className="vysiongids-form-input mt-1 w-full text-sm"
-          placeholder="Bv. Wij zoeken dringend een keukenhulp"
+          placeholder="Bv. Wij zoeken dringend een keukenhulp voor doordeweeks en weekend."
         />
-        <label className="vysiongids-form-label mt-2 text-sm" htmlFor="infoHiringPhone">
-          Telefoon voor sollicitaties
-        </label>
-        <input
-          id="infoHiringPhone"
-          name="infoHiringPhone"
-          type="tel"
-          defaultValue={extras?.hiring?.phone ?? ''}
-          disabled={disabled}
-          className="vysiongids-form-input mt-1 max-w-xs text-sm"
-          placeholder="0492 12 34 56"
-        />
+        <div className="mt-3 grid gap-3 sm:grid-cols-2 sm:max-w-2xl">
+          <div>
+            <label className="vysiongids-form-label text-sm" htmlFor="infoHiringEmail">
+              E-mail voor sollicitaties
+            </label>
+            <input
+              id="infoHiringEmail"
+              name="infoHiringEmail"
+              type="email"
+              defaultValue={extras?.hiring?.email ?? ''}
+              disabled={disabled}
+              className="vysiongids-form-input mt-1 w-full text-sm"
+              placeholder="jobs@jouwzaak.be"
+            />
+          </div>
+          <div>
+            <label className="vysiongids-form-label text-sm" htmlFor="infoHiringPhone">
+              Telefoon voor sollicitaties
+            </label>
+            <input
+              id="infoHiringPhone"
+              name="infoHiringPhone"
+              type="tel"
+              defaultValue={extras?.hiring?.phone ?? ''}
+              disabled={disabled}
+              className="vysiongids-form-input mt-1 w-full text-sm"
+              placeholder="0492 12 34 56"
+            />
+          </div>
+        </div>
       </div>
 
       <div className="mt-8">

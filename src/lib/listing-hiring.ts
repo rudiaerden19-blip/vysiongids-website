@@ -34,20 +34,46 @@ export function hiringJobTypeLabels(ids: HiringJobTypeId[] | undefined): string[
 
 export type ListingHiringFields = {
   enabled?: boolean
+  /** Korte titel op Jobs-pagina, bv. «Flexi gevraagd» */
+  title?: string
   text?: string
   phone?: string
+  email?: string
   jobTypes?: HiringJobTypeId[]
 }
 
 export function listingHiringIsActive(h: ListingHiringFields | undefined | null): boolean {
   if (!h?.enabled) return false
+  const title = h.title?.trim() ?? ''
   const text = h.text?.trim() ?? ''
   const phone = h.phone?.trim() ?? ''
+  const email = h.email?.trim() ?? ''
   const jobTypes = h.jobTypes?.length ?? 0
-  return Boolean(text || phone || jobTypes)
+  return Boolean(title || text || phone || email || jobTypes)
+}
+
+/** Titel op Jobs-kaart; fallback voor oudere vacatures zonder titelveld. */
+export function listingHiringDisplayTitle(h: ListingHiringFields): string {
+  const title = h.title?.trim()
+  if (title) return title
+  const labels = hiringJobTypeLabels(h.jobTypes)
+  if (labels.length) return `${labels.join(' · ')} gezocht`
+  const text = h.text?.trim() ?? ''
+  if (text) {
+    const firstLine = text.split(/\r?\n/)[0]?.trim() ?? text
+    if (firstLine.length <= 72) return firstLine
+    return `${firstLine.slice(0, 69)}…`
+  }
+  return 'Vacature'
 }
 
 export function formatListingHiringPanelMessage(h: ListingHiringFields): string {
+  const title = h.title?.trim()
+  if (title) {
+    const labels = hiringJobTypeLabels(h.jobTypes)
+    if (labels.length) return `${title} (${labels.join(', ')})`
+    return title
+  }
   const text = h.text?.trim() ?? ''
   let message = text
   if (message && !/^wij zoeken\b/i.test(message)) {
