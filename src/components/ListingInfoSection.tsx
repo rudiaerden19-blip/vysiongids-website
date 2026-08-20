@@ -77,21 +77,30 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
           <h2 className="vysiongids-zaak-info-heading">OPENINGSUREN</h2>
           <OpenStatus listing={listing} />
           <table className="vysiongids-zaak-hours-table">
+            <colgroup>
+              <col className="vysiongids-zaak-hours-col-day" />
+              <col className="vysiongids-zaak-hours-col-qr" />
+              <col className="vysiongids-zaak-hours-col-time" />
+            </colgroup>
             <tbody>
-              {hoursRows.map((row) => (
-                <tr
-                  key={row.day}
-                  className={row.day === 'zondag' ? 'vysiongids-zaak-hours-row--with-qr' : undefined}
-                >
-                  <th scope="row">{row.day}</th>
-                  <td className="vysiongids-zaak-hours-qr-slot">
-                    {row.day === 'zondag' ? (
+              {hoursRows.map((row) =>
+                row.day === 'zondag' ? (
+                  <tr key={row.day} className="vysiongids-zaak-hours-row--with-qr">
+                    <th scope="row">{row.day}</th>
+                    <td className="vysiongids-zaak-hours-qr-slot">
                       <ListingZaakQr slug={listing.slug} listingName={listing.name} size={76} />
-                    ) : null}
-                  </td>
-                  <td className="vysiongids-zaak-hours-time">{row.hours}</td>
-                </tr>
-              ))}
+                    </td>
+                    <td className="vysiongids-zaak-hours-time">{row.hours}</td>
+                  </tr>
+                ) : (
+                  <tr key={row.day}>
+                    <th scope="row">{row.day}</th>
+                    <td className="vysiongids-zaak-hours-time" colSpan={2}>
+                      {row.hours}
+                    </td>
+                  </tr>
+                ),
+              )}
             </tbody>
           </table>
           {schedule?.annualLeave?.length ? (

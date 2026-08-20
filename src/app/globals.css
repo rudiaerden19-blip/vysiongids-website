@@ -1063,18 +1063,28 @@ body {
   color: #374151;
 }
 
+.vysiongids-zaak-hours-col-day {
+  width: 38%;
+}
+
+.vysiongids-zaak-hours-col-qr {
+  width: 5.25rem;
+}
+
+.vysiongids-zaak-hours-col-time {
+  width: auto;
+}
+
 .vysiongids-zaak-hours-table th {
   padding: 0.35rem 0.75rem 0.35rem 0;
   font-weight: 400;
   text-align: left;
-  vertical-align: middle;
+  vertical-align: top;
   white-space: nowrap;
-  width: 1%;
 }
 
 .vysiongids-zaak-hours-qr-slot {
-  width: 1%;
-  padding: 0.15rem 0.65rem;
+  padding: 0.2rem 0.35rem;
   vertical-align: middle;
   text-align: center;
 }
@@ -1083,10 +1093,9 @@ body {
   padding: 0.35rem 0;
   font-weight: 500;
   text-align: left;
-  vertical-align: middle;
+  vertical-align: top;
   overflow-wrap: anywhere;
   word-break: break-word;
-  width: auto;
 }
 
 .vysiongids-zaak-hours-row--with-qr .vysiongids-zaak-hours-time {
