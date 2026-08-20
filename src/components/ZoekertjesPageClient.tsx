@@ -86,8 +86,9 @@ export default function ZoekertjesPageClient({
   return (
     <>
       <p style={{ margin: '0 0 1.25rem', maxWidth: '40rem', color: '#4b5563', lineHeight: 1.6 }}>
-        Klein advertentiebord voor horeca: materiaal te koop, ruil, hulp gezocht, … Alleen bekijken. Horeca-zaken
-        plaatsen zoekertjes via <strong>Login → Beheer</strong>.
+        Welkom op het zoekertjesplatform van Vysiongids. Wil je iets verkopen, ruilen, huren of dergelijke? Maak dan
+        een zoekertje aan in je eigen dashboard. Let op: om een jobadvertentie of een zoekertje te plaatsen moet je lid
+        zijn van Vysiongids.
       </p>
 
       {setupRequired ? (
