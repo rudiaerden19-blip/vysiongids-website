@@ -2,6 +2,7 @@
 
 import ListingAmenityIcon from '@/components/ListingAmenityIcon'
 import ListingInfoExtrasSections from '@/components/ListingInfoExtrasSections'
+import ListingZaakQr from '@/components/ListingZaakQr'
 import { resolveListingAmenityList } from '@/lib/listing-amenity-list'
 import {
   AMENITY_LABELS,
@@ -91,6 +92,7 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
               {schedule.annualLeave.map((r) => `${r.from} t/m ${r.to}`).join(' · ')}
             </p>
           ) : null}
+          <ListingZaakQr slug={listing.slug} listingName={listing.name} />
         </div>
 
         <div className="vysiongids-zaak-info-col">
