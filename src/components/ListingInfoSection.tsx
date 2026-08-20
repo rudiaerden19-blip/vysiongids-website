@@ -79,9 +79,17 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
           <table className="vysiongids-zaak-hours-table">
             <tbody>
               {hoursRows.map((row) => (
-                <tr key={row.day}>
+                <tr
+                  key={row.day}
+                  className={row.day === 'zondag' ? 'vysiongids-zaak-hours-row--with-qr' : undefined}
+                >
                   <th scope="row">{row.day}</th>
-                  <td>{row.hours}</td>
+                  <td className="vysiongids-zaak-hours-qr-slot">
+                    {row.day === 'zondag' ? (
+                      <ListingZaakQr slug={listing.slug} listingName={listing.name} size={76} />
+                    ) : null}
+                  </td>
+                  <td className="vysiongids-zaak-hours-time">{row.hours}</td>
                 </tr>
               ))}
             </tbody>
@@ -92,9 +100,6 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
               {schedule.annualLeave.map((r) => `${r.from} t/m ${r.to}`).join(' · ')}
             </p>
           ) : null}
-          <div className="vysiongids-zaak-info-qr-wrap">
-            <ListingZaakQr slug={listing.slug} listingName={listing.name} />
-          </div>
         </div>
 
         <div className="vysiongids-zaak-info-col">

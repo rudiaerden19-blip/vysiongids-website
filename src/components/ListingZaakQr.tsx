@@ -7,10 +7,12 @@ import { gidsListingPublicUrl } from '@/lib/gids-public-site-url'
 type Props = {
   slug: string
   listingName: string
+  /** Canvasbreedte in px (standaard 140; compact op urenregel). */
+  size?: number
 }
 
-/** Compacte zaak-QR onder openingsuren (publieke profielpagina). */
-export default function ListingZaakQr({ slug, listingName }: Props) {
+/** Compacte zaak-QR op de zondag-regel tussen dag en uren. */
+export default function ListingZaakQr({ slug, listingName, size = 140 }: Props) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [error, setError] = useState(false)
   const publicUrl = useMemo(() => gidsListingPublicUrl(slug), [slug])
@@ -20,12 +22,12 @@ export default function ListingZaakQr({ slug, listingName }: Props) {
     if (!canvas || !publicUrl) return
     setError(false)
     void QRCode.toCanvas(canvas, publicUrl, {
-      width: 140,
+      width: size,
       margin: 1,
       errorCorrectionLevel: 'M',
       color: { dark: '#000000', light: '#ffffff' },
     }).catch(() => setError(true))
-  }, [publicUrl])
+  }, [publicUrl, size])
 
   if (!slug.trim()) return null
 
