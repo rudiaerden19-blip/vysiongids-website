@@ -3219,6 +3219,32 @@ body {
   color: #4b5563;
 }
 
+.vysiongids-job-modal-hours {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  margin-top: 0.85rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.875rem;
+}
+
+.vysiongids-job-modal-hours-label {
+  font-weight: 700;
+  color: #374151;
+}
+
+.vysiongids-job-modal-hours-value {
+  color: #4b5563;
+  line-height: 1.45;
+  white-space: pre-wrap;
+}
+
+.vysiongids-job-modal-hours-value--muted {
+  color: #9ca3af;
+  font-style: italic;
+}
+
 .vysiongids-job-card-btn--disabled {
   opacity: 0.45;
   cursor: not-allowed;
@@ -3336,6 +3362,14 @@ body {
   font-size: 1.0625rem;
   color: #374151;
   line-height: 1.5;
+}
+
+.vysiongids-hiring-hours {
+  margin: 0 0 1.25rem;
+  font-size: 0.9375rem;
+  color: #4b5563;
+  line-height: 1.5;
+  text-align: left;
 }
 
 .vysiongids-hiring-contact {

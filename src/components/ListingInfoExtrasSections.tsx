@@ -55,6 +55,12 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
               <p className="vysiongids-hiring-types">{hiringTypeLabels.join(' · ')}</p>
             ) : null}
             {hiring.text ? <p className="vysiongids-hiring-text">{hiring.text}</p> : null}
+            {hiring.hours?.trim() ? (
+              <p className="vysiongids-hiring-hours">
+                <strong>Uren: </strong>
+                {hiring.hours.trim()}
+              </p>
+            ) : null}
             {hiring.email || hiring.phone || listing.email || listing.phone ? (
               <div className="vysiongids-hiring-contact">
                 <span>Interesse? Neem contact op:</span>

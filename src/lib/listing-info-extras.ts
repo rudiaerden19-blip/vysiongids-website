@@ -22,6 +22,7 @@ export type ListingInfoExtras = {
     text?: string
     phone?: string
     email?: string
+    hours?: string
     jobTypes?: HiringJobTypeId[]
   }
   giftCard?: {
@@ -63,14 +64,16 @@ export function normalizeListingInfoExtras(raw: unknown): ListingInfoExtras | un
       const text = formatGidsSentenceText(String(h.text ?? '').trim())
       const phone = String(h.phone ?? '').trim()
       const email = String(h.email ?? '').trim()
+      const hours = formatGidsSentenceText(String(h.hours ?? '').trim())
       const jobTypes = normalizeHiringJobTypes(h.jobTypes)
-      if (title || text || phone || email || jobTypes.length) {
+      if (title || text || phone || email || hours || jobTypes.length) {
         out.hiring = {
           enabled: true,
           title: title || undefined,
           text: text || undefined,
           phone: phone || undefined,
           email: email || undefined,
+          hours: hours || undefined,
           ...(jobTypes.length ? { jobTypes } : {}),
         }
       }
@@ -148,6 +151,7 @@ export type ParsedInfoExtrasForm = {
   hiringText: string
   hiringPhone: string
   hiringEmail: string
+  hiringHours: string
   hiringJobTypes: HiringJobTypeId[]
   giftEnabled: boolean
   giftIntro: string
@@ -181,6 +185,7 @@ export function parseInfoExtrasFromForm(form: FormData): ParsedInfoExtrasForm {
     hiringText: formatGidsSentenceText(String(form.get('infoHiringText') ?? '').trim()).slice(0, 500),
     hiringPhone: String(form.get('infoHiringPhone') ?? '').trim().slice(0, 40),
     hiringEmail: String(form.get('infoHiringEmail') ?? '').trim().slice(0, 120),
+    hiringHours: formatGidsSentenceText(String(form.get('infoHiringHours') ?? '').trim()).slice(0, 240),
     hiringJobTypes: normalizeHiringJobTypes(form.getAll('infoHiringJobType')),
     giftEnabled: form.get('infoGiftEnabled') === 'on',
     giftIntro: formatGidsSentenceText(String(form.get('infoGiftIntro') ?? '').trim()).slice(0, 500),
@@ -236,6 +241,7 @@ export async function buildInfoExtrasPayload(
       text: parsed.hiringText || undefined,
       phone: parsed.hiringPhone || undefined,
       email: parsed.hiringEmail || undefined,
+      hours: parsed.hiringHours || undefined,
       ...(parsed.hiringJobTypes.length ? { jobTypes: parsed.hiringJobTypes } : {}),
     }
   }

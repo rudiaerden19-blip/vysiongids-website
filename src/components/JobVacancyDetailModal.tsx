@@ -42,6 +42,7 @@ export default function JobVacancyDetailModal({ listing, open, onClose }: Props)
   const title = listingHiringBarTitle(hiring)
   const typeLabels = hiringJobTypeLabels(hiring.jobTypes)
   const description = hiring.text?.trim() ? formatGidsSentenceText(hiring.text.trim()) : ''
+  const hours = hiring.hours?.trim() ? formatGidsSentenceText(hiring.hours.trim()) : ''
   const email = resolveJobListingEmail(listing)
   const phone = resolveJobListingPhone(listing)
   const mailHref = email ? jobListingMailtoHref(listing, email) : null
@@ -72,6 +73,12 @@ export default function JobVacancyDetailModal({ listing, open, onClose }: Props)
           {cityLine}
         </address>
         {typeLabels.length ? <p className="vysiongids-job-card-types">{typeLabels.join(' · ')}</p> : null}
+        <div className="vysiongids-job-modal-hours">
+          <span className="vysiongids-job-modal-hours-label">Uren</span>
+          <span className={hours ? 'vysiongids-job-modal-hours-value' : 'vysiongids-job-modal-hours-value vysiongids-job-modal-hours-value--muted'}>
+            {hours || 'Niet opgegeven'}
+          </span>
+        </div>
         <div className="vysiongids-job-modal-body">
           {description ? (
             <p className="vysiongids-job-modal-text">{description}</p>

@@ -41,6 +41,8 @@ export type ListingHiringFields = {
   text?: string
   phone?: string
   email?: string
+  /** Werkuren voor vacature (vrij tekst, zichtbaar in popup). */
+  hours?: string
   jobTypes?: HiringJobTypeId[]
 }
 

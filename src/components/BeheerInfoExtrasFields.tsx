@@ -160,6 +160,18 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
           className="vysiongids-form-input mt-1 w-full text-sm"
           placeholder="Bv. Wij zoeken dringend een keukenhulp voor doordeweeks en weekend."
         />
+        <label className="vysiongids-form-label mt-3 text-sm" htmlFor="infoHiringHours">
+          Uren
+        </label>
+        <SentenceCaseTextarea
+          id="infoHiringHours"
+          name="infoHiringHours"
+          rows={2}
+          defaultValue={extras?.hiring?.hours ?? ''}
+          disabled={disabled}
+          className="vysiongids-form-input mt-1 w-full max-w-xl text-sm"
+          placeholder="Bv. Ma–vr 17u–22u, za–zo 11u–23u"
+        />
         <div className="mt-3 grid gap-3 sm:grid-cols-2 sm:max-w-2xl">
           <div>
             <label className="vysiongids-form-label text-sm" htmlFor="infoHiringEmail">
