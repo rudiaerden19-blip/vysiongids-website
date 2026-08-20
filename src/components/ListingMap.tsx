@@ -1,13 +1,12 @@
 'use client'
 
-import { useEffect, useRef, type ReactNode } from 'react'
-import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
+import { useEffect } from 'react'
+import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import type { Listing } from '@/lib/listing-types'
 import { formatListingAddressLines, getListingCoordinates } from '@/lib/listing-display'
 import ListingNavigationButtons from '@/components/ListingNavigationButtons'
-import ListingTopZaakStamp from '@/components/ListingTopZaakStamp'
 
 /** Rode pin (Google-achtig) + satelliettegels via Esri. */
 const pinIcon = L.icon({
@@ -27,7 +26,7 @@ const ESRI_LABELS =
 
 const MAP_ZOOM = 19
 
-function OpenPopupOnLoad({ lat, lng }: { lat: number; lng: number }) {
+function CenterMapOnLoad({ lat, lng }: { lat: number; lng: number }) {
   const map = useMap()
   useEffect(() => {
     map.setView([lat, lng], MAP_ZOOM)
@@ -47,28 +46,6 @@ function LockMapView() {
     if (map.zoomControl) map.zoomControl.remove()
   }, [map])
   return null
-}
-
-function MarkerWithPopup({
-  lat,
-  lng,
-  popup,
-}: {
-  lat: number
-  lng: number
-  popup: ReactNode
-}) {
-  const markerRef = useRef<L.Marker>(null)
-  useEffect(() => {
-    markerRef.current?.openPopup()
-  }, [lat, lng])
-  return (
-    <Marker ref={markerRef} position={[lat, lng]} icon={pinIcon}>
-      <Popup closeButton autoPan={false}>
-        {popup}
-      </Popup>
-    </Marker>
-  )
 }
 
 export type ListingMapProps = {
@@ -105,25 +82,8 @@ export default function ListingMap({ listing }: ListingMapProps) {
           />
           <TileLayer url={ESRI_LABELS} maxZoom={20} maxNativeZoom={19} opacity={0.85} />
           <LockMapView />
-          <OpenPopupOnLoad lat={lat} lng={lng} />
-          <MarkerWithPopup
-            lat={lat}
-            lng={lng}
-            popup={
-              <div className="min-w-[11rem] pr-1 text-sm leading-snug">
-                <ListingTopZaakStamp listing={listing} variant="inline" className="mb-2" />
-                <p className="font-bold text-gray-900">{listing.name}</p>
-                <p className="mt-1 text-gray-600">
-                  {street}
-                  <br />
-                  {cityLine}
-                </p>
-                <div className="mt-3">
-                  <ListingNavigationButtons listing={listing} compact />
-                </div>
-              </div>
-            }
-          />
+          <CenterMapOnLoad lat={lat} lng={lng} />
+          <Marker position={[lat, lng]} icon={pinIcon} />
         </MapContainer>
       </div>
       <p className="mt-2 text-sm text-gray-600">
