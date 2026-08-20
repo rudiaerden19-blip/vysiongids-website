@@ -2666,7 +2666,11 @@ body {
   flex-direction: column;
   border-radius: 1rem;
   background: #fff;
-  box-shadow: 0 25px 50px -12px rgb(0 0 0 / 0.35);
+  border: 3px solid var(--accent);
+  box-shadow:
+    var(--vysiongids-card-shadow),
+    0 0 0 1px rgb(14 93 130 / 0.2),
+    0 24px 56px rgb(0 0 0 / 0.35);
   padding: 1.25rem 1.25rem 1rem;
 }
 
@@ -4284,6 +4288,11 @@ body {
   padding-top: 0.75rem;
   border-top: 1px solid #e5e7eb;
   margin-top: 0.75rem;
+}
+
+.vysiongids-zoekertje-detail-panel .vysiongids-zoekertje-detail-actions {
+  margin-top: 0;
+  padding: 0.85rem 1.35rem 1.25rem;
 }
 
 .vysiongids-zoekertje-card-media:not(.vysiongids-zoekertje-card-media--browse) {
