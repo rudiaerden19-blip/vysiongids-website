@@ -1,3 +1,4 @@
+import { formatGidsTitleCase, formatGidsSentenceText } from '@/lib/gids-text'
 import {
   formatListingHiringPanelMessage,
   LISTING_PANEL_HIRING_EMPTY_MESSAGE,
@@ -58,8 +59,8 @@ export function normalizeListingInfoExtras(raw: unknown): ListingInfoExtras | un
   if (o.hiring && typeof o.hiring === 'object') {
     const h = o.hiring as Record<string, unknown>
     if (h.enabled === true) {
-      const title = String(h.title ?? '').trim()
-      const text = String(h.text ?? '').trim()
+      const title = formatGidsTitleCase(String(h.title ?? '').trim())
+      const text = formatGidsSentenceText(String(h.text ?? '').trim())
       const phone = String(h.phone ?? '').trim()
       const email = String(h.email ?? '').trim()
       const jobTypes = normalizeHiringJobTypes(h.jobTypes)
@@ -164,7 +165,7 @@ export function parseInfoExtrasFromForm(form: FormData): ParsedInfoExtrasForm {
   const specialtyPhotos: { index: number; file: File }[] = []
 
   for (let i = 0; i < MAX_SPECIALTIES; i++) {
-    const caption = String(form.get(`infoSpecialtyCaption${i}`) ?? '').trim().slice(0, 120)
+    const caption = formatGidsTitleCase(String(form.get(`infoSpecialtyCaption${i}`) ?? '').trim()).slice(0, 120)
     removeSpecialtyPhoto.push(String(form.get(`removeSpecialtyPhoto${i}`) ?? '') === '1')
     const file = form.get(`specialtyPhoto${i}`)
     if (file instanceof File && file.size > 0) {
@@ -176,13 +177,13 @@ export function parseInfoExtrasFromForm(form: FormData): ParsedInfoExtrasForm {
   return {
     specialties,
     hiringEnabled: form.get('infoHiringEnabled') === 'on',
-    hiringTitle: String(form.get('infoHiringTitle') ?? '').trim().slice(0, 120),
-    hiringText: String(form.get('infoHiringText') ?? '').trim().slice(0, 500),
+    hiringTitle: formatGidsTitleCase(String(form.get('infoHiringTitle') ?? '').trim()).slice(0, 120),
+    hiringText: formatGidsSentenceText(String(form.get('infoHiringText') ?? '').trim()).slice(0, 500),
     hiringPhone: String(form.get('infoHiringPhone') ?? '').trim().slice(0, 40),
     hiringEmail: String(form.get('infoHiringEmail') ?? '').trim().slice(0, 120),
     hiringJobTypes: normalizeHiringJobTypes(form.getAll('infoHiringJobType')),
     giftEnabled: form.get('infoGiftEnabled') === 'on',
-    giftIntro: String(form.get('infoGiftIntro') ?? '').trim().slice(0, 500),
+    giftIntro: formatGidsSentenceText(String(form.get('infoGiftIntro') ?? '').trim()).slice(0, 500),
     giftOrderUrl: String(form.get('infoGiftOrderUrl') ?? '').trim(),
     giftValueEur: (() => {
       const raw = String(form.get('infoGiftValueEur') ?? '').trim().replace(',', '.')

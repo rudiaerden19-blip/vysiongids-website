@@ -87,10 +87,20 @@ export function formatGidsTitleCase(input: string): string {
 
 /** Reviewtekst: start met hoofdletter; ook na punt/vraagteken/uitroepteken. */
 export function formatReviewCommentText(input: string): string {
-  const trimmed = input.replace(/\s+/g, ' ').trim()
-  if (!trimmed) return trimmed
-  const first = trimmed.replace(/^(\s*)(\S)/, (_, sp, ch) => `${sp}${ch.toUpperCase()}`)
-  return first.replace(/([.!?…]\s+)([a-zà-ü])/g, (_, sep, ch) => `${sep}${ch.toUpperCase()}`)
+  return formatGidsSentenceText(input.replace(/\s+/g, ' ').trim())
+}
+
+/**
+ * Lopende tekst / omschrijving: hoofdletter aan start, na zinspunt en aan begin van nieuwe regel.
+ * Behoudt regeleinden.
+ */
+export function formatGidsSentenceText(input: string): string {
+  if (!input) return input
+  let s = input.replace(/\r\n/g, '\n')
+  s = s.replace(/^([\s\n]*)(\S)/, (_, lead, ch) => `${lead}${ch.toUpperCase()}`)
+  s = s.replace(/(\n[\s]*)(\S)/g, (_, lead, ch) => `${lead}${ch.toUpperCase()}`)
+  s = s.replace(/([.!?…])([\s\n]+)(\S)/g, (_, punct, ws, ch) => `${punct}${ws}${ch.toUpperCase()}`)
+  return s
 }
 
 export function slugifyListing(name: string, city: string): string {

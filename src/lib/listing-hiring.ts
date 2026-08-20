@@ -1,3 +1,5 @@
+import { formatGidsTitleCase } from '@/lib/gids-text'
+
 export const HIRING_JOB_TYPES = [
   { id: 'fulltime', label: 'Fulltime' },
   { id: 'parttime', label: 'Parttime' },
@@ -70,7 +72,7 @@ export function listingHiringDisplayTitle(h: ListingHiringFields): string {
 /** Korte titel op zoekkaart (blauwe balk) — geen lange omschrijving. */
 export function listingHiringBarTitle(h: ListingHiringFields): string {
   const title = h.title?.trim()
-  if (title) return title
+  if (title) return formatGidsTitleCase(title)
   const labels = hiringJobTypeLabels(h.jobTypes)
   if (labels.length) return `${labels.join(' · ')} gezocht`
   return 'Personeel gezocht'

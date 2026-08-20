@@ -3,6 +3,7 @@
 import { useEffect, useId } from 'react'
 import { createPortal } from 'react-dom'
 import type { Listing } from '@/lib/listing-types'
+import { formatGidsSentenceText } from '@/lib/gids-text'
 import { hiringJobTypeLabels, listingHiringBarTitle } from '@/lib/listing-hiring'
 import {
   jobListingMailtoHref,
@@ -39,7 +40,7 @@ export default function JobVacancyDetailModal({ listing, open, onClose }: Props)
 
   const title = listingHiringBarTitle(hiring)
   const typeLabels = hiringJobTypeLabels(hiring.jobTypes)
-  const description = hiring.text?.trim()
+  const description = hiring.text?.trim() ? formatGidsSentenceText(hiring.text.trim()) : ''
   const email = resolveJobListingEmail(listing)
   const phone = resolveJobListingPhone(listing)
   const mailHref = email ? jobListingMailtoHref(listing, email) : null

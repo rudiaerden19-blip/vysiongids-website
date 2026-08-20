@@ -3,6 +3,8 @@
 import { useRef, useState } from 'react'
 import type { Listing } from '@/lib/listing-types'
 import { HIRING_JOB_TYPES } from '@/lib/listing-hiring'
+import TitleCaseTextInput from '@/components/TitleCaseTextInput'
+import SentenceCaseTextarea from '@/components/SentenceCaseTextarea'
 
 function SpecialtyPhotoField({
   index,
@@ -84,10 +86,9 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
               <label className="vysiongids-form-label text-sm" htmlFor={`infoSpecialtyCaption${i}`}>
                 Tekst op foto
               </label>
-              <input
+              <TitleCaseTextInput
                 id={`infoSpecialtyCaption${i}`}
                 name={`infoSpecialtyCaption${i}`}
-                type="text"
                 maxLength={120}
                 defaultValue={specialties[i]?.caption ?? ''}
                 disabled={disabled}
@@ -139,10 +140,9 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
         <label className="vysiongids-form-label mt-3 text-sm" htmlFor="infoHiringTitle">
           Titel vacature (Jobs-pagina)
         </label>
-        <input
+        <TitleCaseTextInput
           id="infoHiringTitle"
           name="infoHiringTitle"
-          type="text"
           defaultValue={extras?.hiring?.title ?? ''}
           disabled={disabled}
           className="vysiongids-form-input mt-1 w-full max-w-md text-sm"
@@ -151,7 +151,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
         <label className="vysiongids-form-label mt-3 text-sm" htmlFor="infoHiringText">
           Omschrijving
         </label>
-        <textarea
+        <SentenceCaseTextarea
           id="infoHiringText"
           name="infoHiringText"
           rows={4}
@@ -198,7 +198,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
           <input type="checkbox" name="infoGiftEnabled" defaultChecked={extras?.giftCard?.enabled} disabled={disabled} />
           Cadeaubon-sectie tonen
         </label>
-        <textarea
+        <SentenceCaseTextarea
           name="infoGiftIntro"
           rows={2}
           defaultValue={extras?.giftCard?.intro ?? ''}
