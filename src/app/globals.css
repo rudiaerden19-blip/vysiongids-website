@@ -46,6 +46,29 @@ body {
   z-index: 0;
 }
 
+.vysiongids-zaak-panel {
+  border: var(--vysiongids-card-border);
+  border-radius: 1rem;
+  box-shadow: var(--vysiongids-card-shadow);
+  box-sizing: border-box;
+}
+
+.vysiongids-zaak-page .vysiongids-zaak-info.vysiongids-zaak-panel {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.vysiongids-info-block {
+  border: var(--vysiongids-card-border);
+  border-radius: 1rem;
+  box-shadow: var(--vysiongids-card-shadow);
+  background: #fff;
+  padding: 1.25rem 1.25rem 1.5rem;
+  box-sizing: border-box;
+}
+
 /* Zaakpagina: kaart vast — pagina scrollt, embed niet pannen/zoomen */
 .vysiongids-listing-map {
   touch-action: pan-y;
@@ -1229,14 +1252,11 @@ body {
   }
 }
 
-.vysiongids-zaak-page .vysiongids-listing-map {
-  width: calc(100% + 2 * var(--vysiongids-page-x));
-  max-width: none;
-  margin-left: calc(-1 * var(--vysiongids-page-x));
-  margin-right: calc(-1 * var(--vysiongids-page-x));
-  border-radius: 0;
-  border-left: none;
-  border-right: none;
+.vysiongids-zaak-page .vysiongids-zaak-map-panel .vysiongids-listing-map {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
 }
 
 .vysiongids-zoeken-search {

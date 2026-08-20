@@ -14,9 +14,9 @@ export default function ListingMap({ listing, mapPin }: ListingMapProps) {
   const embedSrc = listingGoogleSatelliteEmbedUrl(listing)
 
   return (
-    <section className="mt-8" aria-label="Locatie op de kaart">
+    <section className="vysiongids-zaak-map-panel vysiongids-zaak-panel mt-8 bg-white p-4 sm:p-5" aria-label="Locatie op de kaart">
       <h2 className="text-lg font-bold text-gray-900">Adres</h2>
-      <div className="vysiongids-listing-map relative mt-3 overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
+      <div className="vysiongids-listing-map relative mt-3 overflow-hidden rounded-xl border border-gray-200 shadow-sm">
         <iframe
           title={`Satellietkaart: ${street}, ${cityLine}`}
           src={embedSrc}
