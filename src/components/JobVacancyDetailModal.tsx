@@ -108,6 +108,15 @@ export default function JobVacancyDetailModal({ listing, open, onClose }: Props)
               Telefoon
             </span>
           )}
+          {listing.slug ? (
+            <Link
+              href={`/zaak/${listing.slug}`}
+              className="vysiongids-job-card-btn vysiongids-job-card-btn--phone"
+              onClick={onClose}
+            >
+              Bekijk de werkgever
+            </Link>
+          ) : null}
         </div>
       </div>
     </div>
