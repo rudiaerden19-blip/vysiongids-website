@@ -3363,6 +3363,11 @@ body {
   box-shadow: 0 20px 50px rgb(0 0 0 / 0.2);
 }
 
+.vysiongids-job-modal-panel.vysiongids-premium-modal-panel {
+  width: min(100%, 28rem);
+  max-height: min(92vh, 42rem);
+}
+
 .vysiongids-job-modal-close {
   position: absolute;
   top: 0.5rem;
@@ -3434,20 +3439,21 @@ body {
 }
 
 .vysiongids-premium-modal-panel {
-  width: min(100%, 26rem);
-  max-height: none;
+  width: min(100%, 28rem);
+  max-height: min(92vh, 42rem);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding-bottom: 1.25rem;
+  padding-bottom: 1.35rem;
 }
 
 .vysiongids-premium-modal-scroll {
   flex: 1 1 auto;
   min-height: 0;
-  max-height: min(58vh, 28rem);
+  max-height: min(72vh, 34rem);
   overflow-y: auto;
-  padding-right: 0.15rem;
+  padding-right: 0.25rem;
+  -webkit-overflow-scrolling: touch;
 }
 
 .vysiongids-premium-modal-actions {
