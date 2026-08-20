@@ -2,8 +2,9 @@
 
 import { useState } from 'react'
 import JobVacancyDetailModal from '@/components/JobVacancyDetailModal'
+import ZoekertjeCardPlacedStrip from '@/components/ZoekertjeCardPlacedStrip'
 import type { Listing } from '@/lib/listing-types'
-import { listingHiringBarTitle } from '@/lib/listing-hiring'
+import { listingHiringBarTitle, resolveListingHiringPostedAt } from '@/lib/listing-hiring'
 
 type Props = {
   listing: Listing
@@ -15,6 +16,7 @@ export default function JobListingCard({ listing }: Props) {
   if (!hiring) return null
 
   const title = listingHiringBarTitle(hiring)
+  const postedAt = resolveListingHiringPostedAt(hiring, listing.updatedAt)
 
   return (
     <>
@@ -32,6 +34,7 @@ export default function JobListingCard({ listing }: Props) {
           </p>
           <span className="vysiongids-job-card-more">Open →</span>
         </button>
+        {postedAt ? <ZoekertjeCardPlacedStrip createdAt={postedAt} /> : null}
       </article>
       <JobVacancyDetailModal listing={listing} open={modalOpen} onClose={() => setModalOpen(false)} />
     </>

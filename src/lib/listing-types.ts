@@ -102,6 +102,8 @@ export type Listing = {
   infoExtras?: ListingInfoExtras
   /** Betalend Vysiongids-lid (vacatures, zoekertjes, …) */
   premiumMember?: boolean
+  /** Laatste wijziging zaak (fallback vacature-datum) */
+  updatedAt?: string
 }
 
 export type ListingSearchParams = {

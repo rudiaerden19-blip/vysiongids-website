@@ -48,6 +48,8 @@ export type GidsListingRow = {
   premium_paid_at?: string | null
   premium_expires_at?: string | null
   premium_paused?: boolean | null
+  created_at?: string
+  updated_at?: string
   gids_listing_photos?: PhotoRow[] | null
 }
 
@@ -158,6 +160,7 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
     }),
     lat: row.lat ?? undefined,
     lng: row.lng ?? undefined,
+    updatedAt: row.updated_at ?? undefined,
   }
 }
 

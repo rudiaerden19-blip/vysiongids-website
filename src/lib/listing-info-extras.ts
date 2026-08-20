@@ -25,6 +25,7 @@ export type ListingInfoExtras = {
     email?: string
     hours?: string
     jobTypes?: HiringJobTypeId[]
+    postedAt?: string
   }
   giftCard?: {
     enabled: boolean
@@ -67,6 +68,7 @@ export function normalizeListingInfoExtras(raw: unknown): ListingInfoExtras | un
       const email = String(h.email ?? '').trim()
       const hours = formatGidsSentenceText(String(h.hours ?? '').trim())
       const jobTypes = normalizeHiringJobTypes(h.jobTypes)
+      const postedAt = String(h.postedAt ?? '').trim()
       if (title || text || phone || email || hours || jobTypes.length) {
         out.hiring = {
           enabled: true,
@@ -76,6 +78,7 @@ export function normalizeListingInfoExtras(raw: unknown): ListingInfoExtras | un
           email: email || undefined,
           hours: hours || undefined,
           ...(jobTypes.length ? { jobTypes } : {}),
+          ...(postedAt ? { postedAt } : {}),
         }
       }
     }
@@ -239,6 +242,11 @@ export async function buildInfoExtrasPayload(
       parsed.hiringEmail ||
       parsed.hiringJobTypes.length)
   ) {
+    const prevH = existing?.hiring
+    const keepPostedAt =
+      prevH?.enabled === true &&
+      Boolean(prevH.postedAt?.trim()) &&
+      listingHiringIsActive(prevH)
     payload.hiring = {
       enabled: true,
       title: parsed.hiringTitle || undefined,
@@ -247,6 +255,7 @@ export async function buildInfoExtrasPayload(
       email: parsed.hiringEmail || undefined,
       hours: parsed.hiringHours || undefined,
       ...(parsed.hiringJobTypes.length ? { jobTypes: parsed.hiringJobTypes } : {}),
+      postedAt: keepPostedAt ? prevH!.postedAt! : new Date().toISOString(),
     }
   }
 

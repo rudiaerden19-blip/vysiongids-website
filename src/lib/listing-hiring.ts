@@ -44,6 +44,8 @@ export type ListingHiringFields = {
   /** Werkuren voor vacature (vrij tekst, zichtbaar in popup). */
   hours?: string
   jobTypes?: HiringJobTypeId[]
+  /** ISO-datum eerste publicatie vacature (Jobs). */
+  postedAt?: string
 }
 
 export function listingHiringIsActive(h: ListingHiringFields | undefined | null): boolean {
@@ -85,3 +87,12 @@ export function formatListingHiringPanelMessage(h: ListingHiringFields): string 
 }
 
 export const LISTING_PANEL_HIRING_EMPTY_MESSAGE = 'Deze zaak zoekt momenteel geen personeel.'
+
+/** ISO-timestamp voor «Geplaatst op» — opgeslagen postedAt of fallback (bv. listing updated_at). */
+export function resolveListingHiringPostedAt(
+  hiring: ListingHiringFields | undefined,
+  fallbackIso?: string,
+): string | undefined {
+  const raw = hiring?.postedAt?.trim() || fallbackIso?.trim()
+  return raw || undefined
+}

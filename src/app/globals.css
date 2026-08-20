@@ -3391,6 +3391,10 @@ body {
   box-shadow: var(--vysiongids-card-shadow);
 }
 
+.vysiongids-job-card--clickable .vysiongids-job-card-open {
+  flex: 1;
+}
+
 .vysiongids-job-card-open {
   display: flex;
   flex-direction: column;
@@ -3406,6 +3410,7 @@ body {
   cursor: pointer;
   font: inherit;
   color: inherit;
+  flex: 1;
 }
 
 .vysiongids-job-card-open:hover {
