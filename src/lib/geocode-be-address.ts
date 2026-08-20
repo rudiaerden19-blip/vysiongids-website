@@ -1,7 +1,8 @@
-/** Adres → WGS84 (België): Nominatim + Photon (OSM). Geen postcode-centrum voor zaak-pinnen. */
+/** Adres → WGS84 (België): Geopunt (basisregisters) + Nominatim + Photon. */
 
 import { normalizeSearchText } from '@/lib/gids-text'
 
+const GEOPUNT = 'https://geo.api.vlaanderen.be/geolocation/v4/Location'
 const NOMINATIM = 'https://nominatim.openstreetmap.org/search'
 const PHOTON = 'https://photon.komoot.io/api/'
 const USER_AGENT = 'Vysiongids/1.0 (+https://vysiongids.be; contact@webvysion.tech)'
@@ -46,6 +47,9 @@ export async function geocodeBelgiumStreetAddress(parts: {
 }): Promise<GeocodedPoint | null> {
   if (!parts.address.trim() || !parts.city.trim()) return null
 
+  const geopunt = await fetchGeopuntBelgium(parts)
+  if (geopunt) return geopunt
+
   const structured = await fetchNominatimStructured(parts)
   if (structured) return structured
 
@@ -73,6 +77,52 @@ export async function geocodeBelgiumPostcodeCity(parts: {
   const cityLine = `${parts.postcode.trim()} ${parts.city.trim()}`.trim()
   if (!parts.city.trim()) return null
   return fetchNominatim(`${cityLine}, België`)
+}
+
+type GeopuntHit = {
+  Zipcode?: string
+  Housenumber?: string
+  Thoroughfarename?: string
+  Location?: { Lat_WGS84?: number; Lon_WGS84?: number }
+}
+
+/** Officiële Vlaanderen-locatie (basisregisters huisnummer). */
+async function fetchGeopuntBelgium(parts: {
+  address: string
+  postcode: string
+  city: string
+}): Promise<GeocodedPoint | null> {
+  const q = buildQuery(parts)
+  const url = new URL(GEOPUNT)
+  url.searchParams.set('q', q)
+
+  try {
+    const res = await fetch(url.toString(), {
+      headers: { Accept: 'application/json' },
+      cache: 'no-store',
+    })
+    if (!res.ok) return null
+    const data = (await res.json()) as { LocationResult?: GeopuntHit[] }
+    const hit = data.LocationResult?.[0]
+    if (!hit) return null
+    const loc = hit.Location
+    if (loc?.Lat_WGS84 == null || loc.Lon_WGS84 == null) return null
+
+    const wantPc = postcodeKey(parts.postcode)
+    const gotPc = hit.Zipcode ? postcodeKey(hit.Zipcode) : ''
+    if (wantPc && gotPc && gotPc !== wantPc) return null
+
+    const wantHouse = extractBelgiumHouseNumber(parts.address)
+    const gotHouse = hit.Housenumber ? normalizeHouseNumber(hit.Housenumber) : ''
+    if (wantHouse && gotHouse && gotHouse !== wantHouse) return null
+
+    const lat = loc.Lat_WGS84
+    const lng = loc.Lon_WGS84
+    if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
+    return { lat, lng }
+  } catch {
+    return null
+  }
 }
 
 function municipalityCityVariants(city: string, postcode: string): string[] {

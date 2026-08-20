@@ -1,3 +1,5 @@
+'use client'
+
 import { usePathname } from 'next/navigation'
 import { useLayoutEffect } from 'react'
 import { scrollGidsPageToTop } from '@/lib/scroll-page-top'

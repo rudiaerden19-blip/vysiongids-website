@@ -44,21 +44,39 @@ export async function resolveListingMapPin(listing: Listing): Promise<{
   listing: Listing
   pin: { lat: number; lng: number }
 }> {
+  const streetCoords = await geocodeBelgiumStreetAddress({
+    address: listing.address,
+    postcode: listing.postcode,
+    city: listing.city,
+  })
+
+  if (streetCoords) {
+    const updated = await applyStreetCoordsToListing(listing, streetCoords)
+    return { listing: updated, pin: streetCoords }
+  }
+
   const geocoded = await ensureListingGeocoded(listing)
   const precise = getListingMapCoordinates(geocoded)
   if (precise) return { listing: geocoded, pin: precise }
 
-  const street = await geocodeBelgiumStreetAddress({
-    address: geocoded.address,
-    postcode: geocoded.postcode,
-    city: geocoded.city,
-  })
-  if (street) {
-    const updated = await persistListingCoords(geocoded, street)
-    return { listing: updated, pin: street }
-  }
-
   return { listing: geocoded, pin: getListingFallbackCoordinates(geocoded) }
+}
+
+async function applyStreetCoordsToListing(
+  listing: Listing,
+  streetCoords: { lat: number; lng: number },
+): Promise<Listing> {
+  if (typeof listing.lat !== 'number' || typeof listing.lng !== 'number') {
+    return persistListingCoords(listing, streetCoords)
+  }
+  if (listingStoredCoordsAreFallback(listing)) {
+    return persistListingCoords(listing, streetCoords)
+  }
+  const drift = distanceKmBetween({ lat: listing.lat, lng: listing.lng }, streetCoords)
+  if (drift >= REFRESH_DRIFT_KM) {
+    return persistListingCoords(listing, streetCoords)
+  }
+  return listing
 }
 
 /** Geocoden en opslaan; herstelt verkeerde oude pins (zaaknaam, postcode-centrum). */
@@ -69,21 +87,7 @@ export async function ensureListingGeocoded(listing: Listing): Promise<Listing> 
     city: listing.city,
   })
   if (!streetCoords) return listing
-
-  if (typeof listing.lat !== 'number' || typeof listing.lng !== 'number') {
-    return persistListingCoords(listing, streetCoords)
-  }
-
-  if (listingStoredCoordsAreFallback(listing)) {
-    return persistListingCoords(listing, streetCoords)
-  }
-
-  const drift = distanceKmBetween({ lat: listing.lat, lng: listing.lng }, streetCoords)
-  if (drift >= REFRESH_DRIFT_KM) {
-    return persistListingCoords(listing, streetCoords)
-  }
-
-  return listing
+  return applyStreetCoordsToListing(listing, streetCoords)
 }
 
 /** Batch: altijd opnieuw geocoden op straatadres en opslaan bij wijziging. */
