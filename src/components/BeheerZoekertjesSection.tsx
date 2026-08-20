@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import ZoekertjesPlaceModal from '@/components/ZoekertjesPlaceModal'
+import ZoekertjeDetailModal from '@/components/ZoekertjeDetailModal'
 import { zoekertjeCategoryLabel } from '@/lib/gids-zoekertjes-categories'
 import { formatGidsZoekertjePriceDisplay } from '@/lib/gids-zoekertjes-price'
 import {
@@ -32,6 +33,8 @@ export default function BeheerZoekertjesSection({
   const [setupRequired, setSetupRequired] = useState(false)
   const [loading, setLoading] = useState(true)
   const [editId, setEditId] = useState<string | null>(null)
+  const [previewOpen, setPreviewOpen] = useState(false)
+  const [previewZoekertje, setPreviewZoekertje] = useState<GidsZoekertje | null>(null)
 
   const loadList = useCallback(async () => {
     if (!isPremium) {
@@ -83,6 +86,16 @@ export default function BeheerZoekertjesSection({
   function closeModal() {
     onModalOpenChange(false)
     setEditId(null)
+  }
+
+  function openPreview(z: GidsZoekertje) {
+    setPreviewZoekertje(z)
+    setPreviewOpen(true)
+  }
+
+  function closePreview() {
+    setPreviewOpen(false)
+    setPreviewZoekertje(null)
   }
 
   async function onDelete(id: string, adTitle: string) {
@@ -141,7 +154,7 @@ export default function BeheerZoekertjesSection({
 
       {!loading && mine.length > 0 ? (
         <p className="mt-3 text-sm font-semibold text-gray-800">
-          Jouw zoekertjes ({mine.length})
+          Jouw zoekertjes ({mine.length}) — klik op een kaart om te bekijken zoals op de Zoekertjes-pagina.
         </p>
       ) : null}
 

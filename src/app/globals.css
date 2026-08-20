@@ -3756,6 +3756,42 @@ body {
   color: #78350f;
 }
 
+.vysiongids-zoekertje-card--beheer {
+  display: flex;
+  flex-direction: column;
+}
+
+.vysiongids-zoekertje-beheer-preview-hit {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.vysiongids-zoekertje-beheer-preview-hit:hover .vysiongids-zoekertje-card-title {
+  color: var(--accent);
+}
+
+.vysiongids-zoekertje-card-body--beheer-preview {
+  padding: 0.75rem 1rem 0.5rem;
+}
+
+.vysiongids-zoekertje-beheer-preview-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.vysiongids-zoekertje-card-actions--beheer {
+  margin-top: 0;
+  padding: 0.75rem 1rem 1rem;
+}
+
 .vysiongids-zoekertjes-grid {
   list-style: none;
   margin: 2rem 0 0;
