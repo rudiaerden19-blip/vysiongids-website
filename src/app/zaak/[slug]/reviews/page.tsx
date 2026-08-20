@@ -4,7 +4,7 @@ import ListingStarRating from '@/components/ListingStarRating'
 import ReviewList from '@/components/ReviewList'
 import ReviewSubmitForm from '@/components/ReviewSubmitForm'
 import SiteHeader from '@/components/SiteHeader'
-import { fetchListingIdBySlugAdmin, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
+import { getCachedListingIdBySlug, getCachedReviewsByListingSlug } from '@/lib/gids-reviews-cache'
 import { formatListingAddressLines, getListingBySlug, getListingTypeLabel } from '@/lib/listings'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -28,8 +28,8 @@ export default async function ZaakReviewsPage({ params }: Props) {
   if (!listing) notFound()
 
   const [reviews, canSubmit] = await Promise.all([
-    fetchReviewsByListingSlug(slug).then((r) => r ?? []),
-    fetchListingIdBySlugAdmin(slug).then(Boolean),
+    getCachedReviewsByListingSlug(slug).then((r) => r ?? []),
+    getCachedListingIdBySlug(slug).then(Boolean),
   ])
   const ratingCount = listing.ratingCount
   const ratingAvg = listing.ratingAvg

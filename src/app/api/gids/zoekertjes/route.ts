@@ -87,11 +87,18 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Zoekertjes laden mislukt (database niet bereikbaar).' }, { status: 503 })
   }
 
-  return NextResponse.json({
-    zoekertjes: result.zoekertjes,
-    setupRequired: result.setupRequired === true,
-    ownerListingId: ownerListingId ?? null,
-  })
+  return NextResponse.json(
+    {
+      zoekertjes: result.zoekertjes,
+      setupRequired: result.setupRequired === true,
+      ownerListingId: ownerListingId ?? null,
+    },
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=180',
+      },
+    },
+  )
 }
 
 export async function POST(req: Request) {

@@ -1,10 +1,16 @@
 import { Suspense } from 'react'
 import SiteHeader from '@/components/SiteHeader'
 import BeheerClient from '@/components/BeheerClient'
+import { loadBeheerServerSession } from '@/lib/gids-beheer-server'
 
 export const metadata = { title: 'Beheer' }
 
-export default function BeheerPage() {
+/** Sessie uit cookie — geen static cache; wel direct Supabase op de server i.p.v. dubbele client-API. */
+export const dynamic = 'force-dynamic'
+
+export default async function BeheerPage() {
+  const serverSession = await loadBeheerServerSession()
+
   return (
     <>
       <SiteHeader />
@@ -12,7 +18,7 @@ export default function BeheerPage() {
         <h1 className="text-2xl font-bold text-gray-900">Zaak beheren</h1>
         <div className="mt-6">
           <Suspense fallback={<p className="text-gray-600">Bezig met laden…</p>}>
-            <BeheerClient />
+            <BeheerClient serverSession={serverSession} />
           </Suspense>
         </div>
       </main>

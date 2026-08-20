@@ -10,6 +10,7 @@ import {
   updateGidsZoekertjeAdmin,
   clearGidsZoekertjePhotosAdmin,
 } from '@/lib/gids-zoekertjes-db'
+import { getCachedGidsZoekertjeById } from '@/lib/gids-zoekertjes-detail-cache'
 import { normalizeGidsZoekertjePriceInput } from '@/lib/gids-zoekertjes-price'
 import {
   normalizeZoekertjeDescriptionInput,
@@ -66,14 +67,26 @@ async function requireOwnerPremium(id: string) {
 
 export async function GET(_req: Request, ctx: RouteCtx) {
   const { id } = await ctx.params
-  const ad = await fetchGidsZoekertjeByIdAdmin(id)
-  if (!ad) return NextResponse.json({ error: 'Niet gevonden.' }, { status: 404 })
-
   const listingId = await getGidsOwnerListingIdFromCookies()
-  if (!listingId || ad.listingId !== listingId) {
-    return NextResponse.json({ zoekertje: ad })
+
+  if (listingId) {
+    const ad = await fetchGidsZoekertjeByIdAdmin(id)
+    if (!ad) return NextResponse.json({ error: 'Niet gevonden.' }, { status: 404 })
+    if (ad.listingId === listingId) {
+      return NextResponse.json({ zoekertje: ad, editable: true })
+    }
   }
-  return NextResponse.json({ zoekertje: ad, editable: true })
+
+  const ad = await getCachedGidsZoekertjeById(id)
+  if (!ad) return NextResponse.json({ error: 'Niet gevonden.' }, { status: 404 })
+  return NextResponse.json(
+    { zoekertje: ad },
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=180',
+      },
+    },
+  )
 }
 
 export async function PATCH(req: Request, ctx: RouteCtx) {

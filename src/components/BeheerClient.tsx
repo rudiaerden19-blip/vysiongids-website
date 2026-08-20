@@ -13,6 +13,7 @@ import {
 import BeheerPremiumQuickNav from '@/components/BeheerPremiumQuickNav'
 import BeheerZoekertjesSection from '@/components/BeheerZoekertjesSection'
 import type { Listing } from '@/lib/listing-types'
+import type { BeheerServerSession } from '@/lib/gids-beheer-server'
 
 const BeheerEditForm = dynamic(() => import('@/components/BeheerEditForm'), {
   loading: () => <p className="text-sm text-gray-600">Formulier laden…</p>,
@@ -26,26 +27,53 @@ type MeResponse = {
   listing?: Listing
 }
 
-export default function BeheerClient() {
+type Props = {
+  serverSession: BeheerServerSession
+}
+
+export default function BeheerClient({ serverSession }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const premiumFlash = searchParams.get('premium')
   const loginHint = readGidsBeheerLoginHint()
-  const [me, setMe] = useState<MeResponse | null>(
-    loginHint
-      ? { authenticated: true, name: loginHint.name, slug: loginHint.slug }
-      : null,
+  const [me, setMe] = useState<MeResponse>(() =>
+    serverSession.authenticated
+      ? {
+          authenticated: true,
+          name: serverSession.name,
+          slug: serverSession.slug,
+          premiumMember: serverSession.premiumMember,
+          listing: serverSession.listing,
+        }
+      : loginHint
+        ? { authenticated: true, name: loginHint.name, slug: loginHint.slug }
+        : { authenticated: false },
   )
-  const [listing, setListing] = useState<Listing | null>(null)
-  const [sessionReady, setSessionReady] = useState(Boolean(loginHint))
-  const [listingLoading, setListingLoading] = useState(true)
-  const [publicSlug, setPublicSlug] = useState<string | undefined>(loginHint?.slug)
+  const [listing, setListing] = useState<Listing | null>(serverSession.listing ?? null)
+  const [sessionReady, setSessionReady] = useState(() => {
+    if (serverSession.authenticated && serverSession.listing) return true
+    if (!serverSession.authenticated && !loginHint) return true
+    return false
+  })
+  const [listingLoading, setListingLoading] = useState(
+    serverSession.authenticated ? !serverSession.listing : false,
+  )
+  const [publicSlug, setPublicSlug] = useState<string | undefined>(
+    serverSession.slug ?? loginHint?.slug,
+  )
   const [zoekertjeModalOpen, setZoekertjeModalOpen] = useState(false)
   const [zoekertjePlaceRequest, setZoekertjePlaceRequest] = useState(0)
 
   const premiumMember = listing?.premiumMember ?? me?.premiumMember
 
   useEffect(() => {
+    if (serverSession.authenticated && serverSession.listing) {
+      if (serverSession.authenticated) clearGidsBeheerLoginHint()
+      setSessionReady(true)
+      setListingLoading(false)
+      return
+    }
+
     const controller = new AbortController()
     const signal = controller.signal
 
@@ -80,7 +108,7 @@ export default function BeheerClient() {
     })()
 
     return () => controller.abort()
-  }, [])
+  }, [serverSession.authenticated, serverSession.listing])
 
   /** Na Stripe: premium via webhook — knop «Claim» verdwijnt zodra DB actief is (geen auto-verleng-UI). */
   useEffect(() => {
@@ -129,7 +157,7 @@ export default function BeheerClient() {
     router.push('/login')
   }
 
-  if (!sessionReady && !loginHint) {
+  if (!sessionReady && !loginHint && !serverSession.authenticated) {
     return (
       <div className="space-y-8">
         <BeheerPremiumQuickNav
@@ -186,6 +214,7 @@ export default function BeheerClient() {
         modalOpen={zoekertjeModalOpen}
         onModalOpenChange={setZoekertjeModalOpen}
         placeRequestId={zoekertjePlaceRequest}
+        initialMine={serverSession.initialZoekertjes}
       />
 
       {slug ? <ListingOwnerDailyViews slug={slug} variant="beheer" /> : null}

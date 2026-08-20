@@ -18,6 +18,8 @@ type Props = {
   onModalOpenChange: (open: boolean) => void
   /** Telkens +1 vanuit quick nav: open popup voor nieuw zoekertje. */
   placeRequestId?: number
+  /** Server-side geladen in beheer — geen extra API-roundtrip bij openen. */
+  initialMine?: GidsZoekertje[]
 }
 
 export default function BeheerZoekertjesSection({
@@ -25,11 +27,13 @@ export default function BeheerZoekertjesSection({
   modalOpen,
   onModalOpenChange,
   placeRequestId = 0,
+  initialMine,
 }: Props) {
   const isPremium = listingHasGidsPremium(premiumMember)
-  const [mine, setMine] = useState<GidsZoekertje[]>([])
+  const hasInitialMine = initialMine !== undefined
+  const [mine, setMine] = useState<GidsZoekertje[]>(initialMine ?? [])
   const [setupRequired, setSetupRequired] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = useState(isPremium && !hasInitialMine)
   const [editId, setEditId] = useState<string | null>(null)
   const [previewOpen, setPreviewOpen] = useState(false)
   const [previewZoekertje, setPreviewZoekertje] = useState<GidsZoekertje | null>(null)
@@ -62,8 +66,9 @@ export default function BeheerZoekertjesSection({
   }, [isPremium])
 
   useEffect(() => {
+    if (hasInitialMine) return
     void loadList()
-  }, [loadList])
+  }, [hasInitialMine, loadList])
 
   useEffect(() => {
     if (placeRequestId < 1) return

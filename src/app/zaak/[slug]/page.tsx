@@ -23,7 +23,7 @@ import {
   listingPhotoUrls,
 } from '@/lib/listings'
 import ListingMenuButton from '@/components/ListingMenuButton'
-import { fetchListingIdBySlugAdmin, fetchReviewsByListingSlug } from '@/lib/gids-reviews-db'
+import { getCachedListingIdBySlug, getCachedReviewsByListingSlug } from '@/lib/gids-reviews-cache'
 import { ensureListingGeocoded, listingNeedsBackgroundGeocode } from '@/lib/gids-listing-geocode'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -60,8 +60,8 @@ export default async function ZaakPage({ params }: Props) {
   const deliveryRadiusLabel = formatDeliveryRadius(listing)
   const { street, cityLine } = formatListingAddressLines(listing)
   const [reviews, canSubmitReview] = await Promise.all([
-    fetchReviewsByListingSlug(slug, 5).then((r) => r ?? []),
-    fetchListingIdBySlugAdmin(slug).then(Boolean),
+    getCachedReviewsByListingSlug(slug, 5).then((r) => r ?? []),
+    getCachedListingIdBySlug(slug).then(Boolean),
   ])
   const listingForRating = listing
   const reviewsHref = `/zaak/${slug}/reviews`
