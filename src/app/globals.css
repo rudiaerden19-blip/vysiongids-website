@@ -3206,16 +3206,16 @@ body {
   max-width: 44rem;
   margin-left: auto;
   margin-right: auto;
-  margin-bottom: 1.5rem;
+  margin-bottom: 3rem;
   text-align: center;
 }
 
 .vysiongids-jobs-intro .vysiongids-jobs-page-title {
-  margin-bottom: 0.75rem;
+  margin-bottom: 1.5rem;
 }
 
 .vysiongids-jobs-intro .vysiongids-jobs-page-lead {
-  margin-bottom: 1.25rem;
+  margin-bottom: 2rem;
   text-align: center;
 }
 
@@ -3905,8 +3905,8 @@ body {
 }
 
 .vysiongids-zoekertjes-grid--browse {
-  margin-top: 1.75rem;
-  gap: 1.1rem;
+  margin-top: 2.5rem;
+  gap: 1.35rem;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   max-width: 52rem;
 }
