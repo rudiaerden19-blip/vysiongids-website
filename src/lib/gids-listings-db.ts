@@ -1,6 +1,7 @@
 import type { Listing, ListingAmenityId } from '@/lib/listing-types'
 import { normalizeListingInfoExtras } from '@/lib/listing-info-extras'
 import { gidsBusinessNameLookupKeys } from '@/lib/gids-text'
+import { resolveListingPremiumActive } from '@/lib/gids-premium'
 import { createGidsSupabaseAdmin, createGidsSupabasePublic, isGidsSupabaseConfigured } from '@/lib/supabase-gids'
 
 type PhotoRow = { sort_order: number; public_url: string }
@@ -44,6 +45,9 @@ export type GidsListingRow = {
   lng: number | null
   info_extras?: unknown
   premium_member?: boolean | null
+  premium_paid_at?: string | null
+  premium_expires_at?: string | null
+  premium_paused?: boolean | null
   gids_listing_photos?: PhotoRow[] | null
 }
 
@@ -92,7 +96,11 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
     hoursByDay: row.hours_by_day ?? undefined,
     amenities: row.amenities ?? undefined,
     infoExtras: normalizeListingInfoExtras(row.info_extras),
-    premiumMember: row.premium_member === true,
+    premiumMember: resolveListingPremiumActive({
+      premium_member: row.premium_member,
+      premium_paused: row.premium_paused,
+      premium_expires_at: row.premium_expires_at,
+    }),
     lat: row.lat ?? undefined,
     lng: row.lng ?? undefined,
   }
@@ -163,20 +171,36 @@ export async function fetchListingRowByIdAdmin(id: string): Promise<GidsListingR
 /** Snelle sessie-check voor beheer (geen foto-join). */
 export async function fetchListingSessionByIdAdmin(
   id: string,
-): Promise<{ id: string; slug: string; name: string; premium_member: boolean } | null> {
+): Promise<{
+  id: string
+  slug: string
+  name: string
+  premium_member: boolean
+  premium_paused: boolean
+  premium_expires_at: string | null
+} | null> {
   const supabase = createGidsSupabaseAdmin()
   if (!supabase) return null
   const { data, error } = await supabase
     .from('gids_listings')
-    .select('id, slug, name, premium_member')
+    .select('id, slug, name, premium_member, premium_paused, premium_expires_at')
     .eq('id', id)
     .maybeSingle()
   if (error || !data) return null
+  const premium_member = data.premium_member === true
+  const premium_paused = data.premium_paused === true
+  const premium_expires_at = (data.premium_expires_at as string | null) ?? null
   return {
     id: data.id as string,
     slug: data.slug as string,
     name: data.name as string,
-    premium_member: data.premium_member === true,
+    premium_member: resolveListingPremiumActive({
+      premium_member,
+      premium_paused,
+      premium_expires_at,
+    }),
+    premium_paused,
+    premium_expires_at,
   }
 }
 

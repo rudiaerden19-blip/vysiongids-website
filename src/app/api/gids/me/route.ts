@@ -31,7 +31,8 @@ import {
   uploadGidsListingMenuPdf,
 } from '@/lib/gids-listing-menu-server'
 import { geocodeListingAddress } from '@/lib/gids-listing-geocode'
-import { listingHasGidsPremium } from '@/lib/gids-premium'
+import { resolveListingPremiumActive } from '@/lib/gids-premium'
+import { deleteGidsListingByIdAdmin } from '@/lib/gids-listing-delete-admin'
 
 export const maxDuration = 60
 
@@ -72,24 +73,9 @@ export async function DELETE() {
     return NextResponse.json({ error: 'Niet ingelogd.' }, { status: 401 })
   }
 
-  const admin = createGidsSupabaseAdmin()
-  if (!admin) {
-    return NextResponse.json({ error: 'Database niet geconfigureerd.' }, { status: 503 })
-  }
-
-  const { data: photos } = await admin.from('gids_listing_photos').select('storage_path').eq('listing_id', listingId)
-  if (photos?.length) {
-    const paths = photos.map((p) => p.storage_path).filter(Boolean)
-    if (paths.length) await admin.storage.from(GIDS_LISTING_PHOTOS_BUCKET).remove(paths)
-  }
-  const rowBeforeDelete = await fetchListingRowByIdAdmin(listingId)
-  if (rowBeforeDelete?.menu_pdf_path) {
-    await removeGidsListingMenuPdfStorage(admin, rowBeforeDelete.menu_pdf_path)
-  }
-
-  const { error } = await admin.from('gids_listings').delete().eq('id', listingId)
-  if (error) {
-    return NextResponse.json({ error: 'Verwijderen mislukt.' }, { status: 500 })
+  const deleted = await deleteGidsListingByIdAdmin(listingId)
+  if (!deleted.ok) {
+    return NextResponse.json({ error: deleted.error || 'Verwijderen mislukt.' }, { status: 500 })
   }
 
   revalidateTag('gids-listings', 'max')
@@ -129,7 +115,7 @@ export async function PATCH(req: Request) {
 
   const needsPhotoUpload = d.photos.length > 0 || d.removePhotoSlots.length > 0
   const infoExtrasForm = parseInfoExtrasFromForm(form)
-  if (infoExtrasForm.hiringEnabled && !listingHasGidsPremium(row.premium_member)) {
+  if (infoExtrasForm.hiringEnabled && !resolveListingPremiumActive(row)) {
     return NextResponse.json(
       {
         error:
