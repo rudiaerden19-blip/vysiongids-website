@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import ZoekertjesPlaceModal from '@/components/ZoekertjesPlaceModal'
 import ZoekertjeDetailModal from '@/components/ZoekertjeDetailModal'
+import ZoekertjeCardPlacedStrip from '@/components/ZoekertjeCardPlacedStrip'
 import { zoekertjeCategoryLabel } from '@/lib/gids-zoekertjes-categories'
 import { formatGidsZoekertjePriceDisplay } from '@/lib/gids-zoekertjes-price'
 import { normalizeZoekertjeTitleInput } from '@/lib/gids-zoekertjes-text'
@@ -217,6 +218,7 @@ export default function BeheerZoekertjesSection({
                     Verwijderen
                   </button>
                 </div>
+                <ZoekertjeCardPlacedStrip createdAt={z.createdAt} />
               </li>
             )
           })}

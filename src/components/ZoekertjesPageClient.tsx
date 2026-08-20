@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ZoekertjeDetailModal from '@/components/ZoekertjeDetailModal'
+import ZoekertjeCardPlacedStrip from '@/components/ZoekertjeCardPlacedStrip'
 import {
   ZOEKERTJES_BROWSE_KIND_OPTIONS,
   ZOEKERTJES_CATEGORIES,
@@ -232,6 +233,7 @@ export default function ZoekertjesPageClient({
                   </p>
                 </div>
               </button>
+              <ZoekertjeCardPlacedStrip createdAt={z.createdAt} />
             </li>
           )
         })}

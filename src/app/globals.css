@@ -3979,6 +3979,10 @@ body {
   cursor: pointer;
 }
 
+.vysiongids-zoekertje-card-body-hit {
+  flex: 1;
+}
+
 .vysiongids-zoekertje-card-photo-hit:hover {
   background: rgb(14 93 130 / 0.04);
 }
@@ -4278,6 +4282,18 @@ body {
   margin: 0 0 0.35rem;
   font-size: 0.75rem;
   color: #6b7280;
+}
+
+.vysiongids-zoekertje-card-placed {
+  margin: 0;
+  margin-top: auto;
+  padding: 0.55rem 0.75rem;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  line-height: 1.35;
+  text-align: center;
 }
 
 .vysiongids-zoekertje-card-title {
