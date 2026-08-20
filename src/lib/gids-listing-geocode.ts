@@ -4,7 +4,8 @@ import { distanceKmBetween } from '@/lib/listing-distance'
 import { listingStoredCoordsAreFallback } from '@/lib/listing-geo-fallback'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 
-const REFRESH_DRIFT_KM = 0.35
+/** Corrigeer opgeslagen pin als geocoding > deze afstand afwijkt (meter-nauwkeurigheid). */
+const REFRESH_DRIFT_KM = 0.08
 
 /** Zet lat/lng op basis van straat+postcode+gemeente (Photon / Nominatim). */
 export async function geocodeListingAddress(parts: {
@@ -13,7 +14,11 @@ export async function geocodeListingAddress(parts: {
   city: string
   name?: string
 }) {
-  return geocodeBelgiumStreetAddress(parts)
+  return geocodeBelgiumStreetAddress({
+    address: parts.address,
+    postcode: parts.postcode,
+    city: parts.city,
+  })
 }
 
 async function persistListingCoords(listing: Listing, coords: { lat: number; lng: number }): Promise<Listing> {
@@ -27,35 +32,29 @@ async function persistListingCoords(listing: Listing, coords: { lat: number; lng
   return { ...listing, lat: coords.lat, lng: coords.lng }
 }
 
-function listingNeedsGeocodeRefresh(listing: Listing, streetCoords: { lat: number; lng: number }): boolean {
-  if (typeof listing.lat !== 'number' || typeof listing.lng !== 'number') return true
-  const drift = distanceKmBetween({ lat: listing.lat, lng: listing.lng }, streetCoords)
-  return drift >= REFRESH_DRIFT_KM
-}
-
-/** Geocoden en opslaan; corrigeert ook oude «postcode-centrum»-pins in de DB. */
+/** Geocoden en opslaan; herstelt verkeerde oude pins (zaaknaam, postcode-centrum). */
 export async function ensureListingGeocoded(listing: Listing): Promise<Listing> {
-  if (
-    typeof listing.lat === 'number' &&
-    typeof listing.lng === 'number' &&
-    !listingStoredCoordsAreFallback(listing)
-  ) {
-    return listing
-  }
-
   const streetCoords = await geocodeBelgiumStreetAddress({
     address: listing.address,
     postcode: listing.postcode,
     city: listing.city,
-    name: listing.name,
   })
   if (!streetCoords) return listing
 
-  const mustUpdate =
-    listingStoredCoordsAreFallback(listing) || listingNeedsGeocodeRefresh(listing, streetCoords)
-  if (!mustUpdate) return listing
+  if (typeof listing.lat !== 'number' || typeof listing.lng !== 'number') {
+    return persistListingCoords(listing, streetCoords)
+  }
 
-  return persistListingCoords(listing, streetCoords)
+  if (listingStoredCoordsAreFallback(listing)) {
+    return persistListingCoords(listing, streetCoords)
+  }
+
+  const drift = distanceKmBetween({ lat: listing.lat, lng: listing.lng }, streetCoords)
+  if (drift >= REFRESH_DRIFT_KM) {
+    return persistListingCoords(listing, streetCoords)
+  }
+
+  return listing
 }
 
 export function listingNeedsBackgroundGeocode(listing: Listing): boolean {

@@ -1,7 +1,7 @@
 import type { Listing } from '@/lib/listing-types'
 import { distanceKmBetween } from '@/lib/listing-distance'
 import { formatDeliveryRadiusKm } from '@/lib/listing-delivery-radius'
-import { getListingFallbackCoordinates } from '@/lib/listing-geo-fallback'
+import { getListingFallbackCoordinates, listingStoredCoordsAreFallback } from '@/lib/listing-geo-fallback'
 
 /** Alle foto-URL's voor slider (max. 3 in DB). */
 export function listingPhotoUrls(listing: Listing): string[] {
@@ -110,4 +110,11 @@ export function getListingCoordinates(listing: Listing): { lat: number; lng: num
     return { lat: listing.lat, lng: listing.lng }
   }
   return getListingFallbackCoordinates(listing)
+}
+
+/** Satellietkaart: alleen echte straat-pin — geen postcode/gemeente-centrum. */
+export function getListingMapCoordinates(listing: Listing): { lat: number; lng: number } | null {
+  if (typeof listing.lat !== 'number' || typeof listing.lng !== 'number') return null
+  if (listingStoredCoordsAreFallback(listing)) return null
+  return { lat: listing.lat, lng: listing.lng }
 }

@@ -5,7 +5,7 @@ import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import type { Listing } from '@/lib/listing-types'
-import { formatListingAddressLines, getListingCoordinates } from '@/lib/listing-display'
+import { formatListingAddressLines, getListingMapCoordinates } from '@/lib/listing-display'
 import ListingNavigationButtons from '@/components/ListingNavigationButtons'
 
 /** Rode pin (Google-achtig) + satelliettegels via Esri. */
@@ -53,39 +53,46 @@ export type ListingMapProps = {
 }
 
 export default function ListingMap({ listing }: ListingMapProps) {
-  const { lat, lng } = getListingCoordinates(listing)
+  const mapCoords = getListingMapCoordinates(listing)
   const { street, cityLine } = formatListingAddressLines(listing)
 
   return (
     <section className="mt-8" aria-label="Locatie op de kaart">
       <h2 className="text-lg font-bold text-gray-900">Adres</h2>
-      <div className="vysiongids-listing-map relative mt-3 overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
-        <MapContainer
-          center={[lat, lng]}
-          zoom={MAP_ZOOM}
-          maxZoom={20}
-          zoomControl={false}
-          dragging={false}
-          touchZoom={false}
-          doubleClickZoom={false}
-          boxZoom={false}
-          keyboard={false}
-          scrollWheelZoom={false}
-          className="z-0 h-[min(420px,55vh)] w-full"
-          style={{ height: 'min(420px, 55vh)', width: '100%' }}
-        >
-          <TileLayer
-            attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a>'
-            url={ESRI_SATELLITE}
+      {mapCoords ? (
+        <div className="vysiongids-listing-map relative mt-3 overflow-hidden rounded-2xl border border-gray-200 shadow-sm">
+          <MapContainer
+            center={[mapCoords.lat, mapCoords.lng]}
+            zoom={MAP_ZOOM}
             maxZoom={20}
-            maxNativeZoom={19}
-          />
-          <TileLayer url={ESRI_LABELS} maxZoom={20} maxNativeZoom={19} opacity={0.85} />
-          <LockMapView />
-          <CenterMapOnLoad lat={lat} lng={lng} />
-          <Marker position={[lat, lng]} icon={pinIcon} />
-        </MapContainer>
-      </div>
+            zoomControl={false}
+            dragging={false}
+            touchZoom={false}
+            doubleClickZoom={false}
+            boxZoom={false}
+            keyboard={false}
+            scrollWheelZoom={false}
+            className="z-0 h-[min(420px,55vh)] w-full"
+            style={{ height: 'min(420px, 55vh)', width: '100%' }}
+          >
+            <TileLayer
+              attribution='Tiles &copy; <a href="https://www.esri.com/">Esri</a>'
+              url={ESRI_SATELLITE}
+              maxZoom={20}
+              maxNativeZoom={19}
+            />
+            <TileLayer url={ESRI_LABELS} maxZoom={20} maxNativeZoom={19} opacity={0.85} />
+            <LockMapView />
+            <CenterMapOnLoad lat={mapCoords.lat} lng={mapCoords.lng} />
+            <Marker position={[mapCoords.lat, mapCoords.lng]} icon={pinIcon} />
+          </MapContainer>
+        </div>
+      ) : (
+        <div className="vysiongids-listing-map vysiongids-listing-map--pending relative mt-3 flex h-[min(220px,35vh)] items-center justify-center overflow-hidden rounded-2xl border border-gray-200 bg-gray-100 px-4 text-center text-sm leading-relaxed text-gray-600">
+          Satellietbeeld volgt zodra het exacte adres is gekoppeld. Gebruik Google Maps of Waze hieronder voor
+          navigatie.
+        </div>
+      )}
       <p className="mt-2 text-sm text-gray-600">
         {street}, {cityLine}
       </p>

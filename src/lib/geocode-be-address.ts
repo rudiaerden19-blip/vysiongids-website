@@ -14,6 +14,20 @@ function buildQuery(parts: { address: string; postcode: string; city: string }):
   return [street, cityLine, 'België'].filter(Boolean).join(', ')
 }
 
+function normalizeHouseNumber(value: string): string {
+  return value.trim().toLowerCase().replace(/\s+/g, '')
+}
+
+/** Huisnummer uit Belgisch adres (bv. «Zonnedauwlaan 1» → «1»). */
+export function extractBelgiumHouseNumber(address: string): string | null {
+  const t = address.trim()
+  const tail = t.match(/\s(\d+[a-zA-Z]?)\s*$/)
+  if (tail?.[1]) return normalizeHouseNumber(tail[1])
+  const head = t.match(/^(\d+[a-zA-Z]?)\s+/)
+  if (head?.[1]) return normalizeHouseNumber(head[1])
+  return null
+}
+
 function postcodeKey(postcode: string): string {
   return postcode.trim().slice(0, 4)
 }
@@ -27,15 +41,16 @@ export async function geocodeBelgiumStreetAddress(parts: {
   address: string
   postcode: string
   city: string
+  /** @deprecated niet gebruiken — zaaknaam geeft verkeerde OSM-treffers */
   name?: string
 }): Promise<GeocodedPoint | null> {
   if (!parts.address.trim() || !parts.city.trim()) return null
 
-  const photon = await geocodeBelgiumAddressViaPhoton(parts)
-  if (photon) return photon
-
   const structured = await fetchNominatimStructured(parts)
   if (structured) return structured
+
+  const photon = await geocodeBelgiumAddressViaPhoton(parts)
+  if (photon) return photon
 
   const q = buildQuery(parts)
   return fetchNominatim(q)
@@ -131,13 +146,11 @@ async function geocodeBelgiumAddressViaPhoton(parts: {
   address: string
   postcode: string
   city: string
-  name?: string
 }): Promise<GeocodedPoint | null> {
-  const nameBit = parts.name?.trim()
-  const q = [nameBit, buildQuery(parts)].filter(Boolean).join(', ')
+  const q = buildQuery(parts)
   const url = new URL(PHOTON)
   url.searchParams.set('q', q)
-  url.searchParams.set('limit', '8')
+  url.searchParams.set('limit', '12')
   url.searchParams.set('lang', 'nl')
 
   try {
@@ -148,9 +161,10 @@ async function geocodeBelgiumAddressViaPhoton(parts: {
     const wantPc = postcodeKey(parts.postcode)
     const wantCity = cityKey(parts.city)
     const streetNeedle = normalizeSearchText(parts.address)
+    const wantHouse = extractBelgiumHouseNumber(parts.address)
 
     const scored = features
-      .map((f) => ({ f, score: scorePhotonHit(f, wantPc, wantCity, streetNeedle) }))
+      .map((f) => ({ f, score: scorePhotonHit(f, wantPc, wantCity, streetNeedle, wantHouse) }))
       .filter(({ score }) => score > 0)
       .sort((a, b) => b.score - a.score)
 
@@ -176,6 +190,7 @@ function scorePhotonHit(
   wantPc: string,
   wantCity: string,
   streetNeedle: string,
+  wantHouse: string | null,
 ): number {
   const p = feature.properties
   if (!p || p.countrycode !== 'BE') return 0
@@ -184,13 +199,19 @@ function scorePhotonHit(
   const gotCity = p.city ? cityKey(p.city) : ''
   if (wantCity && gotCity && !municipalityKeysCompatible(wantCity, gotCity)) return 0
 
+  const gotHouse = p.housenumber ? normalizeHouseNumber(p.housenumber) : ''
+  if (wantHouse) {
+    if (!gotHouse) return 0
+    if (gotHouse !== wantHouse) return 0
+  }
+
   let score = 10
   if (wantPc && gotPc === wantPc) score += 40
   if (wantCity && gotCity && municipalityKeysCompatible(wantCity, gotCity)) score += 30
   if (p.housenumber) score += 25
   if (p.street && streetNeedle.includes(normalizeSearchText(p.street))) score += 20
-  if (p.osm_key === 'amenity' || p.type === 'house') score += 15
-  if (p.name && streetNeedle.includes(normalizeSearchText(p.name))) score += 10
+  if (p.osm_key === 'building' || p.type === 'house') score += 15
+  if (p.osm_key === 'amenity') score -= 5
   return score
 }
 
