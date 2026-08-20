@@ -1,7 +1,8 @@
 'use client'
 
-import { useEffect, useId } from 'react'
+import { useEffect, useId, useState } from 'react'
 import { createPortal } from 'react-dom'
+import ZoekertjePhotoLightbox from '@/components/ZoekertjePhotoLightbox'
 import { zoekertjeCategoryLabel } from '@/lib/gids-zoekertjes-categories'
 import { formatGidsZoekertjePriceDisplay } from '@/lib/gids-zoekertjes-price'
 import {
@@ -29,9 +30,18 @@ function detailLine(label: string, value: string | null | undefined) {
 
 export default function ZoekertjeDetailModal({ zoekertje, open, onClose }: Props) {
   const titleId = useId()
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxIndex, setLightboxIndex] = useState(0)
 
   useEffect(() => {
-    if (!open) return
+    if (!open) {
+      setLightboxOpen(false)
+      setLightboxIndex(0)
+    }
+  }, [open])
+
+  useEffect(() => {
+    if (!open || lightboxOpen) return
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose()
     }
@@ -42,7 +52,12 @@ export default function ZoekertjeDetailModal({ zoekertje, open, onClose }: Props
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = prev
     }
-  }, [open, onClose])
+  }, [open, onClose, lightboxOpen])
+
+  function openPhotoAt(i: number) {
+    setLightboxIndex(i)
+    setLightboxOpen(true)
+  }
 
   if (!open || !zoekertje) return null
 
@@ -78,11 +93,17 @@ export default function ZoekertjeDetailModal({ zoekertje, open, onClose }: Props
 
           {z.photos.length > 0 ? (
             <div className="vysiongids-zoekertje-detail-photos">
-              {z.photos.map((p) => (
-                <div key={p.publicUrl} className="vysiongids-zoekertje-detail-photo">
+              {z.photos.map((p, i) => (
+                <button
+                  key={p.publicUrl}
+                  type="button"
+                  className="vysiongids-zoekertje-detail-photo"
+                  onClick={() => openPhotoAt(i)}
+                  aria-label={`Foto ${i + 1} vergroten`}
+                >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={p.publicUrl} alt="" />
-                </div>
+                </button>
               ))}
             </div>
           ) : null}
@@ -109,5 +130,16 @@ export default function ZoekertjeDetailModal({ zoekertje, open, onClose }: Props
   )
 
   if (typeof document === 'undefined') return null
-  return createPortal(panel, document.body)
+  return (
+    <>
+      {createPortal(panel, document.body)}
+      <ZoekertjePhotoLightbox
+        open={lightboxOpen}
+        photos={z.photos}
+        index={lightboxIndex}
+        onIndexChange={setLightboxIndex}
+        onClose={() => setLightboxOpen(false)}
+      />
+    </>
+  )
 }

@@ -3772,7 +3772,8 @@ body {
 }
 
 .vysiongids-zoekertje-card--browse {
-  display: block;
+  display: flex;
+  flex-direction: column;
   width: 100%;
   padding: 0;
   border: 1px solid #e5e7eb;
@@ -3780,9 +3781,6 @@ body {
   overflow: hidden;
   background: #fff;
   box-shadow: 0 1px 2px rgb(0 0 0 / 0.05);
-  cursor: pointer;
-  text-align: left;
-  font-family: inherit;
   transition: box-shadow 0.15s ease, border-color 0.15s ease;
 }
 
@@ -3791,8 +3789,43 @@ body {
   box-shadow: 0 4px 14px rgb(14 93 130 / 0.12);
 }
 
+.vysiongids-zoekertje-card-photo-hit,
+.vysiongids-zoekertje-card-body-hit {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  font-family: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.vysiongids-zoekertje-card-photo-hit:hover {
+  background: rgb(14 93 130 / 0.04);
+}
+
+.vysiongids-zoekertje-card-body-hit:hover .vysiongids-zoekertje-card-title--browse {
+  color: var(--accent);
+}
+
 .vysiongids-zoekertje-card-media--browse {
-  aspect-ratio: 4 / 3;
+  aspect-ratio: auto;
+  min-height: 7.5rem;
+  max-height: 12rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4f6;
+  padding: 0.35rem;
+}
+
+.vysiongids-zoekertje-card-media--browse img {
+  width: 100%;
+  height: auto;
+  max-height: 11.5rem;
+  object-fit: contain;
+  object-position: center;
 }
 
 .vysiongids-zoekertje-card-body--browse {
@@ -3863,21 +3896,128 @@ body {
 }
 
 .vysiongids-zoekertje-detail-photo {
+  display: block;
+  width: 100%;
+  padding: 0.35rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid #e5e7eb;
   border-radius: 0.65rem;
   overflow: hidden;
   background: #f3f4f6;
+  cursor: zoom-in;
+  font-family: inherit;
 }
 
 .vysiongids-zoekertje-detail-photo img {
   width: 100%;
   height: auto;
+  max-height: min(50vh, 18rem);
+  object-fit: contain;
+  object-position: center;
   display: block;
-  max-height: 14rem;
-  object-fit: cover;
+  margin: 0 auto;
 }
 
-.vysiongids-zoekertje-detail-meta {
-  margin-bottom: 1rem;
+.vysiongids-zoekertje-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.vysiongids-zoekertje-lightbox-backdrop {
+  position: absolute;
+  inset: 0;
+  border: none;
+  background: rgb(0 0 0 / 0.88);
+  cursor: zoom-out;
+}
+
+.vysiongids-zoekertje-lightbox-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 2;
+  width: 2.75rem;
+  height: 2.75rem;
+  border: none;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.12);
+  color: #fff;
+  font-size: 1.75rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.vysiongids-zoekertje-lightbox-close:hover {
+  background: rgb(255 255 255 / 0.22);
+}
+
+.vysiongids-zoekertje-lightbox-nav {
+  position: absolute;
+  top: 50%;
+  z-index: 2;
+  transform: translateY(-50%);
+  width: 3rem;
+  height: 3rem;
+  border: none;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.12);
+  color: #fff;
+  font-size: 2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.vysiongids-zoekertje-lightbox-nav:hover {
+  background: rgb(255 255 255 / 0.22);
+}
+
+.vysiongids-zoekertje-lightbox-nav--prev {
+  left: 0.75rem;
+}
+
+.vysiongids-zoekertje-lightbox-nav--next {
+  right: 0.75rem;
+}
+
+.vysiongids-zoekertje-lightbox-counter {
+  position: absolute;
+  top: 1rem;
+  left: 50%;
+  z-index: 2;
+  transform: translateX(-50%);
+  margin: 0;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.45);
+  color: #fff;
+  font-size: 0.8125rem;
+  font-weight: 600;
+}
+
+.vysiongids-zoekertje-lightbox-stage {
+  position: relative;
+  z-index: 1;
+  width: min(96vw, 56rem);
+  height: min(88vh, 48rem);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 3.5rem;
+  pointer-events: none;
+}
+
+.vysiongids-zoekertje-lightbox-img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  object-position: center;
+  pointer-events: auto;
 }
 
 .vysiongids-zoekertje-detail-row {
@@ -3914,6 +4054,23 @@ body {
   padding-top: 0.75rem;
   border-top: 1px solid #e5e7eb;
   margin-top: 0.75rem;
+}
+
+.vysiongids-zoekertje-card-media:not(.vysiongids-zoekertje-card-media--browse) {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 6rem;
+  max-height: 10rem;
+  background: #f3f4f6;
+  padding: 0.35rem;
+}
+
+.vysiongids-zoekertje-card-media:not(.vysiongids-zoekertje-card-media--browse) img {
+  width: 100%;
+  height: auto;
+  max-height: 9rem;
+  object-fit: contain;
 }
 
 .vysiongids-zoekertje-card-media {

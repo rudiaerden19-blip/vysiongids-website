@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import ZoekertjeDetailModal from '@/components/ZoekertjeDetailModal'
+import ZoekertjePhotoLightbox from '@/components/ZoekertjePhotoLightbox'
 import { zoekertjeCategoryLabel } from '@/lib/gids-zoekertjes-categories'
 import { formatGidsZoekertjePriceDisplay } from '@/lib/gids-zoekertjes-price'
 import { normalizeZoekertjeTitleInput } from '@/lib/gids-zoekertjes-text'
@@ -16,6 +17,9 @@ export default function ZoekertjesPageClient() {
   const [loading, setLoading] = useState(true)
   const [detailOpen, setDetailOpen] = useState(false)
   const [selected, setSelected] = useState<GidsZoekertje | null>(null)
+  const [lightboxOpen, setLightboxOpen] = useState(false)
+  const [lightboxPhotos, setLightboxPhotos] = useState<GidsZoekertje['photos']>([])
+  const [lightboxIndex, setLightboxIndex] = useState(0)
 
   const loadList = useCallback(async () => {
     setLoading(true)
@@ -49,6 +53,13 @@ export default function ZoekertjesPageClient() {
   function openDetail(z: GidsZoekertje) {
     setSelected(z)
     setDetailOpen(true)
+  }
+
+  function openLightbox(z: GidsZoekertje, startIndex: number) {
+    if (!z.photos.length) return
+    setLightboxPhotos(z.photos)
+    setLightboxIndex(startIndex)
+    setLightboxOpen(true)
   }
 
   function closeDetail() {
@@ -86,18 +97,23 @@ export default function ZoekertjesPageClient() {
           const thumb = z.photos[0]?.publicUrl
           const price = formatGidsZoekertjePriceDisplay(z.price)
           return (
-            <li key={z.id}>
-              <button type="button" className="vysiongids-zoekertje-card vysiongids-zoekertje-card--browse" onClick={() => openDetail(z)}>
-                {thumb ? (
-                  <div className="vysiongids-zoekertje-card-media vysiongids-zoekertje-card-media--browse">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={thumb} alt="" />
-                  </div>
-                ) : (
-                  <div className="vysiongids-zoekertje-card-media vysiongids-zoekertje-card-media--browse vysiongids-zoekertje-card-media--empty">
-                    Geen Foto
-                  </div>
-                )}
+            <li key={z.id} className="vysiongids-zoekertje-card vysiongids-zoekertje-card--browse">
+              {thumb ? (
+                <button
+                  type="button"
+                  className="vysiongids-zoekertje-card-media vysiongids-zoekertje-card-media--browse vysiongids-zoekertje-card-photo-hit"
+                  onClick={() => openLightbox(z, 0)}
+                  aria-label={`Foto: ${normalizeZoekertjeTitleInput(z.title)}`}
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={thumb} alt="" />
+                </button>
+              ) : (
+                <div className="vysiongids-zoekertje-card-media vysiongids-zoekertje-card-media--browse vysiongids-zoekertje-card-media--empty">
+                  Geen Foto
+                </div>
+              )}
+              <button type="button" className="vysiongids-zoekertje-card-body-hit" onClick={() => openDetail(z)}>
                 <div className="vysiongids-zoekertje-card-body vysiongids-zoekertje-card-body--browse">
                   <p className="vysiongids-zoekertje-card-price">{price}</p>
                   <h2 className="vysiongids-zoekertje-card-title vysiongids-zoekertje-card-title--browse">
@@ -117,6 +133,13 @@ export default function ZoekertjesPageClient() {
       </ul>
 
       <ZoekertjeDetailModal zoekertje={selected} open={detailOpen} onClose={closeDetail} />
+      <ZoekertjePhotoLightbox
+        open={lightboxOpen}
+        photos={lightboxPhotos}
+        index={lightboxIndex}
+        onIndexChange={setLightboxIndex}
+        onClose={() => setLightboxOpen(false)}
+      />
     </>
   )
 }
