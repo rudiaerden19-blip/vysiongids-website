@@ -281,6 +281,25 @@ export default function GidsStaffListingsClient() {
                       >
                         Betaald
                       </button>
+                      {row.premium_member || row.premiumActive ? (
+                        <button
+                          type="button"
+                          disabled={busy}
+                          className="vysiongids-staff-action-btn"
+                          onClick={() => {
+                            if (
+                              !window.confirm(
+                                `Premium voor «${row.name}» uitzetten? Betalingsdatums worden gewist.`,
+                              )
+                            ) {
+                              return
+                            }
+                            void patchListing(row.id, 'revoke_premium')
+                          }}
+                        >
+                          Niet betaald
+                        </button>
+                      ) : null}
                       {row.premium_paused ? (
                         <button
                           type="button"
