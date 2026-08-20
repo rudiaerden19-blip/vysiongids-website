@@ -62,9 +62,8 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
         </div>
         <div className="vysiongids-zaak-intro-body">
           <p className="vysiongids-zaak-intro-promo">
-            Heb je geen reserveringssoftware of online bestelplatform? Als lid van Vysiongids kan je je software
-            downloaden voor <strong>€49 per jaar</strong> (via <strong>Online platform</strong> of{' '}
-            <strong>Reserveringen</strong> in het menu).
+            Heb je geen reserveringssoftware of online bestelplatform? Indien je lid bent van Vysiongids kan je je
+            software downloaden voor <strong>€49 per jaar</strong>.
           </p>
           <p>
             Voordat je je zaak online zet in Vysiongids, lees onderstaande punten. Zo blijft de gids betrouwbaar voor
