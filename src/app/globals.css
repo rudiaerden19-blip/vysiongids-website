@@ -46,19 +46,23 @@ body {
   z-index: 0;
 }
 
-/* Zaakpagina: kaart vast — pagina scrollt, kaart niet pannen/zoomen */
+/* Zaakpagina: kaart vast — pagina scrollt, embed niet pannen/zoomen */
+.vysiongids-listing-map {
+  touch-action: pan-y;
+}
+
 .vysiongids-listing-map-iframe {
   min-height: min(420px, 55vh);
+  pointer-events: none;
 }
 
-.vysiongids-listing-map .leaflet-container {
-  touch-action: pan-y;
+.vysiongids-listing-map-shield {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   cursor: default;
-}
-
-.vysiongids-listing-map .leaflet-grab,
-.vysiongids-listing-map .leaflet-dragging {
-  cursor: default !important;
+  touch-action: pan-y;
+  background: transparent;
 }
 
 /* Regio-popup: altijd overlay, nooit layout-shift */

@@ -23,7 +23,12 @@ export default function ListingMap({ listing, mapPin }: ListingMapProps) {
           className="vysiongids-listing-map-iframe block h-[min(420px,55vh)] w-full border-0"
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
-          allowFullScreen
+          tabIndex={-1}
+        />
+        <div
+          className="vysiongids-listing-map-shield"
+          aria-hidden
+          title=""
         />
       </div>
       <p className="mt-2 text-sm text-gray-600">
