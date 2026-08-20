@@ -47,7 +47,7 @@ function mapRow(row: Row, photos: PhotoRow[]): GidsZoekertje {
     kind: row.kind,
     itemType: row.item_type,
     brand: row.brand,
-    priceClass: row.price_class,
+    price: row.price_class,
     createdAt: row.created_at,
     photos: photos
       .sort((a, b) => a.sort_order - b.sort_order)
@@ -127,7 +127,7 @@ export type SaveZoekertjeInput = {
   kind: string | null
   itemType: string | null
   brand: string | null
-  priceClass: string
+  price: string
 }
 
 export async function createGidsZoekertjeAdmin(
@@ -148,7 +148,7 @@ export async function createGidsZoekertjeAdmin(
       kind: input.kind,
       item_type: input.itemType,
       brand: input.brand,
-      price_class: input.priceClass,
+      price_class: input.price,
       status: 'published',
     })
     .select('id')
@@ -179,7 +179,7 @@ export async function updateGidsZoekertjeAdmin(
       kind: input.kind,
       item_type: input.itemType,
       brand: input.brand,
-      price_class: input.priceClass,
+      price_class: input.price,
     })
     .eq('id', id)
     .eq('listing_id', listingId)

@@ -6,10 +6,10 @@ import {
   ZOEKERTJES_CATEGORIES,
   ZOEKERTJES_CONDITIONS,
   ZOEKERTJES_KINDS,
-  ZOEKERTJES_PRICE_CLASSES,
   guessZoekertjeCategoryFromTitle,
   zoekertjeCategoryLabel,
 } from '@/lib/gids-zoekertjes-categories'
+import { gidsZoekertjePriceForInput } from '@/lib/gids-zoekertjes-price'
 import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
 import { GIDS_ZOEKERTJE_MAX_PHOTOS, GIDS_ZOEKERTJE_TITLE_MAX } from '@/lib/gids-zoekertjes-types'
@@ -48,7 +48,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
   const [kind, setKind] = useState('')
   const [itemType, setItemType] = useState('')
   const [brand, setBrand] = useState('')
-  const [priceClass, setPriceClass] = useState('Bieden')
+  const [price, setPrice] = useState('')
   const [photos, setPhotos] = useState<PhotoSlot[]>([])
   const [existingPhotoUrls, setExistingPhotoUrls] = useState<string[]>([])
   const [replaceAllPhotos, setReplaceAllPhotos] = useState(false)
@@ -71,7 +71,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
       setKind('')
       setItemType('')
       setBrand('')
-      setPriceClass('Bieden')
+      setPrice('')
       setPhotos([])
       setExistingPhotoUrls([])
       setReplaceAllPhotos(false)
@@ -96,7 +96,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
         setKind(z.kind ?? '')
         setItemType(z.itemType ?? '')
         setBrand(z.brand ?? '')
-        setPriceClass(z.priceClass)
+        setPrice(gidsZoekertjePriceForInput(z.price))
         setExistingPhotoUrls(z.photos.map((p) => p.publicUrl))
         setPhotos([])
         setReplaceAllPhotos(false)
@@ -169,7 +169,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
       return null
     }
     if (s === 5) {
-      if (!priceClass) return 'Kies Een Prijsklasse.'
+      if (!price.trim()) return 'Prijs Is Verplicht.'
       return null
     }
     return null
@@ -210,7 +210,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
       form.set('kind', kind)
       form.set('itemType', itemType)
       form.set('brand', brand)
-      form.set('priceClass', priceClass)
+      form.set('price', price.trim())
       if (editId && replaceAllPhotos) form.set('replaceAllPhotos', '1')
 
       const startIndex = editId && !replaceAllPhotos ? existingPhotoUrls.length : 0
@@ -450,22 +450,22 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
 
           {!loadingEdit && step === 5 ? (
             <div className="vysiongids-zoekertje-modal-fields mt-4">
-              <p className="text-sm font-bold text-gray-900">Prijs</p>
-              <label className="vysiongids-form-label mt-2 text-sm" htmlFor="zoekertjePrice">
-                Prijsklasse
+              <label className="vysiongids-form-label text-sm" htmlFor="zoekertjePrice">
+                Prijs (Verplicht)
               </label>
-              <select
-                id="zoekertjePrice"
-                value={priceClass}
-                onChange={(e) => setPriceClass(e.target.value)}
-                className="vysiongids-form-input mt-1 w-full text-sm"
-              >
-                {ZOEKERTJES_PRICE_CLASSES.map((p) => (
-                  <option key={p} value={p}>
-                    {p}
-                  </option>
-                ))}
-              </select>
+              <div className="mt-1 flex items-center gap-2">
+                <span className="text-sm font-semibold text-gray-700">€</span>
+                <input
+                  id="zoekertjePrice"
+                  type="text"
+                  inputMode="decimal"
+                  autoComplete="off"
+                  value={price}
+                  onChange={(e) => setPrice(e.target.value)}
+                  className="vysiongids-form-input w-full text-sm"
+                  placeholder="Bijv. 250 Of 250,50"
+                />
+              </div>
             </div>
           ) : null}
 

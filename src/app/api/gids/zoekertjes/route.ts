@@ -8,6 +8,7 @@ import {
   fetchPublishedGidsZoekertjesAdmin,
   replaceGidsZoekertjePhotosAdmin,
 } from '@/lib/gids-zoekertjes-db'
+import { normalizeGidsZoekertjePriceInput } from '@/lib/gids-zoekertjes-price'
 import { GIDS_ZOEKERTJE_MAX_PHOTOS, GIDS_ZOEKERTJE_TITLE_MAX } from '@/lib/gids-zoekertjes-types'
 import { ensureGidsPhotosBucket, siteOriginFromRequest } from '@/lib/gids-listing-photos-server'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
@@ -23,8 +24,8 @@ function parseSaveFields(form: FormData) {
   const kind = String(form.get('kind') ?? '').trim() || null
   const itemType = String(form.get('itemType') ?? '').trim() || null
   const brand = String(form.get('brand') ?? '').trim() || null
-  const priceClass = String(form.get('priceClass') ?? 'Bieden').trim() || 'Bieden'
-  return { title, description, category, condition, kind, itemType, brand, priceClass }
+  const priceRaw = String(form.get('price') ?? form.get('priceClass') ?? '').trim()
+  return { title, description, category, condition, kind, itemType, brand, priceRaw }
 }
 
 function collectPhotoFiles(form: FormData): { index: number; file: File }[] {
@@ -82,6 +83,10 @@ export async function POST(req: Request) {
   if (!fields.title) return NextResponse.json({ error: 'Titel is verplicht.' }, { status: 400 })
   if (!fields.description) return NextResponse.json({ error: 'Beschrijving is verplicht.' }, { status: 400 })
   if (!fields.category) return NextResponse.json({ error: 'Kies een categorie.' }, { status: 400 })
+  const priceStored = normalizeGidsZoekertjePriceInput(fields.priceRaw)
+  if (!priceStored) {
+    return NextResponse.json({ error: 'Voer een geldige prijs in (bijv. 250 of 250,50).' }, { status: 400 })
+  }
 
   const photos = collectPhotoFiles(form)
   if (photos.length > GIDS_ZOEKERTJE_MAX_PHOTOS) {
@@ -96,7 +101,7 @@ export async function POST(req: Request) {
     kind: fields.kind,
     itemType: fields.itemType,
     brand: fields.brand,
-    priceClass: fields.priceClass,
+    price: priceStored,
   })
   if (!created.ok) return NextResponse.json({ error: created.error }, { status: 500 })
 

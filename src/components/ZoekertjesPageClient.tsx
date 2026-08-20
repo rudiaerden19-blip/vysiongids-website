@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { zoekertjeCategoryLabel } from '@/lib/gids-zoekertjes-categories'
+import { formatGidsZoekertjePriceDisplay } from '@/lib/gids-zoekertjes-price'
 import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
 
@@ -85,7 +86,7 @@ export default function ZoekertjesPageClient() {
                 </p>
                 <h2 className="vysiongids-zoekertje-card-title">{z.title}</h2>
                 <p className="vysiongids-zoekertje-card-tags">
-                  {zoekertjeCategoryLabel(z.category)} · {z.priceClass}
+                  {zoekertjeCategoryLabel(z.category)} · {formatGidsZoekertjePriceDisplay(z.price)}
                 </p>
                 <p className="vysiongids-zoekertje-card-desc">{z.description}</p>
               </div>

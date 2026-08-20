@@ -12,17 +12,6 @@ export const ZOEKERTJES_CONDITIONS = ['Nieuw', 'Zo Goed Als Nieuw', 'Gebruikt', 
 
 export const ZOEKERTJES_KINDS = ['Te koop', 'Te ruil', 'Gezocht'] as const
 
-export const ZOEKERTJES_PRICE_CLASSES = [
-  'Bieden',
-  'Gratis',
-  '€1 – €25',
-  '€25 – €50',
-  '€50 – €100',
-  '€100 – €250',
-  '€250 – €500',
-  '€500 Of Meer',
-] as const
-
 const TITLE_HINTS: { pattern: RegExp; category: ZoekertjeCategoryId }[] = [
   { pattern: /oven|friteuse|koel|vriezer|afwasmachine|grill|mixer|fornuis|keuken/i, category: 'keukenapparatuur' },
   { pattern: /stoel|tafel|bar|inricht|meubel|bank/i, category: 'meubilair' },

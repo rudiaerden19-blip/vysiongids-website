@@ -15,7 +15,8 @@ export type GidsZoekertje = {
   kind: string | null
   itemType: string | null
   brand: string | null
-  priceClass: string
+  /** Weergaveprijs (opgeslagen in kolom price_class). */
+  price: string
   createdAt: string
   photos: GidsZoekertjePhoto[]
 }
