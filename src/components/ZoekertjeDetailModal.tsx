@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useId, useState } from 'react'
 import { createPortal } from 'react-dom'
 import ZoekertjePhotoLightbox from '@/components/ZoekertjePhotoLightbox'
@@ -120,10 +121,19 @@ export default function ZoekertjeDetailModal({ zoekertje, open, onClose }: Props
             <p className="vysiongids-zoekertje-detail-description">{description}</p>
           </div>
         </div>
-        <div className="vysiongids-zoekertje-detail-actions">
+        <div className="vysiongids-zoekertje-detail-actions vysiongids-zoekertje-modal-actions">
           <button type="button" className="vysiongids-zoekertje-primary-btn vysiongids-zoekertje-primary-btn--wide" onClick={onClose}>
             Sluiten
           </button>
+          {z.listingSlug ? (
+            <Link
+              href={`/zaak/${z.listingSlug}`}
+              className="vysiongids-zoekertje-primary-btn vysiongids-zoekertje-primary-btn--wide vysiongids-zoekertje-primary-btn--link"
+              onClick={onClose}
+            >
+              Naar de verkoper
+            </Link>
+          ) : null}
         </div>
       </div>
     </div>

@@ -41,7 +41,7 @@ export default function ZoekertjePhotoLightbox({ open, photos, index, onIndexCha
     onIndexChange((index - 1 + total) % total)
   }
 
-  function goNext(e: React.MouseEvent) {
+  function goNext(e: MouseEvent) {
     e.stopPropagation()
     if (total <= 1) return
     onIndexChange((index + 1) % total)

@@ -6,6 +6,7 @@ export type GidsZoekertjePhoto = {
 export type GidsZoekertje = {
   id: string
   listingId: string
+  listingSlug: string
   listingName: string
   listingCity: string
   title: string

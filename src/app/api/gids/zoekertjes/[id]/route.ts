@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
 import { fetchListingRowByIdAdmin } from '@/lib/gids-listings-db'
 import { resolveListingPremiumActive } from '@/lib/gids-premium'
@@ -125,6 +125,7 @@ export async function PATCH(req: Request, ctx: RouteCtx) {
   }
 
   revalidatePath('/zoekertjes')
+  revalidateTag('gids-zoekertjes', 'max')
   return NextResponse.json({ ok: true })
 }
 
@@ -138,5 +139,6 @@ export async function DELETE(_req: Request, ctx: RouteCtx) {
   if (!deleted.ok) return NextResponse.json({ error: deleted.error }, { status: 500 })
 
   revalidatePath('/zoekertjes')
+  revalidateTag('gids-zoekertjes', 'max')
   return NextResponse.json({ ok: true })
 }

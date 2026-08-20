@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { revalidatePath } from 'next/cache'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
 import { fetchListingRowByIdAdmin } from '@/lib/gids-listings-db'
 import { resolveListingPremiumActive } from '@/lib/gids-premium'
@@ -7,7 +7,6 @@ import {
   createGidsZoekertjeAdmin,
   countGidsZoekertjesByListingIdAdmin,
   fetchGidsZoekertjesByListingIdAdmin,
-  fetchPublishedGidsZoekertjesAdmin,
   replaceGidsZoekertjePhotosAdmin,
 } from '@/lib/gids-zoekertjes-db'
 import { normalizeGidsZoekertjePriceInput } from '@/lib/gids-zoekertjes-price'
@@ -18,9 +17,11 @@ import {
 } from '@/lib/gids-zoekertjes-text'
 import { GIDS_ZOEKERTJE_MAX_PER_LISTING, GIDS_ZOEKERTJE_MAX_PHOTOS } from '@/lib/gids-zoekertjes-types'
 import { ensureGidsPhotosBucket, siteOriginFromRequest } from '@/lib/gids-listing-photos-server'
+import { getCachedPublishedGidsZoekertjesBrowse } from '@/lib/gids-zoekertjes-public-cache'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 
 export const runtime = 'nodejs'
+export const revalidate = 60
 export const maxDuration = 60
 
 function parseSaveFields(form: FormData) {
@@ -62,13 +63,30 @@ async function requirePremiumListing() {
   return { listingId }
 }
 
-export async function GET() {
-  const result = await fetchPublishedGidsZoekertjesAdmin()
+export async function GET(req: Request) {
+  const mine = new URL(req.url).searchParams.get('mine') === '1'
+  const ownerListingId = await getGidsOwnerListingIdFromCookies()
+
+  if (mine) {
+    if (!ownerListingId) {
+      return NextResponse.json({ zoekertjes: [], ownerListingId: null, maxPerListing: GIDS_ZOEKERTJE_MAX_PER_LISTING })
+    }
+    const mineList = await fetchGidsZoekertjesByListingIdAdmin(ownerListingId)
+    if (mineList === null) {
+      return NextResponse.json({ error: 'Zoekertjes laden mislukt (database niet bereikbaar).' }, { status: 503 })
+    }
+    return NextResponse.json({
+      zoekertjes: mineList,
+      ownerListingId,
+      maxPerListing: GIDS_ZOEKERTJE_MAX_PER_LISTING,
+    })
+  }
+
+  const result = await getCachedPublishedGidsZoekertjesBrowse()
   if (result === null) {
     return NextResponse.json({ error: 'Zoekertjes laden mislukt (database niet bereikbaar).' }, { status: 503 })
   }
 
-  const ownerListingId = await getGidsOwnerListingIdFromCookies()
   return NextResponse.json({
     zoekertjes: result.zoekertjes,
     setupRequired: result.setupRequired === true,
@@ -141,5 +159,6 @@ export async function POST(req: Request) {
   }
 
   revalidatePath('/zoekertjes')
+  revalidateTag('gids-zoekertjes', 'max')
   return NextResponse.json({ ok: true, id: created.id })
 }

@@ -7,14 +7,26 @@ import { zoekertjeCategoryLabel } from '@/lib/gids-zoekertjes-categories'
 import { formatGidsZoekertjePriceDisplay } from '@/lib/gids-zoekertjes-price'
 import { normalizeZoekertjeTitleInput } from '@/lib/gids-zoekertjes-text'
 import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
+import { fetchGidsZoekertjeDetailClient } from '@/lib/fetch-gids-zoekertje-detail-client'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
 
+type Props = {
+  initialZoekertjes?: GidsZoekertje[]
+  initialSetupRequired?: boolean
+  initialLoadError?: string | null
+}
+
 /** Publiek overzicht — alleen bekijken, geen plaatsen (dat gebeurt in beheer). */
-export default function ZoekertjesPageClient() {
-  const [zoekertjes, setZoekertjes] = useState<GidsZoekertje[]>([])
-  const [setupRequired, setSetupRequired] = useState(false)
-  const [loadError, setLoadError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(true)
+export default function ZoekertjesPageClient({
+  initialZoekertjes,
+  initialSetupRequired = false,
+  initialLoadError = null,
+}: Props) {
+  const hasServerList = initialZoekertjes !== undefined
+  const [zoekertjes, setZoekertjes] = useState<GidsZoekertje[]>(initialZoekertjes ?? [])
+  const [setupRequired, setSetupRequired] = useState(initialSetupRequired)
+  const [loadError, setLoadError] = useState<string | null>(initialLoadError)
+  const [loading, setLoading] = useState(!hasServerList)
   const [detailOpen, setDetailOpen] = useState(false)
   const [selected, setSelected] = useState<GidsZoekertje | null>(null)
   const [lightboxOpen, setLightboxOpen] = useState(false)
@@ -47,12 +59,16 @@ export default function ZoekertjesPageClient() {
   }, [])
 
   useEffect(() => {
+    if (hasServerList) return
     void loadList()
-  }, [loadList])
+  }, [hasServerList, loadList])
 
   function openDetail(z: GidsZoekertje) {
     setSelected(z)
     setDetailOpen(true)
+    void fetchGidsZoekertjeDetailClient(z.id).then((full) => {
+      if (full) setSelected(full)
+    })
   }
 
   function openLightbox(z: GidsZoekertje, startIndex: number) {
@@ -106,7 +122,7 @@ export default function ZoekertjesPageClient() {
                   aria-label={`Foto: ${normalizeZoekertjeTitleInput(z.title)}`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={thumb} alt="" />
+                  <img src={thumb} alt="" loading="lazy" decoding="async" />
                 </button>
               ) : (
                 <div className="vysiongids-zoekertje-card-media vysiongids-zoekertje-card-media--browse vysiongids-zoekertje-card-media--empty">

@@ -19,7 +19,7 @@ type Row = {
   brand: string | null
   price_class: string
   created_at: string
-  gids_listings: { name: string; city: string } | { name: string; city: string }[] | null
+  gids_listings: { name: string; city: string; slug: string } | { name: string; city: string; slug: string }[] | null
 }
 
 type PhotoRow = {
@@ -27,10 +27,10 @@ type PhotoRow = {
   public_url: string
 }
 
-function listingJoin(row: Row): { name: string; city: string } {
+function listingJoin(row: Row): { name: string; city: string; slug: string } {
   const j = row.gids_listings
-  if (Array.isArray(j)) return j[0] ?? { name: '—', city: '—' }
-  return j ?? { name: '—', city: '—' }
+  if (Array.isArray(j)) return j[0] ?? { name: '—', city: '—', slug: '' }
+  return j ?? { name: '—', city: '—', slug: '' }
 }
 
 function mapRow(row: Row, photos: PhotoRow[]): GidsZoekertje {
@@ -38,6 +38,7 @@ function mapRow(row: Row, photos: PhotoRow[]): GidsZoekertje {
   return {
     id: row.id,
     listingId: row.listing_id,
+    listingSlug: shop.slug,
     listingName: shop.name,
     listingCity: shop.city,
     title: row.title,
@@ -62,7 +63,7 @@ export async function fetchPublishedGidsZoekertjesAdmin(): Promise<FetchPublishe
   const { data, error } = await admin
     .from('gids_zoekertjes')
     .select(
-      'id, listing_id, title, description, category, condition, kind, item_type, brand, price_class, created_at, gids_listings(name, city)',
+      'id, listing_id, title, description, category, condition, kind, item_type, brand, price_class, created_at, gids_listings(name, city, slug)',
     )
     .eq('status', 'published')
     .order('created_at', { ascending: false })
@@ -84,13 +85,12 @@ export async function fetchPublishedGidsZoekertjesAdmin(): Promise<FetchPublishe
     .from('gids_zoekertje_photos')
     .select('zoekertje_id, sort_order, public_url')
     .in('zoekertje_id', ids)
+    .eq('sort_order', 0)
 
   const photosById = new Map<string, PhotoRow[]>()
   for (const p of photoRows ?? []) {
     const id = p.zoekertje_id as string
-    const list = photosById.get(id) ?? []
-    list.push({ sort_order: p.sort_order as number, public_url: p.public_url as string })
-    photosById.set(id, list)
+    photosById.set(id, [{ sort_order: p.sort_order as number, public_url: p.public_url as string }])
   }
 
   return { zoekertjes: rows.map((r) => mapRow(r, photosById.get(r.id) ?? [])) }
@@ -119,7 +119,7 @@ export async function fetchGidsZoekertjesByListingIdAdmin(listingId: string): Pr
   const { data, error } = await admin
     .from('gids_zoekertjes')
     .select(
-      'id, listing_id, title, description, category, condition, kind, item_type, brand, price_class, created_at, gids_listings(name, city)',
+      'id, listing_id, title, description, category, condition, kind, item_type, brand, price_class, created_at, gids_listings(name, city, slug)',
     )
     .eq('listing_id', listingId)
     .eq('status', 'published')
@@ -158,7 +158,7 @@ export async function fetchGidsZoekertjeByIdAdmin(id: string): Promise<GidsZoeke
   const { data, error } = await admin
     .from('gids_zoekertjes')
     .select(
-      'id, listing_id, title, description, category, condition, kind, item_type, brand, price_class, created_at, gids_listings(name, city)',
+      'id, listing_id, title, description, category, condition, kind, item_type, brand, price_class, created_at, gids_listings(name, city, slug)',
     )
     .eq('id', id)
     .maybeSingle()

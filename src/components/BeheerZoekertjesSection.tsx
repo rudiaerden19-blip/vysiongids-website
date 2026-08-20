@@ -6,6 +6,7 @@ import ZoekertjeDetailModal from '@/components/ZoekertjeDetailModal'
 import { zoekertjeCategoryLabel } from '@/lib/gids-zoekertjes-categories'
 import { formatGidsZoekertjePriceDisplay } from '@/lib/gids-zoekertjes-price'
 import { normalizeZoekertjeTitleInput } from '@/lib/gids-zoekertjes-text'
+import { fetchGidsZoekertjeDetailClient } from '@/lib/fetch-gids-zoekertje-detail-client'
 import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
 import { listingHasGidsPremium } from '@/lib/gids-premium'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
@@ -88,6 +89,9 @@ export default function BeheerZoekertjesSection({
   function openPreview(z: GidsZoekertje) {
     setPreviewZoekertje(z)
     setPreviewOpen(true)
+    void fetchGidsZoekertjeDetailClient(z.id).then((full) => {
+      if (full) setPreviewZoekertje(full)
+    })
   }
 
   function closePreview() {

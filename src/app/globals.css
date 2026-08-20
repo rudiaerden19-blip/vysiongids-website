@@ -3677,6 +3677,14 @@ body {
   min-width: 8rem;
 }
 
+.vysiongids-zoekertje-primary-btn--link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  text-align: center;
+}
+
 .vysiongids-zoekertje-modal-actions {
   display: flex;
   flex-wrap: wrap;
