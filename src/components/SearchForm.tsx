@@ -321,7 +321,7 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
           name="q"
           type="search"
           defaultValue={q}
-          placeholder="Bv. pizzeria in Pelt, frituur, naam van de zaak"
+          placeholder="Bv frituur dichtbij pizzeria gent frituur nu open"
           style={fieldInput}
           autoComplete="off"
         />
