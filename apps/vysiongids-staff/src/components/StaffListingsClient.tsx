@@ -1,13 +1,15 @@
 'use client'
 
-import Link from 'next/link'
 import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
 import { formatGidsPremiumDate, GIDS_PREMIUM_YEARLY_EUR } from '@/lib/gids-premium'
 import type { GidsStaffListingRow } from '@/lib/gids-staff-listings-db'
 
+const PUBLIC_GIDS =
+  process.env.NEXT_PUBLIC_VYSIONGIDS_PUBLIC_SITE_URL?.replace(/\/$/, '') ?? 'https://www.vysiongids.be'
+
 type StaffLoginState = 'loading' | 'login' | 'ready' | 'unconfigured'
 
-export default function GidsStaffListingsClient() {
+export default function StaffListingsClient() {
   const [state, setState] = useState<StaffLoginState>('loading')
   const [password, setPassword] = useState('')
   const [loginError, setLoginError] = useState<string | null>(null)
@@ -18,7 +20,7 @@ export default function GidsStaffListingsClient() {
 
   const refreshListings = useCallback(async () => {
     setLoadError(null)
-    const r = await fetch('/api/gids/staff/listings', { credentials: 'same-origin' })
+    const r = await fetch('/api/staff/listings', { credentials: 'same-origin' })
     if (r.status === 401) {
       setState('login')
       return
@@ -34,7 +36,7 @@ export default function GidsStaffListingsClient() {
 
   useEffect(() => {
     void (async () => {
-      const r = await fetch('/api/gids/staff/login', { credentials: 'same-origin' })
+      const r = await fetch('/api/staff/login', { credentials: 'same-origin' })
       const data = (await r.json()) as { authenticated?: boolean; configured?: boolean }
       if (!data.configured) {
         setState('unconfigured')
@@ -51,7 +53,7 @@ export default function GidsStaffListingsClient() {
   async function onLogin(e: FormEvent) {
     e.preventDefault()
     setLoginError(null)
-    const r = await fetch('/api/gids/staff/login', {
+    const r = await fetch('/api/staff/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'same-origin',
@@ -67,7 +69,7 @@ export default function GidsStaffListingsClient() {
   }
 
   async function logout() {
-    await fetch('/api/gids/staff/login', { method: 'DELETE', credentials: 'same-origin' })
+    await fetch('/api/staff/login', { method: 'DELETE', credentials: 'same-origin' })
     setListings([])
     setState('login')
   }
@@ -75,7 +77,7 @@ export default function GidsStaffListingsClient() {
   async function patchListing(id: string, action: string) {
     setBusyId(id)
     try {
-      const r = await fetch(`/api/gids/staff/listings/${id}`, {
+      const r = await fetch(`/api/staff/listings/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
@@ -103,7 +105,7 @@ export default function GidsStaffListingsClient() {
     if (!ok) return
     setBusyId(row.id)
     try {
-      const r = await fetch(`/api/gids/staff/listings/${row.id}`, {
+      const r = await fetch(`/api/staff/listings/${row.id}`, {
         method: 'DELETE',
         credentials: 'same-origin',
       })
@@ -137,17 +139,19 @@ export default function GidsStaffListingsClient() {
   if (state === 'unconfigured') {
     return (
       <p className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-950">
-        Medewerkerslogin is niet geconfigureerd. Zet <code>VYSIONGIDS_STAFF_PASSWORD</code> in Vercel (min. 12
-        tekens).
+        Zet <code>VYSIONGIDS_STAFF_PASSWORD</code> en Supabase-keys in de omgeving van dit portaal.
       </p>
     )
   }
 
   if (state === 'login') {
     return (
-      <form onSubmit={(e) => void onLogin(e)} className="mx-auto max-w-sm space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+      <form
+        onSubmit={(e) => void onLogin(e)}
+        className="mx-auto max-w-sm space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+      >
         <h2 className="text-lg font-bold text-gray-900">Medewerkerslogin</h2>
-        <p className="text-sm text-gray-600">Alleen voor Vysion-personeel. Niet delen met ondernemers.</p>
+        <p className="text-sm text-gray-600">Alleen Vysion-personeel.</p>
         <label className="block text-sm font-medium text-gray-800" htmlFor="staffPassword">
           Wachtwoord
         </label>
@@ -157,11 +161,11 @@ export default function GidsStaffListingsClient() {
           autoComplete="current-password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="vysiongids-form-input w-full"
+          className="staff-form-input"
           required
         />
         {loginError ? <p className="text-sm text-red-700">{loginError}</p> : null}
-        <button type="submit" className="w-full rounded-lg bg-accent px-4 py-2.5 font-semibold text-white hover:opacity-95">
+        <button type="submit" className="staff-btn-primary w-full px-4 py-2.5">
           Inloggen
         </button>
       </form>
@@ -172,7 +176,7 @@ export default function GidsStaffListingsClient() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-gray-600">
-          Premium: €{GIDS_PREMIUM_YEARLY_EUR}/jaar · volgende betaling = +365 dagen na registratie betaling.
+          Premium: €{GIDS_PREMIUM_YEARLY_EUR}/jaar · volgende betaling = +365 dagen na «Betaald».
         </p>
         <button
           type="button"
@@ -188,13 +192,13 @@ export default function GidsStaffListingsClient() {
         placeholder="Zoek op naam, slug, stad…"
         value={filter}
         onChange={(e) => setFilter(e.target.value)}
-        className="vysiongids-form-input max-w-md w-full"
+        className="staff-form-input max-w-md"
       />
 
       {loadError ? <p className="text-red-700">{loadError}</p> : null}
 
-      <div className="vysiongids-staff-table-wrap overflow-x-auto rounded-xl border border-gray-200 bg-white">
-        <table className="vysiongids-staff-table">
+      <div className="staff-table-wrap overflow-x-auto rounded-xl border border-gray-200 bg-white">
+        <table className="staff-table">
           <thead>
             <tr>
               <th>Zaak</th>
@@ -215,9 +219,14 @@ export default function GidsStaffListingsClient() {
                   <td>
                     <div className="font-semibold text-gray-900">{row.name}</div>
                     <div className="text-xs text-gray-500">
-                      <Link href={`/zaak/${row.slug}`} className="text-accent hover:underline" target="_blank" rel="noreferrer">
+                      <a
+                        href={`${PUBLIC_GIDS}/zaak/${row.slug}`}
+                        className="staff-link"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
                         {row.slug}
-                      </Link>
+                      </a>
                     </div>
                   </td>
                   <td className="text-sm text-gray-700">
@@ -242,11 +251,11 @@ export default function GidsStaffListingsClient() {
                     ) : null}
                   </td>
                   <td>
-                    <div className="vysiongids-staff-actions">
+                    <div className="staff-actions">
                       <button
                         type="button"
                         disabled={busy}
-                        className="vysiongids-staff-action-btn"
+                        className="staff-action-btn"
                         onClick={() => void patchListing(row.id, 'mark_paid')}
                       >
                         Betaald
@@ -255,7 +264,7 @@ export default function GidsStaffListingsClient() {
                         <button
                           type="button"
                           disabled={busy}
-                          className="vysiongids-staff-action-btn"
+                          className="staff-action-btn"
                           onClick={() => void patchListing(row.id, 'resume')}
                         >
                           Hervatten
@@ -264,7 +273,7 @@ export default function GidsStaffListingsClient() {
                         <button
                           type="button"
                           disabled={busy}
-                          className="vysiongids-staff-action-btn"
+                          className="staff-action-btn"
                           onClick={() => void patchListing(row.id, 'pause')}
                         >
                           Pauzeren
@@ -274,7 +283,7 @@ export default function GidsStaffListingsClient() {
                         <button
                           type="button"
                           disabled={busy}
-                          className="vysiongids-staff-action-btn"
+                          className="staff-action-btn"
                           onClick={() => void patchListing(row.id, 'show_listing')}
                         >
                           Online
@@ -283,7 +292,7 @@ export default function GidsStaffListingsClient() {
                         <button
                           type="button"
                           disabled={busy}
-                          className="vysiongids-staff-action-btn"
+                          className="staff-action-btn"
                           onClick={() => void patchListing(row.id, 'hide_listing')}
                         >
                           Offline
@@ -292,7 +301,7 @@ export default function GidsStaffListingsClient() {
                       <button
                         type="button"
                         disabled={busy}
-                        className="vysiongids-staff-action-btn vysiongids-staff-action-btn--danger"
+                        className="staff-action-btn staff-action-btn--danger"
                         onClick={() => void deleteListing(row)}
                       >
                         Verwijderen
@@ -308,7 +317,9 @@ export default function GidsStaffListingsClient() {
           <p className="p-6 text-center text-sm text-gray-500">Geen zaken gevonden.</p>
         ) : null}
       </div>
-      <p className="text-xs text-gray-500">{filtered.length} van {listings.length} zaken</p>
+      <p className="text-xs text-gray-500">
+        {filtered.length} van {listings.length} zaken · publieke gids: {PUBLIC_GIDS}
+      </p>
     </div>
   )
 }

@@ -1,5 +1,4 @@
 import { NextResponse } from 'next/server'
-import { revalidatePath, revalidateTag } from 'next/cache'
 import { isGidsStaffAuthenticated } from '@/lib/gids-staff-session'
 import {
   applyGidsStaffListingActionAdmin,
@@ -7,7 +6,7 @@ import {
   fetchGidsListingSlugByIdAdmin,
   type StaffListingAction,
 } from '@/lib/gids-staff-listings-db'
-import { deleteGidsListingByIdAdmin } from '@/lib/gids-listing-delete-admin'
+import { deleteGidsListingByIdAdmin, revalidatePublicGidsSite } from '@/lib/gids-listing-delete-admin'
 
 type PatchBody = {
   action?: StaffListingAction | 'hide_listing' | 'show_listing'
@@ -29,18 +28,11 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
   }
 
   const action = body.action
-  if (action === 'hide_listing') {
-    const r = await setGidsListingPausedAdmin(id, true)
+  if (action === 'hide_listing' || action === 'show_listing') {
+    const r = await setGidsListingPausedAdmin(id, action === 'hide_listing')
     if (!r.ok) return NextResponse.json({ error: r.error }, { status: 500 })
-    revalidateTag('gids-listings', 'max')
-    revalidatePath('/')
-    return NextResponse.json({ ok: true })
-  }
-  if (action === 'show_listing') {
-    const r = await setGidsListingPausedAdmin(id, false)
-    if (!r.ok) return NextResponse.json({ error: r.error }, { status: 500 })
-    revalidateTag('gids-listings', 'max')
-    revalidatePath('/')
+    const slug = await fetchGidsListingSlugByIdAdmin(id)
+    await revalidatePublicGidsSite(slug)
     return NextResponse.json({ ok: true })
   }
 
@@ -51,9 +43,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
   const result = await applyGidsStaffListingActionAdmin(id, action)
   if (!result.ok) return NextResponse.json({ error: result.error }, { status: 500 })
 
-  revalidateTag('gids-listings', 'max')
-  revalidatePath('/')
-  revalidatePath(`/zaak/${result.row.slug}`)
+  await revalidatePublicGidsSite(result.row.slug)
 
   return NextResponse.json({ ok: true, listing: result.row })
 }
@@ -71,9 +61,7 @@ export async function DELETE(_req: Request, ctx: { params: Promise<{ id: string 
   const deleted = await deleteGidsListingByIdAdmin(id)
   if (!deleted.ok) return NextResponse.json({ error: deleted.error }, { status: 500 })
 
-  revalidateTag('gids-listings', 'max')
-  revalidatePath('/')
-  if (slug) revalidatePath(`/zaak/${slug}`)
+  await revalidatePublicGidsSite(slug)
 
   return NextResponse.json({ ok: true })
 }
