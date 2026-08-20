@@ -23,3 +23,5 @@ export type GidsZoekertje = {
 
 export const GIDS_ZOEKERTJE_MAX_PHOTOS = 24
 export const GIDS_ZOEKERTJE_TITLE_MAX = 60
+/** Max. actieve zoekertjes per premium-zaak (meerdere toegestaan). */
+export const GIDS_ZOEKERTJE_MAX_PER_LISTING = 50

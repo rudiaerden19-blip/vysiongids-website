@@ -96,6 +96,61 @@ export async function fetchPublishedGidsZoekertjesAdmin(): Promise<FetchPublishe
   return { zoekertjes: rows.map((r) => mapRow(r, photosById.get(r.id) ?? [])) }
 }
 
+export async function countGidsZoekertjesByListingIdAdmin(listingId: string): Promise<number | null> {
+  const admin = createGidsSupabaseAdmin()
+  if (!admin) return null
+  const { count, error } = await admin
+    .from('gids_zoekertjes')
+    .select('id', { count: 'exact', head: true })
+    .eq('listing_id', listingId)
+    .eq('status', 'published')
+  if (error) {
+    console.error('[gids zoekertjes count]', error.message)
+    return null
+  }
+  return count ?? 0
+}
+
+/** Alle gepubliceerde zoekertjes van één zaak (beheer — geen site-brede limiet). */
+export async function fetchGidsZoekertjesByListingIdAdmin(listingId: string): Promise<GidsZoekertje[] | null> {
+  const admin = createGidsSupabaseAdmin()
+  if (!admin) return null
+
+  const { data, error } = await admin
+    .from('gids_zoekertjes')
+    .select(
+      'id, listing_id, title, description, category, condition, kind, item_type, brand, price_class, created_at, gids_listings(name, city)',
+    )
+    .eq('listing_id', listingId)
+    .eq('status', 'published')
+    .order('created_at', { ascending: false })
+
+  if (error) {
+    console.error('[gids zoekertjes by listing]', error.message)
+    if (isMissingGidsZoekertjesTable(error.message)) return []
+    return null
+  }
+
+  const rows = (data ?? []) as Row[]
+  if (rows.length === 0) return []
+
+  const ids = rows.map((r) => r.id)
+  const { data: photoRows } = await admin
+    .from('gids_zoekertje_photos')
+    .select('zoekertje_id, sort_order, public_url')
+    .in('zoekertje_id', ids)
+
+  const photosById = new Map<string, PhotoRow[]>()
+  for (const p of photoRows ?? []) {
+    const id = p.zoekertje_id as string
+    const list = photosById.get(id) ?? []
+    list.push({ sort_order: p.sort_order as number, public_url: p.public_url as string })
+    photosById.set(id, list)
+  }
+
+  return rows.map((r) => mapRow(r, photosById.get(r.id) ?? []))
+}
+
 export async function fetchGidsZoekertjeByIdAdmin(id: string): Promise<GidsZoekertje | null> {
   const admin = createGidsSupabaseAdmin()
   if (!admin) return null

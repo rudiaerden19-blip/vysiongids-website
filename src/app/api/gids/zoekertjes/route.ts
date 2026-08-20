@@ -5,6 +5,8 @@ import { fetchListingRowByIdAdmin } from '@/lib/gids-listings-db'
 import { resolveListingPremiumActive } from '@/lib/gids-premium'
 import {
   createGidsZoekertjeAdmin,
+  countGidsZoekertjesByListingIdAdmin,
+  fetchGidsZoekertjesByListingIdAdmin,
   fetchPublishedGidsZoekertjesAdmin,
   replaceGidsZoekertjePhotosAdmin,
 } from '@/lib/gids-zoekertjes-db'
@@ -14,7 +16,7 @@ import {
   normalizeZoekertjeOptionalLine,
   normalizeZoekertjeTitleInput,
 } from '@/lib/gids-zoekertjes-text'
-import { GIDS_ZOEKERTJE_MAX_PHOTOS, GIDS_ZOEKERTJE_TITLE_MAX } from '@/lib/gids-zoekertjes-types'
+import { GIDS_ZOEKERTJE_MAX_PER_LISTING, GIDS_ZOEKERTJE_MAX_PHOTOS } from '@/lib/gids-zoekertjes-types'
 import { ensureGidsPhotosBucket, siteOriginFromRequest } from '@/lib/gids-listing-photos-server'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 
@@ -98,6 +100,19 @@ export async function POST(req: Request) {
   const photos = collectPhotoFiles(form)
   if (photos.length > GIDS_ZOEKERTJE_MAX_PHOTOS) {
     return NextResponse.json({ error: `Maximaal ${GIDS_ZOEKERTJE_MAX_PHOTOS} foto's.` }, { status: 400 })
+  }
+
+  const existingCount = await countGidsZoekertjesByListingIdAdmin(listingId)
+  if (existingCount === null) {
+    return NextResponse.json({ error: 'Zoekertjes tellen mislukt.' }, { status: 503 })
+  }
+  if (existingCount >= GIDS_ZOEKERTJE_MAX_PER_LISTING) {
+    return NextResponse.json(
+      {
+        error: `Je hebt het maximum van ${GIDS_ZOEKERTJE_MAX_PER_LISTING} zoekertjes per zaak bereikt. Verwijder eerst een oud zoekertje.`,
+      },
+      { status: 400 },
+    )
   }
 
   const created = await createGidsZoekertjeAdmin(listingId, {

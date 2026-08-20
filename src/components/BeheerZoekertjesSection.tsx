@@ -11,6 +11,7 @@ import {
 import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
 import { listingHasGidsPremium } from '@/lib/gids-premium'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
+import { GIDS_ZOEKERTJE_MAX_PER_LISTING } from '@/lib/gids-zoekertjes-types'
 
 type Props = {
   premiumMember?: boolean
@@ -39,20 +40,19 @@ export default function BeheerZoekertjesSection({
     }
     setLoading(true)
     try {
-      const r = await fetch('/api/gids/zoekertjes', { credentials: 'same-origin' })
+      const r = await fetch('/api/gids/zoekertjes?mine=1', { credentials: 'same-origin' })
       const data = (await r.json()) as {
         zoekertjes?: GidsZoekertje[]
         ownerListingId?: string | null
         setupRequired?: boolean
+        maxPerListing?: number
       }
       if (!r.ok) {
         setMine([])
         return
       }
       setSetupRequired(data.setupRequired === true)
-      const ownerId = data.ownerListingId
-      const all = data.zoekertjes ?? []
-      setMine(ownerId ? all.filter((z) => z.listingId === ownerId) : [])
+      setMine(data.zoekertjes ?? [])
     } catch {
       setMine([])
     } finally {
@@ -106,7 +106,8 @@ export default function BeheerZoekertjesSection({
         <a href="/zoekertjes" className="font-semibold text-accent underline">
           Zoekertjes
         </a>
-        -pagina.
+        -pagina. Je mag <strong>meerdere zoekertjes</strong> plaatsen (max. {GIDS_ZOEKERTJE_MAX_PER_LISTING} per
+        zaak).
       </p>
 
       <div className="vysiongids-zoekertje-beheer-warn mt-3" role="note">
@@ -127,9 +128,22 @@ export default function BeheerZoekertjesSection({
         type="button"
         className="vysiongids-beheer-quick-nav-btn mt-4"
         onClick={openNew}
+        disabled={!loading && mine.length >= GIDS_ZOEKERTJE_MAX_PER_LISTING}
       >
-        Zoekertje plaatsen
+        {mine.length > 0 ? 'Nog een zoekertje plaatsen' : 'Zoekertje plaatsen'}
       </button>
+
+      {!loading && mine.length >= GIDS_ZOEKERTJE_MAX_PER_LISTING ? (
+        <p className="mt-2 text-sm text-amber-900">
+          Maximum {GIDS_ZOEKERTJE_MAX_PER_LISTING} zoekertjes bereikt — verwijder er één om een nieuwe te plaatsen.
+        </p>
+      ) : null}
+
+      {!loading && mine.length > 0 ? (
+        <p className="mt-3 text-sm font-semibold text-gray-800">
+          Jouw zoekertjes ({mine.length})
+        </p>
+      ) : null}
 
       {loading ? <p className="mt-4 text-sm text-gray-600">Je zoekertjes laden…</p> : null}
 
