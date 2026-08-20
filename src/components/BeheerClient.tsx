@@ -11,6 +11,7 @@ import {
   readGidsBeheerLoginHint,
 } from '@/lib/gids-beheer-login-hint'
 import BeheerPremiumQuickNav from '@/components/BeheerPremiumQuickNav'
+import BeheerZoekertjesSection from '@/components/BeheerZoekertjesSection'
 import type { Listing } from '@/lib/listing-types'
 
 const BeheerEditForm = dynamic(() => import('@/components/BeheerEditForm'), {
@@ -39,6 +40,10 @@ export default function BeheerClient() {
   const [sessionReady, setSessionReady] = useState(Boolean(loginHint))
   const [listingLoading, setListingLoading] = useState(true)
   const [publicSlug, setPublicSlug] = useState<string | undefined>(loginHint?.slug)
+  const [zoekertjeModalOpen, setZoekertjeModalOpen] = useState(false)
+  const [zoekertjePlaceRequest, setZoekertjePlaceRequest] = useState(0)
+
+  const premiumMember = listing?.premiumMember ?? me?.premiumMember
 
   useEffect(() => {
     const controller = new AbortController()
@@ -127,7 +132,11 @@ export default function BeheerClient() {
   if (!sessionReady && !loginHint) {
     return (
       <div className="space-y-8">
-        <BeheerPremiumQuickNav premiumMember={listing?.premiumMember ?? me?.premiumMember} listingName={me?.name} />
+        <BeheerPremiumQuickNav
+          premiumMember={premiumMember}
+          listingName={me?.name}
+          onZoekertjePlace={() => setZoekertjePlaceRequest((n) => n + 1)}
+        />
         <p className="text-gray-600">Bezig met laden…</p>
       </div>
     )
@@ -136,7 +145,11 @@ export default function BeheerClient() {
   if (!me?.authenticated) {
     return (
       <div className="space-y-8">
-        <BeheerPremiumQuickNav premiumMember={listing?.premiumMember ?? me?.premiumMember} listingName={me?.name} />
+        <BeheerPremiumQuickNav
+          premiumMember={premiumMember}
+          listingName={me?.name}
+          onZoekertjePlace={() => setZoekertjePlaceRequest((n) => n + 1)}
+        />
         <p className="text-gray-600">
           Niet ingelogd.{' '}
           <Link href="/login" className="font-semibold text-accent hover:underline">
@@ -162,7 +175,18 @@ export default function BeheerClient() {
           Betaling geannuleerd. Je kunt later opnieuw «Premium nemen».
         </p>
       ) : null}
-      <BeheerPremiumQuickNav premiumMember={listing?.premiumMember ?? me?.premiumMember} listingName={me?.name} />
+      <BeheerPremiumQuickNav
+        premiumMember={premiumMember}
+        listingName={me?.name}
+        onZoekertjePlace={() => setZoekertjePlaceRequest((n) => n + 1)}
+      />
+
+      <BeheerZoekertjesSection
+        premiumMember={premiumMember}
+        modalOpen={zoekertjeModalOpen}
+        onModalOpenChange={setZoekertjeModalOpen}
+        placeRequestId={zoekertjePlaceRequest}
+      />
 
       {slug ? <ListingOwnerDailyViews slug={slug} variant="beheer" /> : null}
 

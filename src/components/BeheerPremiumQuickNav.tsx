@@ -1,6 +1,5 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 import GidsPremiumPaywallModal from '@/components/GidsPremiumPaywallModal'
 import { listingHasGidsPremium } from '@/lib/gids-premium'
@@ -8,10 +7,11 @@ import { listingHasGidsPremium } from '@/lib/gids-premium'
 type Props = {
   premiumMember?: boolean
   listingName?: string
+  /** Premium: open zoekertje-popup in beheer (niet op publieke /zoekertjes). */
+  onZoekertjePlace?: () => void
 }
 
-export default function BeheerPremiumQuickNav({ premiumMember, listingName }: Props) {
-  const router = useRouter()
+export default function BeheerPremiumQuickNav({ premiumMember, listingName, onZoekertjePlace }: Props) {
   const [paywallOpen, setPaywallOpen] = useState(false)
   const isPremium = listingHasGidsPremium(premiumMember)
 
@@ -28,7 +28,8 @@ export default function BeheerPremiumQuickNav({ premiumMember, listingName }: Pr
       setPaywallOpen(true)
       return
     }
-    router.push('/zoekertjes?nieuw=1')
+    onZoekertjePlace?.()
+    document.getElementById('zoekertje-beheer')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
   function openPremiumPaywall() {
