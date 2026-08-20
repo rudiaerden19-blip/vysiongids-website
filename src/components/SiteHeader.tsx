@@ -5,6 +5,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
 import { createPortal } from 'react-dom'
 import HeaderLanguagePicker from '@/components/HeaderLanguagePicker'
+import VysionPlatformPromoModal, { type VysionPlatformPromoKind } from '@/components/VysionPlatformPromoModal'
 import {
   BELGIUM_CITIES,
   BELGIUM_PROVINCES,
@@ -45,7 +46,15 @@ function setRegionCookie(slug: ProvinceSlug) {
   document.cookie = `${REGION_COOKIE}=${slug};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`
 }
 
-function HeaderNavLinks({ onNavigate, className }: { onNavigate?: () => void; className?: string }) {
+function HeaderNavLinks({
+  onNavigate,
+  className,
+  onPlatformPromo,
+}: {
+  onNavigate?: () => void
+  className?: string
+  onPlatformPromo: (kind: VysionPlatformPromoKind) => void
+}) {
   return (
     <nav className={className ?? 'vysiongids-header-nav'} aria-label="Hoofdmenu">
       <Link href="/jobs" onClick={onNavigate}>
@@ -54,9 +63,26 @@ function HeaderNavLinks({ onNavigate, className }: { onNavigate?: () => void; cl
       <Link href="/zoekertjes" onClick={onNavigate}>
         Zoekertjes
       </Link>
-      <Link href="/leveranciers" onClick={onNavigate}>
-        Leveranciers
-      </Link>
+      <button
+        type="button"
+        className="vysiongids-header-nav-platform"
+        onClick={() => {
+          onPlatformPromo('order')
+          onNavigate?.()
+        }}
+      >
+        Online platform
+      </button>
+      <button
+        type="button"
+        className="vysiongids-header-nav-platform"
+        onClick={() => {
+          onPlatformPromo('reservations')
+          onNavigate?.()
+        }}
+      >
+        Reserveringen
+      </button>
       <Link href="/diensten" onClick={onNavigate}>
         Diensten
       </Link>
@@ -76,13 +102,25 @@ function HeaderNavLinks({ onNavigate, className }: { onNavigate?: () => void; cl
 const MOBILE_NAV_LINKS = [
   { href: '/jobs', label: 'Jobs' },
   { href: '/zoekertjes', label: 'Zoekertjes' },
-  { href: '/leveranciers', label: 'Leveranciers' },
   { href: '/diensten', label: 'Diensten' },
   { href: '/login', label: 'Login' },
 ] as const
 
-function MobileNavSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+function MobileNavSheet({
+  open,
+  onClose,
+  onPlatformPromo,
+}: {
+  open: boolean
+  onClose: () => void
+  onPlatformPromo: (kind: VysionPlatformPromoKind) => void
+}) {
   if (!open) return null
+
+  const openPlatform = (kind: VysionPlatformPromoKind) => {
+    onClose()
+    onPlatformPromo(kind)
+  }
 
   return (
     <nav className="vysiongids-mobile-nav-sheet" aria-label="Navigatie">
@@ -93,7 +131,24 @@ function MobileNavSheet({ open, onClose }: { open: boolean; onClose: () => void 
         </button>
       </div>
       <ul className="vysiongids-mobile-nav-list">
-        {MOBILE_NAV_LINKS.map((item) => (
+        {MOBILE_NAV_LINKS.slice(0, 2).map((item) => (
+          <li key={item.href}>
+            <Link href={item.href} className="vysiongids-mobile-nav-link" onClick={onClose}>
+              {item.label}
+            </Link>
+          </li>
+        ))}
+        <li>
+          <button type="button" className="vysiongids-mobile-nav-platform" onClick={() => openPlatform('order')}>
+            Online platform
+          </button>
+        </li>
+        <li>
+          <button type="button" className="vysiongids-mobile-nav-platform" onClick={() => openPlatform('reservations')}>
+            Reserveringen
+          </button>
+        </li>
+        {MOBILE_NAV_LINKS.slice(2).map((item) => (
           <li key={item.href}>
             <Link href={item.href} className="vysiongids-mobile-nav-link" onClick={onClose}>
               {item.label}
@@ -117,6 +172,7 @@ function MobileNavSheet({ open, onClose }: { open: boolean; onClose: () => void 
 function SiteHeaderBar() {
   const [open, setOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [platformPromo, setPlatformPromo] = useState<VysionPlatformPromoKind | null>(null)
   const [region, setRegion] = useState<ProvinceSlug>(DEFAULT_PROVINCE_SLUG)
   const [caretLeftPx, setCaretLeftPx] = useState(100)
   const [panelTopPx, setPanelTopPx] = useState(0)
@@ -152,6 +208,12 @@ function SiteHeaderBar() {
 
   const close = useCallback(() => setOpen(false), [])
   const closeMobile = useCallback(() => setMobileMenuOpen(false), [])
+  const closePlatformPromo = useCallback(() => setPlatformPromo(null), [])
+  const openPlatformPromo = useCallback((kind: VysionPlatformPromoKind) => {
+    setOpen(false)
+    setMobileMenuOpen(false)
+    setPlatformPromo(kind)
+  }, [])
 
   const measurePanel = useCallback(() => {
     const header = headerRef.current
@@ -361,7 +423,10 @@ function SiteHeaderBar() {
             </div>
           </div>
 
-          <HeaderNavLinks className="vysiongids-header-nav vysiongids-header-nav--desktop" />
+          <HeaderNavLinks
+            className="vysiongids-header-nav vysiongids-header-nav--desktop"
+            onPlatformPromo={openPlatformPromo}
+          />
 
           <button
             type="button"
@@ -391,12 +456,17 @@ function SiteHeaderBar() {
                 onClick={closeMobile}
               />
               <div id="vysiongids-mobile-nav" role="dialog" aria-modal="true" aria-label="Navigatie">
-                <MobileNavSheet open={mobileMenuOpen} onClose={closeMobile} />
+                <MobileNavSheet open={mobileMenuOpen} onClose={closeMobile} onPlatformPromo={openPlatformPromo} />
               </div>
             </>,
             document.body,
           )
         : null}
+      <VysionPlatformPromoModal
+        kind={platformPromo}
+        open={platformPromo !== null}
+        onClose={closePlatformPromo}
+      />
       {regionOverlay}
     </>
   )
