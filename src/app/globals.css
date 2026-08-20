@@ -1926,6 +1926,14 @@ body {
   color: #475569;
 }
 
+.vysiongids-beheer-hiring-block {
+  margin-top: 2rem;
+  padding: 1.25rem 1.35rem 1.5rem;
+  border-radius: 1rem;
+  border: 1px solid rgb(14 93 130 / 0.18);
+  background: linear-gradient(180deg, rgb(14 93 130 / 0.07) 0%, rgb(14 93 130 / 0.04) 100%);
+}
+
 .vysiongids-listing-open-status.is-open {
   color: #15803d;
 }
