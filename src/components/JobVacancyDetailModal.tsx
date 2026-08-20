@@ -1,5 +1,6 @@
 'use client'
 
+import Link from 'next/link'
 import { useEffect, useId } from 'react'
 import { createPortal } from 'react-dom'
 import type { Listing } from '@/lib/listing-types'
