@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import VerwijderZaakButton from '@/components/VerwijderZaakButton'
 import ListingOwnerDailyViews from '@/components/ListingOwnerDailyViews'
@@ -27,6 +27,8 @@ type MeResponse = {
 
 export default function BeheerClient() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const premiumFlash = searchParams.get('premium')
   const loginHint = readGidsBeheerLoginHint()
   const [me, setMe] = useState<MeResponse | null>(
     loginHint
@@ -108,6 +110,16 @@ export default function BeheerClient() {
 
   return (
     <div className="space-y-8">
+      {premiumFlash === 'success' ? (
+        <p className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900">
+          Bedankt! Je betaling is ontvangen — premium wordt binnen enkele seconden actief (ververs anders deze pagina).
+        </p>
+      ) : null}
+      {premiumFlash === 'cancel' ? (
+        <p className="rounded-lg border border-gray-200 bg-gray-50 px-4 py-3 text-sm text-gray-800">
+          Betaling geannuleerd. Je kunt later opnieuw «Premium nemen».
+        </p>
+      ) : null}
       <BeheerPremiumQuickNav premiumMember={listing?.premiumMember ?? me?.premiumMember} listingName={me?.name} />
 
       {slug ? <ListingOwnerDailyViews slug={slug} variant="beheer" /> : null}

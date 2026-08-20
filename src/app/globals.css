@@ -3426,6 +3426,10 @@ body {
   line-height: 1.65;
 }
 
+.vysiongids-premium-modal-panel {
+  width: min(100%, 26rem);
+}
+
 .vysiongids-job-modal-actions {
   margin-top: 1.25rem;
 }

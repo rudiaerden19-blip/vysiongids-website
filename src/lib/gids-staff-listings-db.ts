@@ -1,5 +1,6 @@
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
-import { addPremiumTermDays, resolveListingPremiumActive } from '@/lib/gids-premium'
+import { resolveListingPremiumActive } from '@/lib/gids-premium'
+import { activateGidsListingPremiumByIdAdmin } from '@/lib/gids-premium-db'
 
 export type GidsStaffListingRow = {
   id: string
@@ -20,6 +21,32 @@ export type GidsStaffListingRow = {
 const STAFF_LISTING_SELECT =
   'id, slug, name, address, city, postcode, status, premium_member, premium_paid_at, premium_expires_at, premium_paused, created_at'
 
+function mapStaffListingRow(row: Record<string, unknown>): GidsStaffListingRow {
+  const premium_member = row.premium_member === true
+  const premium_paused = row.premium_paused === true
+  const premium_paid_at = (row.premium_paid_at as string | null) ?? null
+  const premium_expires_at = (row.premium_expires_at as string | null) ?? null
+  return {
+    id: row.id as string,
+    slug: row.slug as string,
+    name: row.name as string,
+    address: row.address as string,
+    city: row.city as string,
+    postcode: row.postcode as string,
+    status: (row.status as string) ?? 'published',
+    premium_member,
+    premium_paid_at,
+    premium_expires_at,
+    premium_paused,
+    premiumActive: resolveListingPremiumActive({
+      premium_member,
+      premium_paused,
+      premium_expires_at,
+    }),
+    created_at: row.created_at as string,
+  }
+}
+
 export async function fetchAllGidsListingsForStaffAdmin(): Promise<GidsStaffListingRow[] | null> {
   const admin = createGidsSupabaseAdmin()
   if (!admin) return null
@@ -31,31 +58,7 @@ export async function fetchAllGidsListingsForStaffAdmin(): Promise<GidsStaffList
     throw new Error(error.message)
   }
 
-  return (data ?? []).map((row) => {
-    const premium_member = row.premium_member === true
-    const premium_paused = row.premium_paused === true
-    const premium_paid_at = (row.premium_paid_at as string | null) ?? null
-    const premium_expires_at = (row.premium_expires_at as string | null) ?? null
-    return {
-      id: row.id as string,
-      slug: row.slug as string,
-      name: row.name as string,
-      address: row.address as string,
-      city: row.city as string,
-      postcode: row.postcode as string,
-      status: (row.status as string) ?? 'published',
-      premium_member,
-      premium_paid_at,
-      premium_expires_at,
-      premium_paused,
-      premiumActive: resolveListingPremiumActive({
-        premium_member,
-        premium_paused,
-        premium_expires_at,
-      }),
-      created_at: row.created_at as string,
-    }
-  })
+  return (data ?? []).map((row) => mapStaffListingRow(row as Record<string, unknown>))
 }
 
 export type StaffListingAction = 'mark_paid' | 'pause' | 'resume' | 'revoke_premium'
@@ -78,13 +81,8 @@ export async function applyGidsStaffListingActionAdmin(
   let patch: Record<string, unknown> = {}
 
   if (action === 'mark_paid') {
-    const now = new Date()
-    patch = {
-      premium_member: true,
-      premium_paused: false,
-      premium_paid_at: now.toISOString(),
-      premium_expires_at: addPremiumTermDays(now).toISOString(),
-    }
+    const activated = await activateGidsListingPremiumByIdAdmin(listingId)
+    if (!activated.ok) return { ok: false, error: activated.error }
   } else if (action === 'pause') {
     patch = { premium_paused: true }
   } else if (action === 'resume') {
@@ -98,6 +96,16 @@ export async function applyGidsStaffListingActionAdmin(
     }
   }
 
+  if (action === 'mark_paid') {
+    const { data: refreshed, error: refErr } = await admin
+      .from('gids_listings')
+      .select(STAFF_LISTING_SELECT)
+      .eq('id', listingId)
+      .single()
+    if (refErr || !refreshed) return { ok: false, error: refErr?.message ?? 'Ophalen mislukt.' }
+    return { ok: true, row: mapStaffListingRow(refreshed) }
+  }
+
   const { data: updated, error: updErr } = await admin
     .from('gids_listings')
     .update(patch)
@@ -107,33 +115,7 @@ export async function applyGidsStaffListingActionAdmin(
 
   if (updErr || !updated) return { ok: false, error: updErr?.message ?? 'Opslaan mislukt.' }
 
-  const premium_member = updated.premium_member === true
-  const premium_paused = updated.premium_paused === true
-  const premium_paid_at = (updated.premium_paid_at as string | null) ?? null
-  const premium_expires_at = (updated.premium_expires_at as string | null) ?? null
-
-  return {
-    ok: true,
-    row: {
-      id: updated.id as string,
-      slug: updated.slug as string,
-      name: updated.name as string,
-      address: updated.address as string,
-      city: updated.city as string,
-      postcode: updated.postcode as string,
-      status: (updated.status as string) ?? 'published',
-      premium_member,
-      premium_paid_at,
-      premium_expires_at,
-      premium_paused,
-      premiumActive: resolveListingPremiumActive({
-        premium_member,
-        premium_paused,
-        premium_expires_at,
-      }),
-      created_at: updated.created_at as string,
-    },
-  }
+  return { ok: true, row: mapStaffListingRow(updated as Record<string, unknown>) }
 }
 
 export async function setGidsListingPausedAdmin(
