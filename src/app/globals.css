@@ -3211,6 +3211,14 @@ body {
   color: #374151;
 }
 
+.vysiongids-job-modal-address {
+  margin: 0.35rem 0 0;
+  font-style: normal;
+  font-size: 0.875rem;
+  line-height: 1.45;
+  color: #4b5563;
+}
+
 .vysiongids-job-card-btn--disabled {
   opacity: 0.45;
   cursor: not-allowed;

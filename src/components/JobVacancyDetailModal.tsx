@@ -3,6 +3,7 @@
 import { useEffect, useId } from 'react'
 import { createPortal } from 'react-dom'
 import type { Listing } from '@/lib/listing-types'
+import { formatListingAddressLines } from '@/lib/listing-display'
 import { formatGidsSentenceText } from '@/lib/gids-text'
 import { hiringJobTypeLabels, listingHiringBarTitle } from '@/lib/listing-hiring'
 import {
@@ -45,6 +46,7 @@ export default function JobVacancyDetailModal({ listing, open, onClose }: Props)
   const phone = resolveJobListingPhone(listing)
   const mailHref = email ? jobListingMailtoHref(listing, email) : null
   const telHref = phone ? jobListingTelHref(phone) : null
+  const { street, cityLine } = formatListingAddressLines(listing)
 
   const panel = (
     <div className="vysiongids-job-modal-root" role="presentation">
@@ -59,8 +61,16 @@ export default function JobVacancyDetailModal({ listing, open, onClose }: Props)
         </h2>
         <p className="vysiongids-job-modal-zaak">
           <span className="vysiongids-job-modal-zaak-name">{listing.name}</span>
-          <span className="vysiongids-job-card-meta"> · {listing.city}</span>
         </p>
+        <address className="vysiongids-job-modal-address">
+          {street ? (
+            <>
+              {street}
+              <br />
+            </>
+          ) : null}
+          {cityLine}
+        </address>
         {typeLabels.length ? <p className="vysiongids-job-card-types">{typeLabels.join(' · ')}</p> : null}
         <div className="vysiongids-job-modal-body">
           {description ? (
