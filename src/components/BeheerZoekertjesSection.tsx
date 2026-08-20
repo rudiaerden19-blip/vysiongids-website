@@ -102,12 +102,20 @@ export default function BeheerZoekertjesSection({
     <section id="zoekertje-beheer" className="rounded-xl border border-accent/30 bg-sky-50/80 p-5">
       <h2 className="text-lg font-bold text-gray-900">Zoekertjes</h2>
       <p className="mt-2 text-sm text-gray-600">
-        Plaats hier je advertentie (popup). Bezoekers zien hem op{' '}
+        Plaats hier je zoekertje — iedereen kan dit zien op de{' '}
         <a href="/zoekertjes" className="font-semibold text-accent underline">
           Zoekertjes
-        </a>{' '}
-        — zonder zelf te kunnen plaatsen.
+        </a>
+        -pagina.
       </p>
+
+      <div className="vysiongids-zoekertje-beheer-warn mt-3" role="note">
+        <p className="vysiongids-zoekertje-beheer-warn-title">Let Op</p>
+        <p className="vysiongids-zoekertje-beheer-warn-text">
+          Geef geen bankgegevens aan derden. Een zoekertje dat met een koerier moet worden opgehaald, of een
+          misleidend zoekertje, wordt onmiddellijk verwijderd.
+        </p>
+      </div>
 
       {setupRequired ? (
         <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950">
