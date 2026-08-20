@@ -91,6 +91,14 @@ export default function ZoekertjesPageClient({
         zijn van Vysiongids.
       </p>
 
+      <div className="vysiongids-zoekertje-beheer-warn mb-4" role="note" style={{ maxWidth: '40rem' }}>
+        <p className="vysiongids-zoekertje-beheer-warn-title">Let Op</p>
+        <p className="vysiongids-zoekertje-beheer-warn-text">
+          Geef geen bankgegevens aan derden. Een zoekertje dat met een koerier moet worden opgehaald, of een
+          misleidend zoekertje, wordt onmiddellijk verwijderd.
+        </p>
+      </div>
+
       {setupRequired ? (
         <p className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
           {GIDS_ZOEKERTJES_SETUP_SQL_HINT}
