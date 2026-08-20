@@ -66,7 +66,7 @@ export default function HomeStatsBar({ activeZaken, zoekactiesPerDag }: HomeStat
     <section className="vysiongids-home-stats" aria-label="Platformcijfers">
       <div className="vysiongids-home-stats-inner">
         <Stat display={formatStatNumber(active)} label="Actieve ondernemers" />
-        <Stat display={formatStatNumber(searches)} label="Zoekacties vandaag" />
+        <Stat display={formatStatNumber(searches)} label="Bezoekers vandaag" />
         <Stat display={`${gratis}%`} label="0% commissie" />
       </div>
     </section>
