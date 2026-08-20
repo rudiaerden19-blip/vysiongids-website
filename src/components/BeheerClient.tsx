@@ -10,6 +10,7 @@ import {
   clearGidsBeheerLoginHint,
   readGidsBeheerLoginHint,
 } from '@/lib/gids-beheer-login-hint'
+import BeheerPremiumQuickNav from '@/components/BeheerPremiumQuickNav'
 import type { Listing } from '@/lib/listing-types'
 
 const BeheerEditForm = dynamic(() => import('@/components/BeheerEditForm'), {
@@ -20,20 +21,8 @@ type MeResponse = {
   authenticated: boolean
   name?: string
   slug?: string
+  premiumMember?: boolean
   listing?: Listing
-}
-
-function BeheerQuickNav() {
-  return (
-    <div className="vysiongids-beheer-quick-nav">
-      <Link href="#vacature-beheer" className="vysiongids-beheer-quick-nav-btn">
-        Vacature plaatsen
-      </Link>
-      <Link href="/zoekertjes" className="vysiongids-beheer-quick-nav-btn">
-        Zoekertje plaatsen
-      </Link>
-    </div>
-  )
 }
 
 export default function BeheerClient() {
@@ -95,7 +84,7 @@ export default function BeheerClient() {
   if (!sessionReady && !loginHint) {
     return (
       <div className="space-y-8">
-        <BeheerQuickNav />
+        <BeheerPremiumQuickNav premiumMember={listing?.premiumMember ?? me?.premiumMember} listingName={me?.name} />
         <p className="text-gray-600">Bezig met laden…</p>
       </div>
     )
@@ -104,7 +93,7 @@ export default function BeheerClient() {
   if (!me?.authenticated) {
     return (
       <div className="space-y-8">
-        <BeheerQuickNav />
+        <BeheerPremiumQuickNav premiumMember={listing?.premiumMember ?? me?.premiumMember} listingName={me?.name} />
         <p className="text-gray-600">
           Niet ingelogd.{' '}
           <Link href="/login" className="font-semibold text-accent hover:underline">
@@ -119,7 +108,7 @@ export default function BeheerClient() {
 
   return (
     <div className="space-y-8">
-      <BeheerQuickNav />
+      <BeheerPremiumQuickNav premiumMember={listing?.premiumMember ?? me?.premiumMember} listingName={me?.name} />
 
       {slug ? <ListingOwnerDailyViews slug={slug} variant="beheer" /> : null}
 

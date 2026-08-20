@@ -44,7 +44,7 @@ export default function ListingPanel({
 
   const bodyTextSize = compact ? '0.8125rem' : '0.9375rem'
   const showTopZaakStamp = isTopZaakListing(listing)
-  const hiring = resolveListingPanelHiring(listing.infoExtras)
+  const hiring = resolveListingPanelHiring(listing.infoExtras, listing.premiumMember)
 
   return (
     <article className={`vysiongids-listing-panel${compact ? ' vysiongids-listing-panel--compact' : ''}`}>

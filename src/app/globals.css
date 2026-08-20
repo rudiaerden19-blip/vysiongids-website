@@ -1855,6 +1855,7 @@ body {
   justify-content: center;
   min-width: 8.5rem;
   padding: 0.75rem 1rem;
+  border: none;
   border-radius: 0.625rem;
   background: var(--accent);
   color: #fff !important;
@@ -1863,6 +1864,8 @@ body {
   line-height: 1.25;
   text-align: center;
   text-decoration: none;
+  cursor: pointer;
+  font-family: inherit;
   box-shadow: 0 2px 8px rgb(14 93 130 / 0.25);
   transition: filter 0.15s ease;
 }
@@ -3350,6 +3353,13 @@ body {
   margin-top: 1rem;
   color: #6b7280;
   font-style: italic;
+}
+
+.vysiongids-premium-modal-text {
+  margin: 1rem 0 0;
+  font-size: 0.9375rem;
+  color: #374151;
+  line-height: 1.65;
 }
 
 .vysiongids-job-modal-actions {

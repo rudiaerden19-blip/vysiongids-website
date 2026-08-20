@@ -1,4 +1,4 @@
-import Link from 'next/link'
+import ZoekertjesPlaceButton from '@/components/ZoekertjesPlaceButton'
 import SiteHeader from '@/components/SiteHeader'
 
 export const metadata = { title: 'Zoekertjes' }
@@ -23,13 +23,7 @@ export default function ZoekertjesPage() {
           uitgebreid. Wil je als eerste plaatsen?
         </p>
         <p style={{ margin: 0 }}>
-          <Link
-            href="mailto:contact@webvysion.tech?subject=Zoekertje%20Vysiongids"
-            className="vysiongids-header-nav-cta"
-            style={{ display: 'inline-block', textDecoration: 'none' }}
-          >
-            Zoekertje plaatsen
-          </Link>
+          <ZoekertjesPlaceButton />
         </p>
       </main>
     </>

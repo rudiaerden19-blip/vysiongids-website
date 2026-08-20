@@ -1,10 +1,12 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useRef, useState, type SyntheticEvent } from 'react'
 import type { Listing } from '@/lib/listing-types'
 import { HIRING_JOB_TYPES } from '@/lib/listing-hiring'
 import TitleCaseTextInput from '@/components/TitleCaseTextInput'
 import SentenceCaseTextarea from '@/components/SentenceCaseTextarea'
+import GidsPremiumPaywallModal from '@/components/GidsPremiumPaywallModal'
+import { listingHasGidsPremium } from '@/lib/gids-premium'
 
 function SpecialtyPhotoField({
   index,
@@ -69,6 +71,15 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
   const extras = listing?.infoExtras
   const specialties = extras?.specialties ?? []
   const [removeSpecialty, setRemoveSpecialty] = useState<[boolean, boolean, boolean]>([false, false, false])
+  const [paywallOpen, setPaywallOpen] = useState(false)
+  const isPremium = listingHasGidsPremium(listing?.premiumMember)
+  const hiringLocked = !isPremium
+
+  function guardPremium(e: SyntheticEvent) {
+    if (!hiringLocked) return
+    e.preventDefault()
+    setPaywallOpen(true)
+  }
 
   return (
     <fieldset className="vysiongids-owner-options mt-8 border-t border-gray-200 pt-8">
@@ -113,13 +124,28 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
         </div>
       </div>
 
-      <div className="vysiongids-beheer-hiring-block" id="vacature-beheer">
+      <div
+        className="vysiongids-beheer-hiring-block"
+        id="vacature-beheer"
+        onClickCapture={hiringLocked ? guardPremium : undefined}
+      >
         <h3 className="text-base font-semibold text-gray-900">Wij zoeken personeel</h3>
         <p className="text-xs text-gray-500">
           De blauwe balk onderaan elke zoekkaart is altijd zichtbaar. Vul hier je vacature in om «Soliciteren» te tonen.
         </p>
+        {hiringLocked ? (
+          <p className="mt-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-gray-800">
+            Vacatures zijn enkel voor betalende Vysiongids-leden. Gebruik bovenaan{' '}
+            <strong>Vacature plaatsen</strong> om premium aan te vragen.
+          </p>
+        ) : null}
         <label className="mt-2 flex items-center gap-2 text-sm">
-          <input type="checkbox" name="infoHiringEnabled" defaultChecked={extras?.hiring?.enabled} disabled={disabled} />
+          <input
+            type="checkbox"
+            name="infoHiringEnabled"
+            defaultChecked={extras?.hiring?.enabled}
+            disabled={disabled || hiringLocked}
+          />
           Vacature actief (zoekkaart + INFO)
         </label>
         <p className="mt-3 text-sm font-medium text-gray-800">Type contract / functie</p>
@@ -131,7 +157,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
                 name="infoHiringJobType"
                 value={type.id}
                 defaultChecked={extras?.hiring?.jobTypes?.includes(type.id)}
-                disabled={disabled}
+                disabled={disabled || hiringLocked}
               />
               {type.label}
             </label>
@@ -144,7 +170,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
           id="infoHiringTitle"
           name="infoHiringTitle"
           defaultValue={extras?.hiring?.title ?? ''}
-          disabled={disabled}
+          disabled={disabled || hiringLocked}
           className="vysiongids-form-input mt-1 w-full max-w-md text-sm"
           placeholder="Bv. Kok gevraagd"
         />
@@ -156,7 +182,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
           name="infoHiringText"
           rows={4}
           defaultValue={extras?.hiring?.text ?? ''}
-          disabled={disabled}
+          disabled={disabled || hiringLocked}
           className="vysiongids-form-input mt-1 w-full text-sm"
           placeholder="Bv. Wij zoeken dringend een keukenhulp voor doordeweeks en weekend."
         />
@@ -168,7 +194,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
           name="infoHiringHours"
           rows={2}
           defaultValue={extras?.hiring?.hours ?? ''}
-          disabled={disabled}
+          disabled={disabled || hiringLocked}
           className="vysiongids-form-input mt-1 w-full max-w-xl text-sm"
           placeholder="Bv. Ma–vr 17u–22u, za–zo 11u–23u"
         />
@@ -182,7 +208,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
               name="infoHiringEmail"
               type="email"
               defaultValue={extras?.hiring?.email ?? ''}
-              disabled={disabled}
+              disabled={disabled || hiringLocked}
               className="vysiongids-form-input mt-1 w-full text-sm"
               placeholder="jobs@jouwzaak.be"
             />
@@ -196,7 +222,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
               name="infoHiringPhone"
               type="tel"
               defaultValue={extras?.hiring?.phone ?? ''}
-              disabled={disabled}
+              disabled={disabled || hiringLocked}
               className="vysiongids-form-input mt-1 w-full text-sm"
               placeholder="0492 12 34 56"
             />
@@ -250,6 +276,11 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
           </div>
         </div>
       </div>
+      <GidsPremiumPaywallModal
+        open={paywallOpen}
+        onClose={() => setPaywallOpen(false)}
+        listingName={listing?.name}
+      />
     </fieldset>
   )
 }

@@ -100,6 +100,8 @@ export type Listing = {
   hoursByDay?: ListingDayHours[]
   amenities?: ListingAmenityId[]
   infoExtras?: ListingInfoExtras
+  /** Betalend Vysiongids-lid (vacatures, zoekertjes, …) */
+  premiumMember?: boolean
 }
 
 export type ListingSearchParams = {

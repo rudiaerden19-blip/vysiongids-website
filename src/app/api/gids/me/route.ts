@@ -31,6 +31,7 @@ import {
   uploadGidsListingMenuPdf,
 } from '@/lib/gids-listing-menu-server'
 import { geocodeListingAddress } from '@/lib/gids-listing-geocode'
+import { listingHasGidsPremium } from '@/lib/gids-premium'
 
 export const maxDuration = 60
 
@@ -47,6 +48,7 @@ export async function GET(req: Request) {
       listingId: session.id,
       slug: session.slug,
       name: session.name,
+      premiumMember: session.premium_member,
     })
   }
 
@@ -59,6 +61,7 @@ export async function GET(req: Request) {
     listingId: row.id,
     slug: listing.slug,
     name: listing.name,
+    premiumMember: listing.premiumMember === true,
     listing,
   })
 }
@@ -126,6 +129,15 @@ export async function PATCH(req: Request) {
 
   const needsPhotoUpload = d.photos.length > 0 || d.removePhotoSlots.length > 0
   const infoExtrasForm = parseInfoExtrasFromForm(form)
+  if (infoExtrasForm.hiringEnabled && !listingHasGidsPremium(row.premium_member)) {
+    return NextResponse.json(
+      {
+        error:
+          'Vacatures plaatsen is enkel voor betalende Vysiongids-leden (€50/jaar). Vraag premium aan via de knop in beheer.',
+      },
+      { status: 403 },
+    )
+  }
   const needsSpecialtyUpload = infoExtrasForm.specialtyPhotos.length > 0
   const needsMenuUpload = Boolean(d.menuPdfFile) || d.removeMenuPdf
   if (needsPhotoUpload || needsMenuUpload || needsSpecialtyUpload) {

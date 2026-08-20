@@ -43,6 +43,7 @@ export type GidsListingRow = {
   lat: number | null
   lng: number | null
   info_extras?: unknown
+  premium_member?: boolean | null
   gids_listing_photos?: PhotoRow[] | null
 }
 
@@ -91,6 +92,7 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
     hoursByDay: row.hours_by_day ?? undefined,
     amenities: row.amenities ?? undefined,
     infoExtras: normalizeListingInfoExtras(row.info_extras),
+    premiumMember: row.premium_member === true,
     lat: row.lat ?? undefined,
     lng: row.lng ?? undefined,
   }
@@ -161,16 +163,21 @@ export async function fetchListingRowByIdAdmin(id: string): Promise<GidsListingR
 /** Snelle sessie-check voor beheer (geen foto-join). */
 export async function fetchListingSessionByIdAdmin(
   id: string,
-): Promise<{ id: string; slug: string; name: string } | null> {
+): Promise<{ id: string; slug: string; name: string; premium_member: boolean } | null> {
   const supabase = createGidsSupabaseAdmin()
   if (!supabase) return null
   const { data, error } = await supabase
     .from('gids_listings')
-    .select('id, slug, name')
+    .select('id, slug, name, premium_member')
     .eq('id', id)
     .maybeSingle()
   if (error || !data) return null
-  return data as { id: string; slug: string; name: string }
+  return {
+    id: data.id as string,
+    slug: data.slug as string,
+    name: data.name as string,
+    premium_member: data.premium_member === true,
+  }
 }
 
 export async function fetchListingByNormalizedNameAdmin(nameNormalized: string): Promise<GidsListingRow | null> {

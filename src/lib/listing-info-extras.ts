@@ -1,3 +1,4 @@
+import { listingHasGidsPremium } from '@/lib/gids-premium'
 import { formatGidsTitleCase, formatGidsSentenceText } from '@/lib/gids-text'
 import {
   formatListingHiringPanelMessage,
@@ -118,13 +119,16 @@ export function listingHasInfoExtras(extras: ListingInfoExtras | undefined): boo
 }
 
 /** Zoekkaart: vacaturebalk altijd zichtbaar; knop alleen bij actieve vacature. */
-export function resolveListingPanelHiring(extras: ListingInfoExtras | undefined): {
+export function resolveListingPanelHiring(
+  extras: ListingInfoExtras | undefined,
+  premiumMember?: boolean,
+): {
   active: boolean
   message: string
   phone?: string
 } {
   const h = extras?.hiring
-  if (h && listingHiringIsActive(h)) {
+  if (h && listingHiringIsActive(h) && listingHasGidsPremium(premiumMember)) {
     const phone = h.phone?.trim() ?? ''
     return {
       active: true,

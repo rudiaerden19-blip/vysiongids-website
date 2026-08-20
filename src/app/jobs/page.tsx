@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import SiteHeader from '@/components/SiteHeader'
 import JobsPageClient from '@/components/JobsPageClient'
 import { listingHiringIsActive } from '@/lib/listing-hiring'
+import { listingHasGidsPremium } from '@/lib/gids-premium'
 import { getAllListings } from '@/lib/listings'
 
 export const metadata = { title: 'Jobs' }
@@ -9,7 +10,9 @@ export const metadata = { title: 'Jobs' }
 export const revalidate = 60
 
 export default async function JobsPage() {
-  const listings = (await getAllListings()).filter((l) => listingHiringIsActive(l.infoExtras?.hiring))
+  const listings = (await getAllListings()).filter(
+    (l) => listingHasGidsPremium(l.premiumMember) && listingHiringIsActive(l.infoExtras?.hiring),
+  )
 
   return (
     <>
