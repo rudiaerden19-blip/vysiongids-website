@@ -51,7 +51,7 @@ function collectPhotoFiles(form: FormData): { index: number; file: File }[] {
 }
 
 async function requireOwnerPremium(id: string) {
-  const listingId = await getGidsOwnerListingIdFromCookies()
+  const listingId = await getGidsOwnerListingIdFromCookies({ touch: true })
   if (!listingId) return { error: NextResponse.json({ error: 'Log in met je zaak.' }, { status: 401 }) }
   const row = await fetchListingRowByIdAdmin(listingId)
   if (!row || !resolveListingPremiumActive(row)) {
@@ -67,7 +67,7 @@ async function requireOwnerPremium(id: string) {
 
 export async function GET(_req: Request, ctx: RouteCtx) {
   const { id } = await ctx.params
-  const listingId = await getGidsOwnerListingIdFromCookies()
+  const listingId = await getGidsOwnerListingIdFromCookies({ touch: true })
 
   if (listingId) {
     const ad = await fetchGidsZoekertjeByIdAdmin(id)

@@ -22,6 +22,7 @@ export default function GidsLoginForm() {
       const res = await fetch('/api/gids/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ name, pin }),
       })
       const data = (await res.json()) as { error?: string; slug?: string; name?: string }

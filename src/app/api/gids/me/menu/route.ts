@@ -9,7 +9,7 @@ import { gidsListingSaveErrorMessage } from '@/lib/gids-listing-db-write'
 export const maxDuration = 60
 
 export async function GET() {
-  const listingId = await getGidsOwnerListingIdFromCookies()
+  const listingId = await getGidsOwnerListingIdFromCookies({ touch: true })
   if (!listingId) return NextResponse.json({ error: 'Niet ingelogd.' }, { status: 401 })
 
   const catalog = await fetchGidsMenuCatalogByListingIdAdmin(listingId)
@@ -17,7 +17,7 @@ export async function GET() {
 }
 
 export async function PUT(req: Request) {
-  const listingId = await getGidsOwnerListingIdFromCookies()
+  const listingId = await getGidsOwnerListingIdFromCookies({ touch: true })
   if (!listingId) return NextResponse.json({ error: 'Niet ingelogd.' }, { status: 401 })
 
   let body: GidsMenuSavePayload

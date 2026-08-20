@@ -8,7 +8,7 @@ export const maxDuration = 60
 const MAX_BYTES = 5 * 1024 * 1024
 
 export async function POST(req: Request) {
-  const listingId = await getGidsOwnerListingIdFromCookies()
+  const listingId = await getGidsOwnerListingIdFromCookies({ touch: true })
   if (!listingId) return NextResponse.json({ error: 'Niet ingelogd.' }, { status: 401 })
 
   const admin = createGidsSupabaseAdmin()

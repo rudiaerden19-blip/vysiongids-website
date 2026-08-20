@@ -48,7 +48,7 @@ function collectPhotoFiles(form: FormData): { index: number; file: File }[] {
 }
 
 async function requirePremiumListing() {
-  const listingId = await getGidsOwnerListingIdFromCookies()
+  const listingId = await getGidsOwnerListingIdFromCookies({ touch: true })
   if (!listingId) return { error: NextResponse.json({ error: 'Log in met je zaak.' }, { status: 401 }) }
   const row = await fetchListingRowByIdAdmin(listingId)
   if (!row) return { error: NextResponse.json({ error: 'Zaak niet gevonden.' }, { status: 404 }) }
@@ -65,7 +65,7 @@ async function requirePremiumListing() {
 
 export async function GET(req: Request) {
   const mine = new URL(req.url).searchParams.get('mine') === '1'
-  const ownerListingId = await getGidsOwnerListingIdFromCookies()
+  const ownerListingId = await getGidsOwnerListingIdFromCookies({ touch: true })
 
   if (mine) {
     if (!ownerListingId) {

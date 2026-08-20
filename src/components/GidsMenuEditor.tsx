@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { GidsMenuCatalog, GidsMenuCategory, GidsMenuProduct } from '@/lib/gids-menu-types'
 import { compressListingPhoto } from '@/lib/compress-listing-photo'
 import { sanitizeMenuImageUrl } from '@/lib/gids-menu-image-url'
+import GidsOwnerSessionKeepAlive from '@/components/GidsOwnerSessionKeepAlive'
 
 function newId(): string {
   return crypto.randomUUID()
@@ -222,6 +223,8 @@ export default function GidsMenuEditor() {
   if (loading) return <p className="text-gray-600">Menu laden…</p>
 
   return (
+    <>
+      <GidsOwnerSessionKeepAlive />
     <div className="vysiongids-menu-editor space-y-6">
       <p className="text-sm text-gray-600">
         Bouw je menu zoals in de kassa: categorieën, producten, foto&apos;s en prijzen. Na opslaan opent de knop{' '}
@@ -356,5 +359,6 @@ export default function GidsMenuEditor() {
         </button>
       </div>
     </div>
+    </>
   )
 }

@@ -37,7 +37,7 @@ import { deleteGidsListingByIdAdmin } from '@/lib/gids-listing-delete-admin'
 export const maxDuration = 60
 
 export async function GET(req: Request) {
-  const listingId = await getGidsOwnerListingIdFromCookies()
+  const listingId = await getGidsOwnerListingIdFromCookies({ touch: true })
   if (!listingId) return NextResponse.json({ authenticated: false })
 
   const brief = new URL(req.url).searchParams.get('brief') === '1'
@@ -87,7 +87,7 @@ export async function DELETE() {
 }
 
 export async function PATCH(req: Request) {
-  const listingId = await getGidsOwnerListingIdFromCookies()
+  const listingId = await getGidsOwnerListingIdFromCookies({ touch: true })
   if (!listingId) {
     return NextResponse.json({ error: 'Niet ingelogd.' }, { status: 401 })
   }
