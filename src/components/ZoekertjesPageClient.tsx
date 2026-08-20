@@ -3,6 +3,10 @@
 import { useCallback, useEffect, useState } from 'react'
 import { zoekertjeCategoryLabel } from '@/lib/gids-zoekertjes-categories'
 import { formatGidsZoekertjePriceDisplay } from '@/lib/gids-zoekertjes-price'
+import {
+  normalizeZoekertjeDescriptionInput,
+  normalizeZoekertjeTitleInput,
+} from '@/lib/gids-zoekertjes-text'
 import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
 
@@ -84,11 +88,11 @@ export default function ZoekertjesPageClient() {
                 <p className="vysiongids-zoekertje-card-meta">
                   {z.listingName} · {z.listingCity}
                 </p>
-                <h2 className="vysiongids-zoekertje-card-title">{z.title}</h2>
+                <h2 className="vysiongids-zoekertje-card-title">{normalizeZoekertjeTitleInput(z.title)}</h2>
                 <p className="vysiongids-zoekertje-card-tags">
                   {zoekertjeCategoryLabel(z.category)} · {formatGidsZoekertjePriceDisplay(z.price)}
                 </p>
-                <p className="vysiongids-zoekertje-card-desc">{z.description}</p>
+                <p className="vysiongids-zoekertje-card-desc">{normalizeZoekertjeDescriptionInput(z.description)}</p>
               </div>
             </li>
           )

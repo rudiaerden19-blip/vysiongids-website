@@ -11,6 +11,11 @@ import {
   clearGidsZoekertjePhotosAdmin,
 } from '@/lib/gids-zoekertjes-db'
 import { normalizeGidsZoekertjePriceInput } from '@/lib/gids-zoekertjes-price'
+import {
+  normalizeZoekertjeDescriptionInput,
+  normalizeZoekertjeOptionalLine,
+  normalizeZoekertjeTitleInput,
+} from '@/lib/gids-zoekertjes-text'
 import { GIDS_ZOEKERTJE_MAX_PHOTOS, GIDS_ZOEKERTJE_TITLE_MAX } from '@/lib/gids-zoekertjes-types'
 import { ensureGidsPhotosBucket, siteOriginFromRequest } from '@/lib/gids-listing-photos-server'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
@@ -21,13 +26,15 @@ export const maxDuration = 60
 type RouteCtx = { params: Promise<{ id: string }> }
 
 function parseSaveFields(form: FormData) {
-  const title = String(form.get('title') ?? '').trim().slice(0, GIDS_ZOEKERTJE_TITLE_MAX)
-  const description = String(form.get('description') ?? '').trim().slice(0, 4000)
+  const title = normalizeZoekertjeTitleInput(String(form.get('title') ?? ''))
+  const description = normalizeZoekertjeDescriptionInput(String(form.get('description') ?? ''))
   const category = String(form.get('category') ?? '').trim()
   const condition = String(form.get('condition') ?? '').trim() || null
   const kind = String(form.get('kind') ?? '').trim() || null
-  const itemType = String(form.get('itemType') ?? '').trim() || null
-  const brand = String(form.get('brand') ?? '').trim() || null
+  const itemTypeRaw = String(form.get('itemType') ?? '').trim()
+  const brandRaw = String(form.get('brand') ?? '').trim()
+  const itemType = itemTypeRaw ? normalizeZoekertjeOptionalLine(itemTypeRaw) : null
+  const brand = brandRaw ? normalizeZoekertjeOptionalLine(brandRaw) : null
   const priceRaw = String(form.get('price') ?? form.get('priceClass') ?? '').trim()
   const replaceAllPhotos = form.get('replaceAllPhotos') === '1'
   return { title, description, category, condition, kind, itemType, brand, priceRaw, replaceAllPhotos }

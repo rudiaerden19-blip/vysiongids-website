@@ -10,6 +10,11 @@ import {
   zoekertjeCategoryLabel,
 } from '@/lib/gids-zoekertjes-categories'
 import { gidsZoekertjePriceForInput } from '@/lib/gids-zoekertjes-price'
+import {
+  normalizeZoekertjeDescriptionInput,
+  normalizeZoekertjeOptionalLine,
+  normalizeZoekertjeTitleInput,
+} from '@/lib/gids-zoekertjes-text'
 import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
 import { GIDS_ZOEKERTJE_MAX_PHOTOS, GIDS_ZOEKERTJE_TITLE_MAX } from '@/lib/gids-zoekertjes-types'
@@ -129,7 +134,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
     const guess = guessZoekertjeCategoryFromTitle(titleHint)
     if (guess) {
       setCategory(guess)
-      if (!title) setTitle(titleHint.trim().slice(0, GIDS_ZOEKERTJE_TITLE_MAX))
+      if (!title) setTitle(normalizeZoekertjeTitleInput(titleHint))
     } else {
       setError('Geen Categorie Herkend — Kies Er Zelf Één.')
     }
@@ -183,7 +188,11 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
     }
     setError(null)
     if (step === 1 && titleHint.trim() && !title.trim()) {
-      setTitle(titleHint.trim().slice(0, GIDS_ZOEKERTJE_TITLE_MAX))
+      setTitle(normalizeZoekertjeTitleInput(titleHint))
+    }
+    if (step === 3) {
+      setTitle(normalizeZoekertjeTitleInput(title))
+      setDescription(normalizeZoekertjeDescriptionInput(description))
     }
     setStep((s) => (s < 5 ? ((s + 1) as Step) : s))
   }
@@ -201,15 +210,19 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
     }
     setError(null)
     setSubmitting(true)
+    const titleNorm = normalizeZoekertjeTitleInput(title)
+    const descriptionNorm = normalizeZoekertjeDescriptionInput(description)
+    setTitle(titleNorm)
+    setDescription(descriptionNorm)
     try {
       const form = new FormData()
-      form.set('title', title.trim())
-      form.set('description', description.trim())
+      form.set('title', titleNorm)
+      form.set('description', descriptionNorm)
       form.set('category', category)
       form.set('condition', condition)
       form.set('kind', kind)
-      form.set('itemType', itemType)
-      form.set('brand', brand)
+      form.set('itemType', itemType ? normalizeZoekertjeOptionalLine(itemType) : '')
+      form.set('brand', brand ? normalizeZoekertjeOptionalLine(brand) : '')
       form.set('price', price.trim())
       if (editId && replaceAllPhotos) form.set('replaceAllPhotos', '1')
 
@@ -373,6 +386,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
                   maxLength={GIDS_ZOEKERTJE_TITLE_MAX}
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
+                  onBlur={() => setTitle(normalizeZoekertjeTitleInput(title))}
                   className="vysiongids-form-input mt-1 w-full text-sm"
                   required
                 />
@@ -389,6 +403,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
                   rows={6}
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
+                  onBlur={() => setDescription(normalizeZoekertjeDescriptionInput(description))}
                   className="vysiongids-form-input mt-1 w-full text-sm"
                   required
                 />

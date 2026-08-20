@@ -4,6 +4,10 @@ import { useCallback, useEffect, useState } from 'react'
 import ZoekertjesPlaceModal from '@/components/ZoekertjesPlaceModal'
 import { zoekertjeCategoryLabel } from '@/lib/gids-zoekertjes-categories'
 import { formatGidsZoekertjePriceDisplay } from '@/lib/gids-zoekertjes-price'
+import {
+  normalizeZoekertjeDescriptionInput,
+  normalizeZoekertjeTitleInput,
+} from '@/lib/gids-zoekertjes-text'
 import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
 import { listingHasGidsPremium } from '@/lib/gids-premium'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
@@ -142,7 +146,7 @@ export default function BeheerZoekertjesSection({
                   </div>
                 )}
                 <div className="vysiongids-zoekertje-card-body">
-                  <h3 className="vysiongids-zoekertje-card-title">{z.title}</h3>
+                  <h3 className="vysiongids-zoekertje-card-title">{normalizeZoekertjeTitleInput(z.title)}</h3>
                   <p className="vysiongids-zoekertje-card-tags">
                     {zoekertjeCategoryLabel(z.category)} · {formatGidsZoekertjePriceDisplay(z.price)}
                   </p>
