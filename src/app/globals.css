@@ -1021,25 +1021,17 @@ body {
 
 @media (min-width: 768px) {
   .vysiongids-zaak-info-grid {
-    flex-direction: row;
-    flex-wrap: nowrap;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 2.5rem 3rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: start;
+    gap: 2rem 2.5rem;
   }
 }
 
 .vysiongids-zaak-info-col {
-  flex: 1 1 auto;
   min-width: 0;
   max-width: 100%;
   box-sizing: border-box;
-}
-
-@media (min-width: 768px) {
-  .vysiongids-zaak-info-col {
-    flex: 1 1 50%;
-  }
 }
 
 .vysiongids-zaak-info-heading {
@@ -1058,6 +1050,18 @@ body {
   word-break: break-word;
 }
 
+@media (min-width: 768px) {
+  .vysiongids-zaak-info-col {
+    min-width: 0;
+  }
+}
+
+.vysiongids-zaak-hours-block {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+}
+
 .vysiongids-zaak-hours-list {
   display: flex;
   flex-direction: column;
@@ -1068,17 +1072,10 @@ body {
 
 .vysiongids-zaak-hours-line {
   display: grid;
-  grid-template-columns: minmax(6.25rem, 38%) 1fr;
+  grid-template-columns: 6.75rem minmax(0, 1fr);
   column-gap: 0.75rem;
   align-items: baseline;
   padding: 0.3rem 0;
-}
-
-.vysiongids-zaak-hours-line--zondag {
-  grid-template-columns: minmax(6.25rem, 38%) auto 1fr;
-  align-items: center;
-  column-gap: 0.85rem;
-  padding: 0.45rem 0;
 }
 
 .vysiongids-zaak-hours-day {
@@ -1092,11 +1089,17 @@ body {
   word-break: break-word;
 }
 
-.vysiongids-zaak-hours-qr-inline {
-  display: flex;
-  justify-content: center;
+.vysiongids-zaak-hours-qr-row {
+  display: grid;
+  grid-template-columns: 6.75rem minmax(0, 1fr);
+  column-gap: 0.75rem;
+  margin-top: 1rem;
   align-items: center;
-  flex-shrink: 0;
+}
+
+.vysiongids-zaak-hours-qr-row .vysiongids-zaak-info-qr {
+  grid-column: 2;
+  justify-self: center;
 }
 
 .vysiongids-zaak-info-qr {
@@ -1160,12 +1163,9 @@ body {
 }
 
 @media (max-width: 640px) {
-  .vysiongids-zaak-hours-line {
-    grid-template-columns: minmax(5.5rem, 42%) 1fr;
-  }
-
-  .vysiongids-zaak-hours-line--zondag {
-    grid-template-columns: minmax(5.5rem, 42%) auto 1fr;
+  .vysiongids-zaak-hours-line,
+  .vysiongids-zaak-hours-qr-row {
+    grid-template-columns: minmax(5.25rem, 36%) minmax(0, 1fr);
   }
 
   .vysiongids-zaak-info {

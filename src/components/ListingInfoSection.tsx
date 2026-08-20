@@ -76,25 +76,18 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
         <div className="vysiongids-zaak-info-col">
           <h2 className="vysiongids-zaak-info-heading">OPENINGSUREN</h2>
           <OpenStatus listing={listing} />
-          <div className="vysiongids-zaak-hours-list">
-            {hoursRows.map((row) => (
-              <div
-                key={row.day}
-                className={
-                  row.day === 'zondag'
-                    ? 'vysiongids-zaak-hours-line vysiongids-zaak-hours-line--zondag'
-                    : 'vysiongids-zaak-hours-line'
-                }
-              >
-                <span className="vysiongids-zaak-hours-day">{row.day}</span>
-                {row.day === 'zondag' ? (
-                  <span className="vysiongids-zaak-hours-qr-inline">
-                    <ListingZaakQr slug={listing.slug} listingName={listing.name} size={112} />
-                  </span>
-                ) : null}
-                <span className="vysiongids-zaak-hours-value">{row.hours}</span>
-              </div>
-            ))}
+          <div className="vysiongids-zaak-hours-block">
+            <div className="vysiongids-zaak-hours-list">
+              {hoursRows.map((row) => (
+                <div key={row.day} className="vysiongids-zaak-hours-line">
+                  <span className="vysiongids-zaak-hours-day">{row.day}</span>
+                  <span className="vysiongids-zaak-hours-value">{row.hours}</span>
+                </div>
+              ))}
+            </div>
+            <div className="vysiongids-zaak-hours-qr-row">
+              <ListingZaakQr slug={listing.slug} listingName={listing.name} size={112} />
+            </div>
           </div>
           {schedule?.annualLeave?.length ? (
             <p className="mt-3 text-sm text-gray-600">
