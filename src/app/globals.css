@@ -4230,3 +4230,26 @@ body {
 .vysiongids-zoekertje-action-btn--danger:hover {
   background: rgb(220 38 38 / 0.06);
 }
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .vysiongids-beheer-qr-print-target,
+  .vysiongids-beheer-qr-print-target * {
+    visibility: visible;
+  }
+
+  .vysiongids-beheer-qr-print-target {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    padding: 1.5rem;
+  }
+
+  .vysiongids-beheer-qr-actions {
+    display: none !important;
+  }
+}

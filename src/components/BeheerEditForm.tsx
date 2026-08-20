@@ -15,6 +15,7 @@ import ListingMenuOwnerFields from '@/components/ListingMenuOwnerFields'
 import BeheerInfoExtrasFields from '@/components/BeheerInfoExtrasFields'
 import KitchenTypeSelect from '@/components/KitchenTypeSelect'
 import TitleCaseTextInput, { applyTitleCaseFormFields } from '@/components/TitleCaseTextInput'
+import BeheerZaakQrCard from '@/components/BeheerZaakQrCard'
 
 function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
@@ -575,6 +576,8 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
           {loading ? (loadingHint ?? 'Bezig…') : 'Wijzigingen opslaan'}
         </button>
       </form>
+
+      <BeheerZaakQrCard slug={listing.slug} listingName={listing.name} />
     </section>
   )
 }
