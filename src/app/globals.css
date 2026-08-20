@@ -1114,13 +1114,14 @@ body {
   display: grid;
   grid-template-columns: 6.75rem minmax(0, 1fr);
   column-gap: 0.75rem;
-  margin-top: calc(1rem + 4cm);
+  margin-top: calc(1rem + 2cm);
   align-items: center;
 }
 
 .vysiongids-zaak-hours-qr-row .vysiongids-zaak-info-qr {
   grid-column: 2;
   justify-self: center;
+  transform: translate(-2cm, -2cm);
 }
 
 .vysiongids-zaak-info-qr {
