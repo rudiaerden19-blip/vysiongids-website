@@ -28,7 +28,7 @@ export async function fetchAllGidsListingsForStaffAdmin(): Promise<GidsStaffList
 
   if (error) {
     console.error('[gids-staff] list:', error.message)
-    return null
+    throw new Error(error.message)
   }
 
   return (data ?? []).map((row) => {

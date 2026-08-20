@@ -15,21 +15,28 @@ export default function GidsStaffListingsClient() {
   const [loadError, setLoadError] = useState<string | null>(null)
   const [busyId, setBusyId] = useState<string | null>(null)
   const [filter, setFilter] = useState('')
+  const [loggingIn, setLoggingIn] = useState(false)
 
-  const refreshListings = useCallback(async () => {
+  const refreshListings = useCallback(async (): Promise<boolean> => {
     setLoadError(null)
     const r = await fetch('/api/gids/staff/listings', { credentials: 'same-origin' })
     if (r.status === 401) {
-      setState('login')
-      return
+      return false
     }
     if (!r.ok) {
-      setLoadError('Lijst laden mislukt.')
-      return
+      const data = (await r.json().catch(() => ({}))) as { error?: string }
+      setLoadError(
+        data.error ??
+          (r.status === 503
+            ? 'Database niet bereikbaar. Voer supabase/STAFF_PREMIUM_COLUMNS.sql uit in Supabase.'
+            : 'Lijst laden mislukt.'),
+      )
+      return false
     }
     const data = (await r.json()) as { listings: GidsStaffListingRow[] }
     setListings(data.listings ?? [])
     setState('ready')
+    return true
   }, [])
 
   useEffect(() => {
@@ -41,7 +48,8 @@ export default function GidsStaffListingsClient() {
         return
       }
       if (data.authenticated) {
-        await refreshListings()
+        const ok = await refreshListings()
+        if (!ok) setState('login')
       } else {
         setState('login')
       }
@@ -51,19 +59,30 @@ export default function GidsStaffListingsClient() {
   async function onLogin(e: FormEvent) {
     e.preventDefault()
     setLoginError(null)
-    const r = await fetch('/api/gids/staff/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      credentials: 'same-origin',
-      body: JSON.stringify({ password }),
-    })
-    if (!r.ok) {
-      const data = (await r.json()) as { error?: string }
-      setLoginError(data.error ?? 'Inloggen mislukt.')
-      return
+    setLoadError(null)
+    setLoggingIn(true)
+    try {
+      const r = await fetch('/api/gids/staff/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify({ password: password.trim() }),
+      })
+      const data = (await r.json().catch(() => ({}))) as { error?: string }
+      if (!r.ok) {
+        setLoginError(data.error ?? 'Inloggen mislukt.')
+        return
+      }
+      setPassword('')
+      const ok = await refreshListings()
+      if (ok) return
+      setLoginError('Sessie start mislukt — pagina wordt ververst…')
+      window.location.reload()
+    } catch {
+      setLoginError('Netwerkfout. Probeer opnieuw.')
+    } finally {
+      setLoggingIn(false)
     }
-    setPassword('')
-    await refreshListings()
   }
 
   async function logout() {
@@ -162,11 +181,13 @@ export default function GidsStaffListingsClient() {
           required
         />
         {loginError ? <p className="text-sm text-red-700">{loginError}</p> : null}
+        {loadError ? <p className="text-sm text-red-700">{loadError}</p> : null}
         <button
           type="submit"
-          className="w-full rounded-lg bg-accent px-4 py-2.5 font-semibold text-white hover:opacity-95"
+          disabled={loggingIn}
+          className="w-full rounded-lg bg-accent px-4 py-2.5 font-semibold text-white hover:opacity-95 disabled:opacity-60"
         >
-          Inloggen
+          {loggingIn ? 'Bezig…' : 'Inloggen'}
         </button>
       </form>
     )

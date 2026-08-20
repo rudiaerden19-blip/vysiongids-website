@@ -12,8 +12,9 @@ export function isGidsStaffPasswordConfigured(): boolean {
 
 export function verifyGidsStaffPassword(password: string): boolean {
   const expected = process.env.VYSIONGIDS_STAFF_PASSWORD?.trim()
-  if (!expected || !password) return false
-  const a = Buffer.from(password)
+  const given = password.trim()
+  if (!expected || !given) return false
+  const a = Buffer.from(given)
   const b = Buffer.from(expected)
   if (a.length !== b.length) return false
   try {

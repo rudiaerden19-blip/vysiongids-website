@@ -9,6 +9,9 @@ import {
 } from '@/lib/gids-staff-session'
 import { isGidsSessionConfigured } from '@/lib/gids-session'
 
+export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   const authenticated = await isGidsStaffAuthenticated()
   return NextResponse.json({
