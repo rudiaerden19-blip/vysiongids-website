@@ -146,7 +146,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
           defaultValue={extras?.hiring?.title ?? ''}
           disabled={disabled}
           className="vysiongids-form-input mt-1 w-full max-w-md text-sm"
-          placeholder="Bv. Flexi gevraagd"
+          placeholder="Bv. Kok gevraagd"
         />
         <label className="vysiongids-form-label mt-3 text-sm" htmlFor="infoHiringText">
           Omschrijving

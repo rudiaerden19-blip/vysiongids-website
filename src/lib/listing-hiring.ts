@@ -67,25 +67,17 @@ export function listingHiringDisplayTitle(h: ListingHiringFields): string {
   return 'Vacature'
 }
 
-export function formatListingHiringPanelMessage(h: ListingHiringFields): string {
+/** Korte titel op zoekkaart (blauwe balk) — geen lange omschrijving. */
+export function listingHiringBarTitle(h: ListingHiringFields): string {
   const title = h.title?.trim()
-  if (title) {
-    const labels = hiringJobTypeLabels(h.jobTypes)
-    if (labels.length) return `${title} (${labels.join(', ')})`
-    return title
-  }
-  const text = h.text?.trim() ?? ''
-  let message = text
-  if (message && !/^wij zoeken\b/i.test(message)) {
-    message = `Wij zoeken ${message.charAt(0).toLowerCase()}${message.slice(1)}`
-  } else if (!message) {
-    message = 'Wij zoeken personeel'
-  }
+  if (title) return title
   const labels = hiringJobTypeLabels(h.jobTypes)
-  if (labels.length) {
-    message = `${message} (${labels.join(', ')})`
-  }
-  return message
+  if (labels.length) return `${labels.join(' · ')} gezocht`
+  return 'Personeel gezocht'
+}
+
+export function formatListingHiringPanelMessage(h: ListingHiringFields): string {
+  return listingHiringBarTitle(h)
 }
 
 export const LISTING_PANEL_HIRING_EMPTY_MESSAGE = 'Deze zaak zoekt momenteel geen personeel.'
