@@ -86,7 +86,7 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
               ))}
             </div>
             <div className="vysiongids-zaak-hours-qr-row">
-              <ListingZaakQr slug={listing.slug} listingName={listing.name} size={112} />
+              <ListingZaakQr slug={listing.slug} listingName={listing.name} size={148} />
             </div>
           </div>
           {schedule?.annualLeave?.length ? (
@@ -97,7 +97,7 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
           ) : null}
         </div>
 
-        <div className="vysiongids-zaak-info-col">
+        <div className="vysiongids-zaak-info-col vysiongids-zaak-info-col--info">
           <h2 className="vysiongids-zaak-info-heading">INFO</h2>
           <ul className="vysiongids-zaak-info-list">
             {website ? (

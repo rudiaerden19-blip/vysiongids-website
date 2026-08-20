@@ -1026,6 +1026,10 @@ body {
     align-items: start;
     gap: 2rem 2.5rem;
   }
+
+  .vysiongids-zaak-info-col--info {
+    margin-left: 3cm;
+  }
 }
 
 .vysiongids-zaak-info-col {
@@ -1048,12 +1052,6 @@ body {
   min-width: 0;
   overflow-wrap: anywhere;
   word-break: break-word;
-}
-
-@media (min-width: 768px) {
-  .vysiongids-zaak-info-col {
-    min-width: 0;
-  }
 }
 
 .vysiongids-zaak-hours-block {
