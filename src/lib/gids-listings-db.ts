@@ -208,6 +208,31 @@ export async function fetchPublishedListingsFromDb(
   return (data as unknown as GidsListingRow[]).map(mapGidsRowToListing)
 }
 
+/** Staff/batch: gepubliceerde zaken per pagina (slug-only). */
+export async function fetchPublishedListingSlugsBatchAdmin(
+  page: number,
+  limit: number,
+): Promise<{ slugs: string[]; total: number } | null> {
+  const supabase = createGidsSupabaseAdmin()
+  if (!supabase) return null
+  const p = Math.max(1, Math.floor(page) || 1)
+  const lim = Math.min(50, Math.max(1, Math.floor(limit) || 10))
+  const from = (p - 1) * lim
+  const to = from + lim - 1
+  const { data, error, count } = await supabase
+    .from('gids_listings')
+    .select('slug', { count: 'exact' })
+    .eq('status', 'published')
+    .order('slug')
+    .range(from, to)
+  if (error) {
+    console.error('[gids] batch slugs:', error.message)
+    return null
+  }
+  const slugs = (data ?? []).map((r) => String(r.slug)).filter(Boolean)
+  return { slugs, total: count ?? slugs.length }
+}
+
 export async function fetchListingBySlugFromDb(slug: string): Promise<Listing | null> {
   if (!isGidsSupabaseConfigured()) return null
   const supabase = createGidsSupabasePublic()

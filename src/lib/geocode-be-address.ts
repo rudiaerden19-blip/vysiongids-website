@@ -75,18 +75,46 @@ export async function geocodeBelgiumPostcodeCity(parts: {
   return fetchNominatim(`${cityLine}, België`)
 }
 
+function municipalityCityVariants(city: string, postcode: string): string[] {
+  const primary = city.trim()
+  if (!primary) return []
+  const pc = postcode.trim().slice(0, 4)
+  const key = cityKey(primary)
+  const extra: string[] = []
+  if (pc === '3900') {
+    if (key === 'pelt' || key === 'neerpelt') extra.push('Overpelt')
+    if (key === 'overpelt') extra.push('Pelt')
+  }
+  if (pc === '3910' && key === 'pelt') extra.push('Neerpelt')
+  if (pc === '3930' && key === 'pelt') extra.push('Overpelt')
+  return [...new Set([primary, ...extra])]
+}
+
 async function fetchNominatimStructured(parts: {
   address: string
   postcode: string
   city: string
 }): Promise<GeocodedPoint | null> {
+  const cities = municipalityCityVariants(parts.city, parts.postcode)
+  for (const cityTry of cities) {
+    const hit = await fetchNominatimStructuredOnce(parts.address, parts.postcode, cityTry)
+    if (hit) return hit
+  }
+  return null
+}
+
+async function fetchNominatimStructuredOnce(
+  streetAddress: string,
+  postcode: string,
+  city: string,
+): Promise<GeocodedPoint | null> {
   const url = new URL(NOMINATIM)
   url.searchParams.set('format', 'json')
   url.searchParams.set('limit', '1')
   url.searchParams.set('countrycodes', 'be')
-  url.searchParams.set('street', parts.address.trim())
-  url.searchParams.set('city', parts.city.trim())
-  const pc = parts.postcode.trim()
+  url.searchParams.set('street', streetAddress.trim())
+  url.searchParams.set('city', city.trim())
+  const pc = postcode.trim()
   if (pc) url.searchParams.set('postalcode', pc)
 
   try {
@@ -151,7 +179,6 @@ async function geocodeBelgiumAddressViaPhoton(parts: {
   const url = new URL(PHOTON)
   url.searchParams.set('q', q)
   url.searchParams.set('limit', '12')
-  url.searchParams.set('lang', 'nl')
 
   try {
     const res = await fetch(url.toString(), { cache: 'no-store' })

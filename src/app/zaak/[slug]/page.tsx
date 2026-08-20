@@ -23,7 +23,7 @@ import {
 } from '@/lib/listings'
 import ListingMenuButton from '@/components/ListingMenuButton'
 import { getCachedListingIdBySlug, getCachedReviewsByListingSlug } from '@/lib/gids-reviews-cache'
-import { ensureListingGeocoded } from '@/lib/gids-listing-geocode'
+import { resolveListingMapPin } from '@/lib/gids-listing-geocode'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -46,7 +46,8 @@ export default async function ZaakPage({ params }: Props) {
   const { slug } = await params
   let listing = await getListingBySlug(slug)
   if (!listing) notFound()
-  listing = await ensureListingGeocoded(listing)
+  const { listing: geocodedListing, pin: mapPin } = await resolveListingMapPin(listing)
+  listing = geocodedListing
 
   const cuisineLine = getListingCuisineDisplay(listing.cuisineType)
   const minOrder = formatMinOrder(listing)
@@ -109,7 +110,7 @@ export default async function ZaakPage({ params }: Props) {
 
             <ListingInfoSection listing={listingForRating} />
 
-            <ListingMap listing={listingForRating} />
+            <ListingMap listing={listingForRating} mapPin={mapPin} />
 
             <section id="beoordeling" className="mt-8 border-t border-gray-200 pt-8 scroll-mt-24">
               <h2 className="text-lg font-bold text-gray-900">Beoordeling</h2>

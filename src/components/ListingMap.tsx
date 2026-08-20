@@ -5,7 +5,11 @@ import { MapContainer, Marker, TileLayer, useMap } from 'react-leaflet'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import type { Listing } from '@/lib/listing-types'
-import { formatListingAddressLines, getListingCoordinates } from '@/lib/listing-display'
+import {
+  formatListingAddressLines,
+  getListingCoordinates,
+  getListingMapCoordinates,
+} from '@/lib/listing-display'
 import ListingNavigationButtons from '@/components/ListingNavigationButtons'
 
 /** Rode pin (Google-achtig) + satelliettegels via Esri. */
@@ -50,10 +54,13 @@ function LockMapView() {
 
 export type ListingMapProps = {
   listing: Listing
+  /** Server-resolved straat-pin (satelliet nooit op postcode-centrum). */
+  mapPin?: { lat: number; lng: number }
 }
 
-export default function ListingMap({ listing }: ListingMapProps) {
-  const { lat, lng } = getListingCoordinates(listing)
+export default function ListingMap({ listing, mapPin }: ListingMapProps) {
+  const { lat, lng } =
+    mapPin ?? getListingMapCoordinates(listing) ?? getListingCoordinates(listing)
   const { street, cityLine } = formatListingAddressLines(listing)
 
   return (
