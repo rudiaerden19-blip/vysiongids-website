@@ -33,6 +33,25 @@ const cachedDbListings = unstable_cache(
   { revalidate: 60, tags: ['gids-listings'] },
 )
 
+function cachedDbListingsFiltered(province?: string, type?: string) {
+  const p = province?.trim() ?? ''
+  const t = type?.trim() ?? ''
+  return unstable_cache(
+    async () => fetchPublishedListingsFromDb({ province: p || undefined, type: t || undefined }),
+    ['gids-published-listings-filter', p, t],
+    { revalidate: 60, tags: ['gids-listings'] },
+  )()
+}
+
+/** Max. resultaten op /zoeken en search-API (rest via verfijnen). */
+export const GIDS_SEARCH_MAX_RESULTS = 200
+
+export type ListingSearchOutcome = {
+  listings: Listing[]
+  total: number
+  capped: boolean
+}
+
 /** Supabase is leidend per slug; JSON vult ontbrekende demo-zaken aan tot volledige seed. */
 async function loadListings(): Promise<Listing[]> {
   const fromDb = await cachedDbListings()
@@ -91,9 +110,25 @@ export function getListingTypeLabel(type: Listing['type']): string {
   return LISTING_TYPES.find((t) => t.id === type)?.label ?? type
 }
 
+async function loadListingsForSearch(params: ListingSearchParams): Promise<Listing[]> {
+  const q = params.q?.trim()
+  const prov = params.prov?.trim()
+  const formType = (params.type ?? 'all') as ListingTypeId
+  if (!q && (prov || formType !== 'all')) {
+    const fromDb = await cachedDbListingsFiltered(prov, formType !== 'all' ? formType : undefined)
+    if (fromDb?.length) {
+      const bySlug = new Map<string, Listing>()
+      for (const listing of jsonFallback) bySlug.set(listing.slug, listing)
+      for (const listing of fromDb) bySlug.set(listing.slug, listing)
+      return Array.from(bySlug.values())
+    }
+  }
+  return loadListings()
+}
+
 /** Zoek op stad, postcode, naam, keukentype of voorzieningen (query `q`). Filter op zaaktype / provincie. */
-export async function searchListings(params: ListingSearchParams): Promise<Listing[]> {
-  const listings = await loadListings()
+export async function searchListings(params: ListingSearchParams): Promise<ListingSearchOutcome> {
+  const listings = await loadListingsForSearch(params)
   const parsed = parseListingSearchQuery(params.q ?? '')
   const prov = normalizeSearchText(params.prov ?? '')
 
@@ -127,7 +162,13 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
     results.sort(compareListingsByName)
   }
 
-  return results
+  const total = results.length
+  const capped = total > GIDS_SEARCH_MAX_RESULTS
+  if (capped) {
+    results = results.slice(0, GIDS_SEARCH_MAX_RESULTS)
+  }
+
+  return { listings: results, total, capped }
 }
 
 export async function listingsDataSourceLabel(): Promise<'supabase' | 'json' | 'mixed'> {

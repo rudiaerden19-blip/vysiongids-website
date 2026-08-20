@@ -14,6 +14,8 @@ Geen keys, geen tabellen en geen storage van Vysion Order / kassa.
 
 | Bestand | Inhoud |
 |---------|--------|
-| `migrations/001_gids_schema.sql` | Tabellen `gids_listings`, `gids_listing_photos` (voor zaak+pin-flow) |
+| `migrations/017_gids_listings_hide_sensitive_columns.sql` | **Verplicht prod:** anon mag `pin_hash` / `name_normalized` niet lezen |
+
+Nieuwe productie-DB’s: run migraties **001 → 017** in volgorde. Bestaande DB: run minstens **017** in SQL Editor.
 
 Tot de app op Supabase leest, blijven demo-zaken in `data/listings.json` werken.

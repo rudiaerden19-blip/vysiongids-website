@@ -48,17 +48,47 @@ function mapStaffListingRow(row: Record<string, unknown>): GidsStaffListingRow {
 }
 
 export async function fetchAllGidsListingsForStaffAdmin(): Promise<GidsStaffListingRow[] | null> {
+  const page = await fetchGidsListingsForStaffAdminPaginated({ page: 1, limit: 500, search: '' })
+  if (!page) return null
+  return page.rows
+}
+
+const STAFF_PAGE_SIZE_MAX = 200
+
+export async function fetchGidsListingsForStaffAdminPaginated(opts: {
+  page: number
+  limit: number
+  search?: string
+}): Promise<{ rows: GidsStaffListingRow[]; total: number } | null> {
   const admin = createGidsSupabaseAdmin()
   if (!admin) return null
 
-  const { data, error } = await admin.from('gids_listings').select(STAFF_LISTING_SELECT).order('name')
+  const page = Math.max(1, Math.floor(opts.page) || 1)
+  const limit = Math.min(STAFF_PAGE_SIZE_MAX, Math.max(1, Math.floor(opts.limit) || 80))
+  const from = (page - 1) * limit
+  const to = from + limit - 1
+
+  let query = admin.from('gids_listings').select(STAFF_LISTING_SELECT, { count: 'exact' })
+
+  const q = opts.search?.trim()
+  if (q) {
+    const safe = q.replace(/[%_,.]/g, ' ').trim().slice(0, 80)
+    if (safe) {
+      query = query.or(`name.ilike.%${safe}%,slug.ilike.%${safe}%,city.ilike.%${safe}%`)
+    }
+  }
+
+  const { data, error, count } = await query.order('name').range(from, to)
 
   if (error) {
     console.error('[gids-staff] list:', error.message)
     throw new Error(error.message)
   }
 
-  return (data ?? []).map((row) => mapStaffListingRow(row as Record<string, unknown>))
+  return {
+    rows: (data ?? []).map((row) => mapStaffListingRow(row as Record<string, unknown>)),
+    total: count ?? 0,
+  }
 }
 
 export type StaffListingAction = 'mark_paid' | 'pause' | 'resume' | 'revoke_premium'

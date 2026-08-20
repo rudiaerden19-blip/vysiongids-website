@@ -1,13 +1,20 @@
 import { NextResponse } from 'next/server'
 import { verifyGidsPin } from '@/lib/gids-pin'
 import { fetchListingByLoginNameAdmin } from '@/lib/gids-listings-db'
+import { enforceRateLimit } from '@/lib/gids-rate-limit'
 import {
   GIDS_SESSION_COOKIE,
   gidsSessionCookieOptions,
   signGidsSession,
 } from '@/lib/gids-session'
 
+const LOGIN_WINDOW_MS = 15 * 60 * 1000
+const LOGIN_MAX_PER_IP = 20
+
 export async function POST(req: Request) {
+  const limited = enforceRateLimit(req, 'gids-owner-login', LOGIN_WINDOW_MS, LOGIN_MAX_PER_IP)
+  if (limited) return limited
+
   let body: { name?: string; pin?: string }
   try {
     body = await req.json()
@@ -22,21 +29,12 @@ export async function POST(req: Request) {
   }
 
   const row = await fetchListingByLoginNameAdmin(name)
-  if (!row || !row.pin_hash) {
+  const pinOk = row?.pin_hash ? verifyGidsPin(pin, row.pin_hash) : false
+  if (!row || !pinOk) {
     return NextResponse.json(
       {
         error:
-          'Geen zaak gevonden met deze naam. Gebruik de exacte naam zoals in de gids (bv. Nini-Burger, niet Nini-Burgers).',
-      },
-      { status: 401 },
-    )
-  }
-
-  if (!verifyGidsPin(pin, row.pin_hash)) {
-    return NextResponse.json(
-      {
-        error:
-          'Verkeerde PIN. Vul de 6 cijfers in die je koos bij «Zaak toevoegen» (niet een standaardcode zoals 123456).',
+          'Zaaknaam of PIN is onjuist. Gebruik de exacte naam zoals in de gids en de 6 cijfers die je koos bij «Zaak toevoegen».',
       },
       { status: 401 },
     )
@@ -44,13 +42,7 @@ export async function POST(req: Request) {
 
   const token = signGidsSession(row.id)
   if (!token) {
-    return NextResponse.json(
-      {
-        error:
-          'Sessie niet beschikbaar (zet VYSIONGIDS_SESSION_SECRET in Vercel of controleer VYSIONGIDS_SUPABASE_SERVICE_ROLE_KEY).',
-      },
-      { status: 503 },
-    )
+    return NextResponse.json({ error: 'Inloggen tijdelijk niet beschikbaar. Probeer later opnieuw.' }, { status: 503 })
   }
 
   const res = NextResponse.json({ ok: true, slug: row.slug, name: row.name })

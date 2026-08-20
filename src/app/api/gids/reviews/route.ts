@@ -2,6 +2,10 @@ import { NextResponse } from 'next/server'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { fetchListingIdBySlugAdmin, fetchReviewsByListingSlug, insertReviewAdmin } from '@/lib/gids-reviews-db'
 import { formatGidsTitleCase, formatReviewCommentText } from '@/lib/gids-text'
+import { enforceRateLimit } from '@/lib/gids-rate-limit'
+
+const REVIEW_WINDOW_MS = 60 * 60 * 1000
+const REVIEW_MAX_PER_IP = 15
 
 export async function GET(req: Request) {
   const slug = new URL(req.url).searchParams.get('slug')?.trim()
@@ -16,6 +20,9 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
+  const limited = enforceRateLimit(req, 'gids-review-post', REVIEW_WINDOW_MS, REVIEW_MAX_PER_IP)
+  if (limited) return limited
+
   let body: { slug?: string; rating?: number; reviewerName?: string; body?: string }
   try {
     body = await req.json()

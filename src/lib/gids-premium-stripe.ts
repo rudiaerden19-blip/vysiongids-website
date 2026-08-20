@@ -4,12 +4,9 @@ export function gidsPremiumStripeConfigured(): boolean {
   return Boolean(process.env.STRIPE_SECRET_KEY?.trim())
 }
 
-export function siteOriginFromRequest(req: Request): string {
-  const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host')
-  const proto = req.headers.get('x-forwarded-proto') ?? 'https'
-  if (host) return `${proto}://${host}`
-  return process.env.NEXT_PUBLIC_VYSIONGIDS_SITE_URL?.replace(/\/$/, '') ?? 'https://www.vysiongids.be'
-}
+import { siteOriginFromRequest } from '@/lib/gids-site-origin'
+
+export { siteOriginFromRequest }
 
 export function gidsPremiumUnitAmountCents(): number {
   const fromEnv = process.env.STRIPE_GIDS_PREMIUM_AMOUNT_CENTS?.trim()

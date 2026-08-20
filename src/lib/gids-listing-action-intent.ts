@@ -251,12 +251,12 @@ async function pickListingForNavigateSearch(
   const parsed = parseListingSearchQuery(trimmed)
   const needsNear = parsed.nearby || parsed.openNow
   if (needsNear && !near) return null
-  const results = await searchListings({
+  const search = await searchListings({
     q: trimmed || undefined,
     nearLat: near?.lat,
     nearLng: near?.lng,
   })
-  return results[0] ?? null
+  return search.listings[0] ?? null
 }
 
 export function voiceQueryNeedsGeolocation(raw: string): boolean {

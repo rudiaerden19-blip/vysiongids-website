@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { useCallback, useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { formatGidsPremiumDate, GIDS_PREMIUM_YEARLY_EUR } from '@/lib/gids-premium'
 import type { GidsStaffListingRow } from '@/lib/gids-staff-listings-db'
 
@@ -12,14 +12,23 @@ export default function GidsStaffListingsClient() {
   const [password, setPassword] = useState('')
   const [loginError, setLoginError] = useState<string | null>(null)
   const [listings, setListings] = useState<GidsStaffListingRow[]>([])
+  const [total, setTotal] = useState(0)
+  const [page, setPage] = useState(1)
+  const pageSize = 80
   const [loadError, setLoadError] = useState<string | null>(null)
   const [busyId, setBusyId] = useState<string | null>(null)
   const [filter, setFilter] = useState('')
   const [loggingIn, setLoggingIn] = useState(false)
 
-  const refreshListings = useCallback(async (): Promise<boolean> => {
+  const refreshListings = useCallback(async (pageNum = page, search = filter): Promise<boolean> => {
     setLoadError(null)
-    const r = await fetch('/api/gids/staff/listings', { credentials: 'same-origin' })
+    const params = new URLSearchParams({
+      page: String(pageNum),
+      limit: String(pageSize),
+    })
+    const q = search.trim()
+    if (q) params.set('search', q)
+    const r = await fetch(`/api/gids/staff/listings?${params.toString()}`, { credentials: 'same-origin' })
     if (r.status === 401) {
       return false
     }
@@ -33,11 +42,21 @@ export default function GidsStaffListingsClient() {
       )
       return false
     }
-    const data = (await r.json()) as { listings: GidsStaffListingRow[] }
+    const data = (await r.json()) as { listings: GidsStaffListingRow[]; total?: number }
     setListings(data.listings ?? [])
+    setTotal(data.total ?? data.listings?.length ?? 0)
+    setPage(pageNum)
     setState('ready')
     return true
-  }, [])
+  }, [filter, pageSize])
+
+  useEffect(() => {
+    const t = window.setTimeout(() => {
+      if (state !== 'ready') return
+      void refreshListings(1, filter)
+    }, 300)
+    return () => window.clearTimeout(t)
+  }, [filter, state, refreshListings])
 
   useEffect(() => {
     void (async () => {
@@ -48,7 +67,7 @@ export default function GidsStaffListingsClient() {
         return
       }
       if (data.authenticated) {
-        const ok = await refreshListings()
+        const ok = await refreshListings(1, '')
         if (!ok) setState('login')
       } else {
         setState('login')
@@ -74,7 +93,7 @@ export default function GidsStaffListingsClient() {
         return
       }
       setPassword('')
-      const ok = await refreshListings()
+      const ok = await refreshListings(1, filter)
       if (ok) return
       setLoginError('Sessie start mislukt — pagina wordt ververst…')
       window.location.reload()
@@ -108,7 +127,7 @@ export default function GidsStaffListingsClient() {
       if (data.listing) {
         setListings((prev) => prev.map((row) => (row.id === id ? data.listing! : row)))
       } else {
-        await refreshListings()
+        await refreshListings(page, filter)
       }
     } finally {
       setBusyId(null)
@@ -132,22 +151,15 @@ export default function GidsStaffListingsClient() {
         return
       }
       setListings((prev) => prev.filter((l) => l.id !== row.id))
+      setTotal((t) => Math.max(0, t - 1))
     } finally {
       setBusyId(null)
     }
   }
 
-  const filtered = useMemo(() => {
-    const q = filter.trim().toLowerCase()
-    if (!q) return listings
-    return listings.filter(
-      (l) =>
-        l.name.toLowerCase().includes(q) ||
-        l.slug.includes(q) ||
-        l.city.toLowerCase().includes(q) ||
-        l.address.toLowerCase().includes(q),
-    )
-  }, [listings, filter])
+  const filtered = listings
+
+  const totalPages = Math.max(1, Math.ceil(total / pageSize))
 
   if (state === 'loading') {
     return <p className="text-gray-600">Bezig met laden…</p>
@@ -358,8 +370,28 @@ export default function GidsStaffListingsClient() {
         ) : null}
       </div>
       <p className="text-xs text-gray-500">
-        {filtered.length} van {listings.length} zaken
+        Pagina {page} van {totalPages} · {total} {total === 1 ? 'zaak' : 'zaken'}
       </p>
+      {totalPages > 1 ? (
+        <div className="flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={page <= 1}
+            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-semibold text-gray-800 hover:bg-gray-50 disabled:opacity-50"
+            onClick={() => void refreshListings(page - 1, filter)}
+          >
+            Vorige
+          </button>
+          <button
+            type="button"
+            disabled={page >= totalPages}
+            className="rounded-lg border border-gray-300 px-3 py-1.5 text-sm font-semibold text-gray-800 hover:bg-gray-50 disabled:opacity-50"
+            onClick={() => void refreshListings(page + 1, filter)}
+          >
+            Volgende
+          </button>
+        </div>
+      ) : null}
     </div>
   )
 }

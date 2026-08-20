@@ -11,17 +11,19 @@ export async function GET(request: Request) {
   const nearLat = Number(searchParams.get('nearLat'))
   const nearLng = Number(searchParams.get('nearLng'))
 
-  const results = await searchListings({
+  const search = await searchListings({
     q,
     type,
     prov,
     nearLat: Number.isFinite(nearLat) ? nearLat : undefined,
     nearLng: Number.isFinite(nearLng) ? nearLng : undefined,
   })
-  const top = results[0]
+  const top = search.listings[0]
   return NextResponse.json(
     {
-      count: results.length,
+      count: search.total,
+      shown: search.listings.length,
+      capped: search.capped,
       top: top ? { slug: top.slug, name: top.name } : null,
     },
     {

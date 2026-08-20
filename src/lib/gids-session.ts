@@ -60,17 +60,6 @@ function verifySig(payload: string, sig: string): boolean {
   }
 }
 
-/** Legacy v1: `{uuid}.{sig}` */
-function verifyLegacyToken(token: string): string | null {
-  const dot = token.lastIndexOf('.')
-  if (dot <= 0) return null
-  const listingId = token.slice(0, dot)
-  const sig = token.slice(dot + 1)
-  if (!listingId || !sig) return null
-  if (!verifySig(listingId, sig)) return null
-  return listingId
-}
-
 export type VerifiedGidsSession = {
   listingId: string
   iat: number
@@ -82,10 +71,7 @@ export type VerifiedGidsSession = {
 export function verifyGidsSessionTokenDetailed(token: string): VerifiedGidsSession | null {
   const parts = token.split('.')
   if (parts.length === 2) {
-    const listingId = verifyLegacyToken(token)
-    if (!listingId) return null
-    const t = nowUnix()
-    return { listingId, iat: t, lat: t, legacy: true }
+    return null
   }
   if (parts.length !== 4) return null
 

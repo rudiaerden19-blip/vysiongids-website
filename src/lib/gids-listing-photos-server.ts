@@ -1,13 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
+import { siteOriginFromRequest } from '@/lib/gids-site-origin'
+
+export { siteOriginFromRequest }
 
 export const GIDS_LISTING_PHOTOS_BUCKET = 'gids-listing-photos'
-
-export function siteOriginFromRequest(req: Request): string {
-  const host = req.headers.get('x-forwarded-host') ?? req.headers.get('host')
-  const proto = req.headers.get('x-forwarded-proto') ?? 'https'
-  if (host) return `${proto}://${host}`
-  return process.env.NEXT_PUBLIC_VYSIONGIDS_SITE_URL ?? 'https://www.vysiongids.be'
-}
 
 /** Registratie/uploads falen duidelijk als de bucket in Supabase ontbreekt of niet public is. */
 export async function ensureGidsPhotosBucket(

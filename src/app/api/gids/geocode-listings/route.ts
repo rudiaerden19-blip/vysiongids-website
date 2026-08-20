@@ -2,13 +2,19 @@ import { NextResponse } from 'next/server'
 import { ensureListingGeocoded } from '@/lib/gids-listing-geocode'
 import { listingStoredCoordsAreFallback } from '@/lib/listing-geo-fallback'
 import { getListingBySlug } from '@/lib/listings'
+import { enforceRateLimit } from '@/lib/gids-rate-limit'
 
 export const dynamic = 'force-dynamic'
 
 const MAX_SLUGS = 6
+const GEO_WINDOW_MS = 60 * 60 * 1000
+const GEO_MAX_PER_IP = 40
 
 /** Achtergrond-geocode (niet op kritiek pad van zoeken/home). */
 export async function POST(req: Request) {
+  const limited = enforceRateLimit(req, 'gids-geocode-listings', GEO_WINDOW_MS, GEO_MAX_PER_IP)
+  if (limited) return limited
+
   let slugs: unknown
   try {
     const body = (await req.json()) as { slugs?: unknown }

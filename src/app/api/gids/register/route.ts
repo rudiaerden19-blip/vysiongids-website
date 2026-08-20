@@ -13,8 +13,12 @@ import {
   buildInfoExtrasPayload,
   parseInfoExtrasFromForm,
 } from '@/lib/listing-info-extras'
+import { enforceRateLimit } from '@/lib/gids-rate-limit'
 
 export const maxDuration = 60
+
+const REGISTER_WINDOW_MS = 60 * 60 * 1000
+const REGISTER_MAX_PER_IP = 5
 
 export async function POST(req: Request) {
   try {
@@ -26,6 +30,9 @@ export async function POST(req: Request) {
 }
 
 async function handleRegisterPost(req: Request) {
+  const limited = enforceRateLimit(req, 'gids-register', REGISTER_WINDOW_MS, REGISTER_MAX_PER_IP)
+  if (limited) return limited
+
   const admin = createGidsSupabaseAdmin()
   if (!admin) {
     return NextResponse.json({ error: 'Database niet geconfigureerd.' }, { status: 503 })

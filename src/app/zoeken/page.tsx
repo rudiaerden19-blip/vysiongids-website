@@ -21,13 +21,14 @@ export const revalidate = 60
 export default async function ZoekenPage({ searchParams }: Props) {
   const sp = await searchParams
   const near = parseNearPointFromSearchParams(sp)
-  const results = await searchListings({
+  const search = await searchListings({
     q: sp.q,
     type: sp.type,
     prov: sp.prov,
     nearLat: near?.lat,
     nearLng: near?.lng,
   })
+  const results = search.listings
 
   const parsedQ = parseListingSearchQuery(sp.q ?? '')
   const qLabel = sp.q?.trim()
@@ -55,7 +56,8 @@ export default async function ZoekenPage({ searchParams }: Props) {
           {title}
         </h1>
         <p style={{ margin: '0 0 1.5rem', color: '#4b5563', fontSize: '1rem' }}>
-          {results.length} {results.length === 1 ? 'zaak' : 'zaken'} · Bestel rechtstreeks bij de zaak
+          {search.total} {search.total === 1 ? 'zaak' : 'zaken'}
+          {search.capped ? ` (eerste ${results.length} getoond — verfijn je zoekopdracht)` : ''} · Bestel rechtstreeks bij de zaak
         </p>
 
         <Suspense fallback={null}>

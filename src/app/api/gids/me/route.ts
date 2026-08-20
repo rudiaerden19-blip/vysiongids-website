@@ -19,10 +19,7 @@ import { hashGidsPin } from '@/lib/gids-pin'
 import { normalizeGidsBusinessName, slugifyListing } from '@/lib/gids-text'
 import {
   ensureGidsPhotosBucket,
-  GIDS_LISTING_PHOTOS_BUCKET,
-  removeGidsListingPhotoSlot,
   siteOriginFromRequest,
-  uploadGidsListingPhoto,
   uploadGidsListingSpecialtyPhoto,
 } from '@/lib/gids-listing-photos-server'
 import {
@@ -37,6 +34,7 @@ import {
 import { geocodeListingAddress } from '@/lib/gids-listing-geocode'
 import { resolveListingPremiumActive } from '@/lib/gids-premium'
 import { deleteGidsListingByIdAdmin } from '@/lib/gids-listing-delete-admin'
+import { applyGidsOwnerListingPhotoPatch } from '@/lib/gids-me-owner-photo-patch'
 
 export const maxDuration = 60
 
@@ -168,32 +166,14 @@ export async function PATCH(req: Request) {
     }
   }
 
-  const { data: photoRows } = await admin
-    .from('gids_listing_photos')
-    .select('sort_order, storage_path')
-    .eq('listing_id', listingId)
-
-  const photosBySlot = new Map<number, { storage_path: string }>()
-  for (const p of photoRows ?? []) {
-    photosBySlot.set(p.sort_order, { storage_path: p.storage_path })
-  }
-
   const origin = siteOriginFromRequest(req)
 
   try {
-    for (let index = 0; index < 3; index++) {
-      const upload = d.photos.find((p) => p.index === index)
-      if (upload) {
-        await uploadGidsListingPhoto(admin, listingId, index, upload.file, origin)
-        continue
-      }
-      if (d.removePhotoSlots.includes(index)) {
-        const existing = photosBySlot.get(index)
-        if (existing) {
-          await removeGidsListingPhotoSlot(admin, listingId, index, existing.storage_path)
-        }
-      }
-    }
+    await applyGidsOwnerListingPhotoPatch(admin, listingId, {
+      uploads: d.photos,
+      removePhotoSlots: d.removePhotoSlots,
+      origin,
+    })
   } catch (uploadErr) {
     const message = uploadErr instanceof Error ? uploadErr.message : 'Upload mislukt'
     console.error('[gids me patch photos]', message)

@@ -51,10 +51,65 @@ export type GidsListingRow = {
   gids_listing_photos?: PhotoRow[] | null
 }
 
+const PUBLIC_LISTING_COLUMNS = `
+  id,
+  slug,
+  name,
+  status,
+  type,
+  cuisine_type,
+  city,
+  postcode,
+  province,
+  address,
+  order_url,
+  menu_url,
+  menu_pdf_path,
+  menu_pdf_public_url,
+  menu_catalog_active,
+  website,
+  phone,
+  email,
+  opening_hours,
+  closed_days,
+  hours_by_day,
+  amenities,
+  rating_avg,
+  rating_count,
+  delivery_time_min,
+  delivery_time_max,
+  pickup_time_min,
+  pickup_time_max,
+  delivery_radius_km,
+  delivery_fee_eur,
+  min_order_eur,
+  pickup_enabled,
+  delivery_enabled,
+  lat,
+  lng,
+  info_extras,
+  premium_member,
+  premium_paid_at,
+  premium_expires_at,
+  premium_paused,
+  created_at,
+  updated_at
+`.replace(/\s+/g, ' ')
+
+const LISTING_PUBLIC_SELECT = `
+  ${PUBLIC_LISTING_COLUMNS},
+  gids_listing_photos ( sort_order, public_url )
+`
+
 const LISTING_SELECT = `
   *,
   gids_listing_photos ( sort_order, public_url )
 `
+
+export type GidsPublishedListingsFilter = {
+  province?: string
+  type?: string
+}
 
 export function mapGidsRowToListing(row: GidsListingRow): Listing {
   const photos = [...(row.gids_listing_photos ?? [])].sort((a, b) => a.sort_order - b.sort_order)
@@ -121,23 +176,33 @@ export async function fetchPublishedListingCountFromDb(): Promise<number> {
   return count ?? 0
 }
 
-export async function fetchPublishedListingsFromDb(): Promise<Listing[] | null> {
+export async function fetchPublishedListingsFromDb(
+  filter?: GidsPublishedListingsFilter,
+): Promise<Listing[] | null> {
   if (!isGidsSupabaseConfigured()) return null
   const supabase = createGidsSupabasePublic()
   if (!supabase) return null
 
-  const { data, error } = await supabase
+  let query = supabase
     .from('gids_listings')
-    .select(LISTING_SELECT)
+    .select(LISTING_PUBLIC_SELECT)
     .eq('status', 'published')
-    .order('name')
+
+  if (filter?.province?.trim()) {
+    query = query.eq('province', filter.province.trim())
+  }
+  if (filter?.type?.trim()) {
+    query = query.eq('type', filter.type.trim())
+  }
+
+  const { data, error } = await query.order('name')
 
   if (error) {
     console.error('[gids] fetch listings:', error.message)
     return null
   }
 
-  return (data as GidsListingRow[]).map(mapGidsRowToListing)
+  return (data as unknown as GidsListingRow[]).map(mapGidsRowToListing)
 }
 
 export async function fetchListingBySlugFromDb(slug: string): Promise<Listing | null> {
@@ -147,13 +212,13 @@ export async function fetchListingBySlugFromDb(slug: string): Promise<Listing | 
 
   const { data, error } = await supabase
     .from('gids_listings')
-    .select(LISTING_SELECT)
+    .select(LISTING_PUBLIC_SELECT)
     .eq('status', 'published')
     .eq('slug', slug)
     .maybeSingle()
 
   if (error || !data) return null
-  return mapGidsRowToListing(data as GidsListingRow)
+  return mapGidsRowToListing(data as unknown as GidsListingRow)
 }
 
 export async function fetchListingRowByIdAdmin(id: string): Promise<GidsListingRow | null> {
