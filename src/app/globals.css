@@ -3197,6 +3197,28 @@ body {
   color: #6b7280;
 }
 
+.vysiongids-jobs-intro {
+  max-width: 44rem;
+  margin-left: auto;
+  margin-right: auto;
+  margin-bottom: 1.5rem;
+  text-align: center;
+}
+
+.vysiongids-jobs-intro .vysiongids-jobs-page-title {
+  margin-bottom: 0.75rem;
+}
+
+.vysiongids-jobs-intro .vysiongids-jobs-page-lead {
+  margin-bottom: 1.25rem;
+  text-align: center;
+}
+
+.vysiongids-jobs-intro-picker {
+  margin-bottom: 0 !important;
+  text-align: left;
+}
+
 .vysiongids-jobs-grid {
   list-style: none;
   margin: 0;
@@ -3206,13 +3228,7 @@ body {
   grid-template-columns: 1fr;
 }
 
-@media (min-width: 640px) {
-  .vysiongids-jobs-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-  }
-}
-
-@media (min-width: 1024px) {
+@media (min-width: 768px) {
   .vysiongids-jobs-grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }

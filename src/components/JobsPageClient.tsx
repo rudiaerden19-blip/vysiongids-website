@@ -7,7 +7,6 @@ import {
   BELGIUM_PROVINCES,
   DEFAULT_PROVINCE_SLUG,
   REGION_COOKIE,
-  provinceLabel,
   type ProvinceSlug,
 } from '@/lib/belgium-locations'
 import { listingMatchesSearchLocation } from '@/lib/gids-search-locations'
@@ -71,35 +70,35 @@ export default function JobsPageClient({ listings }: Props) {
     router.replace(`/jobs?prov=${encodeURIComponent(next)}`, { scroll: false })
   }
 
-  const provinceLabelText =
-    province === ALL_PROVINCES ? 'Heel België' : provinceLabel(province)
-
   return (
     <>
-      <div className="vysiongids-jobs-province-picker">
-        <label className="vysiongids-jobs-province-label" htmlFor="jobs-province">
-          Provincie
-        </label>
-        <select
-          id="jobs-province"
-          className="vysiongids-jobs-province-select"
-          value={province}
-          onChange={(e) => onProvinceChange(e.target.value)}
-        >
-          <option value={ALL_PROVINCES}>Heel België ({countsByProvince.total})</option>
-          {BELGIUM_PROVINCES.map((prov) => (
-            <option key={prov.slug} value={prov.slug}>
-              {prov.label} ({countsByProvince.bySlug[prov.slug] ?? 0})
-            </option>
-          ))}
-        </select>
-        <p className="vysiongids-jobs-province-hint">
-          {filtered.length === 0
-            ? `Geen vacatures in ${provinceLabelText}.`
-            : `${filtered.length} vacature${filtered.length === 1 ? '' : 's'} in ${provinceLabelText}`}
+      <div className="vysiongids-jobs-intro">
+        <h1 className="vysiongids-jobs-page-title">Jobs</h1>
+        <p className="vysiongids-jobs-page-lead">
+          Vacatures bij horeca in België — solliciteer rechtstreeks bij de zaak.
         </p>
+
+        <div className="vysiongids-jobs-province-picker vysiongids-jobs-intro-picker">
+          <label className="vysiongids-jobs-province-label" htmlFor="jobs-province">
+            Provincie
+          </label>
+          <select
+            id="jobs-province"
+            className="vysiongids-jobs-province-select"
+            value={province}
+            onChange={(e) => onProvinceChange(e.target.value)}
+          >
+            <option value={ALL_PROVINCES}>Heel België ({countsByProvince.total})</option>
+            {BELGIUM_PROVINCES.map((prov) => (
+              <option key={prov.slug} value={prov.slug}>
+                {prov.label} ({countsByProvince.bySlug[prov.slug] ?? 0})
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
 
+      <div className="vysiongids-jobs-listings">
       {filtered.length === 0 ? (
         <p className="vysiongids-jobs-empty">
           {listings.length === 0
@@ -115,6 +114,7 @@ export default function JobsPageClient({ listings }: Props) {
           ))}
         </ul>
       )}
+      </div>
     </>
   )
 }
