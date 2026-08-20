@@ -5,10 +5,7 @@ import ZoekertjesPlaceModal from '@/components/ZoekertjesPlaceModal'
 import ZoekertjeDetailModal from '@/components/ZoekertjeDetailModal'
 import { zoekertjeCategoryLabel } from '@/lib/gids-zoekertjes-categories'
 import { formatGidsZoekertjePriceDisplay } from '@/lib/gids-zoekertjes-price'
-import {
-  normalizeZoekertjeDescriptionInput,
-  normalizeZoekertjeTitleInput,
-} from '@/lib/gids-zoekertjes-text'
+import { normalizeZoekertjeTitleInput } from '@/lib/gids-zoekertjes-text'
 import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
 import { listingHasGidsPremium } from '@/lib/gids-premium'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
@@ -169,40 +166,55 @@ export default function BeheerZoekertjesSection({
           {mine.map((z) => {
             const thumb = z.photos[0]?.publicUrl
             return (
-              <li key={z.id} className="vysiongids-zoekertje-card">
-                {thumb ? (
-                  <div className="vysiongids-zoekertje-card-media">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={thumb} alt="" />
+              <li key={z.id} className="vysiongids-zoekertje-card vysiongids-zoekertje-card--beheer">
+                <button
+                  type="button"
+                  className="vysiongids-zoekertje-beheer-preview-hit"
+                  onClick={() => openPreview(z)}
+                  aria-label={`Zoekertje bekijken: ${normalizeZoekertjeTitleInput(z.title)}`}
+                >
+                  {thumb ? (
+                    <div className="vysiongids-zoekertje-card-media">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={thumb} alt="" />
+                    </div>
+                  ) : (
+                    <div className="vysiongids-zoekertje-card-media vysiongids-zoekertje-card-media--empty">
+                      Geen foto
+                    </div>
+                  )}
+                  <div className="vysiongids-zoekertje-card-body vysiongids-zoekertje-card-body--beheer-preview">
+                    <p className="vysiongids-zoekertje-card-price">{formatGidsZoekertjePriceDisplay(z.price)}</p>
+                    <h3 className="vysiongids-zoekertje-card-title">{normalizeZoekertjeTitleInput(z.title)}</h3>
+                    <p className="vysiongids-zoekertje-card-tags">
+                      {zoekertjeCategoryLabel(z.category)}
+                    </p>
+                    <p className="vysiongids-zoekertje-beheer-preview-hint">Openen om alles te controleren →</p>
                   </div>
-                ) : (
-                  <div className="vysiongids-zoekertje-card-media vysiongids-zoekertje-card-media--empty">
-                    Geen foto
-                  </div>
-                )}
-                <div className="vysiongids-zoekertje-card-body">
-                  <h3 className="vysiongids-zoekertje-card-title">{normalizeZoekertjeTitleInput(z.title)}</h3>
-                  <p className="vysiongids-zoekertje-card-tags">
-                    {zoekertjeCategoryLabel(z.category)} · {formatGidsZoekertjePriceDisplay(z.price)}
-                  </p>
-                  <div className="vysiongids-zoekertje-card-actions">
-                    <button type="button" className="vysiongids-zoekertje-action-btn" onClick={() => openEdit(z.id)}>
-                      Bewerken
-                    </button>
-                    <button
-                      type="button"
-                      className="vysiongids-zoekertje-action-btn vysiongids-zoekertje-action-btn--danger"
-                      onClick={() => void onDelete(z.id, z.title)}
-                    >
-                      Verwijderen
-                    </button>
-                  </div>
+                </button>
+                <div className="vysiongids-zoekertje-card-actions vysiongids-zoekertje-card-actions--beheer">
+                  <button
+                    type="button"
+                    className="vysiongids-zoekertje-action-btn"
+                    onClick={() => openEdit(z.id)}
+                  >
+                    Bewerken
+                  </button>
+                  <button
+                    type="button"
+                    className="vysiongids-zoekertje-action-btn vysiongids-zoekertje-action-btn--danger"
+                    onClick={() => void onDelete(z.id, z.title)}
+                  >
+                    Verwijderen
+                  </button>
                 </div>
               </li>
             )
           })}
         </ul>
       ) : null}
+
+      <ZoekertjeDetailModal zoekertje={previewZoekertje} open={previewOpen} onClose={closePreview} />
 
       <ZoekertjesPlaceModal
         open={modalOpen}
