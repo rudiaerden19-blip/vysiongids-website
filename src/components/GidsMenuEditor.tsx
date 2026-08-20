@@ -235,7 +235,7 @@ export default function GidsMenuEditor() {
       {success ? <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-900">{success}</p> : null}
 
       {categories.map((cat, catIndex) => (
-        <section key={cat.id} className="vysiongids-menu-editor-category rounded-xl border border-gray-200 p-4">
+        <section key={cat.id} className="vysiongids-surface-card vysiongids-menu-editor-category rounded-xl p-4">
           <div className="flex flex-wrap items-end gap-3">
             <div className="min-w-[12rem] flex-1">
               <label className="vysiongids-form-label" htmlFor={`cat-${cat.id}`}>

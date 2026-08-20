@@ -119,7 +119,7 @@ export default function BeheerZoekertjesSection({
   if (!isPremium) return null
 
   return (
-    <section id="zoekertje-beheer" className="rounded-xl border border-accent/30 bg-sky-50/80 p-5">
+    <section id="zoekertje-beheer" className="vysiongids-surface-card rounded-xl bg-sky-50/80 p-5">
       <h2 className="text-lg font-bold text-gray-900">Zoekertjes</h2>
       <p className="mt-2 text-sm text-gray-600">
         Plaats hier je zoekertje — iedereen kan dit zien op de{' '}

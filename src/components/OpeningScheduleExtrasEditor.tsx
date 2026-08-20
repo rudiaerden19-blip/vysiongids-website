@@ -66,7 +66,7 @@ export default function OpeningScheduleExtrasEditor({ initial }: Props) {
   }, [])
 
   return (
-    <fieldset className="mt-6 rounded-xl border border-gray-200 bg-gray-50/80 p-4 sm:p-5">
+    <fieldset className="vysiongids-surface-card mt-6 rounded-xl bg-gray-50/80 p-4 sm:p-5">
       <legend className="vysiongids-form-label px-1 text-base font-bold text-gray-900">Verlof &amp; feestdagen</legend>
       <p className="mt-1 text-sm text-gray-600">
         Optioneel. Gebruikt voor «Nu open» / «Opent …» op de gids (Europese tijd, België).

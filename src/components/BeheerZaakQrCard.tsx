@@ -53,7 +53,7 @@ export default function BeheerZaakQrCard({ slug, listingName }: Props) {
 
   return (
     <section
-      className="vysiongids-beheer-qr-card mt-8 rounded-xl border border-accent/25 bg-white p-5 shadow-sm"
+      className="vysiongids-beheer-qr-card vysiongids-surface-card mt-8 rounded-xl bg-white p-5"
       aria-labelledby={`${printRegionId}-title`}
     >
       <div id={printRegionId} className="vysiongids-beheer-qr-print-target">
@@ -64,7 +64,7 @@ export default function BeheerZaakQrCard({ slug, listingName }: Props) {
           Dit is jouw QR-code met de link van jouw zaak. Druk deze af en hang hem in je zaak of zet hem op je verpakking.
         </p>
         <p className="mt-3 text-sm font-semibold text-gray-800">{listingName}</p>
-        <div className="vysiongids-beheer-qr-frame mt-4 inline-flex rounded-xl border border-gray-200 bg-white p-3">
+        <div className="vysiongids-surface-card vysiongids-beheer-qr-frame mt-4 inline-flex rounded-xl bg-white p-3">
           <canvas ref={canvasRef} role="img" aria-label={`QR-code naar ${listingName}`} />
         </div>
         <p className="vysiongids-beheer-qr-url mt-3 break-all text-xs text-gray-500">{publicUrl}</p>

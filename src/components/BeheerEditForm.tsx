@@ -253,7 +253,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
   const types = LISTING_TYPES.filter((t) => t.id !== 'all')
 
   return (
-    <section className="rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+    <section className="vysiongids-surface-card rounded-xl bg-white p-5">
       <h2 className="text-xl font-bold text-gray-900">Gegevens bewerken</h2>
       <p className="mt-1 text-sm text-gray-600">Wijzigingen zijn direct zichtbaar op je publieke pagina.</p>
 

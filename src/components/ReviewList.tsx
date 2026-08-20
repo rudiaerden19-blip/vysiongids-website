@@ -20,7 +20,7 @@ export default function ReviewList({ reviews }: { reviews: GidsReview[] }) {
   return (
     <ul className="vysiongids-review-list space-y-4">
       {reviews.map((r) => (
-        <li key={r.id} className="vysiongids-review-card rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+        <li key={r.id} className="vysiongids-review-card">
           <div className="flex flex-wrap items-center gap-2">
             <span className="text-amber-500" aria-label={`${r.rating} van 5 sterren`}>
               {stars(r.rating)}

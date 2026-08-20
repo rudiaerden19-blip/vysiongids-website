@@ -10,6 +10,9 @@
   --vysiongids-home-section-x: clamp(1.25rem, 3vw, 2.5rem);
   --vysiongids-content-max: 90rem;
   --vysiongids-page-x: clamp(1rem, 3vw, 2.5rem);
+  --vysiongids-card-border: 2px solid var(--accent);
+  --vysiongids-card-shadow: 0 4px 18px rgb(14 93 130 / 0.1);
+  --vysiongids-card-shadow-hover: 0 6px 22px rgb(14 93 130 / 0.18);
 }
 
 @theme inline {
@@ -30,6 +33,12 @@ body {
   font-family: var(--font-inter), system-ui, sans-serif;
   overflow-x: clip;
   max-width: 100%;
+}
+
+/** Blauw kader — gedeelde kaart-styling (Tailwind-panelen: class `vysiongids-surface-card`). */
+.vysiongids-surface-card {
+  border: var(--vysiongids-card-border) !important;
+  box-shadow: var(--vysiongids-card-shadow) !important;
 }
 
 .leaflet-container {
@@ -717,14 +726,14 @@ body {
   overflow: hidden;
   text-decoration: none;
   color: inherit;
-  border: 2px solid var(--accent);
-  box-shadow: 0 4px 18px rgb(14 93 130 / 0.1);
+  border: var(--vysiongids-card-border);
+  box-shadow: var(--vysiongids-card-shadow);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
 
 .vysiongids-home-region-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 6px 22px rgb(14 93 130 / 0.18);
+  box-shadow: var(--vysiongids-card-shadow-hover);
 }
 
 .vysiongids-home-region-card-media {
@@ -790,18 +799,18 @@ body {
   display: inline-block;
   padding: 0.4rem 0.75rem;
   border-radius: 999px;
-  border: 1px solid #d1d5db;
+  border: var(--vysiongids-card-border);
   background: #f9fafb;
   font-size: 0.8125rem;
   font-weight: 600;
   color: #0e5d82;
   text-decoration: none;
-  transition: background 0.15s ease, border-color 0.15s ease;
+  transition: background 0.15s ease, box-shadow 0.15s ease;
 }
 
 .vysiongids-home-city-chip:hover {
   background: #eef7fb;
-  border-color: #0e5d82;
+  box-shadow: var(--vysiongids-card-shadow);
 }
 
 .vysiongids-hero-search {
@@ -814,10 +823,10 @@ body {
   box-sizing: border-box;
   margin: 0;
   padding: 1.1rem 1.35rem;
-  border: 1px solid #e5e7eb;
+  border: var(--vysiongids-card-border);
   border-radius: 0.875rem;
   background: #fff;
-  box-shadow: 0 2px 10px rgb(0 0 0 / 0.07);
+  box-shadow: var(--vysiongids-card-shadow);
 }
 
 .vysiongids-hero-search-grow {
@@ -1201,13 +1210,13 @@ body {
 .vysiongids-listing-panel {
   overflow: hidden;
   border-radius: 0.75rem;
-  border: 2px solid var(--accent);
+  border: var(--vysiongids-card-border);
   background: #fff;
-  box-shadow: 0 4px 18px rgb(14 93 130 / 0.1);
+  box-shadow: var(--vysiongids-card-shadow);
 }
 
 .vysiongids-listing-panel:hover {
-  box-shadow: 0 6px 22px rgb(14 93 130 / 0.18);
+  box-shadow: var(--vysiongids-card-shadow-hover);
 }
 
 .vysiongids-listing-panel-hiring {
@@ -1698,6 +1707,7 @@ body {
   background: #f3f4f6;
   border-radius: 0.5rem;
   padding: 0.5rem 0.6rem;
+  border: var(--vysiongids-card-border);
 }
 
 .vysiongids-listing-panel-amenities--inline .vysiongids-listing-panel-amenities-list {
@@ -1835,7 +1845,7 @@ body {
   color: #4b5563;
   text-align: right;
   background: #f9fafb;
-  border: 1px solid #e5e7eb;
+  border: var(--vysiongids-card-border);
   border-radius: 0.5rem;
 }
 
@@ -1958,10 +1968,10 @@ body {
 
 .vysiongids-beheer-views-card {
   border-radius: 1rem;
-  border: 2px solid var(--accent);
+  border: var(--vysiongids-card-border);
   background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
   padding: 1.35rem 1.5rem;
-  box-shadow: 0 4px 14px rgb(14 93 130 / 0.12);
+  box-shadow: var(--vysiongids-card-shadow);
 }
 
 .vysiongids-beheer-views-kicker {
@@ -2303,7 +2313,8 @@ body {
   padding: 0.75rem;
   border-radius: 0.75rem;
   background: #fff;
-  border: 1px solid #e5e7eb;
+  border: var(--vysiongids-card-border);
+  box-shadow: var(--vysiongids-card-shadow);
 }
 
 .vysiongids-menu-catalog-thumb {
@@ -2572,10 +2583,11 @@ body {
 }
 
 .vysiongids-opening-hours-day {
-  border: 1px solid #e5e7eb;
+  border: var(--vysiongids-card-border);
   border-radius: 0.75rem;
   padding: 0.65rem 0.75rem;
   background: #fafafa;
+  box-shadow: var(--vysiongids-card-shadow);
 }
 
 .vysiongids-opening-hours-day-head {
@@ -2968,6 +2980,20 @@ body {
   gap: 2.75rem;
 }
 
+.vysiongids-review-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.vysiongids-review-card {
+  border-radius: 0.75rem;
+  background: #fff;
+  padding: 1rem;
+  border: var(--vysiongids-card-border);
+  box-shadow: var(--vysiongids-card-shadow);
+}
+
 .vysiongids-info-kicker {
   margin: 0 0 0.35rem;
   font-size: 0.6875rem;
@@ -2991,6 +3017,13 @@ body {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 1rem;
+}
+
+.vysiongids-specialty-card {
+  border-radius: 0.75rem;
+  overflow: hidden;
+  border: var(--vysiongids-card-border);
+  box-shadow: var(--vysiongids-card-shadow);
 }
 
 @media (max-width: 768px) {
@@ -3039,7 +3072,8 @@ body {
   padding: 1.5rem 1.75rem;
   border-radius: 1rem;
   background: #fff;
-  box-shadow: 0 4px 24px rgb(0 0 0 / 0.08);
+  border: var(--vysiongids-card-border);
+  box-shadow: var(--vysiongids-card-shadow);
   text-align: center;
 }
 
@@ -3252,9 +3286,9 @@ body {
   height: 100%;
   padding: 1.25rem 1.35rem;
   border-radius: 1rem;
-  border: 1px solid #e5e7eb;
+  border: var(--vysiongids-card-border);
   background: #fff;
-  box-shadow: 0 2px 12px rgb(0 0 0 / 0.05);
+  box-shadow: var(--vysiongids-card-shadow);
 }
 
 .vysiongids-job-card-header {
@@ -3349,8 +3383,8 @@ body {
   position: relative;
   padding: 0;
   overflow: hidden;
-  border: 2px solid var(--accent);
-  box-shadow: 0 4px 18px rgb(14 93 130 / 0.1);
+  border: var(--vysiongids-card-border);
+  box-shadow: var(--vysiongids-card-shadow);
 }
 
 .vysiongids-job-card-open {
@@ -3490,7 +3524,8 @@ body {
   padding: 1.5rem 1.35rem 1.35rem;
   border-radius: 1rem;
   background: #fff;
-  box-shadow: 0 20px 50px rgb(0 0 0 / 0.2);
+  border: var(--vysiongids-card-border);
+  box-shadow: var(--vysiongids-card-shadow), 0 20px 50px rgb(0 0 0 / 0.12);
 }
 
 .vysiongids-job-modal-panel.vysiongids-premium-modal-panel {
@@ -3688,6 +3723,8 @@ body {
   padding: 1.25rem;
   text-align: left;
   overflow: hidden;
+  border: var(--vysiongids-card-border);
+  box-shadow: var(--vysiongids-card-shadow);
 }
 
 .vysiongids-gift-card-preview::before {
@@ -3944,11 +3981,11 @@ body {
 }
 
 .vysiongids-zoekertje-card {
-  border: 2px solid var(--accent);
+  border: var(--vysiongids-card-border);
   border-radius: 0.85rem;
   overflow: hidden;
   background: #fff;
-  box-shadow: 0 4px 18px rgb(14 93 130 / 0.1);
+  box-shadow: var(--vysiongids-card-shadow);
 }
 
 .vysiongids-zoekertje-card--browse {
@@ -3963,7 +4000,7 @@ body {
 }
 
 .vysiongids-zoekertje-card--browse:hover {
-  box-shadow: 0 6px 22px rgb(14 93 130 / 0.18);
+  box-shadow: var(--vysiongids-card-shadow-hover);
 }
 
 .vysiongids-zoekertje-card-photo-hit,
@@ -4081,7 +4118,7 @@ body {
   width: 100%;
   padding: 0.35rem;
   margin-bottom: 0.5rem;
-  border: 1px solid #e5e7eb;
+  border: var(--vysiongids-card-border);
   border-radius: 0.65rem;
   overflow: hidden;
   background: #f3f4f6;

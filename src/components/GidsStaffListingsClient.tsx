@@ -177,7 +177,7 @@ export default function GidsStaffListingsClient() {
     return (
       <form
         onSubmit={(e) => void onLogin(e)}
-        className="mx-auto max-w-sm space-y-4 rounded-xl border border-gray-200 bg-white p-6 shadow-sm"
+        className="vysiongids-surface-card mx-auto max-w-sm space-y-4 rounded-xl bg-white p-6"
         autoComplete="off"
         data-1p-ignore
         data-lpignore="true"
@@ -235,7 +235,7 @@ export default function GidsStaffListingsClient() {
 
       {loadError ? <p className="text-red-700">{loadError}</p> : null}
 
-      <div className="vysiongids-staff-table-wrap overflow-x-auto rounded-xl border border-gray-200 bg-white">
+      <div className="vysiongids-surface-card vysiongids-staff-table-wrap overflow-x-auto rounded-xl bg-white">
         <table className="vysiongids-staff-table">
           <thead>
             <tr>

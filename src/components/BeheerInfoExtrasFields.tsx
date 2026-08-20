@@ -93,7 +93,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
         <p className="text-xs text-gray-500">Max. 3 gerechten met foto en korte tekst.</p>
         <div className="mt-3 grid gap-4 sm:grid-cols-3">
           {[0, 1, 2].map((i) => (
-            <div key={i} className="rounded-xl border border-gray-200 p-3">
+            <div key={i} className="vysiongids-surface-card rounded-xl p-3">
               <label className="vysiongids-form-label text-sm" htmlFor={`infoSpecialtyCaption${i}`}>
                 Tekst op foto
               </label>
