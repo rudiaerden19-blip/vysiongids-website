@@ -10,7 +10,25 @@ export type ZoekertjeCategoryId = (typeof ZOEKERTJES_CATEGORIES)[number]['id']
 
 export const ZOEKERTJES_CONDITIONS = ['Nieuw', 'Zo Goed Als Nieuw', 'Gebruikt', 'Zichtbare Gebruikssporen'] as const
 
-export const ZOEKERTJES_KINDS = ['Te koop', 'Te ruil', 'Gezocht'] as const
+export const ZOEKERTJES_KINDS = ['Te koop', 'Te ruil', 'Te huur', 'Gezocht'] as const
+
+/** Publieke browse-filters (/zoekertjes). */
+export const ZOEKERTJES_BROWSE_KIND_OPTIONS = [
+  { value: '', label: 'Alle soorten' },
+  { value: 'Te koop', label: 'Kopen' },
+  { value: 'Te ruil', label: 'Ruilen' },
+  { value: 'Te huur', label: 'Huren' },
+  { value: 'Gezocht', label: 'Gezocht' },
+] as const
+
+export function zoekertjeMatchesBrowseKind(kind: string | null | undefined, filterValue: string): boolean {
+  if (!filterValue) return true
+  const k = (kind ?? '').trim()
+  if (filterValue === 'Te huur') {
+    return k === 'Te huur' || /huur/i.test(k)
+  }
+  return k === filterValue
+}
 
 const TITLE_HINTS: { pattern: RegExp; category: ZoekertjeCategoryId }[] = [
   { pattern: /oven|friteuse|koel|vriezer|afwasmachine|grill|mixer|fornuis|keuken/i, category: 'keukenapparatuur' },

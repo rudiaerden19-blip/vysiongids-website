@@ -3124,6 +3124,41 @@ body {
   color: #6b7280;
 }
 
+.vysiongids-zoekertjes-filters {
+  display: grid;
+  gap: 1.25rem;
+  margin-bottom: 1.5rem;
+  max-width: 42rem;
+}
+
+@media (min-width: 768px) {
+  .vysiongids-zoekertjes-filters {
+    grid-template-columns: 1fr 1fr;
+    align-items: start;
+  }
+}
+
+.vysiongids-zoekertjes-filter-block {
+  margin: 0;
+}
+
+.vysiongids-zoekertjes-filter-row {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+@media (min-width: 480px) {
+  .vysiongids-zoekertjes-filter-row {
+    flex-direction: row;
+  }
+
+  .vysiongids-zoekertjes-filter-row .vysiongids-jobs-province-select {
+    flex: 1;
+    min-width: 0;
+  }
+}
+
 .vysiongids-jobs-empty {
   margin: 0;
   color: #6b7280;

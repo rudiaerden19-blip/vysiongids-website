@@ -1,14 +1,22 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import ZoekertjeDetailModal from '@/components/ZoekertjeDetailModal'
 import ZoekertjePhotoLightbox from '@/components/ZoekertjePhotoLightbox'
-import { zoekertjeCategoryLabel } from '@/lib/gids-zoekertjes-categories'
+import {
+  ZOEKERTJES_BROWSE_KIND_OPTIONS,
+  ZOEKERTJES_CATEGORIES,
+  zoekertjeCategoryLabel,
+  zoekertjeMatchesBrowseKind,
+} from '@/lib/gids-zoekertjes-categories'
 import { formatGidsZoekertjePriceDisplay } from '@/lib/gids-zoekertjes-price'
 import { normalizeZoekertjeTitleInput } from '@/lib/gids-zoekertjes-text'
 import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
 import { fetchGidsZoekertjeDetailClient } from '@/lib/fetch-gids-zoekertje-detail-client'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
+import { BELGIUM_PROVINCES, provinceLabel } from '@/lib/belgium-locations'
+
+const ALL_PROVINCES = 'all'
 
 type Props = {
   initialZoekertjes?: GidsZoekertje[]
@@ -32,6 +40,26 @@ export default function ZoekertjesPageClient({
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxPhotos, setLightboxPhotos] = useState<GidsZoekertje['photos']>([])
   const [lightboxIndex, setLightboxIndex] = useState(0)
+  const [kindFilter, setKindFilter] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState('')
+  const [provinceFilter, setProvinceFilter] = useState(ALL_PROVINCES)
+
+  const filteredZoekertjes = useMemo(() => {
+    return zoekertjes.filter((z) => {
+      if (!zoekertjeMatchesBrowseKind(z.kind, kindFilter)) return false
+      if (categoryFilter && z.category !== categoryFilter) return false
+      if (provinceFilter !== ALL_PROVINCES && z.listingProvince !== provinceFilter) return false
+      return true
+    })
+  }, [zoekertjes, kindFilter, categoryFilter, provinceFilter])
+
+  const provinceCounts = useMemo(() => {
+    const bySlug: Record<string, number> = {}
+    for (const prov of BELGIUM_PROVINCES) {
+      bySlug[prov.slug] = zoekertjes.filter((z) => z.listingProvince === prov.slug).length
+    }
+    return { total: zoekertjes.length, bySlug }
+  }, [zoekertjes])
 
   const loadList = useCallback(async () => {
     setLoading(true)
@@ -99,6 +127,69 @@ export default function ZoekertjesPageClient({
         </p>
       </div>
 
+      <div className="vysiongids-zoekertjes-filters">
+        <div className="vysiongids-zoekertjes-filter-block">
+          <p className="vysiongids-jobs-province-label">Soort &amp; categorie</p>
+          <div className="vysiongids-zoekertjes-filter-row">
+            <select
+              id="zoekertjes-kind"
+              className="vysiongids-jobs-province-select"
+              value={kindFilter}
+              onChange={(e) => setKindFilter(e.target.value)}
+              aria-label="Soort zoekertje"
+            >
+              {ZOEKERTJES_BROWSE_KIND_OPTIONS.map((opt) => (
+                <option key={opt.value || 'all'} value={opt.value}>
+                  {opt.label}
+                </option>
+              ))}
+            </select>
+            <select
+              id="zoekertjes-category"
+              className="vysiongids-jobs-province-select"
+              value={categoryFilter}
+              onChange={(e) => setCategoryFilter(e.target.value)}
+              aria-label="Categorie"
+            >
+              <option value="">Alle categorieën</option>
+              {ZOEKERTJES_CATEGORIES.map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
+        <div className="vysiongids-jobs-province-picker">
+          <label className="vysiongids-jobs-province-label" htmlFor="zoekertjes-province">
+            Provincie
+          </label>
+          <select
+            id="zoekertjes-province"
+            className="vysiongids-jobs-province-select"
+            value={provinceFilter}
+            onChange={(e) => setProvinceFilter(e.target.value)}
+          >
+            <option value={ALL_PROVINCES}>Heel België ({provinceCounts.total})</option>
+            {BELGIUM_PROVINCES.map((prov) => (
+              <option key={prov.slug} value={prov.slug}>
+                {prov.label} ({provinceCounts.bySlug[prov.slug] ?? 0})
+              </option>
+            ))}
+          </select>
+          <p className="vysiongids-jobs-province-hint">
+            {filteredZoekertjes.length === 0
+              ? 'Geen zoekertjes voor deze filters.'
+              : `${filteredZoekertjes.length} zoekertje${filteredZoekertjes.length === 1 ? '' : 's'}${
+                  provinceFilter === ALL_PROVINCES
+                    ? ''
+                    : ` in ${provinceLabel(provinceFilter)}`
+                }`}
+          </p>
+        </div>
+      </div>
+
       {setupRequired ? (
         <p className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
           {GIDS_ZOEKERTJES_SETUP_SQL_HINT}
@@ -117,8 +208,12 @@ export default function ZoekertjesPageClient({
         </p>
       ) : null}
 
+      {!loading && !loadError && zoekertjes.length > 0 && filteredZoekertjes.length === 0 ? (
+        <p className="vysiongids-jobs-empty">Geen zoekertjes voor deze filters. Pas soort, categorie of provincie aan.</p>
+      ) : null}
+
       <ul className="vysiongids-zoekertjes-grid vysiongids-zoekertjes-grid--browse">
-        {zoekertjes.map((z) => {
+        {filteredZoekertjes.map((z) => {
           const thumb = z.photos[0]?.publicUrl
           const price = formatGidsZoekertjePriceDisplay(z.price)
           return (

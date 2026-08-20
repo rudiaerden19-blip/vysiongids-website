@@ -9,6 +9,7 @@ export type GidsZoekertje = {
   listingSlug: string
   listingName: string
   listingCity: string
+  listingProvince: string
   title: string
   description: string
   category: string
