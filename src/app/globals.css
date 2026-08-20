@@ -1358,10 +1358,12 @@ body {
   color: #0e5d82;
   font-size: 0.875rem;
   font-weight: 700;
+  font-family: inherit;
   text-decoration: none;
   white-space: nowrap;
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.15);
   animation: vysiongids-soliciteren-blink 1.35s ease-in-out infinite;
+  cursor: pointer;
 }
 
 .vysiongids-listing-panel-hiring-btn:hover {
@@ -3164,7 +3166,7 @@ body {
   width: 100%;
   height: 100%;
   min-height: 100%;
-  padding: 1.25rem 1.35rem 2.75rem;
+  padding: 1.25rem 1.35rem;
   border: none;
   background: transparent;
   text-align: left;
@@ -3191,18 +3193,35 @@ body {
 }
 
 .vysiongids-job-card-profile-link {
-  position: absolute;
-  right: 1rem;
-  bottom: 0.65rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #6b7280;
-  text-decoration: none;
+  display: none;
 }
 
-.vysiongids-job-card-profile-link:hover {
+.vysiongids-job-modal-kicker {
+  margin: 0 0 0.25rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
   color: var(--accent);
-  text-decoration: underline;
+}
+
+.vysiongids-job-modal-zaak-name,
+.vysiongids-job-card-zaak-name {
+  font-weight: 600;
+  color: #374151;
+}
+
+.vysiongids-job-card-btn--disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+  border: 2px solid #d1d5db;
+  background: #f3f4f6;
+  color: #9ca3af;
+}
+
+.vysiongids-job-card-btn--phone.vysiongids-job-card-btn--disabled {
+  background: #e5e7eb;
+  color: #9ca3af;
 }
 
 .vysiongids-job-modal-root {

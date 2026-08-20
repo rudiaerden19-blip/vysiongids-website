@@ -14,6 +14,7 @@ import { formatDistanceAndDriveTime } from '@/lib/listing-distance'
 import { listingWazeUrl } from '@/lib/gids-listing-navigation'
 import { resolveListingPanelHiring } from '@/lib/listing-info-extras'
 import ListingMenuButton from '@/components/ListingMenuButton'
+import ListingPanelHiringBar from '@/components/ListingPanelHiringBar'
 
 export default function ListingPanel({
   listing,
@@ -44,7 +45,6 @@ export default function ListingPanel({
   const bodyTextSize = compact ? '0.8125rem' : '0.9375rem'
   const showTopZaakStamp = isTopZaakListing(listing)
   const hiring = resolveListingPanelHiring(listing.infoExtras)
-  const hiringProfileHref = `${profileHref}#vacature`
 
   return (
     <article className={`vysiongids-listing-panel${compact ? ' vysiongids-listing-panel--compact' : ''}`}>
@@ -141,22 +141,7 @@ export default function ListingPanel({
           </div>
         </div>
       </div>
-      <div
-        className={`vysiongids-listing-panel-hiring${hiring.active ? ' vysiongids-listing-panel-hiring--active' : ' vysiongids-listing-panel-hiring--empty'}`}
-      >
-        <div className="vysiongids-listing-panel-hiring-inner">
-          <div className="vysiongids-listing-panel-hiring-copy">
-            <span className="vysiongids-listing-panel-hiring-text">{hiring.message}</span>
-          </div>
-          {hiring.active ? (
-            <div className="vysiongids-listing-panel-hiring-btn-wrap">
-              <Link href={hiringProfileHref} className="vysiongids-listing-panel-hiring-btn">
-                Soliciteren
-              </Link>
-            </div>
-          ) : null}
-        </div>
-      </div>
+      <ListingPanelHiringBar listing={listing} message={hiring.message} active={hiring.active} />
     </article>
   )
 }
