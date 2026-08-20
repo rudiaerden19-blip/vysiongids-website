@@ -113,7 +113,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
         </div>
       </div>
 
-      <div className="mt-8" id="vacature-beheer">
+      <div className="vysiongids-beheer-hiring-block" id="vacature-beheer">
         <h3 className="text-base font-semibold text-gray-900">Wij zoeken personeel</h3>
         <p className="text-xs text-gray-500">
           De blauwe balk onderaan elke zoekkaart is altijd zichtbaar. Vul hier je vacature in om «Soliciteren» te tonen.
