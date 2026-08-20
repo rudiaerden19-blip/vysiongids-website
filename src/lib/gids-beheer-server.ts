@@ -17,7 +17,7 @@ export type BeheerServerSession = {
 
 /** Eén server-roundtrip i.p.v. client → API → Supabase (beheer). */
 export async function loadBeheerServerSession(): Promise<BeheerServerSession> {
-  const listingId = await getGidsOwnerListingIdFromCookies({ touch: true })
+  const listingId = await getGidsOwnerListingIdFromCookies()
   if (!listingId) return { authenticated: false }
 
   const row = await fetchListingRowByIdAdmin(listingId)

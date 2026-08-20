@@ -1,5 +1,6 @@
 import { createHash, createHmac, timingSafeEqual } from 'crypto'
 import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
 
 export const GIDS_SESSION_COOKIE = 'gids_owner_session'
 
@@ -140,33 +141,25 @@ export function signGidsSession(listingId: string): string | null {
   return createGidsSessionToken(listingId)
 }
 
-export type ReadGidsSessionOptions = {
-  touch?: boolean
-}
-
-export async function readGidsOwnerSession(
-  options: ReadGidsSessionOptions = {},
-): Promise<VerifiedGidsSession | null> {
+export async function readGidsOwnerSession(): Promise<VerifiedGidsSession | null> {
   const jar = await cookies()
   const raw = jar.get(GIDS_SESSION_COOKIE)?.value
   if (!raw) return null
-  const verified = verifyGidsSessionTokenDetailed(raw)
-  if (!verified) return null
-
-  if (options.touch) {
-    const refreshed = refreshGidsSessionToken(verified)
-    if (refreshed) {
-      jar.set(GIDS_SESSION_COOKIE, refreshed, gidsSessionCookieOptions())
-    }
-  }
-  return verified
+  return verifyGidsSessionTokenDetailed(raw)
 }
 
-export async function getGidsOwnerListingIdFromCookies(
-  options?: ReadGidsSessionOptions,
-): Promise<string | null> {
-  const session = await readGidsOwnerSession(options)
+export async function getGidsOwnerListingIdFromCookies(): Promise<string | null> {
+  const session = await readGidsOwnerSession()
   return session?.listingId ?? null
+}
+
+/** API-routes: sessie verlengen op de response (niet in Server Components). */
+export function applyOwnerSessionRefresh(
+  res: NextResponse,
+  session: VerifiedGidsSession | null | undefined,
+): NextResponse {
+  if (session) setRefreshedGidsSessionCookie(res, session)
+  return res
 }
 
 export function setRefreshedGidsSessionCookie(

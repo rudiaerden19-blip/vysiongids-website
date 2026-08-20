@@ -1,6 +1,10 @@
 import { NextResponse } from 'next/server'
 import { revalidatePath, revalidateTag } from 'next/cache'
-import { GIDS_SESSION_COOKIE, getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
+import {
+  GIDS_SESSION_COOKIE,
+  applyOwnerSessionRefresh,
+  readGidsOwnerSession,
+} from '@/lib/gids-session'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import {
   mapGidsRowToListing,
@@ -37,41 +41,50 @@ import { deleteGidsListingByIdAdmin } from '@/lib/gids-listing-delete-admin'
 export const maxDuration = 60
 
 export async function GET(req: Request) {
-  const listingId = await getGidsOwnerListingIdFromCookies({ touch: true })
-  if (!listingId) return NextResponse.json({ authenticated: false })
+  const session = await readGidsOwnerSession()
+  if (!session) return NextResponse.json({ authenticated: false })
+  const listingId = session.listingId
 
   const brief = new URL(req.url).searchParams.get('brief') === '1'
   if (brief) {
-    const session = await fetchListingSessionByIdAdmin(listingId)
-    if (!session) return NextResponse.json({ authenticated: false })
-    return NextResponse.json({
-      authenticated: true,
-      listingId: session.id,
-      slug: session.slug,
-      name: session.name,
-      premiumMember: session.premium_member,
-    })
+    const row = await fetchListingSessionByIdAdmin(listingId)
+    if (!row) return NextResponse.json({ authenticated: false })
+    return applyOwnerSessionRefresh(
+      NextResponse.json({
+        authenticated: true,
+        listingId: row.id,
+        slug: row.slug,
+        name: row.name,
+        premiumMember: row.premium_member,
+      }),
+      session,
+    )
   }
 
   const row = await fetchListingRowByIdAdmin(listingId)
   if (!row) return NextResponse.json({ authenticated: false })
 
   const listing = mapGidsRowToListing(row)
-  return NextResponse.json({
-    authenticated: true,
-    listingId: row.id,
-    slug: listing.slug,
-    name: listing.name,
-    premiumMember: listing.premiumMember === true,
-    listing,
-  })
+  return applyOwnerSessionRefresh(
+    NextResponse.json({
+      authenticated: true,
+      listingId: row.id,
+      slug: listing.slug,
+      name: listing.name,
+      premiumMember: listing.premiumMember === true,
+      listing,
+    }),
+    session,
+  )
 }
 
 export async function DELETE() {
-  const listingId = await getGidsOwnerListingIdFromCookies()
-  if (!listingId) {
+  const session = await readGidsOwnerSession()
+  if (!session) {
     return NextResponse.json({ error: 'Niet ingelogd.' }, { status: 401 })
   }
+
+  const listingId = session.listingId
 
   const deleted = await deleteGidsListingByIdAdmin(listingId)
   if (!deleted.ok) {
@@ -87,10 +100,11 @@ export async function DELETE() {
 }
 
 export async function PATCH(req: Request) {
-  const listingId = await getGidsOwnerListingIdFromCookies({ touch: true })
-  if (!listingId) {
+  const session = await readGidsOwnerSession()
+  if (!session) {
     return NextResponse.json({ error: 'Niet ingelogd.' }, { status: 401 })
   }
+  const listingId = session.listingId
 
   const admin = createGidsSupabaseAdmin()
   if (!admin) {
@@ -294,10 +308,13 @@ export async function PATCH(req: Request) {
     revalidatePath(`/zaak/${row.slug}/menu`)
   }
 
-  return NextResponse.json({
-    ok: true,
-    slug,
-    url: `/zaak/${slug}`,
-    slugChanged: slug !== row.slug,
-  })
+  return applyOwnerSessionRefresh(
+    NextResponse.json({
+      ok: true,
+      slug,
+      url: `/zaak/${slug}`,
+      slugChanged: slug !== row.slug,
+    }),
+    session,
+  )
 }

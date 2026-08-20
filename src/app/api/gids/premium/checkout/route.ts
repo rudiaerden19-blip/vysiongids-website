@@ -23,7 +23,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Online betalen is nog niet geconfigureerd.' }, { status: 503 })
   }
 
-  const listingId = await getGidsOwnerListingIdFromCookies({ touch: true })
+  const listingId = await getGidsOwnerListingIdFromCookies()
   if (!listingId) {
     return NextResponse.json(
       { error: 'Log in met je zaak (Login) om premium te nemen.' },
