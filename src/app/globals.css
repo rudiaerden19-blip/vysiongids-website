@@ -1114,7 +1114,7 @@ body {
   display: grid;
   grid-template-columns: 6.75rem minmax(0, 1fr);
   column-gap: 0.75rem;
-  margin-top: calc(1rem + 2cm);
+  margin-top: calc(1rem + 4cm);
   align-items: center;
 }
 
