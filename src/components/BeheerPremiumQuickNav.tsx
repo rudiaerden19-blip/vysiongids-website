@@ -28,7 +28,7 @@ export default function BeheerPremiumQuickNav({ premiumMember, listingName }: Pr
       setPaywallOpen(true)
       return
     }
-    router.push('/zoekertjes')
+    router.push('/zoekertjes?nieuw=1')
   }
 
   function openPremiumPaywall() {

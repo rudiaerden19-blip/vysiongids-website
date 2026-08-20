@@ -1,0 +1,117 @@
+import { NextResponse } from 'next/server'
+import { revalidatePath } from 'next/cache'
+import { getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
+import { fetchListingRowByIdAdmin } from '@/lib/gids-listings-db'
+import { resolveListingPremiumActive } from '@/lib/gids-premium'
+import {
+  createGidsZoekertjeAdmin,
+  fetchPublishedGidsZoekertjesAdmin,
+  replaceGidsZoekertjePhotosAdmin,
+} from '@/lib/gids-zoekertjes-db'
+import { GIDS_ZOEKERTJE_MAX_PHOTOS, GIDS_ZOEKERTJE_TITLE_MAX } from '@/lib/gids-zoekertjes-types'
+import { ensureGidsPhotosBucket, siteOriginFromRequest } from '@/lib/gids-listing-photos-server'
+import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
+
+export const runtime = 'nodejs'
+export const maxDuration = 60
+
+function parseSaveFields(form: FormData) {
+  const title = String(form.get('title') ?? '').trim().slice(0, GIDS_ZOEKERTJE_TITLE_MAX)
+  const description = String(form.get('description') ?? '').trim().slice(0, 4000)
+  const category = String(form.get('category') ?? '').trim()
+  const condition = String(form.get('condition') ?? '').trim() || null
+  const kind = String(form.get('kind') ?? '').trim() || null
+  const itemType = String(form.get('itemType') ?? '').trim() || null
+  const brand = String(form.get('brand') ?? '').trim() || null
+  const priceClass = String(form.get('priceClass') ?? 'Bieden').trim() || 'Bieden'
+  return { title, description, category, condition, kind, itemType, brand, priceClass }
+}
+
+function collectPhotoFiles(form: FormData): { index: number; file: File }[] {
+  const out: { index: number; file: File }[] = []
+  for (let i = 0; i < GIDS_ZOEKERTJE_MAX_PHOTOS; i++) {
+    const entry = form.get(`photo_${i}`)
+    if (entry instanceof File && entry.size > 0) out.push({ index: i, file: entry })
+  }
+  return out
+}
+
+async function requirePremiumListing() {
+  const listingId = await getGidsOwnerListingIdFromCookies()
+  if (!listingId) return { error: NextResponse.json({ error: 'Log in met je zaak.' }, { status: 401 }) }
+  const row = await fetchListingRowByIdAdmin(listingId)
+  if (!row) return { error: NextResponse.json({ error: 'Zaak niet gevonden.' }, { status: 404 }) }
+  if (!resolveListingPremiumActive(row)) {
+    return {
+      error: NextResponse.json(
+        { error: 'Zoekertjes plaatsen is enkel voor premium-leden (€50/jaar).' },
+        { status: 403 },
+      ),
+    }
+  }
+  return { listingId }
+}
+
+export async function GET() {
+  const items = await fetchPublishedGidsZoekertjesAdmin()
+  if (items === null) {
+    return NextResponse.json(
+      { error: 'Zoekertjes laden mislukt. Staat de tabel gids_zoekertjes in Supabase?' },
+      { status: 503 },
+    )
+  }
+
+  const ownerListingId = await getGidsOwnerListingIdFromCookies()
+  return NextResponse.json({ zoekertjes: items, ownerListingId: ownerListingId ?? null })
+}
+
+export async function POST(req: Request) {
+  const auth = await requirePremiumListing()
+  if ('error' in auth) return auth.error
+  const { listingId } = auth
+
+  let form: FormData
+  try {
+    form = await req.formData()
+  } catch {
+    return NextResponse.json({ error: 'Ongeldig formulier.' }, { status: 400 })
+  }
+
+  const fields = parseSaveFields(form)
+  if (!fields.title) return NextResponse.json({ error: 'Titel is verplicht.' }, { status: 400 })
+  if (!fields.description) return NextResponse.json({ error: 'Beschrijving is verplicht.' }, { status: 400 })
+  if (!fields.category) return NextResponse.json({ error: 'Kies een categorie.' }, { status: 400 })
+
+  const photos = collectPhotoFiles(form)
+  if (photos.length > GIDS_ZOEKERTJE_MAX_PHOTOS) {
+    return NextResponse.json({ error: `Maximaal ${GIDS_ZOEKERTJE_MAX_PHOTOS} foto's.` }, { status: 400 })
+  }
+
+  const created = await createGidsZoekertjeAdmin(listingId, {
+    title: fields.title,
+    description: fields.description,
+    category: fields.category,
+    condition: fields.condition,
+    kind: fields.kind,
+    itemType: fields.itemType,
+    brand: fields.brand,
+    priceClass: fields.priceClass,
+  })
+  if (!created.ok) return NextResponse.json({ error: created.error }, { status: 500 })
+
+  if (photos.length) {
+    const admin = createGidsSupabaseAdmin()
+    if (!admin) return NextResponse.json({ error: 'Database niet geconfigureerd.' }, { status: 503 })
+    const bucketReady = await ensureGidsPhotosBucket(admin)
+    if (!bucketReady.ok) return NextResponse.json({ error: bucketReady.message }, { status: 503 })
+
+    const origin = siteOriginFromRequest(req)
+    const uploaded = await replaceGidsZoekertjePhotosAdmin(created.id, photos, origin)
+    if (!uploaded.ok) {
+      return NextResponse.json({ error: `Foto's uploaden mislukt: ${uploaded.error}` }, { status: 500 })
+    }
+  }
+
+  revalidatePath('/zoekertjes')
+  return NextResponse.json({ ok: true, id: created.id })
+}

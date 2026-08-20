@@ -3615,3 +3615,210 @@ body {
   font-size: 1.75rem;
   font-weight: 800;
 }
+
+/* Zoekertjes — popup wizard + overzicht */
+.vysiongids-zoekertje-modal-panel {
+  width: min(100%, 32rem);
+  max-height: min(92vh, 44rem);
+}
+
+.vysiongids-zoekertje-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: stretch;
+}
+
+.vysiongids-zoekertje-title-row .vysiongids-form-input {
+  flex: 1 1 12rem;
+  min-width: 0;
+}
+
+.vysiongids-zoekertje-yellow-btn {
+  flex-shrink: 0;
+  border: none;
+  border-radius: 0.5rem;
+  padding: 0.65rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 800;
+  color: #0f172a;
+  background: #facc15;
+  cursor: pointer;
+}
+
+.vysiongids-zoekertje-yellow-btn:hover {
+  background: #eab308;
+}
+
+.vysiongids-zoekertje-yellow-btn--wide {
+  flex: 1 1 auto;
+  min-width: 8rem;
+}
+
+.vysiongids-zoekertje-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.vysiongids-zoekertje-photo-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.5rem;
+}
+
+@media (min-width: 480px) {
+  .vysiongids-zoekertje-photo-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.vysiongids-zoekertje-photo-add,
+.vysiongids-zoekertje-photo-thumb {
+  position: relative;
+  aspect-ratio: 1;
+  border-radius: 0.5rem;
+  border: 2px dashed #cbd5e1;
+  background: #f8fafc;
+  overflow: hidden;
+}
+
+.vysiongids-zoekertje-photo-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  text-align: center;
+  padding: 0.35rem;
+}
+
+.vysiongids-zoekertje-photo-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vysiongids-zoekertje-photo-remove {
+  position: absolute;
+  top: 0.2rem;
+  right: 0.2rem;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: none;
+  border-radius: 999px;
+  background: rgb(0 0 0 / 0.55);
+  color: #fff;
+  font-size: 1rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.vysiongids-zoekertjes-grid {
+  list-style: none;
+  margin: 2rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-zoekertjes-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.vysiongids-zoekertje-card {
+  border: 1px solid #e5e7eb;
+  border-radius: 0.85rem;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+}
+
+.vysiongids-zoekertje-card-media {
+  aspect-ratio: 16 / 10;
+  background: #f3f4f6;
+}
+
+.vysiongids-zoekertje-card-media img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.vysiongids-zoekertje-card-media--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  color: #9ca3af;
+}
+
+.vysiongids-zoekertje-card-body {
+  padding: 1rem 1.1rem 1.1rem;
+}
+
+.vysiongids-zoekertje-card-meta {
+  margin: 0 0 0.35rem;
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.vysiongids-zoekertje-card-title {
+  margin: 0 0 0.35rem;
+  font-size: 1.0625rem;
+  font-weight: 800;
+  color: #111827;
+}
+
+.vysiongids-zoekertje-card-tags {
+  margin: 0 0 0.5rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.vysiongids-zoekertje-card-desc {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #374151;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.vysiongids-zoekertje-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.85rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.vysiongids-zoekertje-action-btn {
+  border: 1px solid var(--accent);
+  border-radius: 0.5rem;
+  padding: 0.45rem 0.85rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--accent);
+  background: #fff;
+  cursor: pointer;
+}
+
+.vysiongids-zoekertje-action-btn:hover {
+  background: rgb(14 93 130 / 0.06);
+}
+
+.vysiongids-zoekertje-action-btn--danger {
+  border-color: #dc2626;
+  color: #dc2626;
+}
+
+.vysiongids-zoekertje-action-btn--danger:hover {
+  background: rgb(220 38 38 / 0.06);
+}

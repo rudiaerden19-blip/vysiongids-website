@@ -4,10 +4,16 @@ import { useEffect, useState } from 'react'
 import GidsPremiumPaywallModal from '@/components/GidsPremiumPaywallModal'
 import { listingHasGidsPremium } from '@/lib/gids-premium'
 
-export default function ZoekertjesPlaceButton() {
+type Props = {
+  /** Premium + ingelogd: open zoekertje-popup i.p.v. mailto */
+  onPremiumReady?: () => void
+}
+
+export default function ZoekertjesPlaceButton({ onPremiumReady }: Props) {
   const [paywallOpen, setPaywallOpen] = useState(false)
   const [listingName, setListingName] = useState<string | undefined>()
   const [isPremium, setIsPremium] = useState(false)
+  const [authenticated, setAuthenticated] = useState(false)
   const [authChecked, setAuthChecked] = useState(false)
 
   useEffect(() => {
@@ -16,6 +22,7 @@ export default function ZoekertjesPlaceButton() {
       .then((data: { authenticated?: boolean; name?: string; premiumMember?: boolean }) => {
         if (data.authenticated) {
           setListingName(data.name)
+          setAuthenticated(true)
           setIsPremium(listingHasGidsPremium(data.premiumMember))
         }
       })
@@ -23,8 +30,13 @@ export default function ZoekertjesPlaceButton() {
   }, [])
 
   function onClick() {
-    if (authChecked && isPremium) {
-      window.location.href = 'mailto:contact@webvysion.tech?subject=Zoekertje%20Vysiongids'
+    if (!authChecked) return
+    if (!authenticated) {
+      setPaywallOpen(true)
+      return
+    }
+    if (isPremium) {
+      onPremiumReady?.()
       return
     }
     setPaywallOpen(true)
