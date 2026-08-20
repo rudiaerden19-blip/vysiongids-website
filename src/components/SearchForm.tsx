@@ -19,6 +19,8 @@ import {
 import { normalizeVoiceActionQuery, voiceQueryNeedsGeolocation } from '@/lib/gids-listing-action-intent'
 import { saveGidsNavTarget } from '@/lib/gids-nav-session'
 
+const GIDS_SEARCH_PLACEHOLDER = 'Bv frituur dichtbij — pizzeria gent — frituur nu open'
+
 const fieldLabel: CSSProperties = {
   display: 'block',
   marginBottom: '0.25rem',
@@ -276,7 +278,7 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
             name="q"
             type="search"
             defaultValue={q}
-            placeholder="Bv frituur dichtbij pizzeria gent frituur nu open"
+            placeholder={GIDS_SEARCH_PLACEHOLDER}
             autoComplete="off"
             style={heroFieldInput}
           />
@@ -321,7 +323,7 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
           name="q"
           type="search"
           defaultValue={q}
-          placeholder="Bv frituur dichtbij pizzeria gent frituur nu open"
+          placeholder={GIDS_SEARCH_PLACEHOLDER}
           style={fieldInput}
           autoComplete="off"
         />
