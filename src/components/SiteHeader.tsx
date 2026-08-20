@@ -28,6 +28,12 @@ const BACKDROP_STYLE: CSSProperties = {
   cursor: 'default',
 }
 
+const MOBILE_MENU_BACKDROP_STYLE: CSSProperties = {
+  ...BACKDROP_STYLE,
+  zIndex: 10050,
+  background: 'rgba(15, 23, 42, 0.45)',
+}
+
 function readRegionCookie(): ProvinceSlug {
   const match = document.cookie.match(new RegExp(`(?:^|; )${REGION_COOKIE}=([^;]*)`))
   const raw = match?.[1]
@@ -63,6 +69,47 @@ function HeaderNavLinks({ onNavigate, className }: { onNavigate?: () => void; cl
       <Link href="/zaak-toevoegen" className="vysiongids-header-nav-cta" onClick={onNavigate}>
         Jouw zaak toevoegen
       </Link>
+    </nav>
+  )
+}
+
+const MOBILE_NAV_LINKS = [
+  { href: '/jobs', label: 'Jobs' },
+  { href: '/zoekertjes', label: 'Zoekertjes' },
+  { href: '/leveranciers', label: 'Leveranciers' },
+  { href: '/diensten', label: 'Diensten' },
+  { href: '/login', label: 'Login' },
+] as const
+
+function MobileNavSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
+  if (!open) return null
+
+  return (
+    <nav className="vysiongids-mobile-nav-sheet" aria-label="Navigatie">
+      <div className="vysiongids-mobile-nav-sheet-head">
+        <p className="vysiongids-mobile-nav-sheet-title">Menu</p>
+        <button type="button" className="vysiongids-mobile-nav-close" aria-label="Menu sluiten" onClick={onClose}>
+          <span aria-hidden>×</span>
+        </button>
+      </div>
+      <ul className="vysiongids-mobile-nav-list">
+        {MOBILE_NAV_LINKS.map((item) => (
+          <li key={item.href}>
+            <Link href={item.href} className="vysiongids-mobile-nav-link" onClick={onClose}>
+              {item.label}
+            </Link>
+          </li>
+        ))}
+      </ul>
+      <div className="vysiongids-mobile-nav-sheet-foot">
+        <div className="vysiongids-mobile-nav-lang-row">
+          <span className="vysiongids-mobile-nav-lang-label">Taal</span>
+          <HeaderLanguagePicker compact />
+        </div>
+        <Link href="/zaak-toevoegen" className="vysiongids-mobile-nav-cta" onClick={onClose}>
+          Jouw zaak toevoegen
+        </Link>
+      </div>
     </nav>
   )
 }
@@ -128,6 +175,7 @@ function SiteHeaderBar() {
   }, [])
 
   const openMenu = useCallback(() => {
+    setMobileMenuOpen(false)
     measurePanel()
     setOpen(true)
   }, [measurePanel])
@@ -317,22 +365,38 @@ function SiteHeaderBar() {
 
           <button
             type="button"
-            className="vysiongids-mobile-menu-btn"
+            className={`vysiongids-mobile-menu-btn${mobileMenuOpen ? ' is-open' : ''}`}
             aria-expanded={mobileMenuOpen}
             aria-controls="vysiongids-mobile-nav"
             aria-label={mobileMenuOpen ? 'Menu sluiten' : 'Menu openen'}
-            onClick={() => setMobileMenuOpen((v) => !v)}
+            onClick={() => {
+              setMobileMenuOpen((v) => {
+                const next = !v
+                if (next) setOpen(false)
+                return next
+              })
+            }}
           >
             <span className="vysiongids-mobile-menu-icon" aria-hidden />
           </button>
         </div>
-
-        {mobileMenuOpen ? (
-          <div id="vysiongids-mobile-nav" className="vysiongids-mobile-nav" role="dialog" aria-label="Navigatie">
-            <HeaderNavLinks className="vysiongids-header-nav vysiongids-header-nav--mobile" onNavigate={closeMobile} />
-          </div>
-        ) : null}
       </header>
+      {mobileMenuOpen && mounted
+        ? createPortal(
+            <>
+              <button
+                type="button"
+                style={MOBILE_MENU_BACKDROP_STYLE}
+                aria-label="Sluit menu"
+                onClick={closeMobile}
+              />
+              <div id="vysiongids-mobile-nav" role="dialog" aria-modal="true" aria-label="Navigatie">
+                <MobileNavSheet open={mobileMenuOpen} onClose={closeMobile} />
+              </div>
+            </>,
+            document.body,
+          )
+        : null}
       {regionOverlay}
     </>
   )
