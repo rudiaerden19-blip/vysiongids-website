@@ -1201,14 +1201,13 @@ body {
 .vysiongids-listing-panel {
   overflow: hidden;
   border-radius: 0.75rem;
-  border: 1px solid #e5e7eb;
+  border: 2px solid var(--accent);
   background: #fff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.06);
+  box-shadow: 0 4px 18px rgb(14 93 130 / 0.1);
 }
 
 .vysiongids-listing-panel:hover {
-  border-color: rgb(14 93 130 / 0.35);
-  box-shadow: 0 4px 14px rgb(0 0 0 / 0.08);
+  box-shadow: 0 6px 22px rgb(14 93 130 / 0.18);
 }
 
 .vysiongids-listing-panel-hiring {
