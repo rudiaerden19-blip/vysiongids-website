@@ -1842,10 +1842,25 @@ body {
   white-space: nowrap;
 }
 
+.vysiongids-beheer-quick-nav-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.65rem;
+  width: 100%;
+}
+
 .vysiongids-beheer-quick-nav {
   display: flex;
   flex-wrap: wrap;
   gap: 0.65rem;
+  width: 100%;
+}
+
+.vysiongids-beheer-quick-nav-btn--claim {
+  flex: 0 1 auto;
+  width: min(100%, 22rem);
+  max-width: 100%;
 }
 
 .vysiongids-beheer-quick-nav-btn {

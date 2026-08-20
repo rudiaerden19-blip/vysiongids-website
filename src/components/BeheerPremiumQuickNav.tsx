@@ -31,15 +31,30 @@ export default function BeheerPremiumQuickNav({ premiumMember, listingName }: Pr
     router.push('/zoekertjes')
   }
 
+  function openPremiumPaywall() {
+    setPaywallOpen(true)
+  }
+
   return (
     <>
-      <div className="vysiongids-beheer-quick-nav">
-        <button type="button" className="vysiongids-beheer-quick-nav-btn" onClick={onVacatureClick}>
-          Vacature plaatsen
-        </button>
-        <button type="button" className="vysiongids-beheer-quick-nav-btn" onClick={onZoekertjeClick}>
-          Zoekertje plaatsen
-        </button>
+      <div className="vysiongids-beheer-quick-nav-wrap">
+        <div className="vysiongids-beheer-quick-nav">
+          <button type="button" className="vysiongids-beheer-quick-nav-btn" onClick={onVacatureClick}>
+            Vacature plaatsen
+          </button>
+          <button type="button" className="vysiongids-beheer-quick-nav-btn" onClick={onZoekertjeClick}>
+            Zoekertje plaatsen
+          </button>
+        </div>
+        {!isPremium ? (
+          <button
+            type="button"
+            className="vysiongids-beheer-quick-nav-btn vysiongids-beheer-quick-nav-btn--claim"
+            onClick={openPremiumPaywall}
+          >
+            Claim uw zaak hier 1 jaar
+          </button>
+        ) : null}
       </div>
       <GidsPremiumPaywallModal
         open={paywallOpen}
