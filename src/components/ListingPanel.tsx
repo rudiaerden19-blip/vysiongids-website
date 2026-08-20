@@ -14,6 +14,7 @@ import { formatDistanceAndDriveTime } from '@/lib/listing-distance'
 import { listingWazeUrl } from '@/lib/gids-listing-navigation'
 import { resolveListingPanelHiring } from '@/lib/listing-info-extras'
 import ListingMenuButton from '@/components/ListingMenuButton'
+import ZaakInfoTopLink from '@/components/ZaakInfoTopLink'
 import ListingPanelHiringBar from '@/components/ListingPanelHiringBar'
 
 export default function ListingPanel({
@@ -122,9 +123,7 @@ export default function ListingPanel({
           <div className="vysiongids-listing-panel-actions">
             <ListingPanelAmenityFooter listing={listing} variant="inline" />
             <div className="vysiongids-listing-panel-cta-stack">
-              <Link href={`${profileHref}#info`} className="vysiongids-listing-action-btn">
-                Info
-              </Link>
+              <ZaakInfoTopLink href={profileHref} className="vysiongids-listing-action-btn" />
               <a
                 href={listing.orderUrl}
                 target="_blank"

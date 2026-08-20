@@ -1,13 +1,6 @@
-'use client'
-
 import { usePathname } from 'next/navigation'
 import { useLayoutEffect } from 'react'
-
-function scrollWindowToTop() {
-  window.scrollTo(0, 0)
-  document.documentElement.scrollTop = 0
-  document.body.scrollTop = 0
-}
+import { scrollGidsPageToTop } from '@/lib/scroll-page-top'
 
 /** Altijd bovenaan starten bij refresh, terug/vooruit en route-wissel — geen midden van de pagina. */
 export default function ScrollToTopOnNavigation() {
@@ -20,12 +13,21 @@ export default function ScrollToTopOnNavigation() {
   }, [])
 
   useLayoutEffect(() => {
-    scrollWindowToTop()
+    scrollGidsPageToTop()
+    const raf = requestAnimationFrame(() => {
+      scrollGidsPageToTop()
+      requestAnimationFrame(scrollGidsPageToTop)
+    })
+    const t = window.setTimeout(scrollGidsPageToTop, 120)
+    return () => {
+      cancelAnimationFrame(raf)
+      window.clearTimeout(t)
+    }
   }, [pathname])
 
   useLayoutEffect(() => {
     const onPageShow = () => {
-      scrollWindowToTop()
+      scrollGidsPageToTop()
     }
     window.addEventListener('pageshow', onPageShow)
     return () => window.removeEventListener('pageshow', onPageShow)

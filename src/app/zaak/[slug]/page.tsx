@@ -22,6 +22,7 @@ import {
   listingPhotoUrls,
 } from '@/lib/listings'
 import ListingMenuButton from '@/components/ListingMenuButton'
+import ZaakInfoTopLink from '@/components/ZaakInfoTopLink'
 import { getCachedListingIdBySlug, getCachedReviewsByListingSlug } from '@/lib/gids-reviews-cache'
 import { resolveListingMapPin } from '@/lib/gids-listing-geocode'
 
@@ -188,9 +189,7 @@ export default async function ZaakPage({ params }: Props) {
                 geen commissie via Vysiongids.
               </p>
               <div className="vysiongids-zaak-sidebar-cta mt-4">
-                <a href="#info" className="vysiongids-zaak-action-btn">
-                  Info
-                </a>
+                <ZaakInfoTopLink href={`/zaak/${slug}`} className="vysiongids-zaak-action-btn" />
                 <a
                   href={listing.orderUrl}
                   target="_blank"
