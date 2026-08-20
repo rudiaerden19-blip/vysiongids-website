@@ -1,5 +1,6 @@
+import { Suspense } from 'react'
 import SiteHeader from '@/components/SiteHeader'
-import JobListingCard from '@/components/JobListingCard'
+import JobsPageClient from '@/components/JobsPageClient'
 import { listingHiringIsActive } from '@/lib/listing-hiring'
 import { getAllListings } from '@/lib/listings'
 
@@ -18,17 +19,9 @@ export default async function JobsPage() {
         <p className="vysiongids-jobs-page-lead">
           Vacatures bij horeca in België — solliciteer rechtstreeks bij de zaak.
         </p>
-        {listings.length === 0 ? (
-          <p className="vysiongids-jobs-empty">Momenteel geen open vacatures in de gids.</p>
-        ) : (
-          <ul className="vysiongids-jobs-grid">
-            {listings.map((listing) => (
-              <li key={listing.slug}>
-                <JobListingCard listing={listing} />
-              </li>
-            ))}
-          </ul>
-        )}
+        <Suspense fallback={<p className="vysiongids-jobs-empty">Vacatures laden…</p>}>
+          <JobsPageClient listings={listings} />
+        </Suspense>
       </main>
     </>
   )

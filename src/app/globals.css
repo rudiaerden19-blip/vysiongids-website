@@ -2978,10 +2978,52 @@ body {
 }
 
 .vysiongids-jobs-page-lead {
-  margin: 0 0 1.5rem;
+  margin: 0 0 1.25rem;
   max-width: 40rem;
   color: #4b5563;
   line-height: 1.6;
+}
+
+.vysiongids-jobs-province-picker {
+  margin: 0 0 1.5rem;
+  max-width: 28rem;
+}
+
+.vysiongids-jobs-province-label {
+  display: block;
+  margin-bottom: 0.35rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.vysiongids-jobs-province-select {
+  display: block;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.5rem 2.25rem 0.5rem 0.85rem;
+  border-radius: 0.65rem;
+  border: 1px solid #d1d5db;
+  background: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #111827;
+  cursor: pointer;
+  appearance: auto;
+}
+
+.vysiongids-jobs-province-select:focus {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-color: var(--accent);
+}
+
+.vysiongids-jobs-province-hint {
+  margin: 0.5rem 0 0;
+  font-size: 0.875rem;
+  color: #6b7280;
 }
 
 .vysiongids-jobs-empty {
