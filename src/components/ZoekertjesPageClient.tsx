@@ -2,7 +2,6 @@
 
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ZoekertjeDetailModal from '@/components/ZoekertjeDetailModal'
-import ZoekertjePhotoLightbox from '@/components/ZoekertjePhotoLightbox'
 import {
   ZOEKERTJES_BROWSE_KIND_OPTIONS,
   ZOEKERTJES_CATEGORIES,
@@ -37,9 +36,6 @@ export default function ZoekertjesPageClient({
   const [loading, setLoading] = useState(!hasServerList)
   const [detailOpen, setDetailOpen] = useState(false)
   const [selected, setSelected] = useState<GidsZoekertje | null>(null)
-  const [lightboxOpen, setLightboxOpen] = useState(false)
-  const [lightboxPhotos, setLightboxPhotos] = useState<GidsZoekertje['photos']>([])
-  const [lightboxIndex, setLightboxIndex] = useState(0)
   const [kindFilter, setKindFilter] = useState('')
   const [categoryFilter, setCategoryFilter] = useState('')
   const [provinceFilter, setProvinceFilter] = useState(ALL_PROVINCES)
@@ -97,13 +93,6 @@ export default function ZoekertjesPageClient({
     void fetchGidsZoekertjeDetailClient(z.id).then((full) => {
       if (full) setSelected(full)
     })
-  }
-
-  function openLightbox(z: GidsZoekertje, startIndex: number) {
-    if (!z.photos.length) return
-    setLightboxPhotos(z.photos)
-    setLightboxIndex(startIndex)
-    setLightboxOpen(true)
   }
 
   function closeDetail() {
@@ -218,8 +207,8 @@ export default function ZoekertjesPageClient({
                 <button
                   type="button"
                   className="vysiongids-zoekertje-card-media vysiongids-zoekertje-card-media--browse vysiongids-zoekertje-card-photo-hit"
-                  onClick={() => openLightbox(z, 0)}
-                  aria-label={`Foto: ${normalizeZoekertjeTitleInput(z.title)}`}
+                  onClick={() => openDetail(z)}
+                  aria-label={`Bekijk zoekertje: ${normalizeZoekertjeTitleInput(z.title)}`}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={thumb} alt="" loading="lazy" decoding="async" />
@@ -250,13 +239,6 @@ export default function ZoekertjesPageClient({
       </div>
 
       <ZoekertjeDetailModal zoekertje={selected} open={detailOpen} onClose={closeDetail} />
-      <ZoekertjePhotoLightbox
-        open={lightboxOpen}
-        photos={lightboxPhotos}
-        index={lightboxIndex}
-        onIndexChange={setLightboxIndex}
-        onClose={() => setLightboxOpen(false)}
-      />
     </>
   )
 }
