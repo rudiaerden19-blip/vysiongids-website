@@ -69,39 +69,50 @@ export async function POST(req: Request) {
   const origin = siteOriginFromRequest(req)
   const amount = gidsPremiumUnitAmountCents()
 
-  const session = await stripe.checkout.sessions.create({
-    payment_method_types: ['card', 'bancontact'],
-    mode: 'payment',
-    customer_email: email,
-    line_items: [
-      {
-        price_data: {
-          currency: 'eur',
-          unit_amount: amount,
-          product_data: {
-            name: 'Vysiongids Premium (1 jaar)',
-            description: `Vacatures & zoekertjes — ${zaakName}`,
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ['card', 'bancontact'],
+      mode: 'payment',
+      customer_email: email,
+      line_items: [
+        {
+          price_data: {
+            currency: 'eur',
+            unit_amount: amount,
+            product_data: {
+              name: 'Vysiongids Premium (1 jaar)',
+              description: `Vacatures & zoekertjes — ${zaakName}`,
+            },
           },
+          quantity: 1,
         },
-        quantity: 1,
+      ],
+      metadata: {
+        kind: 'gids_premium_yearly',
+        listing_id: listingId,
+        listing_slug: row.slug,
+        contact_name: contactName.slice(0, 200),
+        zaak_name: zaakName.slice(0, 200),
+        contact_phone: phone.slice(0, 40),
+        contact_email: email.slice(0, 200),
       },
-    ],
-    metadata: {
-      kind: 'gids_premium_yearly',
-      listing_id: listingId,
-      listing_slug: row.slug,
-      contact_name: contactName.slice(0, 200),
-      zaak_name: zaakName.slice(0, 200),
-      contact_phone: phone.slice(0, 40),
-      contact_email: email.slice(0, 200),
-    },
-    success_url: `${origin}/beheer?premium=success`,
-    cancel_url: `${origin}/beheer?premium=cancel`,
-  })
+      success_url: `${origin}/beheer?premium=success`,
+      cancel_url: `${origin}/beheer?premium=cancel`,
+    })
 
-  if (!session.url) {
-    return NextResponse.json({ error: 'Stripe-sessie kon niet starten.' }, { status: 500 })
+    if (!session.url) {
+      return NextResponse.json({ error: 'Stripe-sessie kon niet starten.' }, { status: 500 })
+    }
+
+    return NextResponse.json({ url: session.url })
+  } catch (err: unknown) {
+    const message =
+      err instanceof Stripe.errors.StripeError
+        ? err.message
+        : err instanceof Error
+          ? err.message
+          : 'Onbekende Stripe-fout'
+    console.error('[gids-premium checkout]', message)
+    return NextResponse.json({ error: message }, { status: 502 })
   }
-
-  return NextResponse.json({ url: session.url })
 }

@@ -119,7 +119,7 @@ export default function GidsPremiumPaywallModal({ open, onClose, listingName }: 
   if (!open) return null
 
   const panel = (
-    <div className="vysiongids-job-modal-root" role="presentation">
+    <div className="vysiongids-job-modal-root vysiongids-premium-modal-root" role="presentation">
       <button type="button" className="vysiongids-job-modal-backdrop" aria-label="Sluiten" onClick={onClose} />
       <div
         className="vysiongids-job-modal-panel vysiongids-premium-modal-panel"
@@ -130,26 +130,27 @@ export default function GidsPremiumPaywallModal({ open, onClose, listingName }: 
         <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label="Sluiten">
           ×
         </button>
-        <p className="vysiongids-job-modal-kicker">Premium</p>
-        <h2 id={titleId} className="vysiongids-job-modal-title">
-          Vysiongids-lidmaatschap
-        </h2>
-        <p className="vysiongids-premium-modal-text">
-          U kunt alleen <strong>vacatures</strong> en <strong>zoekertjes</strong> plaatsen als u betalend lid bent van
-          de Vysiongids. Dit kost <strong>€{GIDS_PREMIUM_YEARLY_EUR} per jaar</strong> — dan geniet u van alle
-          premiumvoordelen van de gids.
-        </p>
-
-        {needsLogin ? (
-          <p className="mt-3 text-sm text-amber-900">
-            <a href="/login" className="font-semibold text-accent underline">
-              Log in
-            </a>{' '}
-            met je zaak voordat je betaalt.
+        <div className="vysiongids-premium-modal-scroll">
+          <p className="vysiongids-job-modal-kicker">Premium</p>
+          <h2 id={titleId} className="vysiongids-job-modal-title">
+            Vysiongids-lidmaatschap
+          </h2>
+          <p className="vysiongids-premium-modal-text">
+            U kunt alleen <strong>vacatures</strong> en <strong>zoekertjes</strong> plaatsen als u betalend lid bent van
+            de Vysiongids. Dit kost <strong>€{GIDS_PREMIUM_YEARLY_EUR} per jaar</strong> — dan geniet u van alle
+            premiumvoordelen van de gids.
           </p>
-        ) : null}
 
-        <div className="vysiongids-premium-modal-form mt-4 space-y-3">
+          {needsLogin ? (
+            <p className="mt-3 text-sm text-amber-900">
+              <a href="/login" className="font-semibold text-accent underline">
+                Log in
+              </a>{' '}
+              met je zaak voordat je betaalt.
+            </p>
+          ) : null}
+
+          <div className="vysiongids-premium-modal-form mt-4 space-y-3">
           <div>
             <label className="vysiongids-form-label text-sm" htmlFor="premiumContactName">
               Naam
@@ -207,9 +208,10 @@ export default function GidsPremiumPaywallModal({ open, onClose, listingName }: 
           </div>
         </div>
 
-        {error ? <p className="mt-3 text-sm text-red-700">{error}</p> : null}
+          {error ? <p className="mt-3 text-sm text-red-700">{error}</p> : null}
+        </div>
 
-        <div className="vysiongids-job-card-actions vysiongids-job-modal-actions">
+        <div className="vysiongids-job-card-actions vysiongids-premium-modal-actions">
           <button
             type="button"
             disabled={submitting || needsLogin}

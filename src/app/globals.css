@@ -3426,8 +3426,35 @@ body {
   line-height: 1.65;
 }
 
+.vysiongids-premium-modal-root {
+  align-items: flex-start;
+  padding-top: max(1rem, env(safe-area-inset-top, 0px));
+  padding-bottom: max(1rem, env(safe-area-inset-bottom, 0px));
+  overflow-y: auto;
+}
+
 .vysiongids-premium-modal-panel {
   width: min(100%, 26rem);
+  max-height: none;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 1.25rem;
+}
+
+.vysiongids-premium-modal-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: min(58vh, 28rem);
+  overflow-y: auto;
+  padding-right: 0.15rem;
+}
+
+.vysiongids-premium-modal-actions {
+  flex-shrink: 0;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
 }
 
 .vysiongids-job-modal-actions {
