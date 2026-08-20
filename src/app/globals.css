@@ -4086,12 +4086,20 @@ body {
   max-height: min(92vh, 44rem);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  padding: 0;
+  border: 3px solid var(--accent);
+  box-shadow:
+    var(--vysiongids-card-shadow),
+    0 0 0 1px rgb(14 93 130 / 0.2),
+    0 24px 56px rgb(0 0 0 / 0.28);
 }
 
 .vysiongids-zoekertje-detail-scroll {
   flex: 1 1 auto;
   overflow-y: auto;
-  padding-right: 0.25rem;
+  padding: 1.5rem 1.35rem 0.75rem;
+  padding-right: calc(1.35rem + 0.25rem);
 }
 
 .vysiongids-zoekertje-detail-price {
@@ -4121,12 +4129,13 @@ body {
   width: 100%;
   padding: 0.35rem;
   margin-bottom: 0.5rem;
-  border: var(--vysiongids-card-border);
+  border: 2px solid var(--accent);
   border-radius: 0.65rem;
   overflow: hidden;
   background: #f3f4f6;
   cursor: zoom-in;
   font-family: inherit;
+  box-shadow: var(--vysiongids-card-shadow);
 }
 
 .vysiongids-zoekertje-detail-photo img {
