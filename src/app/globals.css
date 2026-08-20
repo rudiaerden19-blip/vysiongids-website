@@ -3524,8 +3524,11 @@ body {
   padding: 1.5rem 1.35rem 1.35rem;
   border-radius: 1rem;
   background: #fff;
-  border: var(--vysiongids-card-border);
-  box-shadow: var(--vysiongids-card-shadow), 0 20px 50px rgb(0 0 0 / 0.12);
+  border: 3px solid var(--accent);
+  box-shadow:
+    var(--vysiongids-card-shadow),
+    0 0 0 1px rgb(14 93 130 / 0.15),
+    0 24px 56px rgb(0 0 0 / 0.28);
 }
 
 .vysiongids-job-modal-panel.vysiongids-premium-modal-panel {
