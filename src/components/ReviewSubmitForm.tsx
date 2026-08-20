@@ -1,5 +1,7 @@
 'use client'
 
+import SentenceCaseTextarea from '@/components/SentenceCaseTextarea'
+import TitleCaseTextInput from '@/components/TitleCaseTextInput'
 import { formatGidsTitleCase, formatReviewCommentText } from '@/lib/gids-text'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
@@ -12,24 +14,28 @@ type Props = {
 export default function ReviewSubmitForm({ slug, listingName }: Props) {
   const router = useRouter()
   const [rating, setRating] = useState<number | null>(null)
-  const [name, setName] = useState('')
-  const [body, setBody] = useState('')
+  const [bodyLen, setBodyLen] = useState(0)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
 
-  async function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError(null)
     if (rating == null) {
       setError('Kies eerst je score: tik op 1 tot 5 sterren.')
       return
     }
+    const fd = new FormData(e.currentTarget)
+    const nameRaw = String(fd.get('reviewerName') ?? '').trim()
+    const bodyRaw = String(fd.get('reviewBody') ?? '').trim()
+    const reviewerName = nameRaw ? formatGidsTitleCase(nameRaw) : undefined
+    const reviewBody = formatReviewCommentText(bodyRaw)
+    if (reviewBody.length < 10) {
+      setError('Schrijf minstens 10 tekens over je ervaring.')
+      return
+    }
     setLoading(true)
-    const reviewerName = name.trim() ? formatGidsTitleCase(name.trim()) : undefined
-    const reviewBody = formatReviewCommentText(body.trim())
-    setName(reviewerName ?? '')
-    setBody(reviewBody)
     try {
       const res = await fetch('/api/gids/reviews', {
         method: 'POST',
@@ -93,15 +99,12 @@ export default function ReviewSubmitForm({ slug, listingName }: Props) {
         <label className="vysiongids-form-label" htmlFor="reviewerName">
           Naam (optioneel)
         </label>
-        <input
+        <TitleCaseTextInput
           id="reviewerName"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          onBlur={() => setName((v) => (v.trim() ? formatGidsTitleCase(v) : v))}
+          name="reviewerName"
           maxLength={80}
           className="vysiongids-form-input mt-1"
           autoComplete="name"
-          autoCapitalize="words"
         />
       </div>
 
@@ -112,18 +115,16 @@ export default function ReviewSubmitForm({ slug, listingName }: Props) {
             *
           </span>
         </label>
-        <textarea
+        <SentenceCaseTextarea
           id="reviewBody"
+          name="reviewBody"
           required
           minLength={10}
           maxLength={2000}
           rows={4}
-          value={body}
-          onChange={(e) => setBody(e.target.value)}
-          onBlur={() => setBody((v) => (v.trim() ? formatReviewCommentText(v) : v))}
+          onChange={(e) => setBodyLen(e.target.value.trim().length)}
           className="vysiongids-form-input mt-1 resize-y"
           placeholder="Vertel kort wat je goed of minder vond…"
-          autoCapitalize="sentences"
         />
       </div>
 
@@ -135,7 +136,7 @@ export default function ReviewSubmitForm({ slug, listingName }: Props) {
 
       <button
         type="submit"
-        disabled={loading || rating == null || body.trim().length < 10}
+        disabled={loading || rating == null || bodyLen < 10}
         className="rounded-xl bg-accent px-8 py-3 font-bold text-white hover:bg-accent/90 disabled:opacity-60"
       >
         {loading ? 'Bezig…' : 'Review plaatsen'}
