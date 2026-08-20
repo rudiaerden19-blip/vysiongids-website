@@ -99,7 +99,7 @@ export default async function ZaakPage({ params }: Props) {
               </div>
             ) : null}
 
-            <div className="vysiongids-zaak-gallery vysiongids-zaak-panel relative mt-6 aspect-[4/3] overflow-hidden bg-gray-800 sm:aspect-[16/10]">
+            <div className="vysiongids-zaak-gallery relative mt-6 aspect-[4/3] overflow-hidden rounded-2xl bg-gray-800 sm:aspect-[16/10]">
               <ListingPhotoSlider
                 urls={listingPhotoUrls(listing)}
                 alt={listing.name}
@@ -114,7 +114,7 @@ export default async function ZaakPage({ params }: Props) {
 
             <ListingMap listing={listingForRating} mapPin={mapPin} />
 
-            <section id="beoordeling" className="vysiongids-zaak-panel mt-8 scroll-mt-24 bg-white p-4 sm:p-5">
+            <section id="beoordeling" className="mt-8 border-t border-gray-200 pt-8 scroll-mt-24">
               <h2 className="text-lg font-bold text-gray-900">Beoordeling</h2>
               <div className="mt-3">
                 <ListingStarRating slug={slug} avg={listingForRating.ratingAvg} count={listingForRating.ratingCount} size="md" />
@@ -139,7 +139,7 @@ export default async function ZaakPage({ params }: Props) {
               ) : null}
             </section>
 
-            <section className="vysiongids-zaak-panel mt-8 bg-white p-4 sm:p-5">
+            <section className="mt-8 border-t border-gray-200 pt-8">
               <h2 className="text-lg font-bold text-gray-900">Bestellen</h2>
               <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
                 {listing.pickupTimeMin != null && listing.pickupTimeMax != null ? (
@@ -183,7 +183,7 @@ export default async function ZaakPage({ params }: Props) {
           </div>
 
           <aside className="lg:sticky lg:top-6 lg:self-start">
-            <div className="vysiongids-zaak-panel rounded-2xl bg-gray-50 p-5 shadow-sm">
+            <div className="rounded-2xl border border-gray-200 bg-gray-50 p-5 shadow-sm">
               <p className="text-sm text-gray-600">
                 Bestel rechtstreeks bij deze zaak
                 <br />

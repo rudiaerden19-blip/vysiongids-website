@@ -46,26 +46,7 @@ body {
   z-index: 0;
 }
 
-.vysiongids-zaak-panel {
-  border: var(--vysiongids-card-border);
-  border-radius: 1rem;
-  box-shadow: var(--vysiongids-card-shadow);
-  box-sizing: border-box;
-}
-
-.vysiongids-zaak-page .vysiongids-zaak-info.vysiongids-zaak-panel {
-  width: 100%;
-  max-width: 100%;
-  margin-left: 0;
-  margin-right: 0;
-}
-
 .vysiongids-info-block {
-  border: var(--vysiongids-card-border);
-  border-radius: 1rem;
-  box-shadow: var(--vysiongids-card-shadow);
-  background: #fff;
-  padding: 1.25rem 1.25rem 1.5rem;
   box-sizing: border-box;
 }
 
@@ -1251,13 +1232,6 @@ body {
   .vysiongids-page-wrap {
     padding: 2rem var(--vysiongids-page-x) 2.5rem;
   }
-}
-
-.vysiongids-zaak-page .vysiongids-zaak-map-panel .vysiongids-listing-map {
-  width: 100%;
-  max-width: 100%;
-  margin-left: 0;
-  margin-right: 0;
 }
 
 .vysiongids-zoeken-search {
@@ -3084,8 +3058,6 @@ body {
 .vysiongids-specialty-card {
   border-radius: 0.75rem;
   overflow: hidden;
-  border: var(--vysiongids-card-border);
-  box-shadow: var(--vysiongids-card-shadow);
 }
 
 @media (max-width: 768px) {
