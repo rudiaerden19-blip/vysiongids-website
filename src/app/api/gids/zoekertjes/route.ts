@@ -53,16 +53,17 @@ async function requirePremiumListing() {
 }
 
 export async function GET() {
-  const items = await fetchPublishedGidsZoekertjesAdmin()
-  if (items === null) {
-    return NextResponse.json(
-      { error: 'Zoekertjes laden mislukt. Staat de tabel gids_zoekertjes in Supabase?' },
-      { status: 503 },
-    )
+  const result = await fetchPublishedGidsZoekertjesAdmin()
+  if (result === null) {
+    return NextResponse.json({ error: 'Zoekertjes laden mislukt (database niet bereikbaar).' }, { status: 503 })
   }
 
   const ownerListingId = await getGidsOwnerListingIdFromCookies()
-  return NextResponse.json({ zoekertjes: items, ownerListingId: ownerListingId ?? null })
+  return NextResponse.json({
+    zoekertjes: result.zoekertjes,
+    setupRequired: result.setupRequired === true,
+    ownerListingId: ownerListingId ?? null,
+  })
 }
 
 export async function POST(req: Request) {

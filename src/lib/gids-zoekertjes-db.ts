@@ -1,6 +1,11 @@
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { GIDS_LISTING_PHOTOS_BUCKET } from '@/lib/gids-listing-photos-server'
 import type { GidsZoekertje, GidsZoekertjePhoto } from '@/lib/gids-zoekertjes-types'
+import { friendlyGidsZoekertjesDbError, isMissingGidsZoekertjesTable } from '@/lib/gids-zoekertjes-db-errors'
+
+export type FetchPublishedZoekertjesResult =
+  | { zoekertjes: GidsZoekertje[]; setupRequired?: boolean }
+  | null
 
 type Row = {
   id: string
@@ -50,7 +55,7 @@ function mapRow(row: Row, photos: PhotoRow[]): GidsZoekertje {
   }
 }
 
-export async function fetchPublishedGidsZoekertjesAdmin(): Promise<GidsZoekertje[] | null> {
+export async function fetchPublishedGidsZoekertjesAdmin(): Promise<FetchPublishedZoekertjesResult> {
   const admin = createGidsSupabaseAdmin()
   if (!admin) return null
 
@@ -65,11 +70,14 @@ export async function fetchPublishedGidsZoekertjesAdmin(): Promise<GidsZoekertje
 
   if (error) {
     console.error('[gids zoekertjes list]', error.message)
+    if (isMissingGidsZoekertjesTable(error.message)) {
+      return { zoekertjes: [], setupRequired: true }
+    }
     return null
   }
 
   const rows = (data ?? []) as Row[]
-  if (rows.length === 0) return []
+  if (rows.length === 0) return { zoekertjes: [] }
 
   const ids = rows.map((r) => r.id)
   const { data: photoRows } = await admin
@@ -85,7 +93,7 @@ export async function fetchPublishedGidsZoekertjesAdmin(): Promise<GidsZoekertje
     photosById.set(id, list)
   }
 
-  return rows.map((r) => mapRow(r, photosById.get(r.id) ?? []))
+  return { zoekertjes: rows.map((r) => mapRow(r, photosById.get(r.id) ?? [])) }
 }
 
 export async function fetchGidsZoekertjeByIdAdmin(id: string): Promise<GidsZoekertje | null> {
@@ -148,7 +156,7 @@ export async function createGidsZoekertjeAdmin(
 
   if (error || !data) {
     console.error('[gids zoekertjes create]', error?.message)
-    return { ok: false, error: error?.message ?? 'Opslaan mislukt.' }
+    return { ok: false, error: friendlyGidsZoekertjesDbError(error?.message) }
   }
   return { ok: true, id: data.id as string }
 }

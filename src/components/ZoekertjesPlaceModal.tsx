@@ -10,6 +10,7 @@ import {
   guessZoekertjeCategoryFromTitle,
   zoekertjeCategoryLabel,
 } from '@/lib/gids-zoekertjes-categories'
+import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
 import { GIDS_ZOEKERTJE_MAX_PHOTOS, GIDS_ZOEKERTJE_TITLE_MAX } from '@/lib/gids-zoekertjes-types'
 
@@ -18,6 +19,7 @@ type Props = {
   onClose: () => void
   editId?: string | null
   onSaved?: () => void
+  setupRequired?: boolean
 }
 
 type Step = 1 | 2 | 3 | 4 | 5
@@ -35,7 +37,7 @@ const STEP_TITLES: Record<Step, string> = {
   5: 'Prijs',
 }
 
-export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved }: Props) {
+export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, setupRequired }: Props) {
   const titleId = useId()
   const [step, setStep] = useState<Step>(1)
   const [titleHint, setTitleHint] = useState('')
@@ -258,6 +260,12 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved }:
           <h2 id={titleId} className="vysiongids-job-modal-title">
             {editId ? 'Zoekertje bewerken' : STEP_TITLES[step]}
           </h2>
+
+          {setupRequired && !editId ? (
+            <p className="mt-2 rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-950">
+              {GIDS_ZOEKERTJES_SETUP_SQL_HINT}
+            </p>
+          ) : null}
 
           {loadingEdit ? <p className="text-sm text-gray-600">Gegevens laden…</p> : null}
 
