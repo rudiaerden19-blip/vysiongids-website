@@ -3043,6 +3043,21 @@ body {
   color: #374151;
 }
 
+.vysiongids-zaak-intro-promo {
+  margin: 0 0 1rem;
+  padding: 0.85rem 1rem;
+  border-radius: 0.65rem;
+  border: 2px solid rgb(14 93 130 / 0.35);
+  background: rgb(14 93 130 / 0.06);
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: #1f2937;
+}
+
+.vysiongids-zaak-intro-promo strong {
+  color: var(--accent);
+}
+
 .vysiongids-zaak-intro-body ul {
   margin: 1rem 0;
   padding-left: 1.25rem;
