@@ -14,7 +14,7 @@ import { normalizeZoekertjeTitleInput } from '@/lib/gids-zoekertjes-text'
 import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
 import { fetchGidsZoekertjeDetailClient } from '@/lib/fetch-gids-zoekertje-detail-client'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
-import { BELGIUM_PROVINCES, provinceLabel } from '@/lib/belgium-locations'
+import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
 
 const ALL_PROVINCES = 'all'
 
@@ -113,83 +113,79 @@ export default function ZoekertjesPageClient({
 
   return (
     <>
-      <p style={{ margin: '0 0 1.25rem', maxWidth: '40rem', color: '#4b5563', lineHeight: 1.6 }}>
-        Welkom op het zoekertjesplatform van Vysiongids. Wil je iets verkopen, ruilen, huren of dergelijke? Maak dan
-        een zoekertje aan in je eigen dashboard. Let op: om een jobadvertentie of een zoekertje te plaatsen moet je lid
-        zijn van Vysiongids.
-      </p>
+      <div className="vysiongids-zoekertjes-intro">
+        <h1 className="vysiongids-jobs-page-title">Zoekertjes</h1>
 
-      <div className="vysiongids-zoekertje-beheer-warn mb-4" role="note" style={{ maxWidth: '40rem' }}>
-        <p className="vysiongids-zoekertje-beheer-warn-title">Let Op</p>
-        <p className="vysiongids-zoekertje-beheer-warn-text">
-          Geef geen bankgegevens aan derden. Een zoekertje dat met een koerier moet worden opgehaald, of een
-          misleidend zoekertje, wordt onmiddellijk verwijderd.
+        <p className="vysiongids-zoekertjes-intro-lead">
+          Welkom op het zoekertjesplatform van Vysiongids. Wil je iets verkopen, ruilen, huren of dergelijke? Maak dan
+          een zoekertje aan in je eigen dashboard. Let op: om een jobadvertentie of een zoekertje te plaatsen moet je lid
+          zijn van Vysiongids.
         </p>
-      </div>
 
-      <div className="vysiongids-zoekertjes-filters">
-        <div className="vysiongids-zoekertjes-filter-block">
-          <p className="vysiongids-jobs-province-label">Soort &amp; categorie</p>
-          <div className="vysiongids-zoekertjes-filter-row">
+        <div className="vysiongids-zoekertje-beheer-warn vysiongids-zoekertjes-intro-warn" role="note">
+          <p className="vysiongids-zoekertje-beheer-warn-title">Let Op</p>
+          <p className="vysiongids-zoekertje-beheer-warn-text">
+            Geef geen bankgegevens aan derden. Een zoekertje dat met een koerier moet worden opgehaald, of een
+            misleidend zoekertje, wordt onmiddellijk verwijderd.
+          </p>
+        </div>
+
+        <div className="vysiongids-zoekertjes-filters">
+          <div className="vysiongids-zoekertjes-filter-block">
+            <p className="vysiongids-jobs-province-label">Soort &amp; categorie</p>
+            <div className="vysiongids-zoekertjes-filter-row">
+              <select
+                id="zoekertjes-kind"
+                className="vysiongids-jobs-province-select"
+                value={kindFilter}
+                onChange={(e) => setKindFilter(e.target.value)}
+                aria-label="Soort zoekertje"
+              >
+                {ZOEKERTJES_BROWSE_KIND_OPTIONS.map((opt) => (
+                  <option key={opt.value || 'all'} value={opt.value}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+              <select
+                id="zoekertjes-category"
+                className="vysiongids-jobs-province-select"
+                value={categoryFilter}
+                onChange={(e) => setCategoryFilter(e.target.value)}
+                aria-label="Categorie"
+              >
+                <option value="">Alle categorieën</option>
+                {ZOEKERTJES_CATEGORIES.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="vysiongids-jobs-province-picker vysiongids-zoekertjes-province-picker">
+            <label className="vysiongids-jobs-province-label" htmlFor="zoekertjes-province">
+              Provincie
+            </label>
             <select
-              id="zoekertjes-kind"
+              id="zoekertjes-province"
               className="vysiongids-jobs-province-select"
-              value={kindFilter}
-              onChange={(e) => setKindFilter(e.target.value)}
-              aria-label="Soort zoekertje"
+              value={provinceFilter}
+              onChange={(e) => setProvinceFilter(e.target.value)}
             >
-              {ZOEKERTJES_BROWSE_KIND_OPTIONS.map((opt) => (
-                <option key={opt.value || 'all'} value={opt.value}>
-                  {opt.label}
-                </option>
-              ))}
-            </select>
-            <select
-              id="zoekertjes-category"
-              className="vysiongids-jobs-province-select"
-              value={categoryFilter}
-              onChange={(e) => setCategoryFilter(e.target.value)}
-              aria-label="Categorie"
-            >
-              <option value="">Alle categorieën</option>
-              {ZOEKERTJES_CATEGORIES.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.label}
+              <option value={ALL_PROVINCES}>Heel België ({provinceCounts.total})</option>
+              {BELGIUM_PROVINCES.map((prov) => (
+                <option key={prov.slug} value={prov.slug}>
+                  {prov.label} ({provinceCounts.bySlug[prov.slug] ?? 0})
                 </option>
               ))}
             </select>
           </div>
         </div>
-
-        <div className="vysiongids-jobs-province-picker">
-          <label className="vysiongids-jobs-province-label" htmlFor="zoekertjes-province">
-            Provincie
-          </label>
-          <select
-            id="zoekertjes-province"
-            className="vysiongids-jobs-province-select"
-            value={provinceFilter}
-            onChange={(e) => setProvinceFilter(e.target.value)}
-          >
-            <option value={ALL_PROVINCES}>Heel België ({provinceCounts.total})</option>
-            {BELGIUM_PROVINCES.map((prov) => (
-              <option key={prov.slug} value={prov.slug}>
-                {prov.label} ({provinceCounts.bySlug[prov.slug] ?? 0})
-              </option>
-            ))}
-          </select>
-          <p className="vysiongids-jobs-province-hint">
-            {filteredZoekertjes.length === 0
-              ? 'Geen zoekertjes voor deze filters.'
-              : `${filteredZoekertjes.length} zoekertje${filteredZoekertjes.length === 1 ? '' : 's'}${
-                  provinceFilter === ALL_PROVINCES
-                    ? ''
-                    : ` in ${provinceLabel(provinceFilter)}`
-                }`}
-          </p>
-        </div>
       </div>
 
+      <div className="vysiongids-zoekertjes-listings">
       {setupRequired ? (
         <p className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
           {GIDS_ZOEKERTJES_SETUP_SQL_HINT}
@@ -251,6 +247,7 @@ export default function ZoekertjesPageClient({
           )
         })}
       </ul>
+      </div>
 
       <ZoekertjeDetailModal zoekertje={selected} open={detailOpen} onClose={closeDetail} />
       <ZoekertjePhotoLightbox

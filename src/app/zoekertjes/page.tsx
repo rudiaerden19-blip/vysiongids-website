@@ -17,7 +17,6 @@ export default async function ZoekertjesPage() {
     <>
       <SiteHeader />
       <main className="vysiongids-page-wrap">
-        <h1 className="vysiongids-jobs-page-title">Zoekertjes</h1>
         <Suspense fallback={<p className="vysiongids-jobs-empty">Laden…</p>}>
           <ZoekertjesPageClient
             initialZoekertjes={initialZoekertjes}
