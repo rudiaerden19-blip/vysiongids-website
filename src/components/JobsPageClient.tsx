@@ -53,6 +53,14 @@ export default function JobsPageClient({ listings }: Props) {
     setProvince(fromCookie ?? DEFAULT_PROVINCE_SLUG)
   }, [searchParams])
 
+  const countsByProvince = useMemo(() => {
+    const bySlug: Record<string, number> = {}
+    for (const prov of BELGIUM_PROVINCES) {
+      bySlug[prov.slug] = listings.filter((listing) => listingInProvince(listing, prov.slug)).length
+    }
+    return { total: listings.length, bySlug }
+  }, [listings])
+
   const filtered = useMemo(
     () => listings.filter((listing) => listingInProvince(listing, province)),
     [listings, province],
@@ -78,10 +86,10 @@ export default function JobsPageClient({ listings }: Props) {
           value={province}
           onChange={(e) => onProvinceChange(e.target.value)}
         >
-          <option value={ALL_PROVINCES}>Heel België</option>
+          <option value={ALL_PROVINCES}>Heel België ({countsByProvince.total})</option>
           {BELGIUM_PROVINCES.map((prov) => (
             <option key={prov.slug} value={prov.slug}>
-              {prov.label}
+              {prov.label} ({countsByProvince.bySlug[prov.slug] ?? 0})
             </option>
           ))}
         </select>
