@@ -1054,69 +1054,53 @@ body {
   word-break: break-word;
 }
 
-.vysiongids-zaak-hours-table {
-  width: 100%;
-  max-width: 100%;
-  table-layout: fixed;
-  border-collapse: collapse;
+.vysiongids-zaak-hours-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
   font-size: 0.9375rem;
   color: #374151;
 }
 
-.vysiongids-zaak-hours-col-day {
-  width: 38%;
+.vysiongids-zaak-hours-line {
+  display: grid;
+  grid-template-columns: minmax(6.25rem, 38%) 1fr;
+  column-gap: 0.75rem;
+  align-items: baseline;
+  padding: 0.3rem 0;
 }
 
-.vysiongids-zaak-hours-col-qr {
-  width: 5.25rem;
+.vysiongids-zaak-hours-line--zondag {
+  grid-template-columns: minmax(6.25rem, 38%) auto 1fr;
+  align-items: center;
+  column-gap: 0.85rem;
+  padding: 0.45rem 0;
 }
 
-.vysiongids-zaak-hours-col-time {
-  width: auto;
-}
-
-.vysiongids-zaak-hours-table th {
-  padding: 0.35rem 0.75rem 0.35rem 0;
+.vysiongids-zaak-hours-day {
   font-weight: 400;
-  text-align: left;
-  vertical-align: top;
   white-space: nowrap;
 }
 
-.vysiongids-zaak-hours-qr-slot {
-  padding: 0.2rem 0.35rem;
-  vertical-align: middle;
-  text-align: center;
-}
-
-.vysiongids-zaak-hours-time {
-  padding: 0.35rem 0;
+.vysiongids-zaak-hours-value {
   font-weight: 500;
-  text-align: left;
-  vertical-align: top;
   overflow-wrap: anywhere;
   word-break: break-word;
 }
 
-.vysiongids-zaak-hours-row--with-qr .vysiongids-zaak-hours-time {
-  vertical-align: middle;
-}
-
-.vysiongids-zaak-hours-table td {
-  padding: 0.35rem 0;
-  font-weight: 500;
-  text-align: left;
-  vertical-align: top;
-  overflow-wrap: anywhere;
-  word-break: break-word;
+.vysiongids-zaak-hours-qr-inline {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
 }
 
 .vysiongids-zaak-info-qr {
   display: inline-block;
   width: fit-content;
-  max-width: min(76px, 100%);
-  padding: 0.2rem;
-  border-radius: 0.35rem;
+  max-width: min(112px, 100%);
+  padding: 0.25rem;
+  border-radius: 0.4rem;
   background: #fff;
   box-shadow: 0 1px 3px rgb(0 0 0 / 0.08);
   box-sizing: border-box;
@@ -1172,9 +1156,12 @@ body {
 }
 
 @media (max-width: 640px) {
-  .vysiongids-zaak-hours-table th {
-    white-space: normal;
-    padding-right: 0.5rem;
+  .vysiongids-zaak-hours-line {
+    grid-template-columns: minmax(5.5rem, 42%) 1fr;
+  }
+
+  .vysiongids-zaak-hours-line--zondag {
+    grid-template-columns: minmax(5.5rem, 42%) auto 1fr;
   }
 
   .vysiongids-zaak-info {
