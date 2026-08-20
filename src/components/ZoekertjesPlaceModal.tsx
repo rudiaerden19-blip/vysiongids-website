@@ -284,7 +284,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
                     className="vysiongids-form-input w-full text-sm"
                     placeholder="bv. oven, friteuse, barkrukken…"
                   />
-                  <button type="button" className="vysiongids-zoekertje-yellow-btn" onClick={onVindCategorie}>
+                  <button type="button" className="vysiongids-zoekertje-primary-btn" onClick={onVindCategorie}>
                     Vind categorie
                   </button>
                 </div>
@@ -481,7 +481,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
           {step < 5 ? (
             <button
               type="button"
-              className="vysiongids-zoekertje-yellow-btn vysiongids-zoekertje-yellow-btn--wide"
+              className="vysiongids-zoekertje-primary-btn vysiongids-zoekertje-primary-btn--wide"
               onClick={goNext}
               disabled={loadingEdit}
             >
@@ -490,7 +490,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
           ) : (
             <button
               type="button"
-              className="vysiongids-zoekertje-yellow-btn vysiongids-zoekertje-yellow-btn--wide"
+              className="vysiongids-zoekertje-primary-btn vysiongids-zoekertje-primary-btn--wide"
               disabled={submitting || loadingEdit}
               onClick={() => void onPlaatsen()}
             >

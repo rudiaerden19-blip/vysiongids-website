@@ -3634,23 +3634,31 @@ body {
   min-width: 0;
 }
 
-.vysiongids-zoekertje-yellow-btn {
+.vysiongids-zoekertje-primary-btn {
   flex-shrink: 0;
   border: none;
-  border-radius: 0.5rem;
+  border-radius: 0.625rem;
   padding: 0.65rem 1rem;
   font-size: 0.9375rem;
-  font-weight: 800;
-  color: #0f172a;
-  background: #facc15;
+  font-weight: 700;
+  color: #fff !important;
+  background: var(--accent);
   cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 2px 8px rgb(14 93 130 / 0.25);
+  transition: filter 0.15s ease;
 }
 
-.vysiongids-zoekertje-yellow-btn:hover {
-  background: #eab308;
+.vysiongids-zoekertje-primary-btn:hover {
+  filter: brightness(0.95);
 }
 
-.vysiongids-zoekertje-yellow-btn--wide {
+.vysiongids-zoekertje-primary-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.vysiongids-zoekertje-primary-btn--wide {
   flex: 1 1 auto;
   min-width: 8rem;
 }
