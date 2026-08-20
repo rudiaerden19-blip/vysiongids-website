@@ -4,6 +4,14 @@ import { useCallback, useMemo, useState } from 'react'
 import type { ListingScheduleExtras, ListingAnnualLeaveRange } from '@/lib/listing-schedule-extras'
 import { holidaysForOwnerForm } from '@/lib/listing-schedule-extras'
 
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/
+
+function isCompleteLeaveRange(r: ListingAnnualLeaveRange): boolean {
+  const from = r.from.trim()
+  const to = r.to.trim()
+  return ISO_DATE.test(from) && ISO_DATE.test(to) && to >= from
+}
+
 type Props = {
   initial?: ListingScheduleExtras
 }
@@ -15,7 +23,7 @@ function emptyRange(): ListingAnnualLeaveRange {
 export default function OpeningScheduleExtrasEditor({ initial }: Props) {
   const holidays = useMemo(() => holidaysForOwnerForm(), [])
   const [leaveRanges, setLeaveRanges] = useState<ListingAnnualLeaveRange[]>(() => {
-    const rows = initial?.annualLeave?.length ? [...initial.annualLeave] : [emptyRange()]
+    const rows = (initial?.annualLeave ?? []).filter(isCompleteLeaveRange)
     return rows.slice(0, 8)
   })
   const [holidayChoices, setHolidayChoices] = useState<Record<string, '' | 'open' | 'closed'>>(() => {
@@ -54,10 +62,7 @@ export default function OpeningScheduleExtrasEditor({ initial }: Props) {
   }, [])
 
   const removeRange = useCallback((index: number) => {
-    setLeaveRanges((prev) => {
-      if (prev.length <= 1) return [emptyRange()]
-      return prev.filter((_, i) => i !== index)
-    })
+    setLeaveRanges((prev) => prev.filter((_, i) => i !== index))
   }, [])
 
   return (
@@ -72,6 +77,9 @@ export default function OpeningScheduleExtrasEditor({ initial }: Props) {
       <div className="mt-5">
         <h3 className="text-sm font-semibold text-gray-900">Jaarlijks verlof</h3>
         <p className="mt-0.5 text-xs text-gray-500">Periodes waarop je zaak dicht is (bv. zomervakantie).</p>
+        {leaveRanges.length === 0 ? (
+          <p className="mt-3 text-sm text-gray-500">Nog geen verlofperiode — voeg er één toe wanneer je zaak dicht is.</p>
+        ) : (
         <ul className="mt-3 space-y-3">
           {leaveRanges.map((range, index) => (
             <li key={index} className="flex flex-wrap items-end gap-3">
@@ -110,6 +118,7 @@ export default function OpeningScheduleExtrasEditor({ initial }: Props) {
             </li>
           ))}
         </ul>
+        )}
         {leaveRanges.length < 8 ? (
           <button type="button" className="mt-3 text-sm font-semibold text-accent hover:underline" onClick={addRange}>
             + Periode toevoegen
