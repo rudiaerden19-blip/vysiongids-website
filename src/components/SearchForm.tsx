@@ -276,7 +276,7 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
             name="q"
             type="search"
             defaultValue={q}
-            placeholder="Bv. frituur dichtbij, pizzeria in Pelt — of inspreken ↓"
+            placeholder="Bv frituur dichtbij pizzeria gent frituur nu open"
             autoComplete="off"
             style={heroFieldInput}
           />

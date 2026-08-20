@@ -1809,7 +1809,9 @@ body {
 .vysiongids-listing-panel-status-col--topzaak {
   position: relative;
   flex-shrink: 0;
-  width: 6.25rem;
+  width: auto;
+  min-width: 6.25rem;
+  max-width: 11.5rem;
 }
 
 .vysiongids-listing-open-status {
@@ -2029,6 +2031,10 @@ body {
   .vysiongids-listing-open-status {
     max-width: 9.5rem;
     font-size: 0.75rem;
+  }
+
+  .vysiongids-topzaak-stamp--under-open {
+    width: 4.75rem;
   }
 }
 
@@ -2845,8 +2851,8 @@ body {
 }
 
 .vysiongids-site-footer {
-  background: #2b2b2b;
-  color: #d1d5db;
+  background: var(--accent);
+  color: rgb(255 255 255 / 0.92);
   margin-top: auto;
 }
 
@@ -2885,7 +2891,7 @@ body {
 }
 
 .vysiongids-site-footer-list a {
-  color: #b8bcc4;
+  color: rgb(255 255 255 / 0.82);
   font-size: 0.9375rem;
   line-height: 1.45;
   text-decoration: none;
@@ -2922,14 +2928,14 @@ body {
 .vysiongids-site-footer-copy {
   margin: 2.25rem 0 0;
   padding-top: 1.25rem;
-  border-top: 1px solid rgb(255 255 255 / 0.1);
+  border-top: 1px solid rgb(255 255 255 / 0.2);
   font-size: 0.8125rem;
-  color: #9ca3af;
+  color: rgb(255 255 255 / 0.72);
   text-align: center;
 }
 
 .vysiongids-site-footer-copy a {
-  color: #b8bcc4;
+  color: rgb(255 255 255 / 0.82);
   text-decoration: none;
 }
 
