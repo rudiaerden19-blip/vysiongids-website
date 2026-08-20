@@ -3053,9 +3053,15 @@ body {
 }
 
 .vysiongids-hiring-email {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  border-radius: 999px;
+  font-weight: 700;
+  text-decoration: none;
   background: #fff !important;
   color: var(--accent) !important;
   border: 2px solid var(--accent);
+  transition: background 0.15s ease;
 }
 
 .vysiongids-hiring-email:hover {

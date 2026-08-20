@@ -68,7 +68,7 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
                   {(hiring.email?.trim() || listing.email?.trim()) ? (
                     <a
                       href={`mailto:${encodeURIComponent((hiring.email?.trim() || listing.email) ?? '')}?subject=${encodeURIComponent(`Sollicitatie — ${listing.name}`)}`}
-                      className="vysiongids-hiring-phone vysiongids-hiring-email"
+                      className="vysiongids-hiring-email"
                     >
                       E-mail
                     </a>
