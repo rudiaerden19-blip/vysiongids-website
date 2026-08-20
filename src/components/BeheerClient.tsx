@@ -77,6 +77,47 @@ export default function BeheerClient() {
     return () => controller.abort()
   }, [])
 
+  /** Na Stripe: premium via webhook — knop «Claim» verdwijnt zodra DB actief is (geen auto-verleng-UI). */
+  useEffect(() => {
+    if (premiumFlash !== 'success') return
+    let cancelled = false
+    let attempts = 0
+    const maxAttempts = 20
+
+    const poll = () => {
+      if (cancelled) return
+      attempts += 1
+      void (async () => {
+        try {
+          const fullRes = await fetch('/api/gids/me', { credentials: 'same-origin' })
+          const full = (await fullRes.json()) as MeResponse
+          if (cancelled) return
+          if (full.authenticated) {
+            setMe(full)
+            if (full.listing) setListing(full.listing)
+            if (full.slug) setPublicSlug(full.slug)
+            const active =
+              full.premiumMember === true || full.listing?.premiumMember === true
+            if (active) {
+              router.replace('/beheer', { scroll: false })
+              return
+            }
+          }
+        } catch {
+          /* volgende poging */
+        }
+        if (!cancelled && attempts < maxAttempts) {
+          window.setTimeout(poll, 1500)
+        }
+      })()
+    }
+
+    poll()
+    return () => {
+      cancelled = true
+    }
+  }, [premiumFlash, router])
+
   async function logout() {
     clearGidsBeheerLoginHint()
     await fetch('/api/gids/login', { method: 'DELETE' })
@@ -112,7 +153,8 @@ export default function BeheerClient() {
     <div className="space-y-8">
       {premiumFlash === 'success' ? (
         <p className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900">
-          Bedankt! Je betaling is ontvangen — premium wordt binnen enkele seconden actief (ververs anders deze pagina).
+          Bedankt! Je betaling is ontvangen. De knop «Claim uw zaak» verdwijnt zodra premium actief is (meestal
+          binnen enkele seconden).
         </p>
       ) : null}
       {premiumFlash === 'cancel' ? (
