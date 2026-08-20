@@ -50,6 +50,27 @@ body {
   box-sizing: border-box;
 }
 
+.vysiongids-zaak-panel {
+  border: var(--vysiongids-card-border);
+  border-radius: 1rem;
+  box-shadow: var(--vysiongids-card-shadow);
+  box-sizing: border-box;
+}
+
+.vysiongids-zaak-page .vysiongids-zaak-info.vysiongids-zaak-panel {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.vysiongids-zaak-page .vysiongids-zaak-map-panel .vysiongids-listing-map {
+  width: 100%;
+  max-width: 100%;
+  margin-left: 0;
+  margin-right: 0;
+}
+
 /* Zaakpagina: kaart vast — pagina scrollt, embed niet pannen/zoomen */
 .vysiongids-listing-map {
   touch-action: pan-y;

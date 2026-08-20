@@ -71,7 +71,7 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
   const amenityList = resolveListingAmenityList(listing)
 
   return (
-    <section id="info" className="vysiongids-zaak-info">
+    <section id="info" className="vysiongids-zaak-info vysiongids-zaak-panel">
       <div className="vysiongids-zaak-info-grid">
         <div className="vysiongids-zaak-info-col">
           <h2 className="vysiongids-zaak-info-heading">OPENINGSUREN</h2>
