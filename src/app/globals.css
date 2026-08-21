@@ -5012,6 +5012,60 @@ body {
   gap: 1.25rem;
 }
 
+/*
+ * Dienstenkaart: zelfde linkerkolombreedte als frituren (48% / max 30rem),
+ * foto op volle breedte + natuurlijke hoogte — hele promo zichtbaar, geen crop, geen zijstrepen.
+ */
+.vysiongids-diensten-listing-panel .vysiongids-listing-panel-row {
+  align-items: start;
+}
+
+.vysiongids-diensten-listing-photo {
+  aspect-ratio: unset;
+  height: auto;
+  min-height: 0;
+  background: #fff;
+  overflow: hidden;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-diensten-listing-photo {
+    height: auto;
+    min-height: 0;
+    align-self: start;
+  }
+}
+
+.vysiongids-diensten-listing-photo > span {
+  position: relative !important;
+  inset: auto !important;
+  width: 100% !important;
+  height: auto !important;
+}
+
+.vysiongids-diensten-listing-photo .vysiongids-listing-photo-slider {
+  position: relative;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+}
+
+.vysiongids-diensten-listing-photo .vysiongids-listing-photo-slider-stage {
+  position: relative;
+  inset: unset;
+  opacity: 1 !important;
+  transition: none;
+}
+
+.vysiongids-diensten-listing-photo img {
+  width: 100% !important;
+  height: auto !important;
+  max-height: none !important;
+  object-fit: unset !important;
+  object-position: center top !important;
+  display: block;
+}
+
 .vysiongids-diensten-verified-bar .vysiongids-listing-panel-hiring-inner {
   display: grid;
   grid-template-columns: 1fr auto 1fr;

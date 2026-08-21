@@ -45,12 +45,16 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
   return (
     <article className="vysiongids-listing-panel vysiongids-diensten-listing-panel">
       <div className="vysiongids-listing-panel-row">
-        <Link href={profileHref} className="vysiongids-listing-panel-photo">
+        <Link
+          href={profileHref}
+          className="vysiongids-listing-panel-photo vysiongids-diensten-listing-photo"
+        >
           <ListingPhotoSlider
             urls={listingPhotoUrls(listing)}
             alt={listing.name}
             sizes="(max-width: 639px) 100vw, 30rem"
             showControls
+            layout="intrinsic"
           />
         </Link>
         <div className="vysiongids-listing-panel-body vysiongids-diensten-card-body">
