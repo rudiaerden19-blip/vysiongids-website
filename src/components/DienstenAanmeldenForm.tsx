@@ -9,6 +9,7 @@ import { compressListingPhoto } from '@/lib/compress-listing-photo'
 import SentenceCaseTextarea from '@/components/SentenceCaseTextarea'
 import TitleCaseTextInput from '@/components/TitleCaseTextInput'
 import { applyTitleCaseFormFields } from '@/components/TitleCaseTextInput'
+import { normalizeHttpsUrl } from '@/lib/normalize-url'
 
 function PhotoPickField({
   index,
@@ -70,6 +71,19 @@ export default function DienstenAanmeldenForm() {
     const form = e.currentTarget
     const fd = new FormData(form)
     applyTitleCaseFormFields(fd, ['name', 'city', 'address'])
+
+    const websiteRaw = String(fd.get('website') ?? '').trim()
+    if (websiteRaw) {
+      const websiteNorm = normalizeHttpsUrl(websiteRaw)
+      if (!websiteNorm.ok) {
+        setError(`Website: ${websiteNorm.message}`)
+        setLoading(false)
+        return
+      }
+      fd.set('website', websiteNorm.url)
+    } else {
+      fd.set('website', '')
+    }
 
     try {
       for (let i = 0; i < GIDS_DIENSTEN_MAX_PHOTOS; i++) {
@@ -227,7 +241,15 @@ export default function DienstenAanmeldenForm() {
         <label className="vysiongids-form-label" htmlFor="d-website">
           Website (optioneel)
         </label>
-        <input id="d-website" name="website" type="url" placeholder="https://" className="vysiongids-form-input mt-1" />
+        <input
+          id="d-website"
+          name="website"
+          type="text"
+          inputMode="url"
+          autoComplete="url"
+          placeholder="jouwzaak.be of https://jouwzaak.be (optioneel)"
+          className="vysiongids-form-input mt-1"
+        />
       </div>
 
       <div>
