@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import ListingPhotoSlider from '@/components/ListingPhotoSlider'
+import ListingStarRating from '@/components/ListingStarRating'
 import type { Listing } from '@/lib/listing-types'
 import { formatListingAddressLines } from '@/lib/listing-display'
 import { listingPhotoUrls } from '@/lib/listing-display'
@@ -118,6 +119,14 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
       </div>
       <div className="vysiongids-listing-panel-hiring vysiongids-listing-panel-hiring--empty vysiongids-diensten-verified-bar">
         <div className="vysiongids-listing-panel-hiring-inner">
+          <div className="vysiongids-diensten-verified-bar-rating">
+            <ListingStarRating
+              slug={listing.slug}
+              avg={listing.ratingAvg}
+              count={listing.ratingCount}
+              size="sm"
+            />
+          </div>
           <div className="vysiongids-listing-panel-hiring-copy">
             <span className="vysiongids-listing-panel-hiring-text">Dit bedrijf is geverifieerd</span>
           </div>
