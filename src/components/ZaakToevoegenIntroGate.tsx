@@ -131,8 +131,8 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
               onmiddellijk verwijderd.
             </li>
             <li>
-              <strong>Veiligheid:</strong> geef nooit bankgegevens of andere gevoelige financiële informatie vrij via
-              Vysiongids.
+              <strong>Veiligheid:</strong> geef nooit bankgegevens of andere gevoelige financiële informatie vrij aan
+              derden.
             </li>
           </ul>
           <p className="text-sm text-gray-600">
