@@ -5028,6 +5028,20 @@ body {
   aspect-ratio: 4 / 3;
 }
 
+@media (max-width: 639px) {
+  /* Portret-promo’s: hogere cel = foto vult breedte i.p.v. mini-streep in 4:3 */
+  .vysiongids-diensten-listing-panel .vysiongids-diensten-panel-photo {
+    aspect-ratio: 3 / 4;
+    min-height: min(118vw, 28rem);
+    width: 100%;
+    overflow: hidden;
+  }
+
+  .vysiongids-diensten-panel-photo img {
+    object-position: center top !important;
+  }
+}
+
 @media (min-width: 640px) {
   .vysiongids-diensten-listing-panel .vysiongids-diensten-panel-photo {
     height: auto;
@@ -5048,12 +5062,6 @@ body {
 .vysiongids-diensten-panel-photo img {
   object-fit: contain !important;
   object-position: center center !important;
-}
-
-@media (max-width: 639px) {
-  .vysiongids-diensten-panel-photo {
-    overflow: hidden;
-  }
 }
 
 .vysiongids-diensten-verified-bar .vysiongids-listing-panel-hiring-inner {

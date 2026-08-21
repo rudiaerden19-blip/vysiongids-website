@@ -49,7 +49,7 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
           <ListingPhotoSlider
             urls={listingPhotoUrls(listing)}
             alt={listing.name}
-            sizes="(max-width: 640px) 100vw, 30rem"
+            sizes="(max-width: 639px) 100vw, 30rem"
             showControls
             objectFit="contain"
           />
