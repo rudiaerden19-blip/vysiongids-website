@@ -152,6 +152,7 @@ export const LISTING_BROWSE_SELECT = `
   premium_paused,
   listing_segment,
   service_categories,
+  service_description,
   diensten_expires_at,
   created_at,
   updated_at
