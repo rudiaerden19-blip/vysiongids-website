@@ -32,6 +32,32 @@ export async function POST(req: Request) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session
     if (session.metadata?.kind !== 'gids_premium_yearly') {
+      if (session.metadata?.kind === 'gids_diensten_yearly') {
+        const { activateGidsDienstenMembershipByIdAdmin } = await import('@/lib/gids-diensten-db')
+        const { gidsDienstenUnitAmountCents } = await import('@/lib/gids-diensten-stripe')
+        if (session.payment_status && session.payment_status !== 'paid') {
+          return NextResponse.json({ received: true })
+        }
+        const expectedDiensten = gidsDienstenUnitAmountCents()
+        if (session.amount_total != null && session.amount_total < expectedDiensten) {
+          console.error('[gids webhook] diensten amount mismatch', session.amount_total, expectedDiensten)
+          return NextResponse.json({ error: 'Onjuist bedrag.' }, { status: 400 })
+        }
+        const listingId = session.metadata.listing_id
+        const slug = session.metadata.listing_slug
+        if (!listingId) {
+          return NextResponse.json({ error: 'Geen listing_id in metadata.' }, { status: 400 })
+        }
+        const activated = await activateGidsDienstenMembershipByIdAdmin(listingId)
+        if (!activated.ok) {
+          console.error('[gids webhook diensten]', activated.error)
+          return NextResponse.json({ error: activated.error }, { status: 500 })
+        }
+        revalidateTag('gids-listings', 'max')
+        revalidatePath('/diensten')
+        if (slug) revalidatePath(`/diensten/${slug}`)
+        return NextResponse.json({ received: true })
+      }
       return NextResponse.json({ received: true })
     }
 

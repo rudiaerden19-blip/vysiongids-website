@@ -56,6 +56,12 @@ export type Listing = {
   slug: string
   name: string
   type: Exclude<ListingTypeId, 'all'>
+  /** horeca (default) of diensten/leverancier */
+  listingSegment?: 'horeca' | 'diensten'
+  serviceCategories?: string[]
+  serviceDescription?: string
+  /** Actief diensten-lidmaatschap (€99/jaar) */
+  dienstenActive?: boolean
   /** Optioneel keukentype (Frans, Italiaans, …) */
   cuisineType?: ListingCuisineId
   city: string
@@ -115,4 +121,11 @@ export type ListingSearchParams = {
   nearLng?: number
   /** Max. afstand bij nearby (km), default 40 */
   nearMaxKm?: number
+}
+
+export type DienstenSearchParams = {
+  q?: string
+  /** service category slug */
+  cat?: string
+  prov?: string
 }

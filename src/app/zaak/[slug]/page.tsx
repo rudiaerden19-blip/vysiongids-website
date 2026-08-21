@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import ListingStarRating from '@/components/ListingStarRating'
 import ReviewList from '@/components/ReviewList'
 import ReviewSubmitForm from '@/components/ReviewSubmitForm'
@@ -25,6 +25,7 @@ import ListingMenuButton from '@/components/ListingMenuButton'
 import ZaakInfoTopLink from '@/components/ZaakInfoTopLink'
 import { getCachedListingIdBySlug, getCachedReviewsByListingSlug } from '@/lib/gids-reviews-cache'
 import { resolveListingMapPin } from '@/lib/gids-listing-geocode'
+import { isDienstenListing } from '@/lib/listing-segment'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -48,6 +49,7 @@ export default async function ZaakPage({ params }: Props) {
   const { slug } = await params
   let listing = await getListingBySlug(slug)
   if (!listing) notFound()
+  if (isDienstenListing(listing)) redirect(`/diensten/${slug}`)
   const { listing: geocodedListing, pin: mapPin } = await resolveListingMapPin(listing)
   listing = geocodedListing
 

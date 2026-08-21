@@ -1,0 +1,1 @@
+export const GIDS_DIENSTEN_YEARLY_EUR = 99

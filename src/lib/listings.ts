@@ -4,6 +4,7 @@ import { LISTING_TYPES } from '@/lib/listing-types'
 import { fetchListingBySlugFromDb, fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
 import { normalizeSearchText } from '@/lib/gids-text'
 import { parseListingSearchQuery, listingMatchesParsedSearch } from '@/lib/gids-listing-search'
+import { isHorecaListing } from '@/lib/listing-segment'
 import { compareListingsByName } from '@/lib/listing-alphabetical-sort'
 import { listingDistanceKmFrom } from '@/lib/listing-display'
 import { unstable_cache } from 'next/cache'
@@ -82,9 +83,10 @@ export async function getListingBySlug(slug: string): Promise<Listing | undefine
 /** Homepage «in de kijker»: eerst best beoordeeld, daarna andere gepubliceerde zaken. */
 export async function getFeaturedListings(limit = 4): Promise<Listing[]> {
   const all = await getAllListings()
-  if (all.length === 0) return []
+  const horecaOnly = all.filter(isHorecaListing)
+  if (horecaOnly.length === 0) return []
 
-  const withReviews = [...all]
+  const withReviews = [...horecaOnly]
     .filter((l) => l.ratingCount > 0)
     .sort((a, b) => {
       if (b.ratingAvg !== a.ratingAvg) return b.ratingAvg - a.ratingAvg
@@ -101,7 +103,7 @@ export async function getFeaturedListings(limit = 4): Promise<Listing[]> {
   }
 
   for (const l of withReviews) add(l)
-  for (const l of all) add(l)
+  for (const l of horecaOnly) add(l)
 
   return out
 }
@@ -133,6 +135,7 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
   const prov = normalizeSearchText(params.prov ?? '')
 
   let results = listings.filter((listing) => {
+    if (!isHorecaListing(listing)) return false
     const formType = (params.type ?? 'all') as ListingTypeId
     if (formType !== 'all' && parsed.typeIds.length === 0 && listing.type !== formType) {
       return false

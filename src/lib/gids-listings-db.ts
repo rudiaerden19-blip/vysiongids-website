@@ -2,6 +2,8 @@ import type { Listing, ListingAmenityId } from '@/lib/listing-types'
 import { normalizeListingInfoExtras } from '@/lib/listing-info-extras'
 import { gidsBusinessNameLookupKeys } from '@/lib/gids-text'
 import { resolveListingPremiumActive } from '@/lib/gids-premium'
+import { resolveDienstenListingActive } from '@/lib/gids-diensten-membership'
+import { LISTING_SEGMENT_HORECA } from '@/lib/listing-segment'
 import { createGidsSupabaseAdmin, createGidsSupabasePublic, isGidsSupabaseConfigured } from '@/lib/supabase-gids'
 
 type PhotoRow = { sort_order: number; public_url: string }
@@ -12,6 +14,7 @@ export type GidsListingRow = {
   name: string
   name_normalized?: string
   pin_hash?: string
+  status?: string
   type: string
   cuisine_type?: string | null
   city: string
@@ -48,6 +51,11 @@ export type GidsListingRow = {
   premium_paid_at?: string | null
   premium_expires_at?: string | null
   premium_paused?: boolean | null
+  listing_segment?: string | null
+  service_categories?: string[] | null
+  service_description?: string | null
+  diensten_paid_at?: string | null
+  diensten_expires_at?: string | null
   created_at?: string
   updated_at?: string
   gids_listing_photos?: PhotoRow[] | null
@@ -94,6 +102,11 @@ const PUBLIC_LISTING_COLUMNS = `
   premium_paid_at,
   premium_expires_at,
   premium_paused,
+  listing_segment,
+  service_categories,
+  service_description,
+  diensten_paid_at,
+  diensten_expires_at,
   created_at,
   updated_at
 `.replace(/\s+/g, ' ')
@@ -111,6 +124,9 @@ const LISTING_SELECT = `
 export type GidsPublishedListingsFilter = {
   province?: string
   type?: string
+  listingSegment?: 'horeca' | 'diensten'
+  /** Alleen actieve diensten-lidmaatschappen (voor diensten-zoeken) */
+  dienstenActiveOnly?: boolean
 }
 
 export function mapGidsRowToListing(row: GidsListingRow): Listing {
@@ -158,6 +174,15 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
       premium_paused: row.premium_paused,
       premium_expires_at: row.premium_expires_at,
     }),
+    listingSegment:
+      row.listing_segment === 'diensten' ? 'diensten' : (LISTING_SEGMENT_HORECA as 'horeca'),
+    serviceCategories: row.service_categories?.length ? [...row.service_categories] : undefined,
+    serviceDescription: row.service_description?.trim() || undefined,
+    dienstenActive: resolveDienstenListingActive({
+      listing_segment: row.listing_segment,
+      diensten_expires_at: row.diensten_expires_at,
+      status: row.status ?? 'published',
+    }),
     lat: row.lat ?? undefined,
     lng: row.lng ?? undefined,
     updatedAt: row.updated_at ?? undefined,
@@ -191,6 +216,12 @@ export async function fetchPublishedListingsFromDb(
     .select(LISTING_PUBLIC_SELECT)
     .eq('status', 'published')
 
+  if (filter?.listingSegment === 'diensten') {
+    query = query.eq('listing_segment', 'diensten')
+  } else if (filter?.listingSegment === 'horeca') {
+    query = query.or('listing_segment.is.null,listing_segment.eq.horeca')
+  }
+
   if (filter?.province?.trim()) {
     query = query.eq('province', filter.province.trim())
   }
@@ -205,7 +236,11 @@ export async function fetchPublishedListingsFromDb(
     return null
   }
 
-  return (data as unknown as GidsListingRow[]).map(mapGidsRowToListing)
+  let rows = (data as unknown as GidsListingRow[]).map(mapGidsRowToListing)
+  if (filter?.dienstenActiveOnly) {
+    rows = rows.filter((l) => l.dienstenActive)
+  }
+  return rows
 }
 
 /** Staff/batch: gepubliceerde zaken per pagina (slug-only). */

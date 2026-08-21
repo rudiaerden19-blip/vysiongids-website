@@ -15,6 +15,8 @@ import BeheerZoekertjesSection from '@/components/BeheerZoekertjesSection'
 import GidsOwnerSessionKeepAlive from '@/components/GidsOwnerSessionKeepAlive'
 import type { Listing } from '@/lib/listing-types'
 import type { BeheerServerSession } from '@/lib/gids-beheer-server'
+import { isDienstenListing } from '@/lib/listing-segment'
+import BeheerDienstenPanel from '@/components/BeheerDienstenPanel'
 
 const BeheerEditForm = dynamic(() => import('@/components/BeheerEditForm'), {
   loading: () => <p className="text-sm text-gray-600">Formulier laden…</p>,
@@ -66,6 +68,7 @@ export default function BeheerClient({ serverSession }: Props) {
   const [zoekertjePlaceRequest, setZoekertjePlaceRequest] = useState(0)
 
   const premiumMember = listing?.premiumMember ?? me?.premiumMember
+  const dienstenAccount = listing ? isDienstenListing(listing) : false
 
   useEffect(() => {
     if (serverSession.authenticated && serverSession.listing) {
@@ -205,19 +208,23 @@ export default function BeheerClient({ serverSession }: Props) {
           Betaling geannuleerd. Je kunt later opnieuw «Premium nemen».
         </p>
       ) : null}
-      <BeheerPremiumQuickNav
-        premiumMember={premiumMember}
-        listingName={me?.name}
-        onZoekertjePlace={() => setZoekertjePlaceRequest((n) => n + 1)}
-      />
+      {!dienstenAccount ? (
+        <>
+          <BeheerPremiumQuickNav
+            premiumMember={premiumMember}
+            listingName={me?.name}
+            onZoekertjePlace={() => setZoekertjePlaceRequest((n) => n + 1)}
+          />
 
-      <BeheerZoekertjesSection
-        premiumMember={premiumMember}
-        modalOpen={zoekertjeModalOpen}
-        onModalOpenChange={setZoekertjeModalOpen}
-        placeRequestId={zoekertjePlaceRequest}
-        initialMine={serverSession.initialZoekertjes}
-      />
+          <BeheerZoekertjesSection
+            premiumMember={premiumMember}
+            modalOpen={zoekertjeModalOpen}
+            onModalOpenChange={setZoekertjeModalOpen}
+            placeRequestId={zoekertjePlaceRequest}
+            initialMine={serverSession.initialZoekertjes}
+          />
+        </>
+      ) : null}
 
       {slug ? <ListingOwnerDailyViews slug={slug} variant="beheer" /> : null}
 
@@ -225,26 +232,36 @@ export default function BeheerClient({ serverSession }: Props) {
         Ingelogd als <strong>{me.name}</strong>
       </p>
       {slug ? (
-        <Link href={`/zaak/${slug}`} className="inline-block font-semibold text-accent hover:underline">
-          Publieke pagina bekijken →
-        </Link>
+        dienstenAccount ? (
+          <Link href={`/diensten/${slug}`} className="inline-block font-semibold text-accent hover:underline">
+            Dienstenprofiel bekijken →
+          </Link>
+        ) : (
+          <Link href={`/zaak/${slug}`} className="inline-block font-semibold text-accent hover:underline">
+            Publieke pagina bekijken →
+          </Link>
+        )
       ) : null}
 
-      <div className="vysiongids-surface-card rounded-xl bg-sky-50/80 p-5">
-        <h2 className="text-lg font-bold text-gray-900">Menukaart</h2>
-        <p className="mt-2 text-sm text-gray-600">
-          Voeg categorieën, producten en foto&apos;s toe — zoals in je kassa. Bezoekers openen het via de knop{' '}
-          <strong>Menu</strong>.
-        </p>
-        <Link
-          href="/beheer/menu"
-          className="mt-4 inline-block rounded-lg bg-accent px-4 py-2.5 font-semibold text-white hover:opacity-95"
-        >
-          Menu beheren →
-        </Link>
-      </div>
+      {!dienstenAccount ? (
+        <div className="vysiongids-surface-card rounded-xl bg-sky-50/80 p-5">
+          <h2 className="text-lg font-bold text-gray-900">Menukaart</h2>
+          <p className="mt-2 text-sm text-gray-600">
+            Voeg categorieën, producten en foto&apos;s toe — zoals in je kassa. Bezoekers openen het via de knop{' '}
+            <strong>Menu</strong>.
+          </p>
+          <Link
+            href="/beheer/menu"
+            className="mt-4 inline-block rounded-lg bg-accent px-4 py-2.5 font-semibold text-white hover:opacity-95"
+          >
+            Menu beheren →
+          </Link>
+        </div>
+      ) : null}
 
-      {listing ? (
+      {listing && dienstenAccount && slug ? <BeheerDienstenPanel listing={listing} slug={slug} /> : null}
+
+      {listing && !dienstenAccount ? (
         <BeheerEditForm
           key={listing.slug + (listing.name ?? '')}
           listing={listing}
@@ -258,7 +275,7 @@ export default function BeheerClient({ serverSession }: Props) {
             }
           }}
         />
-      ) : listingLoading ? (
+      ) : listing && dienstenAccount ? null : listingLoading ? (
         <p className="text-gray-600">Je gegevens laden…</p>
       ) : (
         <p className="text-red-700">Gegevens laden mislukt. Vernieuw de pagina.</p>
