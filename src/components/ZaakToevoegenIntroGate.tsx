@@ -82,14 +82,14 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
               className="vysiongids-zaak-intro-platform-btn"
               onClick={() => setPlatformPromo('order')}
             >
-              1 — Online bestelplatform
+              Bekijk online bestelplatform
             </button>
             <button
               type="button"
               className="vysiongids-zaak-intro-platform-btn"
               onClick={() => setPlatformPromo('reservations')}
             >
-              2 — Restaurantreserveringen
+              Bekijk restaurantreserveringen
             </button>
           </div>
           <p className="vysiongids-zaak-intro-lead">
