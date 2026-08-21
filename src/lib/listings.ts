@@ -1,7 +1,13 @@
 import listingsJson from '../../data/listings.json'
 import type { Listing, ListingSearchParams, ListingTypeId } from '@/lib/listing-types'
 import { LISTING_TYPES } from '@/lib/listing-types'
-import { fetchListingBySlugFromDb, fetchFeaturedHorecaListingsFromDb, fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
+import { fetchListingBySlugFromDb, fetchFeaturedHorecaListingsFromDb, fetchPublishedHorecaListingCountFromDb, fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
+import {
+  fetchHorecaListingsForSearchFromDb,
+  GIDS_SEARCH_DB_PREFETCH_MAX,
+  planHorecaSearchDbQuery,
+} from '@/lib/gids-listings-search-db'
+import { isGidsSupabaseConfigured } from '@/lib/supabase-gids'
 import { normalizeSearchText } from '@/lib/gids-text'
 import { parseListingSearchQuery, listingMatchesParsedSearch } from '@/lib/gids-listing-search'
 import { isHorecaListing } from '@/lib/listing-segment'
@@ -119,26 +125,72 @@ export function getListingTypeLabel(type: Listing['type']): string {
   return LISTING_TYPES.find((t) => t.id === type)?.label ?? type
 }
 
-async function loadListingsForSearch(params: ListingSearchParams): Promise<Listing[]> {
+function mergeDbWithJsonHoreca(fromDb: Listing[]): Listing[] {
+  const bySlug = new Map<string, Listing>()
+  for (const listing of jsonFallback) {
+    if (isHorecaListing(listing)) bySlug.set(listing.slug, listing)
+  }
+  for (const listing of fromDb) bySlug.set(listing.slug, listing)
+  return Array.from(bySlug.values())
+}
+
+async function loadListingsForSearch(params: ListingSearchParams, parsed: ReturnType<typeof parseListingSearchQuery>): Promise<{
+  listings: Listing[]
+  dbSimpleBrowseAll: boolean
+  prefetchCapped: boolean
+}> {
+  if (isGidsSupabaseConfigured()) {
+    const plan = planHorecaSearchDbQuery(params, parsed, GIDS_SEARCH_MAX_RESULTS)
+    const fromDb = await unstable_cache(
+      async () => fetchHorecaListingsForSearchFromDb(plan),
+      [
+        'gids-search-horeca',
+        plan.province ?? '',
+        plan.listingType ?? '',
+        plan.cuisineType ?? '',
+        plan.locationKey ?? '',
+        plan.textToken ?? '',
+        String(plan.limit),
+        params.q?.trim() ?? '',
+        params.prov?.trim() ?? '',
+        params.type ?? 'all',
+      ],
+      { revalidate: 60, tags: ['gids-listings'] },
+    )()
+    if (fromDb) {
+      return {
+        listings: mergeDbWithJsonHoreca(fromDb),
+        dbSimpleBrowseAll: plan.simpleBrowseAll,
+        prefetchCapped: plan.needsMemoryFilter && fromDb.length >= GIDS_SEARCH_DB_PREFETCH_MAX,
+      }
+    }
+  }
+
   const q = params.q?.trim()
   const prov = params.prov?.trim()
   const formType = (params.type ?? 'all') as ListingTypeId
   if (!q && (prov || formType !== 'all')) {
     const fromDb = await cachedDbListingsFiltered(prov, formType !== 'all' ? formType : undefined)
     if (fromDb?.length) {
-      const bySlug = new Map<string, Listing>()
-      for (const listing of jsonFallback) bySlug.set(listing.slug, listing)
-      for (const listing of fromDb) bySlug.set(listing.slug, listing)
-      return Array.from(bySlug.values())
+      return {
+        listings: mergeDbWithJsonHoreca(fromDb),
+        dbSimpleBrowseAll: false,
+        prefetchCapped: false,
+      }
     }
   }
-  return loadListings()
+  return {
+    listings: await loadListings(),
+    dbSimpleBrowseAll: false,
+    prefetchCapped: false,
+  }
 }
 
 /** Zoek op stad, postcode, naam, keukentype of voorzieningen (query `q`). Filter op zaaktype / provincie. */
 export async function searchListings(params: ListingSearchParams): Promise<ListingSearchOutcome> {
-  const listings = await loadListingsForSearch(params)
   const parsed = parseListingSearchQuery(params.q ?? '')
+  const loaded = await loadListingsForSearch(params, parsed)
+  const listings = loaded.listings
   const prov = normalizeSearchText(params.prov ?? '')
 
   let results = listings.filter((listing) => {
@@ -172,10 +224,15 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
     results.sort(compareListingsByName)
   }
 
-  const total = results.length
-  const capped = total > GIDS_SEARCH_MAX_RESULTS
-  if (capped) {
+  const total = loaded.dbSimpleBrowseAll
+    ? Math.max(results.length, await fetchPublishedHorecaListingCountFromDb())
+    : results.length
+  let capped = total > GIDS_SEARCH_MAX_RESULTS || loaded.prefetchCapped
+  if (capped && results.length > GIDS_SEARCH_MAX_RESULTS) {
     results = results.slice(0, GIDS_SEARCH_MAX_RESULTS)
+  } else if (loaded.dbSimpleBrowseAll && total > GIDS_SEARCH_MAX_RESULTS) {
+    results = results.slice(0, GIDS_SEARCH_MAX_RESULTS)
+    capped = true
   }
 
   return { listings: results, total, capped }

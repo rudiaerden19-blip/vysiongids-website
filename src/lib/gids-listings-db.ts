@@ -111,8 +111,8 @@ const PUBLIC_LISTING_COLUMNS = `
   updated_at
 `.replace(/\s+/g, ' ')
 
-/** Lichter voor zoeken/lijsten — geen zware JSON-velden. */
-const LISTING_BROWSE_SELECT = `
+/** Geen embedded foto's — browse/zoeken haalt thumbnails in batch (1 per zaak). */
+export const LISTING_BROWSE_SELECT = `
   id,
   slug,
   name,
@@ -169,7 +169,7 @@ const LISTING_SELECT = `
 
 type ListingPhotoClient = ReturnType<typeof createGidsSupabasePublic>
 
-async function fetchFirstListingPhotosMap(
+export async function fetchFirstListingPhotosMap(
   supabase: NonNullable<ListingPhotoClient>,
   listingIds: string[],
 ): Promise<Map<string, PhotoRow[]>> {
@@ -214,7 +214,7 @@ async function fetchAllListingPhotosForId(
   return (data ?? []) as PhotoRow[]
 }
 
-function rowsToListings(rows: GidsListingRow[], photosByListingId: Map<string, PhotoRow[]>): Listing[] {
+export function rowsToListings(rows: GidsListingRow[], photosByListingId: Map<string, PhotoRow[]>): Listing[] {
   return rows.map((row) => {
     const photos = photosByListingId.get(row.id) ?? row.gids_listing_photos ?? []
     return mapGidsRowToListing({ ...row, gids_listing_photos: photos })
