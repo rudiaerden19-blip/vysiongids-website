@@ -1696,11 +1696,13 @@ body {
   0%,
   100% {
     background-color: #fff;
-    color: #0e5d82;
+    color: #f59e0b;
+    border-color: #f59e0b;
   }
   50% {
-    background-color: #0e5d82;
+    background-color: #f59e0b;
     color: #fff;
+    border-color: #f59e0b;
   }
 }
 
@@ -1711,9 +1713,9 @@ body {
   justify-content: center;
   padding: 0.45rem 1.1rem;
   border-radius: 0.5rem;
-  border: 2px solid #fff;
+  border: 2px solid #f59e0b;
   background-color: #fff;
-  color: #0e5d82;
+  color: #f59e0b;
   font-size: 0.875rem;
   font-weight: 700;
   font-family: inherit;
@@ -1727,14 +1729,16 @@ body {
 .vysiongids-listing-panel-hiring-btn:hover {
   animation-play-state: paused;
   background-color: #fff !important;
-  color: #0e5d82 !important;
+  color: #f59e0b !important;
+  border-color: #f59e0b !important;
 }
 
 @media (prefers-reduced-motion: reduce) {
   .vysiongids-listing-panel-hiring-btn {
     animation: none;
-    background-color: #fff;
-    color: #0e5d82;
+    background-color: #f59e0b;
+    color: #fff;
+    border-color: #f59e0b;
   }
 }
 
