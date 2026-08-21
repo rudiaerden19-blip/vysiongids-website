@@ -43,9 +43,46 @@ export default function BeheerGidsChatSection({ initialThreadId }: Props) {
     }
   }, [initialThreadId])
 
+  const [unreadPollCount, setUnreadPollCount] = useState(0)
+
+  const refreshUnreadOnly = useCallback(async () => {
+    const r = await fetch('/api/gids/chat/unread', { credentials: 'same-origin' })
+    if (!r.ok) return
+    const data = (await r.json()) as { unread?: number }
+    setUnreadPollCount(typeof data.unread === 'number' ? data.unread : 0)
+  }, [])
+
+  const unreadConversationCount = threads.filter((t) => t.unread).length
+
+  useEffect(() => {
+    void refreshUnreadOnly()
+    const id = window.setInterval(() => {
+      if (document.visibilityState !== 'visible') return
+      void refreshUnreadOnly()
+    }, 15000)
+    return () => window.clearInterval(id)
+  }, [refreshUnreadOnly])
+
+  const badgeCount =
+    threads.length > 0 ? unreadConversationCount : unreadPollCount
+
   return (
     <section className="vysiongids-surface-card rounded-xl bg-white p-5">
-      <h2 className="text-lg font-bold text-gray-900">Berichten</h2>
+      <div className="vysiongids-gids-chat-section-head">
+        <h2 className="text-lg font-bold text-gray-900">Berichten</h2>
+        {badgeCount > 0 ? (
+          <span className="vysiongids-gids-chat-unread-badge" aria-label={`${badgeCount} ongelezen gesprekken`}>
+            {badgeCount > 99 ? '99+' : badgeCount}
+          </span>
+        ) : null}
+      </div>
+      {badgeCount > 0 ? (
+        <p className="mt-1 text-sm font-medium text-[#0e5d82]">
+          {badgeCount === 1
+            ? '1 nieuw gesprek met ongelezen berichten'
+            : `${badgeCount} gesprekken met ongelezen berichten`}
+        </p>
+      ) : null}
       <p className="mt-1 text-sm text-gray-600">
         Chat met andere leden over zoekertjes of leveranciersprofielen (premium vereist).
       </p>
@@ -55,7 +92,7 @@ export default function BeheerGidsChatSection({ initialThreadId }: Props) {
           <li key={t.id}>
             <button
               type="button"
-              className="vysiongids-gids-chat-inbox-item"
+              className={`vysiongids-gids-chat-inbox-item${t.unread ? ' vysiongids-gids-chat-inbox-item--unread' : ''}`}
               onClick={() => {
                 setActiveThreadId(t.id)
                 setModalOpen(true)
@@ -84,6 +121,7 @@ export default function BeheerGidsChatSection({ initialThreadId }: Props) {
         onClose={() => {
           setModalOpen(false)
           void refresh()
+          void refreshUnreadOnly()
         }}
       />
     </section>
