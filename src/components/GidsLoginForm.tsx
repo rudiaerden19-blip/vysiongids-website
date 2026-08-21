@@ -66,7 +66,7 @@ export default function GidsLoginForm() {
             autoComplete="organization"
             disabled={busy}
             className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 disabled:opacity-60"
-            placeholder="Bv. Nini-Burger"
+            placeholder="Bv. naam zaak"
           />
           <p className="mt-1 text-xs text-gray-500">
             Exact zoals in de gids (meervoud/enkelvoud maakt meestal niet uit). PIN = de 6 cijfers van bij registratie.
