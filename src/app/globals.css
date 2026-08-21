@@ -5601,6 +5601,37 @@ body {
   font-weight: 600;
 }
 
+.vysiongids-gids-chat-inbox-kicker {
+  display: block;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #0e5d82;
+}
+
+.vysiongids-gids-chat-inbox-meta {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.vysiongids-gids-chat-context-meta {
+  margin: 0.2rem 0 0;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #4b5563;
+}
+
+.vysiongids-gids-chat-peer-line {
+  margin: 0.35rem 0 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #374151;
+}
+
 .vysiongids-gids-chat-inbox-title {
   display: flex;
   align-items: center;
