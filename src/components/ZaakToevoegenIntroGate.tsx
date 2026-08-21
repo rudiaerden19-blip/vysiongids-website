@@ -74,7 +74,9 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
             knop <strong>Online platform</strong> of <strong>Reserveringen</strong> drukken en je registreren. Deze
             softwaremodules behoren tot de meest professionele softwareplatformen in België. Je kan de software
             downloaden voor <strong>€49 per jaar</strong>. Dit is tot <strong>20 keer goedkoper</strong> dan andere
-            platformen en alleen toegankelijk voor onze Vysiongids-leden.
+            platformen en alleen toegankelijk voor onze Vysiongids-leden. Heb je wél al een reserverings- en online
+            bestelplatform? Perfect — dit kan je rechtstreeks koppelen aan je bestelknop in Vysiongids. Met{' '}
+            <strong>één klik</strong> zit de klant op jouw software.
           </p>
           <div className="vysiongids-zaak-intro-platform-btns">
             <button
@@ -92,10 +94,6 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
               Bekijk restaurantreserveringen
             </button>
           </div>
-          <p className="vysiongids-zaak-intro-promo">
-            Heb je wél al een reserverings- en online bestelplatform? Perfect — dit kan je rechtstreeks koppelen aan je
-            bestelknop in Vysiongids. Met <strong>één klik</strong> zit de klant op jouw software.
-          </p>
           <p className="vysiongids-zaak-intro-lead">
             Voordat je je zaak online zet in Vysiongids, lees onderstaande punten. Zo blijft de gids betrouwbaar voor
             klanten en voor alle horeca-zaken in België.
