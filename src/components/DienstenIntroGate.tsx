@@ -52,7 +52,12 @@ export default function DienstenIntroGate({ children }: Props) {
           </p>
           <p className="vysiongids-zaak-intro-promo">
             Vul je gegevens, categorieën (kassa, meubilair, …) en tot <strong>10 foto&apos;s</strong> in. Na betaling is
-            je profiel zichtbaar. Klanten contacteeren je via <strong>Contacteer verkoper</strong> (telefoon/e-mail).
+            je profiel zichtbaar. Klanten contacteeren je via <strong>Contacteer verkoper</strong> (telefoon/e-mail) of
+            via je <strong>Website</strong>-knop.
+          </p>
+          <p className="vysiongids-zaak-intro-promo">
+            Let op: het is bewezen — met een leveranciersprofiel boost je je zaak meestal tot{' '}
+            <strong>20% meer zichtbaarheid</strong>.
           </p>
         </div>
         <div className="vysiongids-zaak-intro-actions">
