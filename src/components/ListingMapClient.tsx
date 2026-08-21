@@ -1,4 +1,4 @@
-import ListingMap from '@/components/ListingMap'
+import ListingMapLazy from '@/components/ListingMapLazy'
 
-export default ListingMap
-export type { ListingMapProps } from '@/components/ListingMap'
+export default ListingMapLazy
+export type { ListingMapProps } from '@/components/ListingMapLazy'

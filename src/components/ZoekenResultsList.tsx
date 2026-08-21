@@ -60,6 +60,7 @@ export default function ZoekenResultsList({ listings, initialNear, sortByDistanc
   }, [initialNear])
 
   useEffect(() => {
+    if (!sortByDistance) return
     const slugs = listings.filter(listingNeedsClientGeocode).map((l) => l.slug).slice(0, 3)
     if (slugs.length === 0) return
 
@@ -88,7 +89,7 @@ export default function ZoekenResultsList({ listings, initialNear, sortByDistanc
       cancelled = true
       window.clearTimeout(timer)
     }
-  }, [listings])
+  }, [listings, sortByDistance])
 
   const coordKey = useMemo(
     () =>
@@ -102,7 +103,7 @@ export default function ZoekenResultsList({ listings, initialNear, sortByDistanc
   )
 
   useEffect(() => {
-    if (!near) {
+    if (!sortByDistance || !near) {
       setRoadBySlug({})
       return
     }
@@ -150,7 +151,7 @@ export default function ZoekenResultsList({ listings, initialNear, sortByDistanc
       cancelled = true
       window.clearTimeout(timer)
     }
-  }, [near, coordKey, rows])
+  }, [near, coordKey, rows, sortByDistance])
 
   const sorted = useMemo(() => {
     if (sortByDistance && near) {

@@ -32,8 +32,8 @@ type Props = { params: Promise<{ slug: string }> }
 /** Nieuwe slugs via dynamicParams; listing-cache invalideert via tag gids-listings. */
 export const dynamicParams = true
 
-/** Geocode + kaart altijd vers (geen ISR met oude lat/lng). */
-export const dynamic = 'force-dynamic'
+/** Listing-cache 60s; geocode alleen bij ontbrekende/fallback-coördinaten. */
+export const revalidate = 60
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params

@@ -39,11 +39,16 @@ async function persistListingCoords(listing: Listing, coords: { lat: number; lng
   return { ...listing, lat: coords.lat, lng: coords.lng }
 }
 
-/** Straat-pin voor satelliet (nooit postcode-centrum als geocoding lukt). */
+/** Straat-pin voor satelliet — geen externe geocode als DB al een goede pin heeft. */
 export async function resolveListingMapPin(listing: Listing): Promise<{
   listing: Listing
   pin: { lat: number; lng: number }
 }> {
+  const stored = getListingMapCoordinates(listing)
+  if (stored && !listingStoredCoordsAreFallback(listing)) {
+    return { listing, pin: stored }
+  }
+
   const streetCoords = await geocodeBelgiumStreetAddress({
     address: listing.address,
     postcode: listing.postcode,

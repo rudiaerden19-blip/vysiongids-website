@@ -111,13 +111,56 @@ const PUBLIC_LISTING_COLUMNS = `
   updated_at
 `.replace(/\s+/g, ' ')
 
+/** Lichter voor zoeken/lijsten — geen zware JSON-velden. */
+const LISTING_BROWSE_SELECT = `
+  id,
+  slug,
+  name,
+  status,
+  type,
+  cuisine_type,
+  city,
+  postcode,
+  province,
+  address,
+  order_url,
+  menu_url,
+  menu_catalog_active,
+  website,
+  phone,
+  email,
+  opening_hours,
+  closed_days,
+  hours_by_day,
+  amenities,
+  rating_avg,
+  rating_count,
+  delivery_time_min,
+  delivery_time_max,
+  pickup_time_min,
+  pickup_time_max,
+  delivery_radius_km,
+  delivery_fee_eur,
+  min_order_eur,
+  pickup_enabled,
+  delivery_enabled,
+  lat,
+  lng,
+  premium_member,
+  premium_paid_at,
+  premium_expires_at,
+  premium_paused,
+  listing_segment,
+  service_categories,
+  diensten_expires_at,
+  created_at,
+  updated_at
+`.replace(/\s+/g, ' ')
+
 const LISTING_PUBLIC_SELECT = `
   ${PUBLIC_LISTING_COLUMNS},
   gids_listing_photos ( sort_order, public_url )
 `
-
-/** Geen embedded foto's — browse/zoeken haalt thumbnails in batch (1 per zaak). */
-const LISTING_BROWSE_SELECT = PUBLIC_LISTING_COLUMNS.replace(/\s+/g, ' ')
 
 const LISTING_SELECT = `
   *,

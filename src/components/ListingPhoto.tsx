@@ -26,7 +26,6 @@ export default function ListingPhoto({
   layout = 'fill',
 }: Props) {
   const [currentSrc, setCurrentSrc] = useState(src || FALLBACK)
-  const isRemote = currentSrc.startsWith('http://') || currentSrc.startsWith('https://')
 
   useEffect(() => {
     setCurrentSrc(src?.trim() || FALLBACK)
@@ -41,7 +40,6 @@ export default function ListingPhoto({
         height={0}
         sizes={sizes}
         priority={priority}
-        unoptimized={isRemote}
         className={className}
         style={{ width: '100%', height: 'auto', display: 'block' }}
         onError={() => {
@@ -58,7 +56,6 @@ export default function ListingPhoto({
       fill
       sizes={sizes}
       priority={priority}
-      unoptimized={isRemote}
       className={className}
       style={{ objectFit, objectPosition: 'center' }}
       onError={() => {

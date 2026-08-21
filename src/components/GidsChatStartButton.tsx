@@ -1,6 +1,7 @@
 'use client'
 
 import { useCallback, useEffect, useState } from 'react'
+import { fetchGidsMeBriefCached } from '@/lib/gids-me-brief-client'
 import GidsChatModal from '@/components/GidsChatModal'
 import type { GidsChatContextType } from '@/lib/gids-chat-types'
 
@@ -45,8 +46,8 @@ export default function GidsChatStartButton({
     let cancelled = false
     void (async () => {
       try {
-        const r = await fetch('/api/gids/me?brief=1', { credentials: 'same-origin' })
-        const data = (await r.json()) as { authenticated?: boolean; slug?: string }
+        const r = await fetchGidsMeBriefCached()
+        const data = r
         if (cancelled) return
         if (data.authenticated && data.slug) {
           const mine = normalizeSlug(data.slug)
