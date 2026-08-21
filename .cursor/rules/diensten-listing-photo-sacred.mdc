@@ -1,0 +1,35 @@
+---
+description: Diensten/verkoper-kaart — fotogrootte en layout (HEILIG, eigenaar goedgekeurd)
+alwaysApply: true
+---
+
+# Diensten — foto op zoekkaart (verkopers)
+
+**Eigenaar (aug 2026):** de huidige grootte en weergave is **goed**. **Niet meer wijzigen** (geen cover/crop, geen kleiner vak, geen andere aspect-ratio) tenzij de gebruiker in **dezelfde opdracht** expliciet iets anders vraagt.
+
+Geldt voor **alle tenants / alle verkopers** — elke upload gebruikt dezelfde UI.
+
+## Verplicht gedrag
+
+- **Eén component** voor lijst/zoekresultaten: `src/components/DienstenListingCard.tsx`.
+- Foto: `ListingPhotoSlider` met **`layout="intrinsic"`**, class **`vysiongids-diensten-listing-photo`** op de foto-link.
+- Styling: blok **`vysiongids-diensten-listing-photo`** in `src/app/globals.css` (kolombreedte zoals frituren `48%` / max `30rem`, foto **volle breedte**, hoogte **natuurlijk**, hele promo zichtbaar, **geen zijstrepen**, **geen crop**).
+
+## Verboden
+
+```tsx
+// NOOIT op diensten-zoekkaart — knipt promo-tekst of maakt vak kleiner
+objectFit="cover"
+layout="fill"   // zonder de heilige CSS-override
+aspect-ratio: 4/3 op .vysiongids-diensten-listing-photo
+contain in een laag vak (zijstrepen)
+aparte foto-layout per slug/tenant
+```
+
+## Nieuwe schermen met diensten-lijst
+
+Hergebruik **`DienstenListingCard`**, geen duplicate kaart met andere foto-CSS.
+
+## Detailpagina
+
+Profiel/gallery (`DienstenDetailGallery`) mag apart zijn; **zoekkaart** blijft bovenstaande layout.

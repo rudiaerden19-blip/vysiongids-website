@@ -5013,8 +5013,8 @@ body {
 }
 
 /*
- * Dienstenkaart: zelfde linkerkolombreedte als frituren (48% / max 30rem),
- * foto op volle breedte + natuurlijke hoogte — hele promo zichtbaar, geen crop, geen zijstrepen.
+ * HEILIG — diensten/verkoper zoekkaart foto (alle tenants). Niet wijzigen zonder expliciete opdracht.
+ * Zie .cursor/rules/diensten-listing-photo-sacred.mdc
  */
 .vysiongids-diensten-listing-panel .vysiongids-listing-panel-row {
   align-items: start;

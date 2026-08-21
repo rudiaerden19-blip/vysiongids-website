@@ -12,6 +12,8 @@ import { dienstenListingVisitorsDisplay, formatStatNumber } from '@/lib/gids-pub
 
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
 
+/** Leveranciers-zoekkaart — fotolayout HEILIG: zie .cursor/rules/diensten-listing-photo-sacred.mdc */
+
 function dienstenWebsiteAction(website: string | undefined): { href: string; label: string } | null {
   const raw = website?.trim()
   if (!raw) return null
