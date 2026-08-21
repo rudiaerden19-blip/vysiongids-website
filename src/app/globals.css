@@ -1787,6 +1787,16 @@ body {
   object-position: center 42%;
 }
 
+.vysiongids-listing-panel-photo .vysiongids-listing-photo-slider {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+}
+
+.vysiongids-listing-panel-photo .vysiongids-listing-photo-slider-stage {
+  inset: 0;
+}
+
 .vysiongids-voice-result-banner {
   display: flex;
   flex-wrap: wrap;

@@ -12,7 +12,7 @@ type Props = {
   sizes: string
   className?: string
   priority?: boolean
-  /** Pijltjes op zaakpagina */
+  /** Vorige/volgende pijltjes (zaakpagina, zoekresultaten) */
   showControls?: boolean
   /** Automatisch wisselen (alleen zaakpagina) */
   autoPlay?: boolean
