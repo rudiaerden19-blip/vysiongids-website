@@ -16,6 +16,7 @@ import GidsOwnerSessionKeepAlive from '@/components/GidsOwnerSessionKeepAlive'
 import type { Listing } from '@/lib/listing-types'
 import type { BeheerServerSession } from '@/lib/gids-beheer-server'
 import { isDienstenListing } from '@/lib/listing-segment'
+import { listingHasGidsPremium } from '@/lib/gids-premium'
 import BeheerDienstenPanel from '@/components/BeheerDienstenPanel'
 
 const BeheerGidsChatSection = dynamic(() => import('@/components/BeheerGidsChatSection'), {
@@ -29,6 +30,10 @@ const BeheerGidsChatSection = dynamic(() => import('@/components/BeheerGidsChatS
 
 const BeheerEditForm = dynamic(() => import('@/components/BeheerEditForm'), {
   loading: () => <p className="text-sm text-gray-600">Formulier laden…</p>,
+})
+
+const BeheerDienstenEditForm = dynamic(() => import('@/components/BeheerDienstenEditForm'), {
+  loading: () => <p className="text-sm text-gray-600">Dienstenformulier laden…</p>,
 })
 
 type MeResponse = {
@@ -79,6 +84,8 @@ export default function BeheerClient({ serverSession }: Props) {
 
   const premiumMember = listing?.premiumMember ?? me?.premiumMember
   const dienstenAccount = listing ? isDienstenListing(listing) : false
+  const zoekertjesAllowed =
+    listingHasGidsPremium(premiumMember) || Boolean(listing?.dienstenActive && dienstenAccount)
 
   useEffect(() => {
     if (serverSession.authenticated && serverSession.listing) {
@@ -233,6 +240,21 @@ export default function BeheerClient({ serverSession }: Props) {
             placeRequestId={zoekertjePlaceRequest}
           />
         </>
+      ) : listing?.dienstenActive ? (
+        <>
+          <BeheerPremiumQuickNav
+            variant="diensten"
+            zoekertjesAllowed={zoekertjesAllowed}
+            listingName={me?.name}
+            onZoekertjePlace={() => setZoekertjePlaceRequest((n) => n + 1)}
+          />
+          <BeheerZoekertjesSection
+            premiumMember={zoekertjesAllowed}
+            modalOpen={zoekertjeModalOpen}
+            onModalOpenChange={setZoekertjeModalOpen}
+            placeRequestId={zoekertjePlaceRequest}
+          />
+        </>
       ) : null}
 
       {slug ? <ListingOwnerDailyViews slug={slug} variant="beheer" /> : null}
@@ -272,6 +294,22 @@ export default function BeheerClient({ serverSession }: Props) {
 
       {listing && dienstenAccount && slug ? <BeheerDienstenPanel listing={listing} slug={slug} /> : null}
 
+      {listing && dienstenAccount ? (
+        <BeheerDienstenEditForm
+          key={listing.slug + (listing.serviceDescription ?? '')}
+          listing={listing}
+          onSaved={async (newSlug) => {
+            setPublicSlug(newSlug)
+            const r = await fetch('/api/gids/me')
+            const data = (await r.json()) as MeResponse
+            if (data.authenticated && data.listing) {
+              setMe(data)
+              setListing(data.listing)
+            }
+          }}
+        />
+      ) : null}
+
       {listing && !dienstenAccount ? (
         <BeheerEditForm
           key={listing.slug + (listing.name ?? '')}
@@ -286,7 +324,7 @@ export default function BeheerClient({ serverSession }: Props) {
             }
           }}
         />
-      ) : listing && dienstenAccount ? null : listingLoading ? (
+      ) : listingLoading ? (
         <p className="text-gray-600">Je gegevens laden…</p>
       ) : (
         <p className="text-red-700">Gegevens laden mislukt. Vernieuw de pagina.</p>

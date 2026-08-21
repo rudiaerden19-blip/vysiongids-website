@@ -22,13 +22,24 @@ export type ParsedGidsDienstenForm = {
   serviceDescription: string
   serviceCategories: ReturnType<typeof parseServiceCategoriesFromForm>
   photos: { index: number; file: File }[]
+  removePhotoSlots: number[]
+}
+
+export type ParseGidsDienstenOptions = {
+  requirePin?: boolean
+  requirePhotos?: boolean
 }
 
 export type ParseGidsDienstenFormResult =
   | { ok: true; data: ParsedGidsDienstenForm }
   | { ok: false; error: string; status: number }
 
-export async function parseGidsDienstenFormData(form: FormData): Promise<ParseGidsDienstenFormResult> {
+export async function parseGidsDienstenFormData(
+  form: FormData,
+  options: ParseGidsDienstenOptions = {},
+): Promise<ParseGidsDienstenFormResult> {
+  const requirePin = options.requirePin !== false
+  const requirePhotos = options.requirePhotos !== false
   const name = formatGidsTitleCase(String(form.get('name') ?? '').trim())
   const pinRaw = String(form.get('pin') ?? '').trim()
   const city = formatGidsTitleCase(String(form.get('city') ?? '').trim())
@@ -41,7 +52,10 @@ export async function parseGidsDienstenFormData(form: FormData): Promise<ParseGi
   const descriptionRaw = formatGidsSentenceText(String(form.get('serviceDescription') ?? '').trim())
 
   if (name.length < 3) return { ok: false, error: 'Vul een volledige bedrijfsnaam in.', status: 400 }
-  if (!isValidGidsPin(pinRaw)) return { ok: false, error: 'PIN moet 6 cijfers zijn.', status: 400 }
+  if (requirePin && !isValidGidsPin(pinRaw)) return { ok: false, error: 'PIN moet 6 cijfers zijn.', status: 400 }
+  if (!requirePin && pinRaw && !isValidGidsPin(pinRaw)) {
+    return { ok: false, error: 'Nieuwe PIN moet 6 cijfers zijn.', status: 400 }
+  }
   if (!province || !BELGIUM_PROVINCES.some((p) => p.slug === province)) {
     return { ok: false, error: 'Kies een provincie.', status: 400 }
   }
@@ -78,8 +92,13 @@ export async function parseGidsDienstenFormData(form: FormData): Promise<ParseGi
     const f = form.get(`photo${i}`)
     if (f instanceof File && f.size > 0) photos.push({ index: i, file: f })
   }
-  if (photos.length === 0) {
+  if (photos.length === 0 && requirePhotos) {
     return { ok: false, error: 'Upload minstens 1 foto (max. 10).', status: 400 }
+  }
+
+  const removePhotoSlots: number[] = []
+  for (let i = 0; i < GIDS_DIENSTEN_MAX_PHOTOS; i++) {
+    if (String(form.get(`removePhoto${i}`) ?? '') === '1') removePhotoSlots.push(i)
   }
 
   let totalPhotoBytes = 0
@@ -115,6 +134,7 @@ export async function parseGidsDienstenFormData(form: FormData): Promise<ParseGi
       serviceDescription: descriptionRaw,
       serviceCategories,
       photos,
+      removePhotoSlots,
     },
   }
 }

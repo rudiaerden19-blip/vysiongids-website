@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
 import { fetchListingRowByIdAdmin } from '@/lib/gids-listings-db'
-import { resolveListingPremiumActive } from '@/lib/gids-premium'
+import { listingCanManageZoekertjesFromRow } from '@/lib/gids-zoekertjes-eligibility'
 import {
   createGidsZoekertjeAdmin,
   countGidsZoekertjesByListingIdAdmin,
@@ -52,10 +52,13 @@ async function requirePremiumListing() {
   if (!listingId) return { error: NextResponse.json({ error: 'Log in met je zaak.' }, { status: 401 }) }
   const row = await fetchListingRowByIdAdmin(listingId)
   if (!row) return { error: NextResponse.json({ error: 'Zaak niet gevonden.' }, { status: 404 }) }
-  if (!resolveListingPremiumActive(row)) {
+  if (!listingCanManageZoekertjesFromRow(row)) {
     return {
       error: NextResponse.json(
-        { error: 'Zoekertjes plaatsen is enkel voor premium-leden (€50/jaar).' },
+        {
+          error:
+            'Zoekertjes plaatsen is enkel voor premium-leden (€50/jaar) of actieve diensten-leden (€99/jaar).',
+        },
         { status: 403 },
       ),
     }

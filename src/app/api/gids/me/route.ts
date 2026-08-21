@@ -35,6 +35,7 @@ import { geocodeListingAddress } from '@/lib/gids-listing-geocode'
 import { resolveListingPremiumActive } from '@/lib/gids-premium'
 import { deleteGidsListingByIdAdmin } from '@/lib/gids-listing-delete-admin'
 import { applyGidsOwnerListingPhotoPatch } from '@/lib/gids-me-owner-photo-patch'
+import { patchOwnerDienstenListing } from '@/lib/gids-me-diensten-patch'
 
 export const maxDuration = 60
 
@@ -119,6 +120,10 @@ export async function PATCH(req: Request) {
     form = await req.formData()
   } catch {
     return NextResponse.json({ error: 'Ongeldig formulier.' }, { status: 400 })
+  }
+
+  if (row.listing_segment === 'diensten') {
+    return patchOwnerDienstenListing(req, session, row, admin, form)
   }
 
   const parsed = await parseGidsListingFormData(form, { requirePin: false, requireNewPhotos: false })

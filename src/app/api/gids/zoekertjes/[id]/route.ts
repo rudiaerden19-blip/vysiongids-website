@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
 import { fetchListingRowByIdAdmin } from '@/lib/gids-listings-db'
-import { resolveListingPremiumActive } from '@/lib/gids-premium'
+import { listingCanManageZoekertjesFromRow } from '@/lib/gids-zoekertjes-eligibility'
 import {
   deleteGidsZoekertjeAdmin,
   fetchGidsZoekertjeByIdAdmin,
@@ -54,8 +54,8 @@ async function requireOwnerPremium(id: string) {
   const listingId = await getGidsOwnerListingIdFromCookies()
   if (!listingId) return { error: NextResponse.json({ error: 'Log in met je zaak.' }, { status: 401 }) }
   const row = await fetchListingRowByIdAdmin(listingId)
-  if (!row || !resolveListingPremiumActive(row)) {
-    return { error: NextResponse.json({ error: 'Premium vereist.' }, { status: 403 }) }
+  if (!row || !listingCanManageZoekertjesFromRow(row)) {
+    return { error: NextResponse.json({ error: 'Premium of actief diensten-lidmaatschap vereist.' }, { status: 403 }) }
   }
   const ad = await fetchGidsZoekertjeByIdAdmin(id)
   if (!ad) return { error: NextResponse.json({ error: 'Zoekertje niet gevonden.' }, { status: 404 }) }

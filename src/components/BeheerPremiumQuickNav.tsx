@@ -7,13 +7,22 @@ import { listingHasGidsPremium } from '@/lib/gids-premium'
 type Props = {
   premiumMember?: boolean
   listingName?: string
-  /** Premium: open zoekertje-popup in beheer (niet op publieke /zoekertjes). */
+  variant?: 'horeca' | 'diensten'
+  /** Horeca premium of actief diensten-lidmaatschap */
+  zoekertjesAllowed?: boolean
   onZoekertjePlace?: () => void
 }
 
-export default function BeheerPremiumQuickNav({ premiumMember, listingName, onZoekertjePlace }: Props) {
+export default function BeheerPremiumQuickNav({
+  premiumMember,
+  listingName,
+  variant = 'horeca',
+  zoekertjesAllowed,
+  onZoekertjePlace,
+}: Props) {
   const [paywallOpen, setPaywallOpen] = useState(false)
   const isPremium = listingHasGidsPremium(premiumMember)
+  const canZoekertjes = zoekertjesAllowed ?? isPremium
 
   function onVacatureClick() {
     if (!isPremium) {
@@ -24,7 +33,7 @@ export default function BeheerPremiumQuickNav({ premiumMember, listingName, onZo
   }
 
   function onZoekertjeClick() {
-    if (!isPremium) {
+    if (!canZoekertjes) {
       setPaywallOpen(true)
       return
     }
@@ -40,14 +49,16 @@ export default function BeheerPremiumQuickNav({ premiumMember, listingName, onZo
     <>
       <div className="vysiongids-beheer-quick-nav-wrap">
         <div className="vysiongids-beheer-quick-nav">
-          <button type="button" className="vysiongids-beheer-quick-nav-btn" onClick={onVacatureClick}>
-            Vacature plaatsen
-          </button>
+          {variant === 'horeca' ? (
+            <button type="button" className="vysiongids-beheer-quick-nav-btn" onClick={onVacatureClick}>
+              Vacature plaatsen
+            </button>
+          ) : null}
           <button type="button" className="vysiongids-beheer-quick-nav-btn" onClick={onZoekertjeClick}>
-            Zoekertje plaatsen
+            {variant === 'diensten' ? 'Reclame / zoekertje plaatsen' : 'Zoekertje plaatsen'}
           </button>
         </div>
-        {!isPremium ? (
+        {variant === 'horeca' && !isPremium ? (
           <button
             type="button"
             className="vysiongids-beheer-quick-nav-btn vysiongids-beheer-quick-nav-btn--claim"
