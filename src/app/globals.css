@@ -5063,6 +5063,50 @@ body {
   }
 }
 
+.vysiongids-diensten-verified-bar .vysiongids-listing-panel-hiring-inner {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.vysiongids-diensten-verified-bar .vysiongids-listing-panel-hiring-copy {
+  grid-column: 2;
+  flex: none;
+  justify-content: center;
+  text-align: center;
+}
+
+.vysiongids-diensten-verified-bar-visitors {
+  grid-column: 3;
+  justify-self: end;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #fff;
+  white-space: nowrap;
+}
+
+@media (max-width: 479px) {
+  .vysiongids-diensten-verified-bar .vysiongids-listing-panel-hiring-inner {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+    justify-items: center;
+  }
+
+  .vysiongids-diensten-verified-bar .vysiongids-listing-panel-hiring-copy {
+    grid-column: 1;
+    grid-row: 1;
+  }
+
+  .vysiongids-diensten-verified-bar-visitors {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: center;
+    font-size: 0.75rem;
+  }
+}
+
 .vysiongids-diensten-card-title-link {
   text-decoration: none;
   color: inherit;

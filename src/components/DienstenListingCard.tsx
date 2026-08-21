@@ -6,6 +6,7 @@ import type { Listing } from '@/lib/listing-types'
 import { formatListingAddressLines } from '@/lib/listing-display'
 import { listingPhotoUrls } from '@/lib/listing-display'
 import { serviceCategoryLabel } from '@/lib/gids-service-categories'
+import { dienstenListingVisitorsDisplay, formatStatNumber } from '@/lib/gids-public-stats'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
 
 function dienstenWebsiteAction(website: string | undefined): { href: string; label: string } | null {
@@ -42,6 +43,7 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
   const telHref = contactTel(listing.phone)
   const mailHref = contactMail(listing.email)
   const websiteAction = dienstenWebsiteAction(listing.website)
+  const visitors = dienstenListingVisitorsDisplay(listing.slug)
 
   return (
     <article className="vysiongids-listing-panel vysiongids-diensten-listing-panel">
@@ -119,6 +121,9 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
           <div className="vysiongids-listing-panel-hiring-copy">
             <span className="vysiongids-listing-panel-hiring-text">Dit bedrijf is geverifieerd</span>
           </div>
+          <span className="vysiongids-diensten-verified-bar-visitors">
+            {formatStatNumber(visitors)} bezoekers
+          </span>
         </div>
       </div>
     </article>

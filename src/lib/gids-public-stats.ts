@@ -45,13 +45,44 @@ function brusselsWeekdayIndex(now: Date): number {
   return map[weekday] ?? 0
 }
 
-function daysSinceLaunch(now: Date): number {
+function daysSinceLaunch(now: Date, anchorKey = STATS_SEARCH_LAUNCH_KEY): number {
   const key = brusselsDateKey(now)
   const [y, m, d] = key.split('-').map(Number)
   const currentUtc = Date.UTC(y, m - 1, d)
-  const [ay, am, ad] = STATS_SEARCH_LAUNCH_KEY.split('-').map(Number)
+  const [ay, am, ad] = anchorKey.split('-').map(Number)
   const anchorUtc = Date.UTC(ay, am - 1, ad)
   return Math.max(0, Math.floor((currentUtc - anchorUtc) / 86400000))
+}
+
+function utcDateKeyAfterDays(anchorKey: string, dayOffset: number): string {
+  const [ay, am, ad] = anchorKey.split('-').map(Number)
+  const t = Date.UTC(ay, am - 1, ad + dayOffset)
+  const d = new Date(t)
+  const y = d.getUTCFullYear()
+  const m = String(d.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(d.getUTCDate()).padStart(2, '0')
+  return `${y}-${m}-${day}`
+}
+
+const DIENSTEN_VISITORS_BASE = 80
+const DIENSTEN_VISITORS_LAUNCH = STATS_SEARCH_LAUNCH_KEY
+const DIENSTEN_VISITOR_DAY_DELTAS = [75, 70, 40, 100, 55, 90, 35, 65, 110, 45, 80, 50] as const
+
+/** Bezoekers op dienstenkaart: start 80, per dag wisselende stijging (per slug stabiel). */
+export function dienstenListingVisitorsDisplay(slug: string, now = new Date()): number {
+  const slugNorm = slug.trim().toLowerCase() || 'leverancier'
+  const dayCount = daysSinceLaunch(now, DIENSTEN_VISITORS_LAUNCH)
+  let total = DIENSTEN_VISITORS_BASE
+  for (let i = 0; i < dayCount; i++) {
+    const dayKey = utcDateKeyAfterDays(DIENSTEN_VISITORS_LAUNCH, i)
+    const h = hashDateKey(`${slugNorm}|visitors|${dayKey}`)
+    total += DIENSTEN_VISITOR_DAY_DELTAS[h % DIENSTEN_VISITOR_DAY_DELTAS.length]!
+  }
+  return total
+}
+
+function daysSinceLaunchSearch(now: Date): number {
+  return daysSinceLaunch(now, STATS_SEARCH_LAUNCH_KEY)
 }
 
 function hashDateKey(key: string): number {
@@ -69,7 +100,7 @@ export function zoekactiesPerDagDisplay(now = new Date()): number {
   const key = brusselsDateKey(now)
   const hash = hashDateKey(key)
   const weekday = brusselsWeekdayIndex(now)
-  const dayIndex = daysSinceLaunch(now)
+  const dayIndex = daysSinceLaunchSearch(now)
 
   /** ~12–18 extra per kalenderdag t.o.v. lancering */
   const dailyGrowth = dayIndex * 15
