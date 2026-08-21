@@ -46,18 +46,22 @@ function setRegionCookie(slug: ProvinceSlug) {
   document.cookie = `${REGION_COOKIE}=${slug};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`
 }
 
-function HeaderNavNewBadge({ inline }: { inline?: boolean }) {
+function HeaderNavNewBadge({ variant = 'stacked' }: { variant?: 'stacked' | 'inline' }) {
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src="/images/nieuw-sticker.png"
-      alt=""
-      className={
-        inline
-          ? 'vysiongids-header-nav-new-sticker vysiongids-header-nav-new-sticker--inline'
-          : 'vysiongids-header-nav-new-sticker'
-      }
-    />
+    <span
+      className={`vysiongids-header-nav-new-badge${variant === 'inline' ? ' vysiongids-header-nav-new-badge--inline' : ''}`}
+      aria-hidden
+    >
+      <svg className="vysiongids-header-nav-new-badge-star" viewBox="0 0 100 100" aria-hidden>
+        <path
+          fill="#ef4444"
+          stroke="#111827"
+          strokeWidth="3"
+          d="M50 2 58 34 92 26 66 50 92 74 58 66 50 98 42 66 8 74 34 50 8 26 42 34Z"
+        />
+      </svg>
+      <span className="vysiongids-header-nav-new-badge-text">NIEUW</span>
+    </span>
   )
 }
 
@@ -78,8 +82,8 @@ function HeaderNavLink({
       className={isNew ? 'vysiongids-header-nav-link-new' : undefined}
       onClick={onNavigate}
     >
-      {isNew ? <HeaderNavNewBadge /> : null}
-      <span>{children}</span>
+      {isNew ? <HeaderNavNewBadge variant="stacked" /> : null}
+      <span className="vysiongids-header-nav-link-label">{children}</span>
     </Link>
   )
 }
@@ -173,7 +177,7 @@ function MobileNavSheet({
           <li key={item.href}>
             <Link href={item.href} className="vysiongids-mobile-nav-link" onClick={onClose}>
               {item.label}
-              {'isNew' in item && item.isNew ? <HeaderNavNewBadge inline /> : null}
+              {'isNew' in item && item.isNew ? <HeaderNavNewBadge variant="inline" /> : null}
             </Link>
           </li>
         ))}
@@ -191,7 +195,7 @@ function MobileNavSheet({
           <li key={item.href}>
             <Link href={item.href} className="vysiongids-mobile-nav-link" onClick={onClose}>
               {item.label}
-              {'isNew' in item && item.isNew ? <HeaderNavNewBadge inline /> : null}
+              {'isNew' in item && item.isNew ? <HeaderNavNewBadge variant="inline" /> : null}
             </Link>
           </li>
         ))}
