@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { resolveListingActionIntentAsync } from '@/lib/gids-listing-action-intent'
-import { getAllListings } from '@/lib/listings'
+import { getListingsForVoiceAction } from '@/lib/listings'
 
 export const revalidate = 60
 
@@ -17,7 +17,7 @@ export async function GET(request: Request) {
       ? { lat: nearLat, lng: nearLng }
       : undefined
 
-  const listings = await getAllListings()
+  const listings = await getListingsForVoiceAction()
   const intent = await resolveListingActionIntentAsync(q, listings, near)
   return NextResponse.json(intent)
 }

@@ -157,6 +157,42 @@ export const LISTING_BROWSE_SELECT = `
   updated_at
 `.replace(/\s+/g, ' ')
 
+const LISTING_VOICE_SELECT = `
+  id,
+  slug,
+  name,
+  type,
+  city,
+  postcode,
+  province,
+  address,
+  order_url,
+  lat,
+  lng,
+  status,
+  listing_segment
+`.replace(/\s+/g, ' ')
+
+const LISTING_JOBS_SELECT = `
+  id,
+  slug,
+  name,
+  type,
+  city,
+  postcode,
+  province,
+  address,
+  phone,
+  email,
+  info_extras,
+  premium_member,
+  premium_paused,
+  premium_expires_at,
+  updated_at,
+  status,
+  listing_segment
+`.replace(/\s+/g, ' ')
+
 const LISTING_PUBLIC_SELECT = `
   ${PUBLIC_LISTING_COLUMNS},
   gids_listing_photos ( sort_order, public_url )
@@ -360,6 +396,58 @@ export async function fetchPublishedListingsFromDb(
     rows = rows.filter((l) => l.dienstenActive)
   }
   return rows
+}
+
+function mapLightRowToListing(row: GidsListingRow): Listing {
+  return mapGidsRowToListing({ ...row, gids_listing_photos: [] })
+}
+
+/** Spraak/intent: alle horeca-namen — geen foto’s, geen zware velden. */
+export async function fetchPublishedHorecaListingsForVoiceFromDb(): Promise<Listing[] | null> {
+  if (!isGidsSupabaseConfigured()) return null
+  const supabase = createGidsSupabasePublic()
+  if (!supabase) return null
+
+  const { data, error } = await supabase
+    .from('gids_listings')
+    .select(LISTING_VOICE_SELECT)
+    .eq('status', 'published')
+    .or('listing_segment.is.null,listing_segment.eq.horeca')
+    .order('name')
+
+  if (error) {
+    console.error('[gids] voice listings:', error.message)
+    return null
+  }
+
+  const rows = (data ?? []) as unknown as GidsListingRow[]
+  return rows.map(mapLightRowToListing)
+}
+
+/** Jobs-pagina: premium + actieve vacature in DB voorfilter, daarna JS-validatie. */
+export async function fetchPublishedJobListingsFromDb(): Promise<Listing[] | null> {
+  if (!isGidsSupabaseConfigured()) return null
+  const supabase = createGidsSupabasePublic()
+  if (!supabase) return null
+
+  let query = supabase
+    .from('gids_listings')
+    .select(LISTING_JOBS_SELECT)
+    .eq('status', 'published')
+    .or('listing_segment.is.null,listing_segment.eq.horeca')
+    .eq('premium_member', true)
+    .or('premium_paused.is.null,premium_paused.eq.false')
+    .filter('info_extras->hiring->>enabled', 'eq', 'true')
+
+  const { data, error } = await query.order('name')
+
+  if (error) {
+    console.error('[gids] job listings:', error.message)
+    return null
+  }
+
+  const rows = (data ?? []) as unknown as GidsListingRow[]
+  return rows.map(mapLightRowToListing)
 }
 
 /** Homepage «in de kijker» — geen volledige catalogus laden. */

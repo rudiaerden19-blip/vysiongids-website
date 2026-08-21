@@ -1,7 +1,7 @@
 import listingsJson from '../../data/listings.json'
 import type { Listing, ListingSearchParams, ListingTypeId } from '@/lib/listing-types'
 import { LISTING_TYPES } from '@/lib/listing-types'
-import { fetchListingBySlugFromDb, fetchFeaturedHorecaListingsFromDb, fetchPublishedHorecaListingCountFromDb, fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
+import { fetchListingBySlugFromDb, fetchFeaturedHorecaListingsFromDb, fetchPublishedHorecaListingCountFromDb, fetchPublishedHorecaListingsForVoiceFromDb, fetchPublishedJobListingsFromDb, fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
 import {
   fetchHorecaListingsForSearchFromDb,
   GIDS_SEARCH_DB_PREFETCH_MAX,
@@ -13,6 +13,8 @@ import { parseListingSearchQuery, listingMatchesParsedSearch } from '@/lib/gids-
 import { isHorecaListing } from '@/lib/listing-segment'
 import { compareListingsByName } from '@/lib/listing-alphabetical-sort'
 import { listingDistanceKmFrom } from '@/lib/listing-display'
+import { listingHiringIsActive } from '@/lib/listing-hiring'
+import { listingHasGidsPremium } from '@/lib/gids-premium'
 import { unstable_cache } from 'next/cache'
 
 export {
@@ -74,6 +76,49 @@ export async function getAllListings(): Promise<Listing[]> {
   return loadListings()
 }
 
+function jsonHorecaListings(): Listing[] {
+  return jsonFallback.filter(isHorecaListing)
+}
+
+export function jsonHorecaListingCount(): number {
+  return jsonHorecaListings().length
+}
+
+function mergeVoiceListingsWithJson(fromDb: Listing[]): Listing[] {
+  const bySlug = new Map<string, Listing>()
+  for (const listing of jsonHorecaListings()) bySlug.set(listing.slug, listing)
+  for (const listing of fromDb) bySlug.set(listing.slug, listing)
+  return Array.from(bySlug.values())
+}
+
+/** Lichte catalogus voor spraakherkenning & intent (geen volledige DB-load). */
+export async function getListingsForVoiceAction(): Promise<Listing[]> {
+  return unstable_cache(
+    async () => {
+      const fromDb = await fetchPublishedHorecaListingsForVoiceFromDb()
+      if (fromDb) return mergeVoiceListingsWithJson(fromDb)
+      return jsonHorecaListings()
+    },
+    ['gids-voice-listings'],
+    { revalidate: 300, tags: ['gids-listings'] },
+  )()
+}
+
+/** Vacatures — alleen premium + hiring uit Supabase (geen foto’s / volledige catalogus). */
+export async function getJobListings(): Promise<Listing[]> {
+  return unstable_cache(
+    async () => {
+      const fromDb = await fetchPublishedJobListingsFromDb()
+      const pool = fromDb ?? jsonHorecaListings()
+      return pool.filter(
+        (l) => listingHasGidsPremium(l.premiumMember) && listingHiringIsActive(l.infoExtras?.hiring),
+      )
+    },
+    ['gids-job-listings'],
+    { revalidate: 60, tags: ['gids-listings'] },
+  )()
+}
+
 export async function getListingBySlug(slug: string): Promise<Listing | undefined> {
   return unstable_cache(
     async () => {
@@ -95,8 +140,7 @@ export async function getFeaturedListings(limit = 4): Promise<Listing[]> {
   )()
   if (fromDb?.length) return fromDb.slice(0, limit)
 
-  const all = await getAllListings()
-  const horecaOnly = all.filter(isHorecaListing)
+  const horecaOnly = jsonHorecaListings()
   if (horecaOnly.length === 0) return []
 
   const withReviews = [...horecaOnly]
