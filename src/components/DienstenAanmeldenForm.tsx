@@ -274,7 +274,7 @@ export default function DienstenAanmeldenForm() {
         disabled={loading}
         className="rounded-xl bg-accent px-8 py-3 font-bold text-white hover:bg-accent/90 disabled:opacity-60"
       >
-        {loading ? 'Bezig…' : 'Registreren en betalen (€99/jaar)'}
+        {loading ? 'Bezig…' : process.env.NEXT_PUBLIC_GIDS_DIENSTEN_SKIP_PAYMENT === '1' ? 'Registreren (test)' : 'Registreren en betalen (€99/jaar)'}
       </button>
     </form>
   )

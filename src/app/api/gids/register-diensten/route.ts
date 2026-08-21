@@ -12,7 +12,7 @@ import { siteOriginFromRequest, uploadGidsListingPhoto, ensureGidsPhotosBucket }
 import { geocodeListingAddress } from '@/lib/gids-listing-geocode'
 import { enforceRateLimit } from '@/lib/gids-rate-limit'
 import { grantDienstenMembershipDevByIdAdmin } from '@/lib/gids-diensten-db'
-import { gidsDienstenStripeConfigured, gidsDienstenUnitAmountCents } from '@/lib/gids-diensten-stripe'
+import { gidsDienstenRequiresCheckout, gidsDienstenUnitAmountCents } from '@/lib/gids-diensten-stripe'
 
 export const maxDuration = 60
 
@@ -70,8 +70,8 @@ async function handleRegisterDienstenPost(req: Request) {
     city: d.city,
   })
 
-  const stripeReady = gidsDienstenStripeConfigured()
-  const initialStatus = stripeReady ? 'hidden' : 'published'
+  const requireCheckout = gidsDienstenRequiresCheckout()
+  const initialStatus = requireCheckout ? 'hidden' : 'published'
 
   const { data: inserted, error: insertErr } = await admin
     .from('gids_listings')
@@ -105,7 +105,7 @@ async function handleRegisterDienstenPost(req: Request) {
     return NextResponse.json({ error: `Foto upload mislukt. ${message}` }, { status: 500 })
   }
 
-  if (!stripeReady) {
+  if (!requireCheckout) {
     await grantDienstenMembershipDevByIdAdmin(inserted.id)
     revalidateTag('gids-listings', 'max')
     revalidatePath('/diensten')
