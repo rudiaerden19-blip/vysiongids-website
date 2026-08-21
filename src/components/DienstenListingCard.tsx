@@ -110,7 +110,7 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
                 className="vysiongids-diensten-action-btn vysiongids-diensten-action-btn--website"
                 title={websiteAction.label}
               >
-                {websiteAction.label}
+                Website
               </a>
             ) : null}
           </div>
