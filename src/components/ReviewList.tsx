@@ -1,4 +1,5 @@
 import type { GidsReview } from '@/lib/gids-reviews-db'
+import { formatReviewCommentText } from '@/lib/gids-text'
 
 function formatReviewDate(iso: string): string {
   try {
@@ -28,7 +29,7 @@ export default function ReviewList({ reviews }: { reviews: GidsReview[] }) {
             <span className="font-semibold text-gray-900">{r.reviewerName?.trim() || 'Gast'}</span>
             <span className="text-xs text-gray-500">{formatReviewDate(r.createdAt)}</span>
           </div>
-          <p className="mt-2 text-sm leading-relaxed text-gray-700">{r.body}</p>
+          <p className="mt-2 text-sm leading-relaxed text-gray-700">{formatReviewCommentText(r.body)}</p>
         </li>
       ))}
     </ul>

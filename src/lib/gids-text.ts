@@ -90,16 +90,35 @@ export function formatReviewCommentText(input: string): string {
   return formatGidsSentenceText(input.replace(/\s+/g, ' ').trim())
 }
 
+/** Eerste letter (a–z, incl. accenten) vanaf `start` hoofdletter maken. */
+function capitalizeFirstLetterFrom(input: string, start: number): string {
+  for (let i = Math.max(0, start); i < input.length; i++) {
+    const ch = input[i]!
+    if (/[a-zà-ÿ]/i.test(ch)) {
+      return input.slice(0, i) + ch.toUpperCase() + input.slice(i + 1)
+    }
+  }
+  return input
+}
+
 /**
  * Lopende tekst / omschrijving: hoofdletter aan start, na zinspunt en aan begin van nieuwe regel.
+ * Leestekens aan het begin (b.v. * of ") tellen niet mee — de eerste echte letter wordt hoofdletter.
  * Behoudt regeleinden.
  */
 export function formatGidsSentenceText(input: string): string {
   if (!input) return input
   let s = input.replace(/\r\n/g, '\n')
-  s = s.replace(/^([\s\n]*)(\S)/, (_, lead, ch) => `${lead}${ch.toUpperCase()}`)
-  s = s.replace(/(\n[\s]*)(\S)/g, (_, lead, ch) => `${lead}${ch.toUpperCase()}`)
-  s = s.replace(/([.!?…])([\s\n]+)(\S)/g, (_, punct, ws, ch) => `${punct}${ws}${ch.toUpperCase()}`)
+  s = capitalizeFirstLetterFrom(s, 0)
+  for (let i = 0; i < s.length; i++) {
+    if (s[i] === '\n') {
+      s = capitalizeFirstLetterFrom(s, i + 1)
+    } else if (/[.!?…]/.test(s[i]!)) {
+      let j = i + 1
+      while (j < s.length && /[\s]/.test(s[j]!)) j++
+      s = capitalizeFirstLetterFrom(s, j)
+    }
+  }
   return s
 }
 
