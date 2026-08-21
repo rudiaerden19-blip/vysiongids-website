@@ -5012,41 +5012,27 @@ body {
   gap: 1.25rem;
 }
 
-/* Dienstenkaart: foto vult het hele vak (cover, zoals horeca) */
-.vysiongids-diensten-listing-panel .vysiongids-listing-panel-row {
-  align-items: stretch;
+/* Dienstenkaart: zelfde fotovak als frituren (grid + stretch), volledige foto zichtbaar */
+.vysiongids-diensten-listing-panel .vysiongids-listing-panel-photo {
+  background: #fff;
 }
 
-@media (min-width: 640px) {
-  .vysiongids-diensten-listing-panel .vysiongids-listing-panel-row {
-    grid-template-columns: min(48%, 30rem) minmax(0, 1fr);
-  }
-}
-
-.vysiongids-diensten-panel-photo {
-  background: #1f2937;
-  aspect-ratio: 4 / 3;
-}
-
-@media (min-width: 640px) {
-  .vysiongids-diensten-listing-panel .vysiongids-diensten-panel-photo {
-    height: 100%;
-    min-height: 100%;
-    aspect-ratio: auto;
-    align-self: stretch;
-  }
-}
-
-.vysiongids-diensten-panel-photo .vysiongids-listing-photo-slider {
-  position: absolute;
-  inset: 0;
-  height: 100%;
-  min-height: 0;
-}
-
-.vysiongids-diensten-panel-photo img {
-  object-fit: cover !important;
+.vysiongids-diensten-listing-panel .vysiongids-listing-panel-photo img {
+  object-fit: contain !important;
   object-position: center center !important;
+}
+
+@media (max-width: 639px) {
+  .vysiongids-diensten-listing-panel .vysiongids-listing-panel-photo {
+    aspect-ratio: 1 / 1;
+    min-height: min(100vw, 22rem);
+  }
+}
+
+@media (min-width: 640px) {
+  .vysiongids-diensten-listing-panel .vysiongids-listing-panel-photo {
+    min-height: 18rem;
+  }
 }
 
 .vysiongids-diensten-verified-bar .vysiongids-listing-panel-hiring-inner {
