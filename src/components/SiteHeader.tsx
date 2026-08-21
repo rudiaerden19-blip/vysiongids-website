@@ -136,6 +136,7 @@ function HeaderNavLinks({
 }
 
 const MOBILE_NAV_LINKS = [
+  { href: '/', label: 'Home' },
   { href: '/jobs', label: 'Jobs', isNew: true },
   { href: '/zoekertjes', label: 'Zoekertjes', isNew: true },
   { href: '/diensten', label: 'Diensten', isNew: true },
@@ -167,7 +168,7 @@ function MobileNavSheet({
         </button>
       </div>
       <ul className="vysiongids-mobile-nav-list">
-        {MOBILE_NAV_LINKS.slice(0, 2).map((item) => (
+        {MOBILE_NAV_LINKS.slice(0, 3).map((item) => (
           <li key={item.href}>
             <Link href={item.href} className="vysiongids-mobile-nav-link" onClick={onClose}>
               {item.label}
@@ -185,7 +186,7 @@ function MobileNavSheet({
             Reserveringen
           </button>
         </li>
-        {MOBILE_NAV_LINKS.slice(2).map((item) => (
+        {MOBILE_NAV_LINKS.slice(3).map((item) => (
           <li key={item.href}>
             <Link href={item.href} className="vysiongids-mobile-nav-link" onClick={onClose}>
               {item.label}
