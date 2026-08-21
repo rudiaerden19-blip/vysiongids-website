@@ -5605,6 +5605,7 @@ body {
   display: flex;
   align-items: center;
   gap: 0.35rem;
+  margin-top: 0.1rem;
   font-size: 0.9375rem;
   font-weight: 700;
   color: #111827;

@@ -15,6 +15,8 @@ export type GidsChatThreadSummary = {
   peerSlug: string
   /** Korte contexttitel (zoekertje-titel of leveranciersnaam) */
   contextTitle: string
+  /** Extra regel: categorie/soort/prijs (zoekertje) of null */
+  contextMeta: string | null
   unread: boolean
   lastMessagePreview: string | null
 }

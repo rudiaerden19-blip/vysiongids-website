@@ -50,9 +50,10 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
 
   const sendMessage = useCallback(
     async (text: string) => {
-      if (!threadId || sending) return
+      if (!threadId || sendingRef.current) return
       const body = text.trim()
       if (!body) return
+      sendingRef.current = true
       setSending(true)
       try {
         const r = await fetch(`/api/gids/chat/threads/${encodeURIComponent(threadId)}/messages`, {
@@ -77,10 +78,11 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
         setDraft('')
         await refresh({ silent: true })
       } finally {
+        sendingRef.current = false
         setSending(false)
       }
     },
-    [refresh, sending, threadId],
+    [refresh, threadId],
   )
 
   useEffect(() => {
@@ -145,11 +147,17 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
         </button>
         {detail ? (
           <>
-            <p className="vysiongids-gids-chat-kicker">Chat · {detail.contextTitle}</p>
-            <h2 className="vysiongids-gids-chat-title">
-              {detail.peerName}
+            <p className="vysiongids-gids-chat-kicker">
+              {detail.contextType === 'zoekertje' ? 'Zoekertje' : 'Leveranciersprofiel'}
+            </p>
+            <h2 className="vysiongids-gids-chat-title">{detail.contextTitle}</h2>
+            {detail.contextMeta ? (
+              <p className="vysiongids-gids-chat-context-meta">{detail.contextMeta}</p>
+            ) : null}
+            <p className="vysiongids-gids-chat-peer-line">
+              Met {detail.peerName}
               <span className="vysiongids-gids-chat-city"> · {detail.peerCity}</span>
-            </h2>
+            </p>
           </>
         ) : (
           <h2 className="vysiongids-gids-chat-title">

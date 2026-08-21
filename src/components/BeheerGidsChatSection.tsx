@@ -8,6 +8,10 @@ type Props = {
   initialThreadId?: string | null
 }
 
+function inboxContextKicker(t: GidsChatThreadSummary): string {
+  return t.contextType === 'zoekertje' ? 'Zoekertje' : 'Leveranciersprofiel'
+}
+
 export default function BeheerGidsChatSection({ initialThreadId }: Props) {
   const [threads, setThreads] = useState<GidsChatThreadSummary[]>([])
   const [loadError, setLoadError] = useState<string | null>(null)
@@ -126,12 +130,16 @@ export default function BeheerGidsChatSection({ initialThreadId }: Props) {
                 setModalOpen(true)
               }}
             >
+              <span className="vysiongids-gids-chat-inbox-kicker">{inboxContextKicker(t)}</span>
               <span className="vysiongids-gids-chat-inbox-title">
                 {t.contextTitle}
                 {t.unread ? <span className="vysiongids-gids-chat-unread-dot" aria-label="Ongelezen" /> : null}
               </span>
+              {t.contextMeta ? (
+                <span className="vysiongids-gids-chat-inbox-meta">{t.contextMeta}</span>
+              ) : null}
               <span className="vysiongids-gids-chat-inbox-peer">
-                {t.peerName} · {t.peerCity}
+                Van {t.peerName} · {t.peerCity}
               </span>
               {t.lastMessagePreview ? (
                 <span className="vysiongids-gids-chat-inbox-preview">{t.lastMessagePreview}</span>

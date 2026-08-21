@@ -1,4 +1,6 @@
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
+import { formatGidsZoekertjePriceDisplay } from '@/lib/gids-zoekertjes-price'
+import { zoekertjeCategoryLabel } from '@/lib/gids-zoekertjes-categories'
 import type {
   GidsChatMessage,
   GidsChatThreadDetail,
@@ -58,17 +60,34 @@ async function fetchListingBriefsByIds(ids: string[]): Promise<Map<string, Listi
   return map
 }
 
-async function fetchZoekertjeTitlesByIds(ids: string[]): Promise<Map<string, string>> {
-  const map = new Map<string, string>()
+type ZoekertjeContextBrief = {
+  title: string
+  meta: string | null
+}
+
+async function fetchZoekertjeContextByIds(ids: string[]): Promise<Map<string, ZoekertjeContextBrief>> {
+  const map = new Map<string, ZoekertjeContextBrief>()
   const unique = [...new Set(ids.filter(Boolean))]
   if (unique.length === 0) return map
 
   const admin = createGidsSupabaseAdmin()
   if (!admin) return map
 
-  const { data } = await admin.from('gids_zoekertjes').select('id, title').in('id', unique)
+  const { data } = await admin
+    .from('gids_zoekertjes')
+    .select('id, title, category, kind, price_class')
+    .in('id', unique)
   for (const row of data ?? []) {
-    map.set(row.id as string, String(row.title ?? '').trim() || 'Zoekertje')
+    const id = row.id as string
+    const title = String(row.title ?? '').trim() || 'Zoekertje'
+    const parts: string[] = []
+    const cat = zoekertjeCategoryLabel(String(row.category ?? ''))
+    if (cat) parts.push(cat)
+    const kind = String(row.kind ?? '').trim()
+    if (kind) parts.push(kind)
+    const price = formatGidsZoekertjePriceDisplay(String(row.price_class ?? ''))
+    if (price) parts.push(price)
+    map.set(id, { title, meta: parts.length ? parts.join(' · ') : null })
   }
   return map
 }
@@ -137,11 +156,17 @@ async function fetchUnreadFlagsByThreadIds(
   return map
 }
 
-function contextTitleFromMaps(row: ThreadRow, zoekTitles: Map<string, string>, listings: Map<string, ListingBrief>): string {
+function contextFromMaps(
+  row: ThreadRow,
+  zoekCtx: Map<string, ZoekertjeContextBrief>,
+  listings: Map<string, ListingBrief>,
+): { title: string; meta: string | null } {
   if (row.context_type === 'zoekertje') {
-    return zoekTitles.get(row.context_id) ?? 'Zoekertje'
+    const z = zoekCtx.get(row.context_id)
+    return { title: z?.title ?? 'Zoekertje', meta: z?.meta ?? null }
   }
-  return listings.get(row.context_id)?.name ?? 'Leverancier'
+  const name = listings.get(row.context_id)?.name ?? 'Leverancier'
+  return { title: name, meta: 'Leveranciersprofiel' }
 }
 
 async function mapThreadSummariesBatch(rows: ThreadRow[], myListingId: string): Promise<GidsChatThreadSummary[]> {
@@ -155,9 +180,9 @@ async function mapThreadSummariesBatch(rows: ThreadRow[], myListingId: string): 
   const threadIds = rows.map((r) => r.id)
 
   const listingIds = [...new Set([...peerIds, ...dienstenIds])]
-  const [listings, zoekTitles, lastMsgs, unreadMap] = await Promise.all([
+  const [listings, zoekCtx, lastMsgs, unreadMap] = await Promise.all([
     fetchListingBriefsByIds(listingIds),
-    fetchZoekertjeTitlesByIds(zoekIds),
+    fetchZoekertjeContextByIds(zoekIds),
     fetchLastMessagesByThreadIds(threadIds),
     fetchUnreadFlagsByThreadIds(threadIds, myListingId),
   ])
@@ -168,6 +193,7 @@ async function mapThreadSummariesBatch(rows: ThreadRow[], myListingId: string): 
     const peer = listings.get(peerId)
     if (!peer) continue
     const last = lastMsgs.get(row.id)
+    const ctx = contextFromMaps(row, zoekCtx, listings)
     out.push({
       id: row.id,
       contextType: row.context_type as GidsChatThreadSummary['contextType'],
@@ -180,7 +206,8 @@ async function mapThreadSummariesBatch(rows: ThreadRow[], myListingId: string): 
       peerName: peer.name,
       peerCity: peer.city,
       peerSlug: peer.slug,
-      contextTitle: contextTitleFromMaps(row, zoekTitles, listings),
+      contextTitle: ctx.title,
+      contextMeta: ctx.meta,
       unread: unreadMap.get(row.id) ?? false,
       lastMessagePreview: last ? last.body.slice(0, 120) : null,
     })
@@ -284,9 +311,11 @@ export async function fetchGidsChatThreadDetailAdmin(
 
   const listingsPromise = fetchListingBriefsByIds([peerId, ...(t.context_type === 'diensten_listing' ? [t.context_id] : [])])
   const zoekPromise =
-    t.context_type === 'zoekertje' ? fetchZoekertjeTitlesByIds([t.context_id]) : Promise.resolve(new Map<string, string>())
+    t.context_type === 'zoekertje'
+      ? fetchZoekertjeContextByIds([t.context_id])
+      : Promise.resolve(new Map<string, ZoekertjeContextBrief>())
 
-  const [messagesResult, listings, zoekTitles] = await Promise.all([messagesPromise, listingsPromise, zoekPromise])
+  const [messagesResult, listings, zoekCtx] = await Promise.all([messagesPromise, listingsPromise, zoekPromise])
 
   if (messagesResult.error) {
     return { ok: false, error: friendlyGidsChatDbError(messagesResult.error.message), status: 500 }
@@ -295,10 +324,7 @@ export async function fetchGidsChatThreadDetailAdmin(
   const peer = listings.get(peerId)
   if (!peer) return { ok: false, error: 'Gesprek kon niet geladen worden.', status: 500 }
 
-  const contextTitle =
-    t.context_type === 'zoekertje'
-      ? (zoekTitles.get(t.context_id) ?? 'Zoekertje')
-      : (listings.get(t.context_id)?.name ?? 'Leverancier')
+  const ctx = contextFromMaps(t, zoekCtx, listings)
 
   const mappedMessages: GidsChatMessage[] = (messagesResult.data ?? []).map((m) => {
     const msg = m as MessageRow
@@ -330,7 +356,8 @@ export async function fetchGidsChatThreadDetailAdmin(
       peerName: peer.name,
       peerCity: peer.city,
       peerSlug: peer.slug,
-      contextTitle,
+      contextTitle: ctx.title,
+      contextMeta: ctx.meta,
       unread: false,
       lastMessagePreview: mappedMessages.length
         ? mappedMessages[mappedMessages.length - 1]!.body.slice(0, 120)
