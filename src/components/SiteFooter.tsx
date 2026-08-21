@@ -4,6 +4,7 @@ import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { useState } from 'react'
 import GidsContactModal from '@/components/GidsContactModal'
+import GidsPrivacyModal from '@/components/GidsPrivacyModal'
 
 const FOOTER_CITIES = [
   'Brussel',
@@ -33,10 +34,10 @@ function SocialIcon({ label, href, children }: { label: string; href: string; ch
   )
 }
 
-function FooterContactLink({ onOpen }: { onOpen: () => void }) {
+function FooterModalLink({ children, onOpen }: { children: ReactNode; onOpen: () => void }) {
   return (
     <button type="button" className="vysiongids-site-footer-contact-btn" onClick={onOpen}>
-      Contact
+      {children}
     </button>
   )
 }
@@ -44,6 +45,7 @@ function FooterContactLink({ onOpen }: { onOpen: () => void }) {
 export default function SiteFooter() {
   const year = new Date().getFullYear()
   const [contactOpen, setContactOpen] = useState(false)
+  const [privacyOpen, setPrivacyOpen] = useState(false)
 
   return (
     <>
@@ -71,10 +73,10 @@ export default function SiteFooter() {
                   <a href="https://www.vysionorder.com/contact">Werken bij Vysion</a>
                 </li>
                 <li>
-                  <a href="https://www.vysionorder.com/privacy">Privacy Policy</a>
+                  <FooterModalLink onOpen={() => setPrivacyOpen(true)}>Privacy Policy</FooterModalLink>
                 </li>
                 <li>
-                  <FooterContactLink onOpen={() => setContactOpen(true)} />
+                  <FooterModalLink onOpen={() => setContactOpen(true)}>Contact</FooterModalLink>
                 </li>
                 <li>
                   <a href="https://www.vysionorder.com/help">Help</a>
@@ -103,7 +105,7 @@ export default function SiteFooter() {
                   <Link href="/login">Inloggen</Link>
                 </li>
                 <li>
-                  <FooterContactLink onOpen={() => setContactOpen(true)} />
+                  <FooterModalLink onOpen={() => setContactOpen(true)}>Contact</FooterModalLink>
                 </li>
                 <li>
                   <Link href="/zaak-toevoegen">Publiciteit op Vysiongids</Link>
@@ -142,6 +144,7 @@ export default function SiteFooter() {
         </div>
       </footer>
       <GidsContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
+      <GidsPrivacyModal open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
     </>
   )
 }
