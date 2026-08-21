@@ -111,6 +111,23 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
               ruimschoots bewezen.
             </p>
           </div>
+          <div className="vysiongids-zaak-intro-promo">
+            <h3 className="vysiongids-zaak-intro-promo-title">Hoe klanten jou vinden</h3>
+            <p className="vysiongids-zaak-intro-promo-text">
+              De klant kan jou zoeken op <strong>frituur nu open</strong>, <strong>frituur in de buurt</strong> of op jouw
+              naam, enz. Zeer veel klanten gebruiken nu al de Vysiongids.
+            </p>
+            <p className="vysiongids-zaak-intro-promo-text">
+              Op jouw zaakkaart staat ook de QR-code naar jouw kaart. Je kan die afdrukken en op je toonbank plaatsen of op
+              je verpakkingen laten drukken, zodat klanten rechtstreeks bij jou bestellen en niet via platformen waar je
+              commissie moet betalen.
+            </p>
+            <p className="vysiongids-zaak-intro-promo-text">
+              Je kan je zaak ook vanboven op de website <strong>in de kijker</strong> plaatsen of een{' '}
+              <strong>promotie van de week</strong> toevoegen. Niets is te gek: Vysiongids kan meegroeien met wat jij voor
+              je zaak wilt bereiken.
+            </p>
+          </div>
           <p className="vysiongids-zaak-intro-lead">
             Voordat je je zaak online zet in Vysiongids, lees onderstaande punten. Zo blijft de gids betrouwbaar voor
             klanten en voor alle horeca-zaken in België.
