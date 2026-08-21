@@ -115,7 +115,7 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
             <h3 className="vysiongids-zaak-intro-promo-title">Hoe klanten jou vinden</h3>
             <p className="vysiongids-zaak-intro-promo-text">
               De klant kan jou zoeken op <strong>frituur nu open</strong>, <strong>frituur in de buurt</strong> of op jouw
-              naam, enz. Zeer veel klanten gebruiken nu al de Vysiongids.
+              naam, enz. Meer dan 3000 klanten gebruiken nu al iedere dag de Vysiongids.
             </p>
             <p className="vysiongids-zaak-intro-promo-text">
               Op jouw zaakkaart staat ook de QR-code naar jouw kaart. Je kan die afdrukken en op je toonbank plaatsen of op
