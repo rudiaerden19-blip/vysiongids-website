@@ -3484,6 +3484,25 @@ body {
   text-decoration: underline;
 }
 
+.vysiongids-site-footer-contact-btn {
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  font: inherit;
+  cursor: pointer;
+  color: rgb(255 255 255 / 0.82);
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  text-decoration: none;
+  text-align: left;
+}
+
+.vysiongids-site-footer-contact-btn:hover {
+  color: #fff;
+  text-decoration: underline;
+}
+
 .vysiongids-site-footer-socials {
   display: flex;
   flex-wrap: wrap;
