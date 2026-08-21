@@ -10,7 +10,7 @@ export default function DienstenAanmeldenPage() {
     <>
       <SiteHeader />
       <main className="vysiongids-page-wrap mx-auto max-w-2xl">
-        <h1 className="text-2xl font-bold text-gray-900">Jouw dienstenprofiel toevoegen</h1>
+        <h1 className="text-2xl font-bold text-gray-900">Jouw leveranciersprofiel toevoegen</h1>
         <p className="mt-2 text-sm text-gray-600">
           Alleen voor leveranciers en diensten — geen horecazaak.{' '}
           <Link href="/diensten" className="font-semibold text-accent hover:underline">

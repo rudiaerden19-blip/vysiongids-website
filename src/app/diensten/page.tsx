@@ -21,7 +21,7 @@ export default async function DienstenPage() {
         </p>
         <p className="vysiongids-diensten-page-cta-wrap">
           <Link href="/diensten/aanmelden" className="vysiongids-header-nav-cta vysiongids-diensten-page-cta">
-            Jouw dienstenprofiel toevoegen — €99/jaar
+            Jouw leveranciersprofiel toevoegen — €99/jaar
           </Link>
         </p>
 
