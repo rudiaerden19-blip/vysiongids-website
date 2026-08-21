@@ -133,6 +133,7 @@ export const LISTING_BROWSE_SELECT = `
   closed_days,
   hours_by_day,
   amenities,
+  info_extras,
   rating_avg,
   rating_count,
   delivery_time_min,
