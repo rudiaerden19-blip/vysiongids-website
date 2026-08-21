@@ -22,7 +22,6 @@ import {
 import ListingMenuButton from '@/components/ListingMenuButton'
 import ZaakInfoTopLink from '@/components/ZaakInfoTopLink'
 import { getCachedListingIdBySlug, getCachedReviewsByListingSlug } from '@/lib/gids-reviews-cache'
-import { getCachedPublishedGidsZoekertjesByListingId } from '@/lib/gids-zoekertjes-public-cache'
 import { resolveListingMapPin } from '@/lib/gids-listing-geocode'
 import { isDienstenListing } from '@/lib/listing-segment'
 
@@ -57,13 +56,10 @@ export default async function ZaakPage({ params }: Props) {
   const deliveryFeeLabel = formatDeliveryFee(listing)
   const deliveryRadiusLabel = formatDeliveryRadius(listing)
   const { street, cityLine } = formatListingAddressLines(listing)
-  const [reviews, listingId] = await Promise.all([
+  const [reviews, canSubmitReview] = await Promise.all([
     getCachedReviewsByListingSlug(slug, 5).then((r) => r ?? []),
-    getCachedListingIdBySlug(slug),
+    getCachedListingIdBySlug(slug).then(Boolean),
   ])
-  const canSubmitReview = Boolean(listingId)
-  const zaakZoekertjes =
-    listingId != null ? (await getCachedPublishedGidsZoekertjesByListingId(listingId)) ?? [] : []
   const listingForRating = listing
   const reviewsHref = `/zaak/${slug}/reviews`
 
@@ -139,7 +135,7 @@ export default async function ZaakPage({ params }: Props) {
           </aside>
 
           <div className="vysiongids-zaak-body">
-            <ListingInfoSection listing={listingForRating} zoekertjes={zaakZoekertjes} />
+            <ListingInfoSection listing={listingForRating} />
 
             <ListingMap listing={listingForRating} mapPin={mapPin} />
 

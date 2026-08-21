@@ -1,19 +1,15 @@
-import ListingInfoZoekertjesSection from '@/components/ListingInfoZoekertjesSection'
 import type { Listing } from '@/lib/listing-types'
 import { belgiumPhoneTelHref } from '@/lib/belgium-phone'
 import { listingHasInfoExtras } from '@/lib/listing-info-extras'
 import { hiringJobTypeLabels } from '@/lib/listing-hiring'
-import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
 
 type Props = {
   listing: Listing
-  zoekertjes?: GidsZoekertje[]
 }
 
-export default function ListingInfoExtrasSections({ listing, zoekertjes = [] }: Props) {
+export default function ListingInfoExtrasSections({ listing }: Props) {
   const extras = listing.infoExtras
-  const hasZoekertjes = zoekertjes.length > 0
-  if (!listingHasInfoExtras(extras) && !hasZoekertjes) return null
+  if (!listingHasInfoExtras(extras)) return null
 
   const specialties = extras?.specialties?.filter((s) => s.caption || s.imageUrl) ?? []
   const hiring = extras?.hiring?.enabled ? extras.hiring : null
@@ -94,10 +90,6 @@ export default function ListingInfoExtrasSections({ listing, zoekertjes = [] }: 
             ) : null}
           </div>
         </section>
-      ) : null}
-
-      {hasZoekertjes ? (
-        <ListingInfoZoekertjesSection listingName={listing.name} zoekertjes={zoekertjes} />
       ) : null}
 
       {gift ? (
