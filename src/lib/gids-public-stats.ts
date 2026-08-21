@@ -2,6 +2,12 @@
 
 export const STATS_ACTIVE_ONDERNEMERS_FLOOR = 284
 
+/** Publiek getoonde horeca-telling: min. vloer, daarna mee met echte groei (285, 286, …). */
+export function publicHorecaZakenDisplayCount(actualCount: number): number {
+  const n = Math.max(0, Math.floor(actualCount))
+  return Math.max(n, STATS_ACTIVE_ONDERNEMERS_FLOOR)
+}
+
 export const STATS_SEARCH_BASE = 3240
 
 const STATS_SEARCH_LAUNCH_KEY = '2026-08-15'

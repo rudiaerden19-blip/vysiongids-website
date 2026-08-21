@@ -204,6 +204,23 @@ export async function fetchPublishedListingCountFromDb(): Promise<number> {
   return count ?? 0
 }
 
+/** Gepubliceerde horeca-zaken (geen diensten/leveranciers). */
+export async function fetchPublishedHorecaListingCountFromDb(): Promise<number> {
+  if (!isGidsSupabaseConfigured()) return 0
+  const supabase = createGidsSupabasePublic()
+  if (!supabase) return 0
+  const { count, error } = await supabase
+    .from('gids_listings')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'published')
+    .or('listing_segment.is.null,listing_segment.eq.horeca')
+  if (error) {
+    console.error('[gids] count horeca listings:', error.message)
+    return 0
+  }
+  return count ?? 0
+}
+
 export async function fetchPublishedListingsFromDb(
   filter?: GidsPublishedListingsFilter,
 ): Promise<Listing[] | null> {

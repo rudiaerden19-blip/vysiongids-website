@@ -1,17 +1,21 @@
 import { unstable_cache } from 'next/cache'
-import { fetchPublishedListingCountFromDb } from '@/lib/gids-listings-db'
+import { fetchPublishedHorecaListingCountFromDb, fetchPublishedListingCountFromDb } from '@/lib/gids-listings-db'
 import { getAllListings } from '@/lib/listings'
-import { STATS_ACTIVE_ONDERNEMERS_FLOOR, zoekactiesPerDagDisplay } from '@/lib/gids-public-stats'
+import { isHorecaListing } from '@/lib/listing-segment'
+import { publicHorecaZakenDisplayCount, zoekactiesPerDagDisplay } from '@/lib/gids-public-stats'
 
 const cachedHomeStats = unstable_cache(
   async () => {
-    let activeZaken = await fetchPublishedListingCountFromDb()
+    let activeZaken = await fetchPublishedHorecaListingCountFromDb()
+    if (activeZaken <= 0) {
+      activeZaken = await fetchPublishedListingCountFromDb()
+    }
     if (activeZaken <= 0) {
       const all = await getAllListings()
-      activeZaken = all.length
+      activeZaken = all.filter(isHorecaListing).length
     }
     return {
-      activeZaken: Math.max(activeZaken, STATS_ACTIVE_ONDERNEMERS_FLOOR),
+      activeZaken: publicHorecaZakenDisplayCount(activeZaken),
       zoekactiesPerDag: zoekactiesPerDagDisplay(),
     }
   },
