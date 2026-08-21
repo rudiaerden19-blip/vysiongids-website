@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties } from 'react'
+import { Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, type CSSProperties, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import HeaderLanguagePicker from '@/components/HeaderLanguagePicker'
 import VysionPlatformPromoModal, { type VysionPlatformPromoKind } from '@/components/VysionPlatformPromoModal'
@@ -46,6 +46,33 @@ function setRegionCookie(slug: ProvinceSlug) {
   document.cookie = `${REGION_COOKIE}=${slug};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`
 }
 
+function HeaderNavNewBadge() {
+  return <span className="vysiongids-header-nav-new-badge">nieuw</span>
+}
+
+function HeaderNavLink({
+  href,
+  children,
+  isNew,
+  onNavigate,
+}: {
+  href: string
+  children: ReactNode
+  isNew?: boolean
+  onNavigate?: () => void
+}) {
+  return (
+    <Link
+      href={href}
+      className={isNew ? 'vysiongids-header-nav-link-new' : undefined}
+      onClick={onNavigate}
+    >
+      {isNew ? <HeaderNavNewBadge /> : null}
+      <span>{children}</span>
+    </Link>
+  )
+}
+
 function HeaderNavLinks({
   onNavigate,
   className,
@@ -60,9 +87,9 @@ function HeaderNavLinks({
       <Link href="/jobs" onClick={onNavigate}>
         Jobs
       </Link>
-      <Link href="/zoekertjes" onClick={onNavigate}>
+      <HeaderNavLink href="/zoekertjes" isNew onNavigate={onNavigate}>
         Zoekertjes
-      </Link>
+      </HeaderNavLink>
       <button
         type="button"
         className="vysiongids-header-nav-platform"
@@ -83,9 +110,9 @@ function HeaderNavLinks({
       >
         Reserveringen
       </button>
-      <Link href="/diensten" onClick={onNavigate}>
+      <HeaderNavLink href="/diensten" isNew onNavigate={onNavigate}>
         Diensten
-      </Link>
+      </HeaderNavLink>
       <Link href="/login" onClick={onNavigate}>
         Login
       </Link>
@@ -101,8 +128,8 @@ function HeaderNavLinks({
 
 const MOBILE_NAV_LINKS = [
   { href: '/jobs', label: 'Jobs' },
-  { href: '/zoekertjes', label: 'Zoekertjes' },
-  { href: '/diensten', label: 'Diensten' },
+  { href: '/zoekertjes', label: 'Zoekertjes', isNew: true },
+  { href: '/diensten', label: 'Diensten', isNew: true },
   { href: '/login', label: 'Login' },
 ] as const
 
@@ -135,6 +162,9 @@ function MobileNavSheet({
           <li key={item.href}>
             <Link href={item.href} className="vysiongids-mobile-nav-link" onClick={onClose}>
               {item.label}
+              {'isNew' in item && item.isNew ? (
+                <span className="vysiongids-header-nav-new-badge vysiongids-header-nav-new-badge--inline">nieuw</span>
+              ) : null}
             </Link>
           </li>
         ))}
@@ -152,6 +182,9 @@ function MobileNavSheet({
           <li key={item.href}>
             <Link href={item.href} className="vysiongids-mobile-nav-link" onClick={onClose}>
               {item.label}
+              {'isNew' in item && item.isNew ? (
+                <span className="vysiongids-header-nav-new-badge vysiongids-header-nav-new-badge--inline">nieuw</span>
+              ) : null}
             </Link>
           </li>
         ))}

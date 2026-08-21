@@ -217,6 +217,35 @@ body {
   color: var(--accent);
 }
 
+.vysiongids-header-nav-link-new {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.12rem;
+  padding-top: 0.1rem;
+  vertical-align: top;
+}
+
+.vysiongids-header-nav-new-badge {
+  display: block;
+  padding: 0.05rem 0.35rem;
+  border: 1px solid var(--accent);
+  border-radius: 0.25rem;
+  font-size: 0.5625rem;
+  font-weight: 700;
+  line-height: 1.25;
+  letter-spacing: 0.02em;
+  text-transform: lowercase;
+  color: var(--accent);
+  background: #fff;
+}
+
+.vysiongids-header-nav-new-badge--inline {
+  display: inline-block;
+  margin-left: 0.45rem;
+  vertical-align: middle;
+}
+
 .vysiongids-header-nav-lang {
   display: inline-flex;
   align-items: center;
