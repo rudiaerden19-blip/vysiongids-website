@@ -79,8 +79,8 @@ export default async function ZaakPage({ params }: Props) {
           <span className="text-gray-800">{listing.city}</span>
         </nav>
 
-        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_min(18rem,22vw)] xl:grid-cols-[minmax(0,1fr)_20rem]">
-          <div>
+        <div className="vysiongids-zaak-layout">
+          <div className="vysiongids-zaak-hero">
             <h1 className="vysiongids-zaak-title text-3xl font-bold text-accent sm:text-4xl">
               {listing.name}
               {cuisineLine ? (
@@ -103,7 +103,38 @@ export default async function ZaakPage({ params }: Props) {
                 sizes="(max-width: 1024px) 100vw, min(960px, 75vw)"
               />
             </div>
+          </div>
 
+          <aside className="vysiongids-zaak-sidebar lg:sticky lg:top-6 lg:self-start">
+            <div className="vysiongids-zaak-panel rounded-2xl bg-gray-50 p-5 shadow-sm">
+              <p className="text-sm text-gray-600">
+                Bestel rechtstreeks bij deze zaak
+                <br />
+                geen commissie via Vysiongids.
+              </p>
+              <div className="vysiongids-zaak-sidebar-cta mt-4">
+                <ZaakInfoTopLink href={`/zaak/${slug}`} className="vysiongids-zaak-action-btn" />
+                <a
+                  href={listing.orderUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="vysiongids-zaak-action-btn"
+                >
+                  Bestel
+                </a>
+                <Link href={`${reviewsHref}#schrijven`} className="vysiongids-zaak-action-btn">
+                  Geef review
+                </Link>
+                <ListingMenuButton listing={listing} className="vysiongids-zaak-action-btn" />
+              </div>
+              <div className="mt-4 border-t border-gray-200 pt-4">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Route</p>
+                <ListingNavigationButtons listing={listing} compact mapPin={mapPin} />
+              </div>
+            </div>
+          </aside>
+
+          <div className="vysiongids-zaak-body">
             <ListingInfoSection listing={listingForRating} />
 
             <ListingMap listing={listingForRating} mapPin={mapPin} />
@@ -175,35 +206,6 @@ export default async function ZaakPage({ params }: Props) {
 
             <ZaakOwnerDeleteSection slug={slug} />
           </div>
-
-          <aside className="lg:sticky lg:top-6 lg:self-start">
-            <div className="vysiongids-zaak-panel rounded-2xl bg-gray-50 p-5 shadow-sm">
-              <p className="text-sm text-gray-600">
-                Bestel rechtstreeks bij deze zaak
-                <br />
-                geen commissie via Vysiongids.
-              </p>
-              <div className="vysiongids-zaak-sidebar-cta mt-4">
-                <ZaakInfoTopLink href={`/zaak/${slug}`} className="vysiongids-zaak-action-btn" />
-                <a
-                  href={listing.orderUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="vysiongids-zaak-action-btn"
-                >
-                  Bestel
-                </a>
-                <Link href={`${reviewsHref}#schrijven`} className="vysiongids-zaak-action-btn">
-                  Geef review
-                </Link>
-                <ListingMenuButton listing={listing} className="vysiongids-zaak-action-btn" />
-              </div>
-              <div className="mt-4 border-t border-gray-200 pt-4">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Route</p>
-                <ListingNavigationButtons listing={listing} compact mapPin={mapPin} />
-              </div>
-            </div>
-          </aside>
         </div>
       </main>
     </>

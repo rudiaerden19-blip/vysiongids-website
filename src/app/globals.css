@@ -1757,9 +1757,50 @@ body {
   }
 }
 
-.vysiongids-zaak-page .grid {
+.vysiongids-zaak-page .grid,
+.vysiongids-zaak-layout {
   min-width: 0;
   max-width: 100%;
+}
+
+.vysiongids-zaak-layout {
+  display: grid;
+  gap: 2rem;
+}
+
+/* Mobiel: titel + foto → knoppen → rest. Desktop: sidebar rechts sticky. */
+@media (min-width: 1024px) {
+  .vysiongids-zaak-layout {
+    grid-template-columns: minmax(0, 1fr) min(18rem, 22vw);
+    grid-template-areas:
+      'hero sidebar'
+      'body sidebar';
+    align-items: start;
+  }
+
+  .vysiongids-zaak-hero {
+    grid-area: hero;
+  }
+
+  .vysiongids-zaak-sidebar {
+    grid-area: sidebar;
+  }
+
+  .vysiongids-zaak-body {
+    grid-area: body;
+  }
+}
+
+@media (min-width: 1280px) {
+  .vysiongids-zaak-layout {
+    grid-template-columns: minmax(0, 1fr) 20rem;
+  }
+}
+
+.vysiongids-zaak-hero,
+.vysiongids-zaak-body,
+.vysiongids-zaak-sidebar {
+  min-width: 0;
 }
 
 .vysiongids-page-wrap {
