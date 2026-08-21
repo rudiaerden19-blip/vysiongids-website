@@ -63,6 +63,12 @@ export default function ListingPhotoSlider({
     (delta: number) => {
       if (total <= 1) return
       clearFadeTimeout()
+      // Handmatige slider: geen fade (voorkomt flikkeren bij contain/intrinsic layout).
+      if (showControls && !autoPlay) {
+        setIndex((i) => (i + delta + total) % total)
+        setVisible(true)
+        return
+      }
       setVisible(false)
       fadeTimeoutRef.current = window.setTimeout(() => {
         setIndex((i) => (i + delta + total) % total)
@@ -70,7 +76,7 @@ export default function ListingPhotoSlider({
         fadeTimeoutRef.current = null
       }, FADE_MS)
     },
-    [clearFadeTimeout, total],
+    [autoPlay, clearFadeTimeout, showControls, total],
   )
 
   const goPrev = useCallback(() => advance(-1), [advance])
@@ -158,7 +164,6 @@ export default function ListingPhotoSlider({
         aria-live="polite"
       >
         <ListingPhoto
-          key={src}
           src={src}
           alt={`${alt} — foto ${index + 1} van ${total}`}
           sizes={sizes}

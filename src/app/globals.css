@@ -5012,54 +5012,47 @@ body {
   gap: 1.25rem;
 }
 
-/* Dienstenkaart = zelfde vak/raster als horeca-zoek (frituren); foto vult linkerkolom, niet afgesneden */
+/* Dienstenkaart: vaste fotocel (contain), geen intrinsic height-loop in grid */
 .vysiongids-diensten-listing-panel .vysiongids-listing-panel-row {
   align-items: start;
 }
 
+@media (min-width: 640px) {
+  .vysiongids-diensten-listing-panel .vysiongids-listing-panel-row {
+    grid-template-columns: min(50%, 30rem) minmax(0, 1fr);
+  }
+}
+
 .vysiongids-diensten-panel-photo {
-  background: #fff;
+  background: #f3f4f6;
+  aspect-ratio: 4 / 3;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-diensten-listing-panel .vysiongids-diensten-panel-photo {
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 4 / 3;
+    align-self: start;
+  }
 }
 
 .vysiongids-diensten-panel-photo .vysiongids-listing-photo-slider {
-  position: relative;
-  height: auto;
+  position: absolute;
+  inset: 0;
+  height: 100%;
   min-height: 0;
-}
-
-.vysiongids-diensten-panel-photo .vysiongids-listing-photo-slider--intrinsic {
-  height: auto;
-  min-height: 0;
-}
-
-.vysiongids-diensten-panel-photo .vysiongids-listing-photo-slider-stage {
-  position: relative;
-  inset: unset;
 }
 
 .vysiongids-diensten-panel-photo img {
-  width: 100% !important;
-  height: auto !important;
-  max-height: none !important;
   object-fit: contain !important;
-  object-position: center top !important;
-  display: block;
+  object-position: center center !important;
 }
 
 @media (max-width: 639px) {
   .vysiongids-diensten-panel-photo {
-    aspect-ratio: auto;
-    height: auto;
-    overflow: visible;
-  }
-}
-
-@media (min-width: 640px) {
-  .vysiongids-diensten-panel-photo {
-    height: auto;
-    min-height: 0;
-    aspect-ratio: auto;
-    align-self: start;
+    overflow: hidden;
   }
 }
 
@@ -5291,17 +5284,27 @@ body {
   position: relative;
 }
 
-.vysiongids-diensten-detail-gallery .vysiongids-listing-photo-slider {
+.vysiongids-diensten-detail-gallery-stage {
   position: relative;
-  height: auto;
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  max-height: min(72vh, 28rem);
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: #f3f4f6;
 }
 
-.vysiongids-diensten-detail-gallery img {
-  border-radius: 0.75rem;
-  width: 100%;
-  max-height: min(90vw, 36rem);
-  object-fit: contain;
-  object-position: center top;
+.vysiongids-diensten-detail-gallery-stage .vysiongids-listing-photo-slider {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  min-height: 0;
+}
+
+.vysiongids-diensten-detail-gallery-stage img {
+  border-radius: 0;
+  object-fit: contain !important;
+  object-position: center center !important;
 }
 
 .vysiongids-diensten-detail-gallery-enlarge {

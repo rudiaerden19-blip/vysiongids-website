@@ -24,23 +24,27 @@ export default function DienstenDetailGallery({ urls, alt }: Props) {
   if (photos.length === 0) {
     return (
       <div className="vysiongids-diensten-detail-gallery">
-        <ListingPhotoSlider urls={[]} alt={alt} sizes="(max-width: 768px) 100vw, 480px" layout="intrinsic" />
+        <div className="vysiongids-diensten-detail-gallery-stage">
+          <ListingPhotoSlider urls={[]} alt={alt} sizes="(max-width: 768px) 100vw, 480px" objectFit="contain" />
+        </div>
       </div>
     )
   }
 
   return (
     <div className="vysiongids-diensten-detail-gallery">
-      <ListingPhotoSlider
-        urls={photos.map((p) => p.publicUrl)}
-        alt={alt}
-        sizes="(max-width: 768px) 100vw, 480px"
-        showControls
-        priority
-        layout="intrinsic"
-        onSlideIndexChange={setSlideIndex}
-        activeIndex={slideIndex}
-      />
+      <div className="vysiongids-diensten-detail-gallery-stage">
+        <ListingPhotoSlider
+          urls={photos.map((p) => p.publicUrl)}
+          alt={alt}
+          sizes="(max-width: 768px) 100vw, 480px"
+          showControls
+          priority
+          objectFit="contain"
+          onSlideIndexChange={setSlideIndex}
+          activeIndex={slideIndex}
+        />
+      </div>
       <button
         type="button"
         className="vysiongids-diensten-detail-gallery-enlarge"
