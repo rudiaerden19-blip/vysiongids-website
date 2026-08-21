@@ -29,12 +29,16 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
   const [draft, setDraft] = useState('')
   const [sending, setSending] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
+  const refreshGenRef = useRef(0)
+  const sendingRef = useRef(false)
 
   const refresh = useCallback(async (opts?: { silent?: boolean }) => {
     if (!threadId) return
+    const gen = ++refreshGenRef.current
     const r = await fetch(`/api/gids/chat/threads/${encodeURIComponent(threadId)}`, {
       credentials: 'same-origin',
     })
+    if (gen !== refreshGenRef.current) return
     const data = (await r.json()) as { thread?: GidsChatThreadDetail; error?: string }
     if (!r.ok) {
       if (!opts?.silent) setLoadError(data.error ?? 'Laden mislukt.')
@@ -43,6 +47,41 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
     setLoadError(null)
     setDetail(data.thread ?? null)
   }, [threadId])
+
+  const sendMessage = useCallback(
+    async (text: string) => {
+      if (!threadId || sending) return
+      const body = text.trim()
+      if (!body) return
+      setSending(true)
+      try {
+        const r = await fetch(`/api/gids/chat/threads/${encodeURIComponent(threadId)}/messages`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'same-origin',
+          body: JSON.stringify({ body }),
+        })
+        const data = (await r.json()) as { message?: GidsChatMessage; error?: string }
+        if (!r.ok) {
+          alert(data.error ?? 'Versturen mislukt.')
+          return
+        }
+        if (data.message) {
+          refreshGenRef.current += 1
+          setDetail((prev) => {
+            if (!prev) return prev
+            if (prev.messages.some((m) => m.id === data.message!.id)) return prev
+            return { ...prev, messages: [...prev.messages, data.message!] }
+          })
+        }
+        setDraft('')
+        await refresh({ silent: true })
+      } finally {
+        setSending(false)
+      }
+    },
+    [refresh, sending, threadId],
+  )
 
   useEffect(() => {
     if (!open || !threadId) {
@@ -78,36 +117,6 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
       document.body.style.overflow = prev
     }
   }, [open, onClose])
-
-  async function sendMessage(text: string) {
-    if (!threadId || sending) return
-    const body = text.trim()
-    if (!body) return
-    setSending(true)
-    try {
-      const r = await fetch(`/api/gids/chat/threads/${encodeURIComponent(threadId)}/messages`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
-        body: JSON.stringify({ body }),
-      })
-      const data = (await r.json()) as { message?: GidsChatMessage; error?: string }
-      if (!r.ok) {
-        alert(data.error ?? 'Versturen mislukt.')
-        return
-      }
-      if (data.message) {
-        setDetail((prev) =>
-          prev
-            ? { ...prev, messages: [...prev.messages, data.message!] }
-            : prev,
-        )
-      }
-      setDraft('')
-    } finally {
-      setSending(false)
-    }
-  }
 
   if (!open) return null
   if (typeof document === 'undefined') return null
@@ -170,8 +179,12 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
               key={q}
               type="button"
               className="vysiongids-gids-chat-quick-btn"
-              disabled={sending}
-              onClick={() => void sendMessage(q)}
+              disabled={sending || Boolean(loadError)}
+              onClick={(e) => {
+                e.preventDefault()
+                e.stopPropagation()
+                void sendMessage(q)
+              }}
             >
               {q}
             </button>
@@ -193,7 +206,11 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
             onChange={(e) => setDraft(e.target.value)}
             disabled={sending}
           />
-          <button type="submit" className="vysiongids-gids-chat-send" disabled={sending || !draft.trim()}>
+          <button
+            type="submit"
+            className="vysiongids-gids-chat-send"
+            disabled={sending || Boolean(loadError) || !draft.trim()}
+          >
             {sending ? 'Bezig…' : 'Verstuur'}
           </button>
         </form>

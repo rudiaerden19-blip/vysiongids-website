@@ -5385,6 +5385,12 @@ body {
   position: fixed;
   inset: 0;
   z-index: 10050;
+  pointer-events: none;
+}
+
+.vysiongids-gids-chat-root .vysiongids-job-modal-backdrop,
+.vysiongids-gids-chat-root .vysiongids-gids-chat-panel {
+  pointer-events: auto;
 }
 
 .vysiongids-gids-chat-panel {
@@ -5494,6 +5500,11 @@ body {
   font-weight: 600;
   color: #0e5d82;
   cursor: pointer;
+}
+
+.vysiongids-gids-chat-quick-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 .vysiongids-gids-chat-compose {
