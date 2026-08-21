@@ -59,14 +59,19 @@ export default function ListingPanel({
         </Link>
         <div className="vysiongids-listing-panel-body">
           <div className="vysiongids-listing-panel-head">
-            <Link href={profileHref} className="vysiongids-listing-panel-title-link">
-              <h2 className="vysiongids-listing-panel-title">
-                {listing.name}
-                {cuisineLine ? (
-                  <span className="vysiongids-listing-panel-cuisine-inline"> · {cuisineLine}</span>
-                ) : null}
-              </h2>
-            </Link>
+            <div className="vysiongids-listing-panel-title-block">
+              <Link href={profileHref} className="vysiongids-listing-panel-title-link">
+                <h2 className="vysiongids-listing-panel-title">
+                  {listing.name}
+                  {cuisineLine ? (
+                    <span className="vysiongids-listing-panel-cuisine-inline"> · {cuisineLine}</span>
+                  ) : null}
+                </h2>
+              </Link>
+              <div className="vysiongids-listing-panel-title-rating">
+                <ListingStarRating slug={listing.slug} avg={listing.ratingAvg} count={listing.ratingCount} />
+              </div>
+            </div>
             <div
               className={`vysiongids-listing-panel-status-col${showTopZaakStamp ? ' vysiongids-listing-panel-status-col--topzaak' : ''}${travelLabel ? ' vysiongids-listing-panel-status-col--has-travel' : ''}`}
             >
@@ -97,9 +102,6 @@ export default function ListingPanel({
             <br />
             {cityLine}
           </p>
-          <p style={{ margin: 0, fontSize: bodyTextSize, color: '#4b5563' }}>
-            {formatListingServiceMode(listing)}
-          </p>
           <div className="vysiongids-listing-panel-hours-wrap">
             <ul className="vysiongids-listing-panel-hours">
               {hoursRows.map((row) => (
@@ -111,7 +113,7 @@ export default function ListingPanel({
             </ul>
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem 0.85rem', fontSize: bodyTextSize }}>
-            <ListingStarRating slug={listing.slug} avg={listing.ratingAvg} count={listing.ratingCount} />
+            <span className="vysiongids-listing-panel-service-mode">{formatListingServiceMode(listing)}</span>
             {pickupTimeLabel ? <span style={{ color: '#6b7280' }}>{pickupTimeLabel}</span> : null}
             {deliveryTimeLabel ? <span style={{ color: '#6b7280' }}>{deliveryTimeLabel}</span> : null}
             {deliveryLabel ? <span style={{ fontWeight: 500, color: '#374151' }}>{deliveryLabel}</span> : null}

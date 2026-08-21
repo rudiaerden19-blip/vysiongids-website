@@ -2037,6 +2037,20 @@ body {
   text-decoration: none;
 }
 
+.vysiongids-listing-panel-title-block {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+.vysiongids-listing-panel-title-rating {
+  margin-top: 0.35rem;
+}
+
+.vysiongids-listing-panel-service-mode {
+  font-weight: 600;
+  color: #374151;
+}
+
 .vysiongids-listing-panel-title {
   margin: 0;
   font-size: clamp(1.125rem, 2vw, 1.35rem);
