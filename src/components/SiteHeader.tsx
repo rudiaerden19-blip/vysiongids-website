@@ -90,6 +90,9 @@ function HeaderNavLinks({
 }) {
   return (
     <nav className={className ?? 'vysiongids-header-nav'} aria-label="Hoofdmenu">
+      <Link href="/" onClick={onNavigate}>
+        Home
+      </Link>
       <HeaderNavLink href="/jobs" isNew onNavigate={onNavigate}>
         Jobs
       </HeaderNavLink>
