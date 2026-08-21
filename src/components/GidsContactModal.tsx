@@ -74,6 +74,18 @@ export default function GidsContactModal({ open, onClose }: Props) {
             </dd>
           </div>
         </dl>
+        <div className="vysiongids-contact-modal-actions">
+          <a
+            href={`mailto:${GIDS_CONTACT.email}`}
+            className="vysiongids-contact-modal-btn"
+            onClick={onClose}
+          >
+            Mail ons
+          </a>
+          <a href={`tel:${GIDS_CONTACT.phoneTel}`} className="vysiongids-contact-modal-btn" onClick={onClose}>
+            Bel ons
+          </a>
+        </div>
       </div>
     </div>
   )

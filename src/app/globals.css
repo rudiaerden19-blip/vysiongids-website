@@ -723,6 +723,31 @@ body {
   filter: brightness(1.05);
 }
 
+.vysiongids-contact-modal-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+  margin-top: 1.35rem;
+}
+
+.vysiongids-contact-modal-btn {
+  flex: 1 1 8.5rem;
+  box-sizing: border-box;
+  padding: 0.85rem 1rem;
+  border-radius: 0.5rem;
+  background: var(--accent);
+  color: #fff !important;
+  font-size: 1rem;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+  box-shadow: 0 4px 14px rgb(14 93 130 / 0.25);
+}
+
+.vysiongids-contact-modal-btn:hover {
+  filter: brightness(1.05);
+}
+
 .vysiongids-mobile-nav-sheet-foot {
   flex-shrink: 0;
   padding: 1rem 1.1rem 1.2rem;
