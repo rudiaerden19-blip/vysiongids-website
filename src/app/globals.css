@@ -5003,7 +5003,7 @@ body {
   position: relative;
   display: block;
   aspect-ratio: 4 / 3;
-  background: #1f2937;
+  background: #f3f4f6;
   overflow: hidden;
 }
 
@@ -5158,14 +5158,26 @@ body {
 .vysiongids-diensten-detail-gallery {
   position: relative;
   aspect-ratio: 4 / 3;
+  min-height: min(70vw, 22rem);
   border-radius: 0.75rem;
   overflow: hidden;
-  background: #1f2937;
+  background: #f3f4f6;
 }
 
 .vysiongids-diensten-detail-gallery .vysiongids-listing-photo-slider {
   position: absolute;
   inset: 0;
+}
+
+.vysiongids-diensten-detail-gallery .vysiongids-listing-photo-slider-stage,
+.vysiongids-diensten-card-photo .vysiongids-listing-photo-slider-stage {
+  inset: 0;
+}
+
+.vysiongids-diensten-detail-gallery img,
+.vysiongids-diensten-card-photo img {
+  object-fit: contain !important;
+  object-position: center center !important;
 }
 
 .vysiongids-diensten-detail-desc {

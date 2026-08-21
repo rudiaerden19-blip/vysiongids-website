@@ -35,6 +35,7 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
             alt={listing.name}
             sizes="(max-width: 640px) 100vw, 22rem"
             showControls
+            objectFit="contain"
           />
         </Link>
         <div className="vysiongids-diensten-card-body">

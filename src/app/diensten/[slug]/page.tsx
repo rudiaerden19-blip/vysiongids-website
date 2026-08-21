@@ -45,6 +45,7 @@ export default async function DienstenProfielPage({ params }: Props) {
               sizes="(max-width: 768px) 100vw, 480px"
               showControls
               priority
+              objectFit="contain"
             />
           </div>
           <div>
