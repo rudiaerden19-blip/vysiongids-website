@@ -1,8 +1,7 @@
 'use client'
 
-import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ListingPhoto from '@/components/ListingPhoto'
-import { useLazyInView } from '@/hooks/use-lazy-in-view'
 
 const SLIDE_MS = 6000
 const FADE_MS = 500
@@ -22,36 +21,6 @@ type Props = {
   onSlideIndexChange?: (index: number) => void
   /** Sync slide (bijv. na lightbox) zonder de slider opnieuw te mounten. */
   activeIndex?: number
-}
-
-function LazyPhotoShell({
-  priority,
-  layout,
-  children,
-}: {
-  priority?: boolean
-  layout: 'fill' | 'intrinsic'
-  children: ReactNode
-}) {
-  const lazy = !priority
-  const { ref, inView } = useLazyInView(lazy)
-  const fill = layout === 'fill'
-
-  return (
-    <div
-      ref={ref}
-      className={`vysiongids-listing-photo-lazy-root${fill ? ' vysiongids-listing-photo-lazy-root--fill' : ''}`}
-    >
-      {inView ? (
-        children
-      ) : (
-        <div
-          className={`vysiongids-listing-photo-lazy-placeholder${fill ? ' vysiongids-listing-photo-lazy-placeholder--fill' : ''}`}
-          aria-hidden
-        />
-      )}
-    </div>
-  )
 }
 
 function uniqueUrls(urls: string[]): string[] {
@@ -140,10 +109,8 @@ export default function ListingPhotoSlider({
     }
   }, [activeIndex, total, index])
 
-  let inner: ReactNode
-
   if (total === 0) {
-    inner = (
+    return (
       <ListingPhoto
         src=""
         alt={alt}
@@ -154,8 +121,10 @@ export default function ListingPhotoSlider({
         layout={layout}
       />
     )
-  } else if (total === 1) {
-    inner = (
+  }
+
+  if (total === 1) {
+    return (
       <ListingPhoto
         src={slides[0]!}
         alt={alt}
@@ -165,87 +134,83 @@ export default function ListingPhotoSlider({
         objectFit={objectFit}
         layout={layout}
       />
-    )
-  } else if (!autoPlay && !showControls) {
-    inner = (
-      <ListingPhoto
-        src={slides[0]!}
-        alt={alt}
-        sizes={sizes}
-        className={className}
-        priority={priority}
-        objectFit={objectFit}
-        layout={layout}
-      />
-    )
-  } else {
-    const src = slides[index]!
-    const sliderClass =
-      layout === 'intrinsic'
-        ? 'vysiongids-listing-photo-slider vysiongids-listing-photo-slider--intrinsic'
-        : 'vysiongids-listing-photo-slider'
-
-    inner = (
-      <div className={sliderClass}>
-        <div
-          className={`vysiongids-listing-photo-slider-stage ${visible ? 'is-visible' : ''}`}
-          aria-live="polite"
-        >
-          <ListingPhoto
-            src={src}
-            alt={`${alt} — foto ${index + 1} van ${total}`}
-            sizes={sizes}
-            className={className}
-            priority={priority && index === 0}
-            objectFit={objectFit}
-            layout={layout}
-          />
-        </div>
-
-        {showControls ? (
-          <>
-            <button
-              type="button"
-              className="vysiongids-listing-photo-slider-arrow vysiongids-listing-photo-slider-arrow--prev"
-              aria-label="Vorige foto"
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                goPrev()
-              }}
-            >
-              ‹
-            </button>
-            <button
-              type="button"
-              className="vysiongids-listing-photo-slider-arrow vysiongids-listing-photo-slider-arrow--next"
-              aria-label="Volgende foto"
-              onClick={(e) => {
-                e.preventDefault()
-                e.stopPropagation()
-                goNext()
-              }}
-            >
-              ›
-            </button>
-          </>
-        ) : null}
-
-        <div className="vysiongids-listing-photo-slider-dots" aria-hidden={total <= 1}>
-          {slides.map((_, i) => (
-            <span
-              key={i}
-              className={`vysiongids-listing-photo-slider-dot${i === index ? ' is-active' : ''}`}
-            />
-          ))}
-        </div>
-      </div>
     )
   }
 
+  if (!autoPlay && !showControls) {
+    return (
+      <ListingPhoto
+        src={slides[0]!}
+        alt={alt}
+        sizes={sizes}
+        className={className}
+        priority={priority}
+        objectFit={objectFit}
+        layout={layout}
+      />
+    )
+  }
+
+  const src = slides[index]!
+  const sliderClass =
+    layout === 'intrinsic'
+      ? 'vysiongids-listing-photo-slider vysiongids-listing-photo-slider--intrinsic'
+      : 'vysiongids-listing-photo-slider'
+
   return (
-    <LazyPhotoShell priority={priority} layout={layout}>
-      {inner}
-    </LazyPhotoShell>
+    <div className={sliderClass}>
+      <div
+        className={`vysiongids-listing-photo-slider-stage ${visible ? 'is-visible' : ''}`}
+        aria-live="polite"
+      >
+        <ListingPhoto
+          src={src}
+          alt={`${alt} — foto ${index + 1} van ${total}`}
+          sizes={sizes}
+          className={className}
+          priority={priority && index === 0}
+          objectFit={objectFit}
+          layout={layout}
+        />
+      </div>
+
+      {showControls ? (
+        <>
+          <button
+            type="button"
+            className="vysiongids-listing-photo-slider-arrow vysiongids-listing-photo-slider-arrow--prev"
+            aria-label="Vorige foto"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              goPrev()
+            }}
+          >
+            ‹
+          </button>
+          <button
+            type="button"
+            className="vysiongids-listing-photo-slider-arrow vysiongids-listing-photo-slider-arrow--next"
+            aria-label="Volgende foto"
+            onClick={(e) => {
+              e.preventDefault()
+              e.stopPropagation()
+              goNext()
+            }}
+          >
+            ›
+          </button>
+        </>
+      ) : null}
+
+      <div className="vysiongids-listing-photo-slider-dots" aria-hidden={total <= 1}>
+        {slides.map((_, i) => (
+          <span
+            key={i}
+            className={`vysiongids-listing-photo-slider-dot${i === index ? ' is-active' : ''}`}
+          />
+        ))}
+      </div>
+    </div>
   )
 }

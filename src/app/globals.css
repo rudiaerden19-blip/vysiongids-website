@@ -94,38 +94,6 @@ body {
   }
 }
 
-.vysiongids-listing-photo-lazy-root {
-  display: block;
-  width: 100%;
-}
-
-.vysiongids-listing-photo-lazy-root--fill {
-  position: absolute;
-  inset: 0;
-  min-height: 0;
-}
-
-.vysiongids-listing-photo-lazy-placeholder {
-  display: block;
-  width: 100%;
-  min-height: 10rem;
-  background: linear-gradient(110deg, #374151 8%, #4b5563 18%, #374151 33%);
-  background-size: 200% 100%;
-  animation: vysiongids-photo-shimmer 1.4s ease-in-out infinite;
-}
-
-.vysiongids-listing-photo-lazy-placeholder--fill {
-  position: absolute;
-  inset: 0;
-  min-height: 0;
-}
-
-@keyframes vysiongids-photo-shimmer {
-  to {
-    background-position-x: -120%;
-  }
-}
-
 /** Blauw kader — gedeelde kaart-styling (Tailwind-panelen: class `vysiongids-surface-card`). */
 .vysiongids-surface-card {
   border: var(--vysiongids-card-border) !important;
