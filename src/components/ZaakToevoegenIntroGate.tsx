@@ -99,8 +99,8 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
             <h3 className="vysiongids-zaak-intro-promo-title">Wat is de Vysiongids</h3>
             <p className="vysiongids-zaak-intro-promo-text">
               Als je lid bent van Vysiongids, kan je vanaf dan je eigen kaart met je gegevens, foto&apos;s, QR-code en
-              meer aanmaken. Duizenden klanten kunnen je dan in onze gids zoeken. Je kan jobs en advertenties plaatsen, en ook een
-              zoekertje als je iets te koop hebt, dat zoekertje is meteen in heel Vysiongids zichtbaar. Bij interesse kan
+              meer aanmaken. Duizenden klanten kunnen je dan in onze gids zoeken. Je kan advertenties plaatsen als ook een
+              zoekertje plaatsen als je iets te koop aan wil bieden, dat zoekertje is meteen in heel Vysiongids zichtbaar. Bij interesse kan
               je chatten met de koper.
             </p>
             <p className="vysiongids-zaak-intro-promo-text">
