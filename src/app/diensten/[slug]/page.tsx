@@ -6,6 +6,7 @@ import { getDienstenListingBySlug } from '@/lib/listings-diensten'
 import { formatListingAddressLines, listingPhotoUrls } from '@/lib/listing-display'
 import { serviceCategoryLabel } from '@/lib/gids-service-categories'
 import { provinceLabel } from '@/lib/belgium-locations'
+import { normalizeHttpsUrl } from '@/lib/normalize-url'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -26,6 +27,10 @@ export default async function DienstenProfielPage({ params }: Props) {
   const mail = listing.email?.trim()
   const telHref = tel ? `tel:${tel.replace(/[^\d+]/g, '')}` : null
   const mailHref = mail && mail.includes('@') ? `mailto:${mail}` : null
+  const websiteRaw = listing.website?.trim()
+  const websiteNorm = websiteRaw ? normalizeHttpsUrl(websiteRaw) : null
+  const websiteHref = websiteNorm?.ok ? websiteNorm.url : null
+  const reviewsHref = `/zaak/${listing.slug}/reviews#schrijven`
 
   return (
     <>
@@ -60,14 +65,7 @@ export default async function DienstenProfielPage({ params }: Props) {
               ) : null}
             </p>
             {tel ? <p className="mt-2 font-medium text-gray-900">{tel}</p> : null}
-            {listing.website ? (
-              <p className="mt-2">
-                <a href={listing.website} target="_blank" rel="noopener noreferrer" className="font-semibold text-accent hover:underline">
-                  Website
-                </a>
-              </p>
-            ) : null}
-            <div className="mt-6 flex flex-wrap gap-3">
+            <div className="vysiongids-diensten-detail-actions mt-6">
               {telHref ? (
                 <a href={telHref} className="vysiongids-diensten-action-btn">
                   Contacteer verkoper
@@ -77,6 +75,19 @@ export default async function DienstenProfielPage({ params }: Props) {
                   Contacteer verkoper
                 </a>
               ) : null}
+              {websiteHref ? (
+                <a
+                  href={websiteHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="vysiongids-diensten-action-btn"
+                >
+                  Website
+                </a>
+              ) : null}
+              <Link href={reviewsHref} className="vysiongids-diensten-action-btn">
+                Geef review
+              </Link>
             </div>
           </div>
         </div>

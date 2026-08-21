@@ -5323,6 +5323,20 @@ body {
   color: #0a4a68;
 }
 
+.vysiongids-diensten-detail-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.5rem;
+  max-width: 22rem;
+}
+
+.vysiongids-diensten-detail-actions .vysiongids-diensten-action-btn {
+  justify-content: center;
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .vysiongids-diensten-detail-desc {
   padding: 1.25rem;
   border-radius: 0.75rem;
