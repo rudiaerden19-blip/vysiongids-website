@@ -5145,9 +5145,6 @@ body {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  background: #fff;
-  color: var(--accent);
-  border: 2px solid var(--accent);
 }
 
 .vysiongids-diensten-cat-backdrop {
