@@ -6,6 +6,22 @@ import type { Listing } from '@/lib/listing-types'
 import { formatListingAddressLines } from '@/lib/listing-display'
 import { listingPhotoUrls } from '@/lib/listing-display'
 import { serviceCategoryLabel } from '@/lib/gids-service-categories'
+import { normalizeHttpsUrl } from '@/lib/normalize-url'
+
+function dienstenWebsiteAction(website: string | undefined): { href: string; label: string } | null {
+  const raw = website?.trim()
+  if (!raw) return null
+  const norm = normalizeHttpsUrl(raw)
+  if (!norm.ok) return null
+  try {
+    const u = new URL(norm.url)
+    const path = u.pathname !== '/' ? u.pathname.replace(/\/$/, '') : ''
+    const label = `${u.hostname}${path}`
+    return { href: norm.url, label }
+  } catch {
+    return null
+  }
+}
 
 function contactTel(phone: string | undefined): string | null {
   const p = phone?.trim()
@@ -25,6 +41,7 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
   const profileHref = `/diensten/${listing.slug}`
   const telHref = contactTel(listing.phone)
   const mailHref = contactMail(listing.email)
+  const websiteAction = dienstenWebsiteAction(listing.website)
 
   return (
     <article className="vysiongids-listing-panel vysiongids-diensten-listing-panel">
@@ -83,6 +100,17 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
                 Contacteer verkoper
               </Link>
             )}
+            {websiteAction ? (
+              <a
+                href={websiteAction.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="vysiongids-diensten-action-btn vysiongids-diensten-action-btn--website"
+                title={websiteAction.label}
+              >
+                {websiteAction.label}
+              </a>
+            ) : null}
           </div>
         </div>
       </div>

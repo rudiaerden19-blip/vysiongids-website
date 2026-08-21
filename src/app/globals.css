@@ -5140,6 +5140,16 @@ body {
   border: 2px solid var(--accent);
 }
 
+.vysiongids-diensten-action-btn--website {
+  max-width: min(100%, 14rem);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: #fff;
+  color: var(--accent);
+  border: 2px solid var(--accent);
+}
+
 .vysiongids-diensten-cat-backdrop {
   position: fixed;
   inset: 0;
