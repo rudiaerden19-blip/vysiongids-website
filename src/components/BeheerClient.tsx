@@ -16,8 +16,16 @@ import GidsOwnerSessionKeepAlive from '@/components/GidsOwnerSessionKeepAlive'
 import type { Listing } from '@/lib/listing-types'
 import type { BeheerServerSession } from '@/lib/gids-beheer-server'
 import { isDienstenListing } from '@/lib/listing-segment'
-import BeheerGidsChatSection from '@/components/BeheerGidsChatSection'
 import BeheerDienstenPanel from '@/components/BeheerDienstenPanel'
+
+const BeheerGidsChatSection = dynamic(() => import('@/components/BeheerGidsChatSection'), {
+  loading: () => (
+    <section className="vysiongids-surface-card rounded-xl bg-white p-5">
+      <p className="text-sm text-gray-500">Berichten laden…</p>
+    </section>
+  ),
+  ssr: false,
+})
 
 const BeheerEditForm = dynamic(() => import('@/components/BeheerEditForm'), {
   loading: () => <p className="text-sm text-gray-600">Formulier laden…</p>,
@@ -223,7 +231,6 @@ export default function BeheerClient({ serverSession }: Props) {
             modalOpen={zoekertjeModalOpen}
             onModalOpenChange={setZoekertjeModalOpen}
             placeRequestId={zoekertjePlaceRequest}
-            initialMine={serverSession.initialZoekertjes}
           />
         </>
       ) : null}

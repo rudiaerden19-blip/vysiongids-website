@@ -1,7 +1,7 @@
 import listingsJson from '../../data/listings.json'
 import type { Listing, ListingSearchParams, ListingTypeId } from '@/lib/listing-types'
 import { LISTING_TYPES } from '@/lib/listing-types'
-import { fetchListingBySlugFromDb, fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
+import { fetchListingBySlugFromDb, fetchFeaturedHorecaListingsFromDb, fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
 import { normalizeSearchText } from '@/lib/gids-text'
 import { parseListingSearchQuery, listingMatchesParsedSearch } from '@/lib/gids-listing-search'
 import { isHorecaListing } from '@/lib/listing-segment'
@@ -82,6 +82,13 @@ export async function getListingBySlug(slug: string): Promise<Listing | undefine
 
 /** Homepage «in de kijker»: eerst best beoordeeld, daarna andere gepubliceerde zaken. */
 export async function getFeaturedListings(limit = 4): Promise<Listing[]> {
+  const fromDb = await unstable_cache(
+    async () => fetchFeaturedHorecaListingsFromDb(limit),
+    ['gids-featured-listings', String(limit)],
+    { revalidate: 60, tags: ['gids-listings'] },
+  )()
+  if (fromDb?.length) return fromDb.slice(0, limit)
+
   const all = await getAllListings()
   const horecaOnly = all.filter(isHorecaListing)
   if (horecaOnly.length === 0) return []

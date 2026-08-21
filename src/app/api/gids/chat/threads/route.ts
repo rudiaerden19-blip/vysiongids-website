@@ -4,7 +4,7 @@ import { requireGidsChatOwner } from '@/lib/gids-chat-api-auth'
 import { resolveGidsChatContextAdmin } from '@/lib/gids-chat-context'
 import { findOrCreateGidsChatThreadAdmin, listGidsChatThreadsForListingAdmin } from '@/lib/gids-chat-db'
 import type { GidsChatContextType } from '@/lib/gids-chat-types'
-import { fetchListingRowByIdAdmin } from '@/lib/gids-listings-db'
+import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { listingCanUseGidsChatFromRow } from '@/lib/gids-chat-access'
 
 export const runtime = 'nodejs'
@@ -60,7 +60,16 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Je kunt geen chat starten met jezelf.', code: 'self' }, { status: 400 })
   }
 
-  const sellerRow = await fetchListingRowByIdAdmin(ctx.sellerListingId)
+  const admin = createGidsSupabaseAdmin()
+  const { data: sellerRow } = admin
+    ? await admin
+        .from('gids_listings')
+        .select(
+          'id, listing_segment, premium_member, premium_paused, premium_expires_at, diensten_expires_at, status',
+        )
+        .eq('id', ctx.sellerListingId)
+        .maybeSingle()
+    : { data: null }
   if (!sellerRow) {
     return NextResponse.json({ error: 'Verkoper niet gevonden.' }, { status: 404 })
   }

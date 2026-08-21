@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { readGidsOwnerSession } from '@/lib/gids-session'
-import { fetchListingRowByIdAdmin } from '@/lib/gids-listings-db'
+import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import {
   gidsChatMembershipDeniedMessage,
   listingCanUseGidsChatFromRow,
@@ -20,8 +20,23 @@ export async function requireGidsChatOwner(): Promise<GidsChatOwnerContext> {
     }
   }
 
-  const row = await fetchListingRowByIdAdmin(session.listingId)
-  if (!row) {
+  const admin = createGidsSupabaseAdmin()
+  if (!admin) {
+    return {
+      ok: false,
+      response: NextResponse.json({ error: 'Database niet geconfigureerd.' }, { status: 503 }),
+    }
+  }
+
+  const { data: row, error } = await admin
+    .from('gids_listings')
+    .select(
+      'id, listing_segment, premium_member, premium_paused, premium_expires_at, diensten_expires_at, status',
+    )
+    .eq('id', session.listingId)
+    .maybeSingle()
+
+  if (error || !row) {
     return {
       ok: false,
       response: NextResponse.json({ error: 'Profiel niet gevonden.' }, { status: 404 }),
@@ -40,5 +55,5 @@ export async function requireGidsChatOwner(): Promise<GidsChatOwnerContext> {
   }
 
   const segment = row.listing_segment === LISTING_SEGMENT_DIENSTEN ? 'diensten' : 'horeca'
-  return { ok: true, listingId: row.id, segment }
+  return { ok: true, listingId: row.id as string, segment }
 }

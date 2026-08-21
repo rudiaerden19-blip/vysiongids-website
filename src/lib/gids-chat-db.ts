@@ -396,7 +396,24 @@ export async function markGidsChatThreadReadAdmin(threadId: string, listingId: s
 }
 
 export async function countGidsChatUnreadAdmin(listingId: string): Promise<number> {
-  const listed = await listGidsChatThreadsForListingAdmin(listingId)
-  if (!listed.ok) return 0
-  return listed.threads.filter((t) => t.unread).length
+  const admin = createGidsSupabaseAdmin()
+  if (!admin) return 0
+
+  const { data: threads, error } = await admin
+    .from('gids_chat_threads')
+    .select('id')
+    .or(`seller_listing_id.eq.${listingId},buyer_listing_id.eq.${listingId}`)
+    .limit(100)
+
+  if (error || !threads?.length) return 0
+
+  const unreadMap = await fetchUnreadFlagsByThreadIds(
+    threads.map((t) => t.id as string),
+    listingId,
+  )
+  let count = 0
+  for (const v of unreadMap.values()) {
+    if (v) count += 1
+  }
+  return count
 }

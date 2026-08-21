@@ -116,10 +116,67 @@ const LISTING_PUBLIC_SELECT = `
   gids_listing_photos ( sort_order, public_url )
 `
 
+/** Geen embedded foto's — browse/zoeken haalt thumbnails in batch (1 per zaak). */
+const LISTING_BROWSE_SELECT = PUBLIC_LISTING_COLUMNS.replace(/\s+/g, ' ')
+
 const LISTING_SELECT = `
   *,
   gids_listing_photos ( sort_order, public_url )
 `
+
+type ListingPhotoClient = ReturnType<typeof createGidsSupabasePublic>
+
+async function fetchFirstListingPhotosMap(
+  supabase: NonNullable<ListingPhotoClient>,
+  listingIds: string[],
+): Promise<Map<string, PhotoRow[]>> {
+  const map = new Map<string, PhotoRow[]>()
+  const unique = [...new Set(listingIds.filter(Boolean))]
+  if (unique.length === 0) return map
+
+  const chunkSize = 80
+  for (let i = 0; i < unique.length; i += chunkSize) {
+    const chunk = unique.slice(i, i + chunkSize)
+    const { data, error } = await supabase
+      .from('gids_listing_photos')
+      .select('listing_id, sort_order, public_url')
+      .in('listing_id', chunk)
+      .order('sort_order', { ascending: true })
+    if (error) {
+      console.error('[gids] batch listing photos:', error.message)
+      continue
+    }
+    for (const row of data ?? []) {
+      const lid = row.listing_id as string
+      if (map.has(lid)) continue
+      map.set(lid, [{ sort_order: row.sort_order as number, public_url: row.public_url as string }])
+    }
+  }
+  return map
+}
+
+async function fetchAllListingPhotosForId(
+  supabase: NonNullable<ListingPhotoClient>,
+  listingId: string,
+): Promise<PhotoRow[]> {
+  const { data, error } = await supabase
+    .from('gids_listing_photos')
+    .select('sort_order, public_url')
+    .eq('listing_id', listingId)
+    .order('sort_order', { ascending: true })
+  if (error) {
+    console.error('[gids] listing photos:', error.message)
+    return []
+  }
+  return (data ?? []) as PhotoRow[]
+}
+
+function rowsToListings(rows: GidsListingRow[], photosByListingId: Map<string, PhotoRow[]>): Listing[] {
+  return rows.map((row) => {
+    const photos = photosByListingId.get(row.id) ?? row.gids_listing_photos ?? []
+    return mapGidsRowToListing({ ...row, gids_listing_photos: photos })
+  })
+}
 
 export type GidsPublishedListingsFilter = {
   province?: string
@@ -228,10 +285,7 @@ export async function fetchPublishedListingsFromDb(
   const supabase = createGidsSupabasePublic()
   if (!supabase) return null
 
-  let query = supabase
-    .from('gids_listings')
-    .select(LISTING_PUBLIC_SELECT)
-    .eq('status', 'published')
+  let query = supabase.from('gids_listings').select(LISTING_BROWSE_SELECT).eq('status', 'published')
 
   if (filter?.listingSegment === 'diensten') {
     query = query.eq('listing_segment', 'diensten')
@@ -253,11 +307,45 @@ export async function fetchPublishedListingsFromDb(
     return null
   }
 
-  let rows = (data as unknown as GidsListingRow[]).map(mapGidsRowToListing)
+  const rawRows = (data ?? []) as unknown as GidsListingRow[]
+  const photosById = await fetchFirstListingPhotosMap(
+    supabase,
+    rawRows.map((r) => r.id),
+  )
+  let rows = rowsToListings(rawRows, photosById)
   if (filter?.dienstenActiveOnly) {
     rows = rows.filter((l) => l.dienstenActive)
   }
   return rows
+}
+
+/** Homepage «in de kijker» — geen volledige catalogus laden. */
+export async function fetchFeaturedHorecaListingsFromDb(limit: number): Promise<Listing[] | null> {
+  if (!isGidsSupabaseConfigured()) return null
+  const supabase = createGidsSupabasePublic()
+  if (!supabase) return null
+  const take = Math.min(50, Math.max(4, limit * 4))
+
+  const { data, error } = await supabase
+    .from('gids_listings')
+    .select(LISTING_BROWSE_SELECT)
+    .eq('status', 'published')
+    .or('listing_segment.is.null,listing_segment.eq.horeca')
+    .order('rating_avg', { ascending: false })
+    .order('rating_count', { ascending: false })
+    .limit(take)
+
+  if (error) {
+    console.error('[gids] featured listings:', error.message)
+    return null
+  }
+
+  const rawRows = (data ?? []) as unknown as GidsListingRow[]
+  const photosById = await fetchFirstListingPhotosMap(
+    supabase,
+    rawRows.map((r) => r.id),
+  )
+  return rowsToListings(rawRows, photosById).slice(0, limit)
 }
 
 /** Staff/batch: gepubliceerde zaken per pagina (slug-only). */
@@ -292,13 +380,15 @@ export async function fetchListingBySlugFromDb(slug: string): Promise<Listing | 
 
   const { data, error } = await supabase
     .from('gids_listings')
-    .select(LISTING_PUBLIC_SELECT)
+    .select(LISTING_BROWSE_SELECT)
     .eq('status', 'published')
     .eq('slug', slug)
     .maybeSingle()
 
   if (error || !data) return null
-  return mapGidsRowToListing(data as unknown as GidsListingRow)
+  const row = data as unknown as GidsListingRow
+  const photos = await fetchAllListingPhotosForId(supabase, row.id)
+  return mapGidsRowToListing({ ...row, gids_listing_photos: photos })
 }
 
 export async function fetchListingRowByIdAdmin(id: string): Promise<GidsListingRow | null> {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import GidsChatModal from '@/components/GidsChatModal'
 import type { GidsChatThreadSummary } from '@/lib/gids-chat-types'
 
@@ -13,6 +13,25 @@ export default function BeheerGidsChatSection({ initialThreadId }: Props) {
   const [loadError, setLoadError] = useState<string | null>(null)
   const [activeThreadId, setActiveThreadId] = useState<string | null>(initialThreadId ?? null)
   const [modalOpen, setModalOpen] = useState(Boolean(initialThreadId))
+  const sectionRef = useRef<HTMLElement>(null)
+  const pollRef = useRef<number | null>(null)
+  const [unreadPollCount, setUnreadPollCount] = useState(0)
+
+  const refreshUnreadOnly = useCallback(async () => {
+    const r = await fetch('/api/gids/chat/unread', { credentials: 'same-origin' })
+    if (!r.ok) return
+    const data = (await r.json()) as { unread?: number }
+    setUnreadPollCount(typeof data.unread === 'number' ? data.unread : 0)
+  }, [])
+
+  const unreadConversationCount = threads.filter((t) => t.unread).length
+
+  useEffect(() => {
+    if (initialThreadId) {
+      setActiveThreadId(initialThreadId)
+      setModalOpen(true)
+    }
+  }, [initialThreadId])
 
   const refresh = useCallback(async () => {
     setLoadError(null)
@@ -31,35 +50,44 @@ export default function BeheerGidsChatSection({ initialThreadId }: Props) {
   }, [])
 
   useEffect(() => {
-    void refresh()
-    const id = window.setInterval(() => void refresh(), 20000)
-    return () => window.clearInterval(id)
-  }, [refresh])
+    if (initialThreadId) void refresh()
+  }, [initialThreadId, refresh])
 
   useEffect(() => {
-    if (initialThreadId) {
-      setActiveThreadId(initialThreadId)
-      setModalOpen(true)
+    const section = sectionRef.current
+    if (!section) return
+
+    let started = false
+    const start = () => {
+      if (started) return
+      started = true
+      void refresh()
+      pollRef.current = window.setInterval(() => {
+        if (document.visibilityState !== 'visible') return
+        void refresh()
+      }, 25000)
     }
-  }, [initialThreadId])
 
-  const [unreadPollCount, setUnreadPollCount] = useState(0)
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((e) => e.isIntersecting)) start()
+      },
+      { rootMargin: '120px' },
+    )
+    observer.observe(section)
 
-  const refreshUnreadOnly = useCallback(async () => {
-    const r = await fetch('/api/gids/chat/unread', { credentials: 'same-origin' })
-    if (!r.ok) return
-    const data = (await r.json()) as { unread?: number }
-    setUnreadPollCount(typeof data.unread === 'number' ? data.unread : 0)
-  }, [])
-
-  const unreadConversationCount = threads.filter((t) => t.unread).length
+    return () => {
+      observer.disconnect()
+      if (pollRef.current) window.clearInterval(pollRef.current)
+    }
+  }, [refresh])
 
   useEffect(() => {
     void refreshUnreadOnly()
     const id = window.setInterval(() => {
       if (document.visibilityState !== 'visible') return
       void refreshUnreadOnly()
-    }, 15000)
+    }, 20000)
     return () => window.clearInterval(id)
   }, [refreshUnreadOnly])
 
@@ -67,7 +95,7 @@ export default function BeheerGidsChatSection({ initialThreadId }: Props) {
     threads.length > 0 ? unreadConversationCount : unreadPollCount
 
   return (
-    <section className="vysiongids-surface-card rounded-xl bg-white p-5">
+    <section ref={sectionRef} className="vysiongids-surface-card rounded-xl bg-white p-5">
       <div className="vysiongids-gids-chat-section-head">
         <h2 className="text-lg font-bold text-gray-900">Berichten</h2>
         {badgeCount > 0 ? (
@@ -83,7 +111,7 @@ export default function BeheerGidsChatSection({ initialThreadId }: Props) {
             : `${badgeCount} gesprekken met ongelezen berichten`}
         </p>
       ) : null}
-      <p className="mt-1 text-sm text-gray-600">
+      <p className={`text-sm text-gray-600${badgeCount > 0 ? ' mt-2' : ' mt-1'}`}>
         Chat met andere leden over zoekertjes of leveranciersprofielen (premium vereist).
       </p>
       {loadError ? <p className="mt-3 text-sm text-amber-800">{loadError}</p> : null}

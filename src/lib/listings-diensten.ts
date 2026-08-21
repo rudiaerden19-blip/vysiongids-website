@@ -1,5 +1,5 @@
 import type { DienstenSearchParams, Listing } from '@/lib/listing-types'
-import { fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
+import { fetchListingBySlugFromDb, fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
 import { normalizeSearchText } from '@/lib/gids-text'
 import { compareListingsByName } from '@/lib/listing-alphabetical-sort'
 import { unstable_cache } from 'next/cache'
@@ -32,8 +32,9 @@ export async function loadDienstenListings(): Promise<Listing[]> {
 }
 
 export async function getDienstenListingBySlug(slug: string): Promise<Listing | undefined> {
-  const all = await loadDienstenListings()
-  return all.find((l) => l.slug === slug)
+  const one = await fetchListingBySlugFromDb(slug)
+  if (!one || one.listingSegment !== 'diensten' || !one.dienstenActive) return undefined
+  return one
 }
 
 export type DienstenSearchOutcome = {
