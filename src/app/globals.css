@@ -4998,21 +4998,15 @@ body {
   flex-direction: column;
 }
 
-@media (min-width: 640px) {
-  .vysiongids-diensten-card-row {
-    flex-direction: row;
-  }
-
-  .vysiongids-diensten-card-photo {
-    width: 38%;
-    max-width: 16rem;
-  }
+.vysiongids-diensten-card-row {
+  display: flex;
+  flex-direction: column;
 }
 
 .vysiongids-diensten-card-photo {
   position: relative;
   display: block;
-  align-self: flex-start;
+  width: 100%;
   flex-shrink: 0;
 }
 
@@ -5022,7 +5016,14 @@ body {
 }
 
 .vysiongids-diensten-card-photo img {
-  border-radius: 0.5rem;
+  width: 100%;
+  height: auto;
+  max-height: min(85vw, 28rem);
+  object-fit: contain;
+  object-position: center top;
+  display: block;
+  margin: 0 auto;
+  border-radius: 0;
 }
 
 .vysiongids-diensten-card-body {
@@ -5163,7 +5164,7 @@ body {
 
 @media (min-width: 768px) {
   .vysiongids-diensten-detail-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 1.15fr 0.85fr;
     align-items: start;
   }
 }
@@ -5179,6 +5180,10 @@ body {
 
 .vysiongids-diensten-detail-gallery img {
   border-radius: 0.75rem;
+  width: 100%;
+  max-height: min(90vw, 36rem);
+  object-fit: contain;
+  object-position: center top;
 }
 
 .vysiongids-diensten-detail-gallery-enlarge {
