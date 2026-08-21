@@ -64,6 +64,12 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
             <Link href={profileHref} className="vysiongids-diensten-action-btn vysiongids-diensten-action-btn--secondary">
               Info
             </Link>
+            <Link
+              href={`/zaak/${listing.slug}/reviews#schrijven`}
+              className="vysiongids-diensten-action-btn"
+            >
+              Geef review
+            </Link>
             {telHref ? (
               <a href={telHref} className="vysiongids-diensten-action-btn">
                 Contacteer verkoper
