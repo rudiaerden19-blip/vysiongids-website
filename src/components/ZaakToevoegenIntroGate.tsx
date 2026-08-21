@@ -74,9 +74,7 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
             knop <strong>Online platform</strong> of <strong>Reserveringen</strong> drukken en je registreren. Deze
             softwaremodules behoren tot de meest professionele softwareplatformen in België. Je kan de software
             downloaden voor <strong>€49 per jaar</strong>. Dit is tot <strong>20 keer goedkoper</strong> dan andere
-            platformen en alleen toegankelijk voor onze Vysiongids-leden. Heb je wél al een reserverings- en online
-            bestelplatform? Perfect — dit kan je rechtstreeks koppelen aan je bestelknop in Vysiongids. Met{' '}
-            <strong>één klik</strong> zit de klant op jouw software.
+            platformen en alleen toegankelijk voor onze Vysiongids-leden.
           </p>
           <div className="vysiongids-zaak-intro-platform-btns">
             <button
