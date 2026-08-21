@@ -65,6 +65,12 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
             Heb je geen reserveringssoftware of online bestelplatform? Indien je lid bent van Vysiongids kan je je
             software downloaden voor <strong>€49 per jaar</strong>.
           </p>
+          <p className="vysiongids-zaak-intro-promo">
+            Wil je lid worden van Vysiongids? Druk dan bovenaan op de knop <strong>Zaak toevoegen</strong> en volg alle
+            stappen. Het lidmaatschap kost <strong>€49 per jaar</strong>. Hiervoor ontvang je alle premiumfuncties
+            zonder limiet. Je zaak wordt dan direct zichtbaar voor duizenden klanten in de buurt, maar ook in heel
+            België.
+          </p>
           <p>
             Voordat je je zaak online zet in Vysiongids, lees onderstaande punten. Zo blijft de gids betrouwbaar voor
             klanten en voor alle horeca-zaken in België.
