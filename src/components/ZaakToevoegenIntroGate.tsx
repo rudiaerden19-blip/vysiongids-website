@@ -72,7 +72,7 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
           <p className="vysiongids-zaak-intro-promo">
             Heb je geen reserveringssoftware of online bestelplatform? Indien je lid bent van Vysiongids, kan je op de
             knop <strong>Online platform</strong> of <strong>Reserveringen</strong> drukken en je registreren. Deze
-            softwaremodules behoren tot de meest professionele softwareplatformen in België. Je kunt je software
+            softwaremodules behoren tot de meest professionele softwareplatformen in België. Je kan de software
             downloaden voor <strong>€49 per jaar</strong>. Dit is tot <strong>20 keer goedkoper</strong> dan andere
             platformen en alleen toegankelijk voor onze Vysiongids-leden.
           </p>
