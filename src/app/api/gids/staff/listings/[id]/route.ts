@@ -16,9 +16,11 @@ type PatchBody = {
 function revalidateListing(slug?: string) {
   revalidateTag('gids-listings', 'max')
   revalidatePath('/')
+  revalidatePath('/diensten')
   if (slug) {
     revalidatePath(`/zaak/${slug}`)
     revalidatePath(`/zaak/${slug}/reviews`)
+    revalidatePath(`/diensten/${slug}`)
   }
 }
 

@@ -1,4 +1,6 @@
 /** Vysiongids premium — vacatures & zoekertjes (en andere voordelen). */
+export const GIDS_HORECA_YEARLY_EUR = 49
+/** Stripe/default bedrag (centen) — kan via env afwijken. */
 export const GIDS_PREMIUM_YEARLY_EUR = 50
 export const GIDS_PREMIUM_TERM_DAYS = 365
 

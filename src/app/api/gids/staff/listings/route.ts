@@ -14,9 +14,12 @@ export async function GET(req: Request) {
   const page = Number(url.searchParams.get('page') ?? '1')
   const limit = Number(url.searchParams.get('limit') ?? '80')
   const search = url.searchParams.get('search') ?? undefined
+  const segmentParam = url.searchParams.get('segment')
+  const segment =
+    segmentParam === 'diensten' ? 'diensten' : segmentParam === 'horeca' ? 'horeca' : undefined
 
   try {
-    const result = await fetchGidsListingsForStaffAdminPaginated({ page, limit, search })
+    const result = await fetchGidsListingsForStaffAdminPaginated({ page, limit, search, segment })
     if (!result) {
       return NextResponse.json({ error: 'Database niet geconfigureerd.' }, { status: 503 })
     }
