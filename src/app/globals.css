@@ -5379,3 +5379,211 @@ body {
     display: none !important;
   }
 }
+
+/* Gids B2B-chat (premium leden) */
+.vysiongids-gids-chat-root {
+  position: fixed;
+  inset: 0;
+  z-index: 10050;
+}
+
+.vysiongids-gids-chat-panel {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  z-index: 10051;
+  display: flex;
+  max-height: min(90vh, 40rem);
+  width: min(92vw, 28rem);
+  translate: -50% -50%;
+  flex-direction: column;
+  border-radius: 1rem;
+  background: #fff;
+  padding: 1.25rem 1.25rem 1rem;
+  box-shadow: 0 20px 50px rgb(0 0 0 / 0.2);
+}
+
+.vysiongids-gids-chat-kicker {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #0e5d82;
+}
+
+.vysiongids-gids-chat-title {
+  margin: 0.35rem 0 0.75rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #111827;
+  line-height: 1.3;
+}
+
+.vysiongids-gids-chat-city {
+  font-weight: 500;
+  color: #6b7280;
+  font-size: 0.9375rem;
+}
+
+.vysiongids-gids-chat-error {
+  margin: 0 0 0.5rem;
+  font-size: 0.875rem;
+  color: #b91c1c;
+}
+
+.vysiongids-gids-chat-messages {
+  flex: 1;
+  min-height: 8rem;
+  max-height: 16rem;
+  overflow-y: auto;
+  padding: 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.vysiongids-gids-chat-bubble {
+  align-self: flex-start;
+  max-width: 92%;
+  border-radius: 0.75rem;
+  background: #f3f4f6;
+  padding: 0.5rem 0.65rem;
+}
+
+.vysiongids-gids-chat-bubble--mine {
+  align-self: flex-end;
+  background: #e0f2fe;
+}
+
+.vysiongids-gids-chat-bubble-text {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  word-break: break-word;
+  color: #111827;
+}
+
+.vysiongids-gids-chat-bubble-time {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.6875rem;
+  color: #6b7280;
+}
+
+.vysiongids-gids-chat-empty {
+  margin: 0;
+  font-size: 0.875rem;
+  color: #6b7280;
+}
+
+.vysiongids-gids-chat-quick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.5rem;
+}
+
+.vysiongids-gids-chat-quick-btn {
+  border: 1px solid #bae6fd;
+  border-radius: 9999px;
+  background: #f0f9ff;
+  padding: 0.25rem 0.55rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #0e5d82;
+  cursor: pointer;
+}
+
+.vysiongids-gids-chat-compose {
+  margin-top: 0.65rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.vysiongids-gids-chat-input {
+  width: 100%;
+  resize: vertical;
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  font-size: 0.9375rem;
+  font-family: inherit;
+}
+
+.vysiongids-gids-chat-send {
+  align-self: flex-end;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--accent);
+  color: #fff;
+  padding: 0.45rem 1rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.vysiongids-gids-chat-send:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.vysiongids-gids-chat-inbox {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.vysiongids-gids-chat-inbox-item {
+  width: 100%;
+  text-align: left;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.65rem;
+  background: #fafafa;
+  padding: 0.65rem 0.75rem;
+  cursor: pointer;
+}
+
+.vysiongids-gids-chat-inbox-item:hover {
+  border-color: #bae6fd;
+  background: #f0f9ff;
+}
+
+.vysiongids-gids-chat-inbox-title {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.vysiongids-gids-chat-inbox-peer {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.8125rem;
+  color: #4b5563;
+}
+
+.vysiongids-gids-chat-inbox-preview {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8125rem;
+  color: #6b7280;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.vysiongids-gids-chat-unread-dot {
+  display: inline-block;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 9999px;
+  background: #ef4444;
+}

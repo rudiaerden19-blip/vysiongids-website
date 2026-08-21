@@ -16,6 +16,7 @@ import GidsOwnerSessionKeepAlive from '@/components/GidsOwnerSessionKeepAlive'
 import type { Listing } from '@/lib/listing-types'
 import type { BeheerServerSession } from '@/lib/gids-beheer-server'
 import { isDienstenListing } from '@/lib/listing-segment'
+import BeheerGidsChatSection from '@/components/BeheerGidsChatSection'
 import BeheerDienstenPanel from '@/components/BeheerDienstenPanel'
 
 const BeheerEditForm = dynamic(() => import('@/components/BeheerEditForm'), {
@@ -38,6 +39,7 @@ export default function BeheerClient({ serverSession }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const premiumFlash = searchParams.get('premium')
+  const chatThreadId = searchParams.get('chat')
   const loginHint = readGidsBeheerLoginHint()
   const [me, setMe] = useState<MeResponse>(() =>
     serverSession.authenticated
@@ -227,6 +229,8 @@ export default function BeheerClient({ serverSession }: Props) {
       ) : null}
 
       {slug ? <ListingOwnerDailyViews slug={slug} variant="beheer" /> : null}
+
+      {me?.authenticated ? <BeheerGidsChatSection initialThreadId={chatThreadId} /> : null}
 
       <p className="text-lg text-gray-800">
         Ingelogd als <strong>{me.name}</strong>

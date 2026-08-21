@@ -10,6 +10,7 @@ import {
   normalizeZoekertjeDescriptionInput,
   normalizeZoekertjeTitleInput,
 } from '@/lib/gids-zoekertjes-text'
+import GidsChatStartButton from '@/components/GidsChatStartButton'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
 
 type Props = {
@@ -122,6 +123,12 @@ export default function ZoekertjeDetailModal({ zoekertje, open, onClose }: Props
           </div>
         </div>
         <div className="vysiongids-zoekertje-detail-actions vysiongids-zoekertje-modal-actions">
+          <GidsChatStartButton
+            contextType="zoekertje"
+            contextId={z.id}
+            className="vysiongids-zoekertje-primary-btn vysiongids-zoekertje-primary-btn--wide"
+            label="Chat"
+          />
           <button type="button" className="vysiongids-zoekertje-primary-btn vysiongids-zoekertje-primary-btn--wide" onClick={onClose}>
             Sluiten
           </button>

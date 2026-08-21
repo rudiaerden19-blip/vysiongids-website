@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import SiteHeader from '@/components/SiteHeader'
 import GidsLoginForm from '@/components/GidsLoginForm'
 
@@ -14,7 +15,9 @@ export default function LoginPage() {
           Na login kun je in beheer je zaak volledig wissen met <strong>Verwijder je zaak</strong> (foto&apos;s, reviews,
           listing).
         </p>
-        <GidsLoginForm />
+        <Suspense fallback={<p className="mt-8 text-gray-600">Formulier laden…</p>}>
+          <GidsLoginForm />
+        </Suspense>
       </main>
     </>
   )

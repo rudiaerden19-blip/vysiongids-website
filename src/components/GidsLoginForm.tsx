@@ -1,13 +1,15 @@
 'use client'
 
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import TitleCaseTextInput from '@/components/TitleCaseTextInput'
 import { storeGidsBeheerLoginHint } from '@/lib/gids-beheer-login-hint'
 
 export default function GidsLoginForm() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const returnTo = searchParams.get('returnTo')?.trim()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -34,7 +36,9 @@ export default function GidsLoginForm() {
         storeGidsBeheerLoginHint(data.slug, data.name)
       }
       router.prefetch('/beheer')
-      router.push('/beheer')
+      const dest =
+        returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/beheer'
+      router.push(dest)
     } catch {
       setError('Netwerkfout.')
     } finally {

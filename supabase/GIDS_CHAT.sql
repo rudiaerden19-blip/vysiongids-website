@@ -1,0 +1,1 @@
+-- Chat tussen premium leden: zie supabase/migrations/020_gids_chat.sql

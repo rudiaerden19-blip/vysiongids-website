@@ -10,6 +10,7 @@ import { belgiumPhoneTelHref, formatBelgiumPhoneDisplay } from '@/lib/belgium-ph
 import { serviceCategoryLabel } from '@/lib/gids-service-categories'
 import { dienstenListingVisitorsDisplay, formatStatNumber } from '@/lib/gids-public-stats'
 
+import GidsChatStartButton from '@/components/GidsChatStartButton'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
 
 /** Leveranciers-zoekkaart — fotolayout HEILIG: zie .cursor/rules/diensten-listing-photo-sacred.mdc */
@@ -104,6 +105,12 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
                 Contacteer verkoper
               </Link>
             )}
+            <GidsChatStartButton
+              contextType="diensten_listing"
+              contextSlug={listing.slug}
+              className="vysiongids-diensten-action-btn"
+              label="Chat"
+            />
             {websiteAction ? (
               <a
                 href={websiteAction.href}

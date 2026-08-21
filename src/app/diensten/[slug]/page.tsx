@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import SiteHeader from '@/components/SiteHeader'
 import DienstenDetailGallery from '@/components/DienstenDetailGallery'
+import DienstenProfielChatButton from '@/components/DienstenProfielChatButton'
 import { getDienstenListingBySlug } from '@/lib/listings-diensten'
 import { formatListingAddressLines, listingPhotoUrls } from '@/lib/listing-display'
 import { serviceCategoryLabel } from '@/lib/gids-service-categories'
@@ -76,6 +77,7 @@ export default async function DienstenProfielPage({ params }: Props) {
                   Contacteer verkoper
                 </a>
               ) : null}
+              <DienstenProfielChatButton slug={listing.slug} />
               {websiteHref ? (
                 <a
                   href={websiteHref}
