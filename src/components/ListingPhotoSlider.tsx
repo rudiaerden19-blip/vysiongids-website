@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import ListingPhoto from '@/components/ListingPhoto'
 
-const SLIDE_MS = 3000
+const SLIDE_MS = 6000
 const FADE_MS = 500
 
 type Props = {
