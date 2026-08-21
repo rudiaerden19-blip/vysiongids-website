@@ -3734,53 +3734,128 @@ body {
   gap: 2.75rem;
 }
 
-.vysiongids-zaak-info-zoekertjes-grid {
+.vysiongids-zaak-zoekertjes-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(min(100%, 11.5rem), 1fr));
-  gap: 1rem;
-}
-
-.vysiongids-zoekertje-card--zaak-info {
   display: flex;
   flex-direction: column;
+  gap: 1.25rem;
+}
+
+.vysiongids-zaak-zoekertje-card {
+  max-width: 42rem;
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 10.5rem) minmax(0, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+  padding: 1.25rem 1.5rem;
+  border-radius: 0.875rem;
+  border: var(--vysiongids-card-border);
+  background: #fff;
+  box-shadow: var(--vysiongids-card-shadow);
+}
+
+@media (max-width: 540px) {
+  .vysiongids-zaak-zoekertje-card {
+    grid-template-columns: 1fr;
+  }
+}
+
+.vysiongids-zaak-zoekertje-photo {
+  display: block;
   width: 100%;
   padding: 0;
-  border-radius: 0.75rem;
+  border: none;
+  border-radius: 0.625rem;
   overflow: hidden;
-  background: #fff;
-  border: var(--vysiongids-card-border);
-  box-shadow: var(--vysiongids-card-shadow);
-  transition: box-shadow 0.15s ease;
+  background: #f3f4f6;
+  cursor: pointer;
+  aspect-ratio: 1;
 }
 
-.vysiongids-zoekertje-card--zaak-info:hover {
-  box-shadow: var(--vysiongids-card-shadow-hover);
-}
-
-.vysiongids-zoekertje-card-media--zaak-info {
-  aspect-ratio: 4 / 3;
-  width: 100%;
-  overflow: hidden;
-  background: #e5e7eb;
-}
-
-.vysiongids-zoekertje-card-media--zaak-info img {
+.vysiongids-zaak-zoekertje-photo img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
 }
 
-.vysiongids-zoekertje-card-body--zaak-info {
-  padding: 0.65rem 0.75rem 0.5rem;
+.vysiongids-zaak-zoekertje-photo--empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: #6b7280;
+  aspect-ratio: 1;
 }
 
-.vysiongids-zoekertje-card-title--zaak-info {
+.vysiongids-zaak-zoekertje-fields {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.vysiongids-zaak-zoekertje-field {
+  display: grid;
+  grid-template-columns: 6.25rem minmax(0, 1fr);
+  gap: 0.65rem;
+  align-items: baseline;
+  margin: 0;
+}
+
+@media (max-width: 540px) {
+  .vysiongids-zaak-zoekertje-field {
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+  }
+}
+
+.vysiongids-zaak-zoekertje-field-label {
+  margin: 0;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #6b7280;
+}
+
+.vysiongids-zaak-zoekertje-field-value {
+  margin: 0;
   font-size: 0.9375rem;
-  margin: 0.15rem 0 0;
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.4;
+}
+
+.vysiongids-zaak-zoekertje-body {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  min-width: 0;
+}
+
+.vysiongids-zaak-zoekertje-detail-btn {
+  align-self: flex-start;
+  padding: 0.55rem 1.1rem;
+  border-radius: 999px;
+  border: 2px solid var(--accent);
+  background: #fff;
+  color: var(--accent);
+  font-size: 0.875rem;
+  font-weight: 700;
+  font-family: inherit;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    color 0.15s ease;
+}
+
+.vysiongids-zaak-zoekertje-detail-btn:hover {
+  background: var(--accent);
+  color: #fff;
 }
 
 .vysiongids-review-list {

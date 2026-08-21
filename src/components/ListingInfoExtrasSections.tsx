@@ -96,7 +96,9 @@ export default function ListingInfoExtrasSections({ listing, zoekertjes = [] }: 
         </section>
       ) : null}
 
-      {hasZoekertjes ? <ListingInfoZoekertjesSection zoekertjes={zoekertjes} /> : null}
+      {hasZoekertjes ? (
+        <ListingInfoZoekertjesSection listingName={listing.name} zoekertjes={zoekertjes} />
+      ) : null}
 
       {gift ? (
         <section className="vysiongids-info-block vysiongids-info-block--gift">
