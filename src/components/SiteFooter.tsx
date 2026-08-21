@@ -72,16 +72,10 @@ export default function SiteFooter() {
                   <FooterModalLink onOpen={() => setAboutOpen(true)}>Over ons</FooterModalLink>
                 </li>
                 <li>
-                  <a href="https://www.vysionorder.com/contact">Werken bij Vysion</a>
-                </li>
-                <li>
                   <FooterModalLink onOpen={() => setPrivacyOpen(true)}>Privacy Policy</FooterModalLink>
                 </li>
                 <li>
                   <FooterModalLink onOpen={() => setContactOpen(true)}>Contact</FooterModalLink>
-                </li>
-                <li>
-                  <a href="https://www.vysionorder.com/help">Help</a>
                 </li>
               </ul>
             </div>
