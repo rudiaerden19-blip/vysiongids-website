@@ -125,7 +125,7 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
             <p className="vysiongids-zaak-intro-promo-text">
               Je kan je zaak ook vanboven op de website <strong>in de kijker</strong> plaatsen of een{' '}
               <strong>promotie van de week</strong> toevoegen. Niets is te gek: Vysiongids kan meegroeien met wat jij voor
-              je zaak wilt bereiken. Na het aankopen van het jaarlijkse lidmaatschap krijg je een factuur (Peppol) die je
+              je zaak wilt bereiken. Na het aankopen van het jaarlijkse lidmaatschap krijg je een factuur (Peppol) die
               voor 100% meetelt in je boekhouding.
             </p>
           </div>
