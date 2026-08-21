@@ -106,7 +106,7 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
             </li>
             <li>
               <strong>PIN bewaren:</strong> je 6-cijferige PIN is nodig om later in te loggen, je zaak te beheren of te
-              verwijderen. Vysiongids kan je PIN niet teruggeven.
+              verwijderen.
             </li>
             <li>
               <strong>Foto&apos;s:</strong> upload enkel beelden van jouw zaak (minstens 1, max. 3). Geen stockfoto&apos;s van andere
