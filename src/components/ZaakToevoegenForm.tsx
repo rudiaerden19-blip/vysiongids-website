@@ -2,6 +2,9 @@
 
 import { useRouter } from 'next/navigation'
 import { useCallback, useRef, useState } from 'react'
+import { GidsButtonLoadingContent } from '@/components/GidsLoadingSpinner'
+import GidsPageLoadingOverlay from '@/components/GidsPageLoadingOverlay'
+import { useGidsBusyUntilNav } from '@/hooks/use-gids-busy-until-nav'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
 import { LISTING_TYPES, type ListingDayHours } from '@/lib/listing-types'
 import OpeningHoursEditor, { type OpeningHoursPayload } from '@/components/OpeningHoursEditor'
@@ -84,8 +87,8 @@ function PhotoPickField({
 export default function ZaakToevoegenForm() {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
   const [loadingHint, setLoadingHint] = useState<string | null>(null)
+  const { busy, startBusy, stopBusy } = useGidsBusyUntilNav()
   const hoursPayloadRef = useRef<OpeningHoursPayload>({ json: '[]', error: null })
 
   const onHoursPayloadChange = useCallback((payload: OpeningHoursPayload) => {
@@ -95,7 +98,7 @@ export default function ZaakToevoegenForm() {
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setError(null)
-    setLoading(true)
+    startBusy()
     const form = e.currentTarget
     const fd = new FormData(form)
     applyTitleCaseFormFields(fd, ['name', 'city', 'address'])
@@ -103,12 +106,12 @@ export default function ZaakToevoegenForm() {
     const hoursRaw = hoursPayload.json || String(fd.get('hoursByDay') ?? '[]')
     if (hoursPayload.error) {
       setError(hoursPayload.error)
-      setLoading(false)
+      stopBusy()
       return
     }
     if (hoursRaw === '[]' || hoursRaw === '') {
       setError('Controleer je openingsuren per dag (tijden en eventueel 2e shift).')
-      setLoading(false)
+      stopBusy()
       return
     }
 
@@ -118,7 +121,7 @@ export default function ZaakToevoegenForm() {
       const websiteNorm = normalizeHttpsUrl(websiteRaw)
       if (!websiteNorm.ok) {
         setError(`Website: ${websiteNorm.message}`)
-        setLoading(false)
+        stopBusy()
         return
       }
       fd.set('website', websiteNorm.url)
@@ -129,7 +132,7 @@ export default function ZaakToevoegenForm() {
       const orderUrlNorm = normalizeHttpsUrl(orderUrlRaw)
       if (!orderUrlNorm.ok) {
         setError(`Bestel- of reserveer-URL: ${orderUrlNorm.message}`)
-        setLoading(false)
+        stopBusy()
         return
       }
       fd.set('orderUrl', orderUrlNorm.url)
@@ -140,17 +143,17 @@ export default function ZaakToevoegenForm() {
       const rows = JSON.parse(hoursRaw) as ListingDayHours[]
       if (!Array.isArray(rows) || rows.length !== 7) {
         setError('Vul openingsuren per dag in.')
-        setLoading(false)
+        stopBusy()
         return
       }
       if (rows.every((r) => r.hours === 'gesloten')) {
         setError('Minstens één dag moet open zijn.')
-        setLoading(false)
+        stopBusy()
         return
       }
     } catch {
       setError('Openingsuren ongeldig.')
-      setLoading(false)
+      stopBusy()
       return
     }
     try {
@@ -166,7 +169,7 @@ export default function ZaakToevoegenForm() {
           compressed = await compressListingPhoto(f)
         } catch {
           setError(`Foto ${i + 1} kon niet verwerkt worden. Probeer een andere foto (JPG/PNG).`)
-          setLoading(false)
+          stopBusy()
           setLoadingHint(null)
           return
         }
@@ -175,13 +178,13 @@ export default function ZaakToevoegenForm() {
       }
       if (!hasPhoto) {
         setError('Upload minstens 1 foto.')
-        setLoading(false)
+        stopBusy()
         setLoadingHint(null)
         return
       }
       if (totalPhotoBytes > GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES) {
         setError('Foto\'s samen nog te groot na verkleinen. Upload minder foto\'s.')
-        setLoading(false)
+        stopBusy()
         setLoadingHint(null)
         return
       }
@@ -199,22 +202,27 @@ export default function ZaakToevoegenForm() {
           } else {
             setError(`Server antwoordde niet correct (${res.status}). Probeer later opnieuw.`)
           }
+          stopBusy()
+          setLoadingHint(null)
           return
         }
       }
       if (!res.ok) {
         setError(data.error ?? 'Registratie mislukt.')
+        stopBusy()
+        setLoadingHint(null)
         return
       }
       if (data.url) {
+        setLoadingHint('Doorverwijzen…')
         window.location.assign(data.url)
         return
       }
+      setLoadingHint('Zoeken openen…')
       router.push('/zoeken')
     } catch {
       setError('Verbinding mislukt. Controleer je internet en probeer opnieuw.')
-    } finally {
-      setLoading(false)
+      stopBusy()
       setLoadingHint(null)
     }
   }
@@ -362,7 +370,7 @@ export default function ZaakToevoegenForm() {
         </p>
       </div>
 
-      <ListingMenuOwnerFields idPrefix="register" disabled={loading} />
+      <ListingMenuOwnerFields idPrefix="register" disabled={busy} />
 
       <div>
         <p className="vysiongids-form-label">
@@ -488,22 +496,27 @@ export default function ZaakToevoegenForm() {
         </p>
         <div className="mt-2 flex flex-wrap gap-3">
           {[0, 1, 2].map((i) => (
-            <PhotoPickField key={i} index={i} required={i === 0} disabled={loading} />
+            <PhotoPickField key={i} index={i} required={i === 0} disabled={busy} />
           ))}
         </div>
       </div>
 
       <ListingOwnerOptionsFields />
 
-      <BeheerInfoExtrasFields disabled={loading} />
+      <BeheerInfoExtrasFields disabled={busy} />
 
       <button
         type="submit"
-        disabled={loading}
+        disabled={busy}
         className="vysiongids-form-submit w-full rounded-xl bg-accent py-3.5 text-lg font-bold text-white hover:bg-accent/90 disabled:opacity-60 sm:w-auto sm:px-10"
       >
-        {loading ? (loadingHint ?? 'Bezig…') : 'Direct online zetten'}
+        {busy ? (
+          <GidsButtonLoadingContent label={loadingHint ?? 'Bezig…'} />
+        ) : (
+          'Direct online zetten'
+        )}
       </button>
+      <GidsPageLoadingOverlay open={busy} message={loadingHint ?? 'Registratie verwerken…'} />
     </form>
   )
 }

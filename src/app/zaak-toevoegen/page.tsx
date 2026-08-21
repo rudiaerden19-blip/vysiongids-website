@@ -1,5 +1,6 @@
 import SiteHeader from '@/components/SiteHeader'
 import ZaakToevoegenForm from '@/components/ZaakToevoegenForm'
+import ZaakToevoegenFooterLoginLink from '@/components/ZaakToevoegenFooterLoginLink'
 import ZaakToevoegenIntroGate from '@/components/ZaakToevoegenIntroGate'
 
 export const metadata = { title: 'Zaak toevoegen' }
@@ -17,13 +18,7 @@ export default function ZaakToevoegenPage() {
         <ZaakToevoegenIntroGate>
           <ZaakToevoegenForm />
         </ZaakToevoegenIntroGate>
-        <p className="mt-10 border-t border-gray-200 pt-6 text-sm text-gray-600">
-          Zaak al online en wil je alles verwijderen?{' '}
-          <a href="/login" className="font-semibold text-accent hover:underline">
-            Log in
-          </a>{' '}
-          → beheer → <strong>Verwijder je zaak</strong>.
-        </p>
+        <ZaakToevoegenFooterLoginLink />
       </main>
     </>
   )

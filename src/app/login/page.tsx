@@ -1,6 +1,7 @@
 import { Suspense } from 'react'
 import SiteHeader from '@/components/SiteHeader'
 import GidsLoginForm from '@/components/GidsLoginForm'
+import GidsLoginFormFallback from '@/components/GidsLoginFormFallback'
 
 export const metadata = { title: 'Login' }
 
@@ -15,7 +16,7 @@ export default function LoginPage() {
           Na login kun je in beheer je zaak volledig wissen met <strong>Verwijder je zaak</strong> (foto&apos;s, reviews,
           listing).
         </p>
-        <Suspense fallback={<p className="mt-8 text-gray-600">Formulier laden…</p>}>
+        <Suspense fallback={<GidsLoginFormFallback />}>
           <GidsLoginForm />
         </Suspense>
       </main>
