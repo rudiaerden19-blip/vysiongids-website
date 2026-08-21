@@ -1,7 +1,13 @@
 import listingsJson from '../../data/listings.json'
 import type { Listing, ListingSearchParams, ListingTypeId } from '@/lib/listing-types'
 import { LISTING_TYPES } from '@/lib/listing-types'
-import { fetchListingBySlugFromDb, fetchFeaturedHorecaListingsFromDb, fetchPublishedHorecaListingCountFromDb, fetchPublishedHorecaListingsForVoiceFromDb, fetchPublishedJobListingsFromDb, fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
+import {
+  fetchFeaturedHorecaListingsFromDb,
+  fetchListingBySlugFromDb,
+  fetchPublishedHorecaListingCountFromDb,
+  fetchPublishedHorecaListingsForVoiceFromDb,
+  fetchPublishedJobListingsFromDb,
+} from '@/lib/gids-listings-db'
 import {
   fetchHorecaListingsForSearchFromDb,
   GIDS_SEARCH_DB_PREFETCH_MAX,
@@ -36,22 +42,6 @@ export {
 
 const jsonFallback = listingsJson as Listing[]
 
-const cachedDbListings = unstable_cache(
-  async () => fetchPublishedListingsFromDb(),
-  ['gids-published-listings'],
-  { revalidate: 60, tags: ['gids-listings'] },
-)
-
-function cachedDbListingsFiltered(province?: string, type?: string) {
-  const p = province?.trim() ?? ''
-  const t = type?.trim() ?? ''
-  return unstable_cache(
-    async () => fetchPublishedListingsFromDb({ province: p || undefined, type: t || undefined }),
-    ['gids-published-listings-filter', p, t],
-    { revalidate: 60, tags: ['gids-listings'] },
-  )()
-}
-
 /** Max. resultaten op /zoeken en search-API (rest via verfijnen). */
 export const GIDS_SEARCH_MAX_RESULTS = 200
 
@@ -61,19 +51,12 @@ export type ListingSearchOutcome = {
   capped: boolean
 }
 
-/** Supabase is leidend per slug; JSON vult ontbrekende demo-zaken aan tot volledige seed. */
-async function loadListings(): Promise<Listing[]> {
-  const fromDb = await cachedDbListings()
-  const bySlug = new Map<string, Listing>()
-  for (const listing of jsonFallback) bySlug.set(listing.slug, listing)
-  if (fromDb?.length) {
-    for (const listing of fromDb) bySlug.set(listing.slug, listing)
-  }
-  return Array.from(bySlug.values())
-}
-
+/** Geen volledige catalogus — max. prefetch voor scripts/diagnostics. */
 export async function getAllListings(): Promise<Listing[]> {
-  return loadListings()
+  if (!isGidsSupabaseConfigured()) return jsonHorecaListings()
+  const plan = planHorecaSearchDbQuery({ type: 'all' }, parseListingSearchQuery(''), GIDS_SEARCH_DB_PREFETCH_MAX)
+  const fromDb = await fetchHorecaListingsForSearchFromDb(plan)
+  return mergeDbWithJsonHoreca(fromDb ?? [])
 }
 
 function jsonHorecaListings(): Listing[] {
@@ -208,23 +191,19 @@ async function loadListingsForSearch(params: ListingSearchParams, parsed: Return
         prefetchCapped: plan.needsMemoryFilter && fromDb.length >= GIDS_SEARCH_DB_PREFETCH_MAX,
       }
     }
-  }
 
-  const q = params.q?.trim()
-  const prov = params.prov?.trim()
-  const formType = (params.type ?? 'all') as ListingTypeId
-  if (!q && (prov || formType !== 'all')) {
-    const fromDb = await cachedDbListingsFiltered(prov, formType !== 'all' ? formType : undefined)
-    if (fromDb?.length) {
+    const retry = await fetchHorecaListingsForSearchFromDb(plan)
+    if (retry) {
       return {
-        listings: mergeDbWithJsonHoreca(fromDb),
-        dbSimpleBrowseAll: false,
-        prefetchCapped: false,
+        listings: mergeDbWithJsonHoreca(retry),
+        dbSimpleBrowseAll: plan.simpleBrowseAll,
+        prefetchCapped: plan.needsMemoryFilter && retry.length >= GIDS_SEARCH_DB_PREFETCH_MAX,
       }
     }
   }
+
   return {
-    listings: await loadListings(),
+    listings: mergeDbWithJsonHoreca([]),
     dbSimpleBrowseAll: false,
     prefetchCapped: false,
   }
@@ -283,8 +262,8 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
 }
 
 export async function listingsDataSourceLabel(): Promise<'supabase' | 'json' | 'mixed'> {
-  const fromDb = await cachedDbListings()
-  const dbCount = fromDb?.length ?? 0
+  if (!isGidsSupabaseConfigured()) return 'json'
+  const dbCount = await fetchPublishedHorecaListingCountFromDb()
   if (dbCount === 0) return 'json'
   if (dbCount >= jsonFallback.length) return 'supabase'
   return 'mixed'
