@@ -4,7 +4,7 @@ import { useCallback, useEffect, useState } from 'react'
 import ListingPanel from '@/components/ListingPanel'
 import type { Listing } from '@/lib/listing-types'
 
-const SLIDE_MS = 5000
+const SLIDE_MS = 6000
 const TRANSITION_MS = 550
 
 type Props = {
@@ -22,6 +22,9 @@ export default function HomeFeaturedCarousel({ listings }: Props) {
     },
     [total],
   )
+
+  const goPrev = useCallback(() => goTo(index - 1), [goTo, index])
+  const goNext = useCallback(() => goTo(index + 1), [goTo, index])
 
   useEffect(() => {
     if (total <= 1) return
@@ -41,20 +44,38 @@ export default function HomeFeaturedCarousel({ listings }: Props) {
 
   return (
     <div className="vysiongids-home-featured-carousel">
-      <div className="vysiongids-home-featured-viewport" aria-live="polite">
-        <div
-          className="vysiongids-home-featured-track"
-          style={{
-            transform: `translateX(-${index * 100}%)`,
-            transition: `transform ${TRANSITION_MS}ms ease-in-out`,
-          }}
+      <div className="vysiongids-home-featured-carousel-stage">
+        <button
+          type="button"
+          className="vysiongids-home-featured-arrow vysiongids-home-featured-arrow--prev"
+          aria-label="Vorige zaak"
+          onClick={goPrev}
         >
-          {listings.map((listing) => (
-            <div key={listing.slug} className="vysiongids-home-featured-slide">
-              <ListingPanel listing={listing} />
-            </div>
-          ))}
+          ‹
+        </button>
+        <div className="vysiongids-home-featured-viewport" aria-live="polite">
+          <div
+            className="vysiongids-home-featured-track"
+            style={{
+              transform: `translateX(-${index * 100}%)`,
+              transition: `transform ${TRANSITION_MS}ms ease-in-out`,
+            }}
+          >
+            {listings.map((listing) => (
+              <div key={listing.slug} className="vysiongids-home-featured-slide">
+                <ListingPanel listing={listing} />
+              </div>
+            ))}
+          </div>
         </div>
+        <button
+          type="button"
+          className="vysiongids-home-featured-arrow vysiongids-home-featured-arrow--next"
+          aria-label="Volgende zaak"
+          onClick={goNext}
+        >
+          ›
+        </button>
       </div>
 
       <div className="vysiongids-home-featured-dots">

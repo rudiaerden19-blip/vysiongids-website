@@ -833,6 +833,52 @@ body {
   margin-top: 0;
 }
 
+.vysiongids-home-featured-carousel-stage {
+  position: relative;
+}
+
+.vysiongids-home-featured-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 4;
+  display: flex;
+  height: 2.5rem;
+  width: 2.5rem;
+  translate: 0 -50%;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.95);
+  font-size: 1.65rem;
+  line-height: 1;
+  color: #0e5d82;
+  box-shadow: 0 2px 10px rgb(0 0 0 / 0.14);
+  cursor: pointer;
+}
+
+.vysiongids-home-featured-arrow:hover {
+  background: #fff;
+}
+
+.vysiongids-home-featured-arrow--prev {
+  left: 0.5rem;
+}
+
+.vysiongids-home-featured-arrow--next {
+  right: 0.5rem;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-home-featured-arrow--prev {
+    left: -1.15rem;
+  }
+
+  .vysiongids-home-featured-arrow--next {
+    right: -1.15rem;
+  }
+}
+
 @media (max-width: 639px) {
   .vysiongids-listing-panel--compact .vysiongids-listing-panel-photo {
     aspect-ratio: 4 / 3;
