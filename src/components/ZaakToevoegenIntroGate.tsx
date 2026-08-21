@@ -124,6 +124,10 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
               commissie moet betalen.
             </p>
             <p className="vysiongids-zaak-intro-promo-text">
+              Wil je nu personeel aanwerven, dan kan je gratis een sollicitatie plaatsen. Duizenden bezoekers die dagelijks
+              onze site bezoeken, krijgen jouw vacature dan te zien.
+            </p>
+            <p className="vysiongids-zaak-intro-promo-text">
               Je kan je zaak ook vanboven op de website <strong>in de kijker</strong> plaatsen of een{' '}
               <strong>promotie van de week</strong> toevoegen. Niets is te gek: Vysiongids kan meegroeien met wat jij voor
               je zaak wilt bereiken. Na het aankopen van het jaarlijkse lidmaatschap krijg je een factuur (Peppol) die
