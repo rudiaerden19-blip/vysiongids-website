@@ -7,6 +7,7 @@ export default function DienstenProfielChatButton({ slug }: { slug: string }) {
     <GidsChatStartButton
       contextType="diensten_listing"
       contextSlug={slug}
+      sellerSlug={slug}
       className="vysiongids-diensten-action-btn"
       label="Chat"
     />

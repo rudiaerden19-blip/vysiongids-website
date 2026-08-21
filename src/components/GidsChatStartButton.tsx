@@ -1,6 +1,6 @@
 'use client'
 
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import GidsChatModal from '@/components/GidsChatModal'
 import type { GidsChatContextType } from '@/lib/gids-chat-types'
 
@@ -8,6 +8,8 @@ type Props = {
   contextType: GidsChatContextType
   contextId?: string
   contextSlug?: string
+  /** Slug van de verkoper/leverancier — chat verborgen als je als die zaak bent ingelogd */
+  sellerSlug?: string
   className?: string
   label?: string
   /** voorkom navigatie (binnen Link) */
@@ -20,10 +22,15 @@ function loginUrlWithReturn(): string {
   return `/login?returnTo=${encodeURIComponent(returnTo)}`
 }
 
+function normalizeSlug(s: string | undefined): string {
+  return (s ?? '').trim().toLowerCase()
+}
+
 export default function GidsChatStartButton({
   contextType,
   contextId,
   contextSlug,
+  sellerSlug,
   className,
   label = 'Chat',
   stopPropagation = true,
@@ -31,6 +38,33 @@ export default function GidsChatStartButton({
   const [threadId, setThreadId] = useState<string | null>(null)
   const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [sessionChecked, setSessionChecked] = useState(false)
+  const [hideAsOwner, setHideAsOwner] = useState(false)
+
+  useEffect(() => {
+    let cancelled = false
+    void (async () => {
+      try {
+        const r = await fetch('/api/gids/me?brief=1', { credentials: 'same-origin' })
+        const data = (await r.json()) as { authenticated?: boolean; slug?: string }
+        if (cancelled) return
+        if (data.authenticated && data.slug) {
+          const mine = normalizeSlug(data.slug)
+          const seller = normalizeSlug(sellerSlug ?? contextSlug)
+          if (mine && seller && mine === seller) {
+            setHideAsOwner(true)
+          }
+        }
+      } catch {
+        /* anoniem of netwerk — knop tonen */
+      } finally {
+        if (!cancelled) setSessionChecked(true)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [contextSlug, sellerSlug])
 
   const startChat = useCallback(async () => {
     setBusy(true)
@@ -62,6 +96,9 @@ export default function GidsChatStartButton({
           if (go) window.location.href = '/beheer'
           return
         }
+        if (r.status === 400 && data.error?.includes('jezelf')) {
+          return
+        }
         alert(data.error ?? 'Chat starten mislukt.')
         return
       }
@@ -75,6 +112,10 @@ export default function GidsChatStartButton({
       setBusy(false)
     }
   }, [contextId, contextSlug, contextType])
+
+  if (!sessionChecked || hideAsOwner) {
+    return null
+  }
 
   return (
     <>

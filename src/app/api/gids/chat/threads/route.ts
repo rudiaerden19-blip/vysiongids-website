@@ -57,7 +57,7 @@ export async function POST(req: Request) {
 
   const { ctx } = resolved
   if (ctx.sellerListingId === owner.listingId) {
-    return NextResponse.json({ error: 'Je kunt geen chat starten met jezelf.' }, { status: 400 })
+    return NextResponse.json({ error: 'Je kunt geen chat starten met jezelf.', code: 'self' }, { status: 400 })
   }
 
   const sellerRow = await fetchListingRowByIdAdmin(ctx.sellerListingId)

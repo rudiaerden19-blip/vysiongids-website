@@ -108,6 +108,7 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
             <GidsChatStartButton
               contextType="diensten_listing"
               contextSlug={listing.slug}
+              sellerSlug={listing.slug}
               className="vysiongids-diensten-action-btn"
               label="Chat"
             />

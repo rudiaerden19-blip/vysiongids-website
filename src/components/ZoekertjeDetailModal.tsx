@@ -126,6 +126,7 @@ export default function ZoekertjeDetailModal({ zoekertje, open, onClose }: Props
           <GidsChatStartButton
             contextType="zoekertje"
             contextId={z.id}
+            sellerSlug={z.listingSlug}
             className="vysiongids-zoekertje-primary-btn vysiongids-zoekertje-primary-btn--wide"
             label="Chat"
           />
