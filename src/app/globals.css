@@ -3691,12 +3691,46 @@ body {
 }
 
 .vysiongids-job-card-types {
-  margin: 0.5rem 0 0;
+  margin: 0;
   font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   color: var(--accent);
+}
+
+.vysiongids-job-card-types--muted {
+  color: #9ca3af;
+  font-weight: 600;
+}
+
+.vysiongids-job-card-detail {
+  margin-top: 0.65rem;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.vysiongids-job-card-address {
+  margin: 0;
+  font-style: normal;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: #4b5563;
+}
+
+.vysiongids-job-card-hours {
+  margin: 0;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: #374151;
+}
+
+.vysiongids-job-card-hours-label {
+  font-weight: 700;
+  color: #6b7280;
+  margin-right: 0.25rem;
 }
 
 .vysiongids-job-card-text {
