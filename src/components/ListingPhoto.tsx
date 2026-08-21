@@ -31,6 +31,8 @@ export default function ListingPhoto({
     setCurrentSrc(src?.trim() || FALLBACK)
   }, [src])
 
+  const eager = Boolean(priority)
+
   if (layout === 'intrinsic') {
     return (
       <Image
@@ -40,6 +42,8 @@ export default function ListingPhoto({
         height={0}
         sizes={sizes}
         priority={priority}
+        loading={eager ? 'eager' : 'lazy'}
+        fetchPriority={eager ? 'high' : 'low'}
         className={className}
         style={{ width: '100%', height: 'auto', display: 'block' }}
         onError={() => {
@@ -56,6 +60,8 @@ export default function ListingPhoto({
       fill
       sizes={sizes}
       priority={priority}
+      loading={eager ? 'eager' : 'lazy'}
+      fetchPriority={eager ? 'high' : 'low'}
       className={className}
       style={{ objectFit, objectPosition: 'center' }}
       onError={() => {
