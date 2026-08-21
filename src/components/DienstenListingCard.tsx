@@ -80,6 +80,13 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
           </div>
         </div>
       </div>
+      <div className="vysiongids-listing-panel-hiring vysiongids-listing-panel-hiring--empty vysiongids-diensten-verified-bar">
+        <div className="vysiongids-listing-panel-hiring-inner">
+          <div className="vysiongids-listing-panel-hiring-copy">
+            <span className="vysiongids-listing-panel-hiring-text">Dit bedrijf is geverifieerd</span>
+          </div>
+        </div>
+      </div>
     </article>
   )
 }
