@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import SiteHeader from '@/components/SiteHeader'
 
-export const metadata = { title: 'Diensten en reclame' }
+export const metadata = { title: 'Publiciteit en diensten' }
 
 export default function DienstenPage() {
   return (
@@ -16,7 +16,7 @@ export default function DienstenPage() {
             color: '#111827',
           }}
         >
-          Diensten en reclame
+          Publiciteit en diensten
         </h1>
         <p style={{ margin: '0 0 1.25rem', maxWidth: '42rem', color: '#4b5563', lineHeight: 1.65 }}>
           Heb je een onderneming die diensten verkoopt, bijv. kassasystemen, horecameubilair, inrichting horeca, of ben
