@@ -17,6 +17,7 @@ type Props = {
   /** Automatisch wisselen (alleen zaakpagina) */
   autoPlay?: boolean
   objectFit?: 'cover' | 'contain'
+  layout?: 'fill' | 'intrinsic'
 }
 
 function uniqueUrls(urls: string[]): string[] {
@@ -38,6 +39,7 @@ export default function ListingPhotoSlider({
   showControls = false,
   autoPlay = false,
   objectFit = 'cover',
+  layout = 'fill',
 }: Props) {
   const slides = useMemo(() => uniqueUrls(urls), [urls])
   const [index, setIndex] = useState(0)
@@ -85,7 +87,15 @@ export default function ListingPhotoSlider({
 
   if (total === 0) {
     return (
-      <ListingPhoto src="" alt={alt} sizes={sizes} className={className} priority={priority} objectFit={objectFit} />
+      <ListingPhoto
+        src=""
+        alt={alt}
+        sizes={sizes}
+        className={className}
+        priority={priority}
+        objectFit={objectFit}
+        layout={layout}
+      />
     )
   }
 
@@ -98,6 +108,7 @@ export default function ListingPhotoSlider({
         className={className}
         priority={priority}
         objectFit={objectFit}
+        layout={layout}
       />
     )
   }
@@ -111,14 +122,19 @@ export default function ListingPhotoSlider({
         className={className}
         priority={priority}
         objectFit={objectFit}
+        layout={layout}
       />
     )
   }
 
   const src = slides[index]!
+  const sliderClass =
+    layout === 'intrinsic'
+      ? 'vysiongids-listing-photo-slider vysiongids-listing-photo-slider--intrinsic'
+      : 'vysiongids-listing-photo-slider'
 
   return (
-    <div className="vysiongids-listing-photo-slider">
+    <div className={sliderClass}>
       <div
         className={`vysiongids-listing-photo-slider-stage ${visible ? 'is-visible' : ''}`}
         aria-live="polite"
@@ -131,6 +147,7 @@ export default function ListingPhotoSlider({
           className={className}
           priority={priority && index === 0}
           objectFit={objectFit}
+          layout={layout}
         />
       </div>
 
