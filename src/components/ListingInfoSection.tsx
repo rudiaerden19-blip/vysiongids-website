@@ -3,6 +3,7 @@
 import ListingAmenityIcon from '@/components/ListingAmenityIcon'
 import ListingInfoExtrasSections from '@/components/ListingInfoExtrasSections'
 import ListingZaakQr from '@/components/ListingZaakQr'
+import { belgiumPhoneTelHref, formatBelgiumPhoneDisplay } from '@/lib/belgium-phone'
 import { resolveListingAmenityList } from '@/lib/listing-amenity-list'
 import {
   AMENITY_LABELS,
@@ -66,7 +67,8 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
   const hoursRows = resolveHoursByDay(listing)
   const schedule = listing.infoExtras?.schedule
   const website = listing.website?.trim()
-  const phone = listing.phone?.trim()
+  const phoneDisplay = formatBelgiumPhoneDisplay(listing.phone)
+  const phoneHref = belgiumPhoneTelHref(listing.phone)
   const email = listing.email?.trim()
   const amenityList = resolveListingAmenityList(listing)
 
@@ -110,12 +112,12 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
                 </a>
               </li>
             ) : null}
-            {phone ? (
+            {phoneDisplay && phoneHref ? (
               <li className="vysiongids-zaak-info-item vysiongids-zaak-info-item--contact">
                 <span className="vysiongids-zaak-info-icon vysiongids-zaak-info-icon--blue">
                   <ContactIcon kind="phone" />
                 </span>
-                <a href={`tel:${phone.replace(/\s/g, '')}`}>{phone}</a>
+                <a href={phoneHref}>{phoneDisplay}</a>
               </li>
             ) : null}
             {email ? (
@@ -134,7 +136,7 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
                 <span className="vysiongids-zaak-info-amenity-label">{AMENITY_LABELS[id]}</span>
               </li>
             ))}
-            {!website && !phone && !email && amenityList.length === 0 ? (
+            {!website && !phoneDisplay && !email && amenityList.length === 0 ? (
               <li className="vysiongids-zaak-info-item">
                 <span style={{ color: '#6b7280', fontSize: '0.9375rem' }}>Contactgegevens volgen binnenkort.</span>
               </li>

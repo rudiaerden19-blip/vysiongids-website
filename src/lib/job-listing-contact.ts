@@ -1,4 +1,5 @@
 import type { Listing } from '@/lib/listing-types'
+import { belgiumPhoneTelHref, formatBelgiumPhoneDisplay } from '@/lib/belgium-phone'
 
 export function resolveJobListingEmail(listing: Listing): string | null {
   const hiringEmail = listing.infoExtras?.hiring?.email?.trim()
@@ -9,9 +10,14 @@ export function resolveJobListingEmail(listing: Listing): string | null {
 
 export function resolveJobListingPhone(listing: Listing): string | null {
   const hiringPhone = listing.infoExtras?.hiring?.phone?.trim()
+  const raw = hiringPhone || listing.phone?.trim()
+  return raw ? formatBelgiumPhoneDisplay(raw) : null
+}
+
+export function resolveJobListingPhoneRaw(listing: Listing): string | null {
+  const hiringPhone = listing.infoExtras?.hiring?.phone?.trim()
   if (hiringPhone) return hiringPhone
-  const general = listing.phone?.trim()
-  return general || null
+  return listing.phone?.trim() || null
 }
 
 export function jobListingMailtoHref(listing: Listing, email: string): string {
@@ -19,5 +25,5 @@ export function jobListingMailtoHref(listing: Listing, email: string): string {
 }
 
 export function jobListingTelHref(phone: string): string {
-  return `tel:${phone.replace(/[^\d+]/g, '')}`
+  return belgiumPhoneTelHref(phone) ?? `tel:${phone.replace(/[^\d+]/g, '')}`
 }

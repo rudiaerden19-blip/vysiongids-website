@@ -1,4 +1,5 @@
 import type { Listing } from '@/lib/listing-types'
+import { belgiumPhoneTelHref } from '@/lib/belgium-phone'
 import { listingHasInfoExtras } from '@/lib/listing-info-extras'
 import { hiringJobTypeLabels } from '@/lib/listing-hiring'
 
@@ -75,7 +76,10 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
                   ) : null}
                   {(hiring.phone?.trim() || listing.phone?.trim()) ? (
                     <a
-                      href={`tel:${(hiring.phone || listing.phone || '').replace(/\s/g, '')}`}
+                      href={
+                        belgiumPhoneTelHref(hiring.phone || listing.phone) ??
+                        `tel:${(hiring.phone || listing.phone || '').replace(/\s/g, '')}`
+                      }
                       className="vysiongids-hiring-phone"
                     >
                       Telefoon

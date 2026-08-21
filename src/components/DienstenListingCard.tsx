@@ -6,8 +6,10 @@ import ListingStarRating from '@/components/ListingStarRating'
 import type { Listing } from '@/lib/listing-types'
 import { formatListingAddressLines } from '@/lib/listing-display'
 import { listingPhotoUrls } from '@/lib/listing-display'
+import { belgiumPhoneTelHref, formatBelgiumPhoneDisplay } from '@/lib/belgium-phone'
 import { serviceCategoryLabel } from '@/lib/gids-service-categories'
 import { dienstenListingVisitorsDisplay, formatStatNumber } from '@/lib/gids-public-stats'
+
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
 
 function dienstenWebsiteAction(website: string | undefined): { href: string; label: string } | null {
@@ -25,13 +27,6 @@ function dienstenWebsiteAction(website: string | undefined): { href: string; lab
   }
 }
 
-function contactTel(phone: string | undefined): string | null {
-  const p = phone?.trim()
-  if (!p) return null
-  const digits = p.replace(/[^\d+]/g, '')
-  return digits ? `tel:${digits}` : null
-}
-
 function contactMail(email: string | undefined): string | null {
   const e = email?.trim()
   if (!e || !e.includes('@')) return null
@@ -41,7 +36,8 @@ function contactMail(email: string | undefined): string | null {
 export default function DienstenListingCard({ listing }: { listing: Listing }) {
   const { street, cityLine } = formatListingAddressLines(listing)
   const profileHref = `/diensten/${listing.slug}`
-  const telHref = contactTel(listing.phone)
+  const telHref = belgiumPhoneTelHref(listing.phone)
+  const phoneDisplay = formatBelgiumPhoneDisplay(listing.phone)
   const mailHref = contactMail(listing.email)
   const websiteAction = dienstenWebsiteAction(listing.website)
   const visitors = dienstenListingVisitorsDisplay(listing.slug)
@@ -74,8 +70,8 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
             <br />
             {cityLine}
           </p>
-          {listing.phone ? (
-            <p className="vysiongids-diensten-card-phone">{listing.phone}</p>
+          {phoneDisplay ? (
+            <p className="vysiongids-diensten-card-phone">{phoneDisplay}</p>
           ) : null}
           {listing.serviceDescription ? (
             <p className="vysiongids-diensten-card-desc">{listing.serviceDescription}</p>

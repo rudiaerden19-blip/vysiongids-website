@@ -6,6 +6,7 @@ import { getDienstenListingBySlug } from '@/lib/listings-diensten'
 import { formatListingAddressLines, listingPhotoUrls } from '@/lib/listing-display'
 import { serviceCategoryLabel } from '@/lib/gids-service-categories'
 import { provinceLabel } from '@/lib/belgium-locations'
+import { belgiumPhoneTelHref, formatBelgiumPhoneDisplay } from '@/lib/belgium-phone'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
 
 type Props = { params: Promise<{ slug: string }> }
@@ -23,9 +24,9 @@ export default async function DienstenProfielPage({ params }: Props) {
   if (!listing) notFound()
 
   const { street, cityLine } = formatListingAddressLines(listing)
-  const tel = listing.phone?.trim()
+  const telHref = belgiumPhoneTelHref(listing.phone)
+  const phoneDisplay = formatBelgiumPhoneDisplay(listing.phone)
   const mail = listing.email?.trim()
-  const telHref = tel ? `tel:${tel.replace(/[^\d+]/g, '')}` : null
   const mailHref = mail && mail.includes('@') ? `mailto:${mail}` : null
   const websiteRaw = listing.website?.trim()
   const websiteNorm = websiteRaw ? normalizeHttpsUrl(websiteRaw) : null
@@ -64,7 +65,7 @@ export default async function DienstenProfielPage({ params }: Props) {
                 </>
               ) : null}
             </p>
-            {tel ? <p className="mt-2 font-medium text-gray-900">{tel}</p> : null}
+            {phoneDisplay ? <p className="mt-2 font-medium text-gray-900">{phoneDisplay}</p> : null}
             <div className="vysiongids-diensten-detail-actions mt-6">
               {telHref ? (
                 <a href={telHref} className="vysiongids-diensten-action-btn">
