@@ -62,16 +62,17 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
         </div>
         <div className="vysiongids-zaak-intro-body">
           <p className="vysiongids-zaak-intro-promo">
-            Heb je geen reserveringssoftware of online bestelplatform? Indien je lid bent van Vysiongids, kan je op de
-            knop <strong>Online platform</strong> of <strong>Reserveringen</strong> drukken en je registreren. Deze
-            softwaremodules behoren tot de meest professionele softwareplatformen in België. Je kunt je software
-            downloaden voor <strong>€49 per jaar</strong>.
-          </p>
-          <p className="vysiongids-zaak-intro-promo">
             Wil je lid worden van Vysiongids? Druk dan bovenaan op de knop <strong>Zaak toevoegen</strong> en volg alle
             stappen. Het lidmaatschap kost <strong>€49 per jaar</strong>. Hiervoor ontvang je alle premiumfuncties
             zonder limiet. Je zaak wordt dan direct zichtbaar voor duizenden klanten in de buurt, maar ook in heel
             België.
+          </p>
+          <p className="vysiongids-zaak-intro-promo">
+            Heb je geen reserveringssoftware of online bestelplatform? Indien je lid bent van Vysiongids, kan je op de
+            knop <strong>Online platform</strong> of <strong>Reserveringen</strong> drukken en je registreren. Deze
+            softwaremodules behoren tot de meest professionele softwareplatformen in België. Je kunt je software
+            downloaden voor <strong>€49 per jaar</strong>. Dit is tot <strong>20 keer goedkoper</strong> dan andere
+            platformen en alleen toegankelijk voor onze Vysiongids-leden.
           </p>
           <p>
             Voordat je je zaak online zet in Vysiongids, lees onderstaande punten. Zo blijft de gids betrouwbaar voor
