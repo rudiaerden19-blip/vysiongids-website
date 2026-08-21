@@ -54,8 +54,13 @@ export default function DienstenIntroGate({ children }: Props) {
             Vul je gegevens, categorieën (kassa, meubilair, …) en tot <strong>10 foto&apos;s</strong> in. Na betaling is
             je profiel zichtbaar. Klanten contacteeren je via <strong>Contacteer verkoper</strong> (telefoon/e-mail).
           </p>
-          <button type="button" className="vysiongids-zaak-intro-continue" onClick={continueToForm}>
+        </div>
+        <div className="vysiongids-zaak-intro-actions">
+          <button type="button" className="vysiongids-zaak-intro-btn-primary" onClick={continueToForm}>
             Doorgaan naar formulier
+          </button>
+          <button type="button" className="vysiongids-zaak-intro-btn-secondary" onClick={dismiss}>
+            Sluiten
           </button>
         </div>
       </div>
