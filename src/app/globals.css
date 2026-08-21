@@ -5078,6 +5078,38 @@ body {
   text-align: center;
 }
 
+.vysiongids-diensten-verified-bar-rating {
+  grid-column: 1;
+  justify-self: start;
+  min-width: 0;
+}
+
+.vysiongids-diensten-verified-bar .vysiongids-star-rating {
+  font-size: 0.8125rem;
+  gap: 0.25rem 0.4rem;
+}
+
+.vysiongids-diensten-verified-bar .vysiongids-star-rating-stars {
+  color: #fbbf24;
+}
+
+.vysiongids-diensten-verified-bar .vysiongids-star-rating-avg,
+.vysiongids-diensten-verified-bar .vysiongids-star-rating-count {
+  color: #fff;
+  font-weight: 600;
+}
+
+.vysiongids-diensten-verified-bar .vysiongids-star-rating-link:hover .vysiongids-star-rating-avg,
+.vysiongids-diensten-verified-bar .vysiongids-star-rating-link:hover .vysiongids-star-rating-count {
+  color: #e0f2fe;
+}
+
+.vysiongids-diensten-verified-bar .vysiongids-star-rating--empty .vysiongids-star-rating-count {
+  color: rgb(255 255 255 / 0.85);
+  font-style: normal;
+  font-size: 0.75rem;
+}
+
 .vysiongids-diensten-verified-bar-visitors {
   grid-column: 3;
   justify-self: end;
