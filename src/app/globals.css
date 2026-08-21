@@ -572,7 +572,7 @@ body {
 .vysiongids-platform-promo-modal-root {
   position: fixed;
   inset: 0;
-  z-index: 10060;
+  z-index: 10150;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -2983,8 +2983,8 @@ body {
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    width: min(42rem, calc(100vw - 2rem));
-    max-height: min(88vh, 40rem);
+    width: min(44rem, calc(100vw - 2rem));
+    max-height: min(92vh, 54rem);
     padding: 2rem 2rem 1.5rem;
   }
 }
@@ -3056,6 +3056,52 @@ body {
 
 .vysiongids-zaak-intro-promo strong {
   color: var(--accent);
+}
+
+.vysiongids-zaak-intro-platform-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+  margin: 0 0 1.1rem;
+}
+
+@media (min-width: 480px) {
+  .vysiongids-zaak-intro-platform-btns {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .vysiongids-zaak-intro-platform-btn {
+    flex: 1 1 calc(50% - 0.3rem);
+    min-width: min(100%, 14rem);
+  }
+}
+
+.vysiongids-zaak-intro-platform-btn {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-radius: 0.65rem;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  text-align: center;
+  cursor: pointer;
+  font-family: inherit;
+  box-shadow: 0 4px 14px rgb(14 93 130 / 0.22);
+}
+
+.vysiongids-zaak-intro-platform-btn:hover {
+  filter: brightness(1.05);
+}
+
+.vysiongids-zaak-intro-lead {
+  margin: 0 0 0.75rem;
+  font-weight: 500;
+  color: #111827;
 }
 
 .vysiongids-zaak-intro-body ul {

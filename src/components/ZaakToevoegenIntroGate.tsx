@@ -2,6 +2,7 @@
 
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
+import VysionPlatformPromoModal, { type VysionPlatformPromoKind } from '@/components/VysionPlatformPromoModal'
 
 type Props = {
   children: React.ReactNode
@@ -10,6 +11,7 @@ type Props = {
 export default function ZaakToevoegenIntroGate({ children }: Props) {
   const router = useRouter()
   const [open, setOpen] = useState(true)
+  const [platformPromo, setPlatformPromo] = useState<VysionPlatformPromoKind | null>(null)
 
   const continueToForm = useCallback(() => setOpen(false), [])
 
@@ -74,7 +76,23 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
             downloaden voor <strong>€49 per jaar</strong>. Dit is tot <strong>20 keer goedkoper</strong> dan andere
             platformen en alleen toegankelijk voor onze Vysiongids-leden.
           </p>
-          <p>
+          <div className="vysiongids-zaak-intro-platform-btns">
+            <button
+              type="button"
+              className="vysiongids-zaak-intro-platform-btn"
+              onClick={() => setPlatformPromo('order')}
+            >
+              1 — Online bestelplatform
+            </button>
+            <button
+              type="button"
+              className="vysiongids-zaak-intro-platform-btn"
+              onClick={() => setPlatformPromo('reservations')}
+            >
+              2 — Restaurantreserveringen
+            </button>
+          </div>
+          <p className="vysiongids-zaak-intro-lead">
             Voordat je je zaak online zet in Vysiongids, lees onderstaande punten. Zo blijft de gids betrouwbaar voor
             klanten en voor alle horeca-zaken in België.
           </p>
@@ -117,6 +135,11 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
           </button>
         </div>
       </div>
+      <VysionPlatformPromoModal
+        kind={platformPromo}
+        open={platformPromo !== null}
+        onClose={() => setPlatformPromo(null)}
+      />
     </>
   )
 }
