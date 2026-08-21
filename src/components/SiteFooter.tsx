@@ -3,6 +3,7 @@
 import type { ReactNode } from 'react'
 import Link from 'next/link'
 import { useState } from 'react'
+import GidsAboutModal from '@/components/GidsAboutModal'
 import GidsContactModal from '@/components/GidsContactModal'
 import GidsPrivacyModal from '@/components/GidsPrivacyModal'
 
@@ -46,6 +47,7 @@ export default function SiteFooter() {
   const year = new Date().getFullYear()
   const [contactOpen, setContactOpen] = useState(false)
   const [privacyOpen, setPrivacyOpen] = useState(false)
+  const [aboutOpen, setAboutOpen] = useState(false)
 
   return (
     <>
@@ -67,7 +69,7 @@ export default function SiteFooter() {
               <h3 className="vysiongids-site-footer-heading">Vysiongids</h3>
               <ul className="vysiongids-site-footer-list">
                 <li>
-                  <a href="https://www.vysionorder.com/over-ons">Over ons</a>
+                  <FooterModalLink onOpen={() => setAboutOpen(true)}>Over ons</FooterModalLink>
                 </li>
                 <li>
                   <a href="https://www.vysionorder.com/contact">Werken bij Vysion</a>
@@ -145,6 +147,7 @@ export default function SiteFooter() {
       </footer>
       <GidsContactModal open={contactOpen} onClose={() => setContactOpen(false)} />
       <GidsPrivacyModal open={privacyOpen} onClose={() => setPrivacyOpen(false)} />
+      <GidsAboutModal open={aboutOpen} onClose={() => setAboutOpen(false)} />
     </>
   )
 }
