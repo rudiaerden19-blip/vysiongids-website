@@ -324,11 +324,11 @@ export default function BeheerClient({ serverSession }: Props) {
             }
           }}
         />
-      ) : listingLoading ? (
+      ) : !listing && listingLoading ? (
         <p className="text-gray-600">Je gegevens laden…</p>
-      ) : (
+      ) : !listing && !listingLoading ? (
         <p className="text-red-700">Gegevens laden mislukt. Vernieuw de pagina.</p>
-      )}
+      ) : null}
 
       <div className="flex flex-wrap gap-3 border-t border-gray-200 pt-6">
         <button
