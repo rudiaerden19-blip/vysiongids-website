@@ -56,7 +56,7 @@ export default function DienstenIntroGate({ children }: Props) {
             via je <strong>Website</strong>-knop.
           </p>
           <p className="vysiongids-zaak-intro-promo">
-            Let op: het is bewezen — met een leveranciersprofiel boost je je zaak meestal tot{' '}
+            Let op: het is bewezen — met een leveranciersprofiel boost je je zaak tot{' '}
             <strong>35% meer zichtbaarheid</strong>.
           </p>
         </div>
