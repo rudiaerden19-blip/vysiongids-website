@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import SiteHeader from '@/components/SiteHeader'
-import ListingPhotoSlider from '@/components/ListingPhotoSlider'
+import DienstenDetailGallery from '@/components/DienstenDetailGallery'
 import { getDienstenListingBySlug } from '@/lib/listings-diensten'
 import { formatListingAddressLines, listingPhotoUrls } from '@/lib/listing-display'
 import { serviceCategoryLabel } from '@/lib/gids-service-categories'
@@ -38,16 +38,7 @@ export default async function DienstenProfielPage({ params }: Props) {
         </p>
 
         <div className="vysiongids-diensten-detail-grid">
-          <div className="vysiongids-diensten-detail-gallery">
-            <ListingPhotoSlider
-              urls={listingPhotoUrls(listing)}
-              alt={listing.name}
-              sizes="(max-width: 768px) 100vw, 480px"
-              showControls
-              priority
-              layout="intrinsic"
-            />
-          </div>
+          <DienstenDetailGallery urls={listingPhotoUrls(listing)} alt={listing.name} />
           <div>
             <h1 className="text-2xl font-bold text-gray-900 sm:text-3xl">{listing.name}</h1>
             {listing.serviceCategories?.length ? (

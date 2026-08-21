@@ -5181,6 +5181,25 @@ body {
   border-radius: 0.75rem;
 }
 
+.vysiongids-diensten-detail-gallery-enlarge {
+  display: block;
+  width: 100%;
+  margin: 0.5rem 0 0;
+  padding: 0.25rem 0;
+  border: none;
+  background: none;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #0e5d82;
+  text-align: center;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.vysiongids-diensten-detail-gallery-enlarge:hover {
+  color: #0a4a68;
+}
+
 .vysiongids-diensten-detail-desc {
   padding: 1.25rem;
   border-radius: 0.75rem;

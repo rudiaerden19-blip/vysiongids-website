@@ -18,6 +18,9 @@ type Props = {
   autoPlay?: boolean
   objectFit?: 'cover' | 'contain'
   layout?: 'fill' | 'intrinsic'
+  onSlideIndexChange?: (index: number) => void
+  /** Sync slide (bijv. na lightbox) zonder de slider opnieuw te mounten. */
+  activeIndex?: number
 }
 
 function uniqueUrls(urls: string[]): string[] {
@@ -40,6 +43,8 @@ export default function ListingPhotoSlider({
   autoPlay = false,
   objectFit = 'cover',
   layout = 'fill',
+  onSlideIndexChange,
+  activeIndex,
 }: Props) {
   const slides = useMemo(() => uniqueUrls(urls), [urls])
   const [index, setIndex] = useState(0)
@@ -84,6 +89,10 @@ export default function ListingPhotoSlider({
     setIndex(0)
     setVisible(true)
   }, [slides])
+
+  useEffect(() => {
+    onSlideIndexChange?.(index)
+  }, [index, onSlideIndexChange])
 
   if (total === 0) {
     return (
