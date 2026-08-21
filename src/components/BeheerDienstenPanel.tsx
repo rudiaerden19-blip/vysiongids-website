@@ -18,8 +18,8 @@ export default function BeheerDienstenPanel({ listing, slug }: { listing: Listin
         Publiek dienstenprofiel bekijken →
       </Link>
       <p className="text-sm text-gray-600">
-        Bewerk hieronder je advertentietekst en foto&apos;s. Extra reclame (zoekertjes) beheer je in de sectie{' '}
-        <strong>Reclame / zoekertjes</strong>.
+        Bewerk hieronder je advertentietekst en foto&apos;s op je dienstenprofiel. Zoekertjes op de marktplaats zijn
+        alleen voor horeca-zaken met premium — niet voor leveranciers.
       </p>
     </div>
   )

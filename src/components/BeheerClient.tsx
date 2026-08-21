@@ -16,7 +16,6 @@ import GidsOwnerSessionKeepAlive from '@/components/GidsOwnerSessionKeepAlive'
 import type { Listing } from '@/lib/listing-types'
 import type { BeheerServerSession } from '@/lib/gids-beheer-server'
 import { isDienstenListing } from '@/lib/listing-segment'
-import { listingHasGidsPremium } from '@/lib/gids-premium'
 import BeheerDienstenPanel from '@/components/BeheerDienstenPanel'
 
 const BeheerGidsChatSection = dynamic(() => import('@/components/BeheerGidsChatSection'), {
@@ -84,8 +83,6 @@ export default function BeheerClient({ serverSession }: Props) {
 
   const premiumMember = listing?.premiumMember ?? me?.premiumMember
   const dienstenAccount = listing ? isDienstenListing(listing) : false
-  const zoekertjesAllowed =
-    listingHasGidsPremium(premiumMember) || Boolean(listing?.dienstenActive && dienstenAccount)
 
   useEffect(() => {
     if (serverSession.authenticated && serverSession.listing) {
@@ -235,21 +232,6 @@ export default function BeheerClient({ serverSession }: Props) {
 
           <BeheerZoekertjesSection
             premiumMember={premiumMember}
-            modalOpen={zoekertjeModalOpen}
-            onModalOpenChange={setZoekertjeModalOpen}
-            placeRequestId={zoekertjePlaceRequest}
-          />
-        </>
-      ) : listing?.dienstenActive ? (
-        <>
-          <BeheerPremiumQuickNav
-            variant="diensten"
-            zoekertjesAllowed={zoekertjesAllowed}
-            listingName={me?.name}
-            onZoekertjePlace={() => setZoekertjePlaceRequest((n) => n + 1)}
-          />
-          <BeheerZoekertjesSection
-            premiumMember={zoekertjesAllowed}
             modalOpen={zoekertjeModalOpen}
             onModalOpenChange={setZoekertjeModalOpen}
             placeRequestId={zoekertjePlaceRequest}

@@ -55,7 +55,7 @@ async function requireOwnerPremium(id: string) {
   if (!listingId) return { error: NextResponse.json({ error: 'Log in met je zaak.' }, { status: 401 }) }
   const row = await fetchListingRowByIdAdmin(listingId)
   if (!row || !listingCanManageZoekertjesFromRow(row)) {
-    return { error: NextResponse.json({ error: 'Premium of actief diensten-lidmaatschap vereist.' }, { status: 403 }) }
+    return { error: NextResponse.json({ error: 'Premium horeca vereist — geen zoekertjes voor leveranciers.' }, { status: 403 }) }
   }
   const ad = await fetchGidsZoekertjeByIdAdmin(id)
   if (!ad) return { error: NextResponse.json({ error: 'Zoekertje niet gevonden.' }, { status: 404 }) }

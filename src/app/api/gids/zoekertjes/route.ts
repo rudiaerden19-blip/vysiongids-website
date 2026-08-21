@@ -57,7 +57,7 @@ async function requirePremiumListing() {
       error: NextResponse.json(
         {
           error:
-            'Zoekertjes plaatsen is enkel voor premium-leden (€50/jaar) of actieve diensten-leden (€99/jaar).',
+            'Zoekertjes plaatsen is enkel voor premium horeca-leden (€50/jaar), niet voor leveranciersprofielen.',
         },
         { status: 403 },
       ),
