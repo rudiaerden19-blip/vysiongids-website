@@ -12,6 +12,7 @@ import { siteOriginFromRequest, uploadGidsListingPhoto, ensureGidsPhotosBucket }
 import { geocodeListingAddress } from '@/lib/gids-listing-geocode'
 import { enforceRateLimit } from '@/lib/gids-rate-limit'
 import { grantDienstenMembershipDevByIdAdmin } from '@/lib/gids-diensten-db'
+import { isDienstenComplimentaryRegistration } from '@/lib/gids-diensten-complimentary'
 import { gidsDienstenRequiresCheckout, gidsDienstenUnitAmountCents } from '@/lib/gids-diensten-stripe'
 
 export const maxDuration = 60
@@ -70,7 +71,8 @@ async function handleRegisterDienstenPost(req: Request) {
     city: d.city,
   })
 
-  const requireCheckout = gidsDienstenRequiresCheckout()
+  const complimentary = isDienstenComplimentaryRegistration({ name: d.name, email: d.email })
+  const requireCheckout = gidsDienstenRequiresCheckout() && !complimentary
   const initialStatus = requireCheckout ? 'hidden' : 'published'
 
   const { data: inserted, error: insertErr } = await admin
@@ -83,6 +85,7 @@ async function handleRegisterDienstenPost(req: Request) {
         lat: coords?.lat ?? null,
         lng: coords?.lng ?? null,
         status: initialStatus,
+        dienstenComplimentary: complimentary,
       }),
     )
     .select('id, slug')

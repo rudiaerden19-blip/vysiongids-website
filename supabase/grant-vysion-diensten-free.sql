@@ -1,12 +1,9 @@
--- Gratis diensten-registratie voor Vysion (eigenaar / test).
--- Voer uit in Supabase SQL Editor ná aanmelden op /diensten/aanmelden,
--- of als profiel op hidden blijft na geannuleerde Stripe-betaling.
---
--- Werkt op alle gids_listings waar naam of slug "vysion" bevat en segment diensten is.
--- Pas het filter aan als je een andere testnaam gebruikt.
+-- Gratis diensten-lidmaatschap voor Vysion (eigenaar / test).
+-- Voer migratie 019 uit als kolom diensten_complimentary nog ontbreekt.
 
 UPDATE public.gids_listings
 SET
+  diensten_complimentary = true,
   status = 'published',
   diensten_paid_at = COALESCE(diensten_paid_at, timezone('utc', now())),
   diensten_expires_at = timezone('utc', now()) + interval '10 years'
@@ -16,21 +13,14 @@ WHERE
     name_normalized ILIKE '%vysion%'
     OR slug ILIKE '%vysion%'
     OR name ILIKE '%vysion%'
+    OR email ILIKE '%@vysionhoreca.com'
   );
 
--- Controle
-SELECT
-  slug,
-  name,
-  status,
-  listing_segment,
-  diensten_paid_at,
-  diensten_expires_at
+SELECT slug, name, status, diensten_complimentary, diensten_expires_at
 FROM public.gids_listings
-WHERE
-  listing_segment = 'diensten'
+WHERE listing_segment = 'diensten'
   AND (
-    name_normalized ILIKE '%vysion%'
+    name ILIKE '%vysion%'
     OR slug ILIKE '%vysion%'
-    OR name ILIKE '%vysion%'
+    OR email ILIKE '%@vysionhoreca.com'
   );

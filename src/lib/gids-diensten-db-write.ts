@@ -9,6 +9,7 @@ type InsertExtras = {
   lng?: number | null
   /** hidden tot betaling, published na webhook of zonder Stripe */
   status: 'published' | 'hidden'
+  dienstenComplimentary?: boolean
 }
 
 export function buildGidsDienstenInsertRow(
@@ -41,6 +42,9 @@ export function buildGidsDienstenInsertRow(
     rating_count: 0,
     pickup_enabled: false,
     delivery_enabled: false,
+  }
+  if (extras.dienstenComplimentary) {
+    row.diensten_complimentary = true
   }
   if (typeof extras.lat === 'number' && typeof extras.lng === 'number') {
     row.lat = extras.lat
