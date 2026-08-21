@@ -50,17 +50,8 @@ function HeaderNavNewBadge({ variant = 'stacked' }: { variant?: 'stacked' | 'inl
   return (
     <span
       className={`vysiongids-header-nav-new-badge${variant === 'inline' ? ' vysiongids-header-nav-new-badge--inline' : ''}`}
-      aria-hidden
     >
-      <svg className="vysiongids-header-nav-new-badge-star" viewBox="0 0 100 100" aria-hidden>
-        <path
-          fill="#ef4444"
-          stroke="#111827"
-          strokeWidth="3"
-          d="M50 2 58 34 92 26 66 50 92 74 58 66 50 98 42 66 8 74 34 50 8 26 42 34Z"
-        />
-      </svg>
-      <span className="vysiongids-header-nav-new-badge-text">NIEUW</span>
+      nieuw
     </span>
   )
 }
@@ -99,9 +90,9 @@ function HeaderNavLinks({
 }) {
   return (
     <nav className={className ?? 'vysiongids-header-nav'} aria-label="Hoofdmenu">
-      <Link href="/jobs" onClick={onNavigate}>
+      <HeaderNavLink href="/jobs" isNew onNavigate={onNavigate}>
         Jobs
-      </Link>
+      </HeaderNavLink>
       <HeaderNavLink href="/zoekertjes" isNew onNavigate={onNavigate}>
         Zoekertjes
       </HeaderNavLink>
@@ -142,7 +133,7 @@ function HeaderNavLinks({
 }
 
 const MOBILE_NAV_LINKS = [
-  { href: '/jobs', label: 'Jobs' },
+  { href: '/jobs', label: 'Jobs', isNew: true },
   { href: '/zoekertjes', label: 'Zoekertjes', isNew: true },
   { href: '/diensten', label: 'Diensten', isNew: true },
   { href: '/login', label: 'Login' },
