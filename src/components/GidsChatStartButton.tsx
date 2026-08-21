@@ -38,8 +38,8 @@ export default function GidsChatStartButton({
   const [threadId, setThreadId] = useState<string | null>(null)
   const [open, setOpen] = useState(false)
   const [busy, setBusy] = useState(false)
-  const [sessionChecked, setSessionChecked] = useState(false)
   const [hideAsOwner, setHideAsOwner] = useState(false)
+  const [pendingTitle, setPendingTitle] = useState<string | undefined>()
 
   useEffect(() => {
     let cancelled = false
@@ -56,9 +56,7 @@ export default function GidsChatStartButton({
           }
         }
       } catch {
-        /* anoniem of netwerk — knop tonen */
-      } finally {
-        if (!cancelled) setSessionChecked(true)
+        /* anoniem */
       }
     })()
     return () => {
@@ -68,6 +66,7 @@ export default function GidsChatStartButton({
 
   const startChat = useCallback(async () => {
     setBusy(true)
+    setOpen(true)
     try {
       const r = await fetch('/api/gids/chat/threads', {
         method: 'POST',
@@ -81,14 +80,17 @@ export default function GidsChatStartButton({
       })
       const data = (await r.json()) as {
         threadId?: string
+        contextTitle?: string
         error?: string
         code?: string
       }
       if (r.status === 401 || data.code === 'auth') {
+        setOpen(false)
         window.location.href = loginUrlWithReturn()
         return
       }
       if (!r.ok) {
+        setOpen(false)
         if (data.code === 'membership') {
           const go = window.confirm(
             `${data.error ?? 'Lidmaatschap vereist.'}\n\nNaar beheer gaan om in te loggen of premium te nemen?`,
@@ -103,9 +105,11 @@ export default function GidsChatStartButton({
         return
       }
       if (!data.threadId) {
+        setOpen(false)
         alert('Chat kon niet gestart worden.')
         return
       }
+      setPendingTitle(data.contextTitle)
       setThreadId(data.threadId)
       setOpen(true)
     } finally {
@@ -113,7 +117,7 @@ export default function GidsChatStartButton({
     }
   }, [contextId, contextSlug, contextType])
 
-  if (!sessionChecked || hideAsOwner) {
+  if (hideAsOwner) {
     return null
   }
 
@@ -133,7 +137,15 @@ export default function GidsChatStartButton({
       >
         {busy ? 'Even geduld…' : label}
       </button>
-      <GidsChatModal threadId={threadId} open={open} onClose={() => setOpen(false)} />
+      <GidsChatModal
+        threadId={threadId}
+        open={open}
+        initialContextTitle={pendingTitle}
+        onClose={() => {
+          setOpen(false)
+          setThreadId(null)
+        }}
+      />
     </>
   )
 }

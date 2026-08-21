@@ -9,6 +9,7 @@ type Props = {
   threadId: string | null
   open: boolean
   onClose: () => void
+  initialContextTitle?: string
 }
 
 function formatChatTime(iso: string): string {
@@ -22,21 +23,21 @@ function formatChatTime(iso: string): string {
   })
 }
 
-export default function GidsChatModal({ threadId, open, onClose }: Props) {
+export default function GidsChatModal({ threadId, open, onClose, initialContextTitle }: Props) {
   const [detail, setDetail] = useState<GidsChatThreadDetail | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [draft, setDraft] = useState('')
   const [sending, setSending] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
 
-  const refresh = useCallback(async () => {
+  const refresh = useCallback(async (opts?: { silent?: boolean }) => {
     if (!threadId) return
     const r = await fetch(`/api/gids/chat/threads/${encodeURIComponent(threadId)}`, {
       credentials: 'same-origin',
     })
     const data = (await r.json()) as { thread?: GidsChatThreadDetail; error?: string }
     if (!r.ok) {
-      setLoadError(data.error ?? 'Laden mislukt.')
+      if (!opts?.silent) setLoadError(data.error ?? 'Laden mislukt.')
       return
     }
     setLoadError(null)
@@ -51,7 +52,10 @@ export default function GidsChatModal({ threadId, open, onClose }: Props) {
       return
     }
     void refresh()
-    const id = window.setInterval(() => void refresh(), 12000)
+    const id = window.setInterval(() => {
+      if (document.visibilityState !== 'visible') return
+      void refresh({ silent: true })
+    }, 20000)
     return () => window.clearInterval(id)
   }, [open, threadId, refresh])
 
@@ -92,15 +96,36 @@ export default function GidsChatModal({ threadId, open, onClose }: Props) {
         alert(data.error ?? 'Versturen mislukt.')
         return
       }
+      if (data.message) {
+        setDetail((prev) =>
+          prev
+            ? { ...prev, messages: [...prev.messages, data.message!] }
+            : prev,
+        )
+      }
       setDraft('')
-      await refresh()
     } finally {
       setSending(false)
     }
   }
 
-  if (!open || !threadId) return null
+  if (!open) return null
   if (typeof document === 'undefined') return null
+
+  if (!threadId) {
+    const loadingPanel = (
+      <div className="vysiongids-gids-chat-root" role="presentation">
+        <button type="button" className="vysiongids-job-modal-backdrop" aria-label="Sluiten" onClick={onClose} />
+        <div className="vysiongids-gids-chat-panel" role="dialog" aria-modal="true" aria-label="Chat">
+          <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label="Sluiten">
+            ×
+          </button>
+          <h2 className="vysiongids-gids-chat-title">Chat voorbereiden…</h2>
+        </div>
+      </div>
+    )
+    return createPortal(loadingPanel, document.body)
+  }
 
   const panel = (
     <div className="vysiongids-gids-chat-root" role="presentation">
@@ -118,7 +143,9 @@ export default function GidsChatModal({ threadId, open, onClose }: Props) {
             </h2>
           </>
         ) : (
-          <h2 className="vysiongids-gids-chat-title">Chat laden…</h2>
+          <h2 className="vysiongids-gids-chat-title">
+            {initialContextTitle ? `Chat · ${initialContextTitle}` : 'Chat laden…'}
+          </h2>
         )}
         {loadError ? <p className="vysiongids-gids-chat-error">{loadError}</p> : null}
         <div ref={scrollRef} className="vysiongids-gids-chat-messages">

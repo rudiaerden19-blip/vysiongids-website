@@ -1,5 +1,4 @@
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
-import { fetchListingRowByIdAdmin } from '@/lib/gids-listings-db'
 import type {
   GidsChatMessage,
   GidsChatThreadDetail,
@@ -25,6 +24,8 @@ type MessageRow = {
   created_at: string
 }
 
+type ListingBrief = { id: string; name: string; city: string; slug: string }
+
 function isMissingChatTable(msg: string): boolean {
   return /gids_chat_threads|does not exist|schema cache/i.test(msg)
 }
@@ -36,83 +37,155 @@ export function friendlyGidsChatDbError(message: string): string {
   return message
 }
 
-async function fetchListingBriefAdmin(
-  listingId: string,
-): Promise<{ name: string; city: string; slug: string } | null> {
-  const row = await fetchListingRowByIdAdmin(listingId)
-  if (!row) return null
-  return { name: row.name, city: row.city, slug: row.slug }
+async function fetchListingBriefsByIds(ids: string[]): Promise<Map<string, ListingBrief>> {
+  const map = new Map<string, ListingBrief>()
+  const unique = [...new Set(ids.filter(Boolean))]
+  if (unique.length === 0) return map
+
+  const admin = createGidsSupabaseAdmin()
+  if (!admin) return map
+
+  const { data } = await admin.from('gids_listings').select('id, name, city, slug').in('id', unique)
+  for (const row of data ?? []) {
+    const id = row.id as string
+    map.set(id, {
+      id,
+      name: row.name as string,
+      city: row.city as string,
+      slug: row.slug as string,
+    })
+  }
+  return map
 }
 
-async function lastMessageForThread(threadId: string): Promise<{ body: string; created_at: string } | null> {
+async function fetchZoekertjeTitlesByIds(ids: string[]): Promise<Map<string, string>> {
+  const map = new Map<string, string>()
+  const unique = [...new Set(ids.filter(Boolean))]
+  if (unique.length === 0) return map
+
   const admin = createGidsSupabaseAdmin()
-  if (!admin) return null
+  if (!admin) return map
+
+  const { data } = await admin.from('gids_zoekertjes').select('id, title').in('id', unique)
+  for (const row of data ?? []) {
+    map.set(row.id as string, String(row.title ?? '').trim() || 'Zoekertje')
+  }
+  return map
+}
+
+async function fetchLastMessagesByThreadIds(threadIds: string[]): Promise<Map<string, { body: string; created_at: string }>> {
+  const map = new Map<string, { body: string; created_at: string }>()
+  if (threadIds.length === 0) return map
+
+  const admin = createGidsSupabaseAdmin()
+  if (!admin) return map
+
   const { data } = await admin
     .from('gids_chat_messages')
-    .select('body, created_at')
-    .eq('thread_id', threadId)
+    .select('thread_id, body, created_at')
+    .in('thread_id', threadIds)
     .order('created_at', { ascending: false })
-    .limit(1)
-    .maybeSingle()
-  if (!data) return null
-  return data as { body: string; created_at: string }
+    .limit(500)
+
+  for (const row of data ?? []) {
+    const tid = row.thread_id as string
+    if (!map.has(tid)) {
+      map.set(tid, { body: row.body as string, created_at: row.created_at as string })
+    }
+  }
+  return map
 }
 
-async function unreadForThread(threadId: string, myListingId: string): Promise<boolean> {
+async function fetchUnreadFlagsByThreadIds(
+  threadIds: string[],
+  myListingId: string,
+): Promise<Map<string, boolean>> {
+  const map = new Map<string, boolean>()
+  for (const id of threadIds) map.set(id, false)
+  if (threadIds.length === 0) return map
+
   const admin = createGidsSupabaseAdmin()
-  if (!admin) return false
-  const { data: readRow } = await admin
+  if (!admin) return map
+
+  const { data: readRows } = await admin
     .from('gids_chat_read_state')
-    .select('last_read_at')
-    .eq('thread_id', threadId)
+    .select('thread_id, last_read_at')
     .eq('listing_id', myListingId)
-    .maybeSingle()
-  const lastRead = (readRow?.last_read_at as string | undefined) ?? '1970-01-01T00:00:00Z'
-  const { count } = await admin
+    .in('thread_id', threadIds)
+
+  const lastReadByThread = new Map<string, string>()
+  for (const r of readRows ?? []) {
+    lastReadByThread.set(r.thread_id as string, (r.last_read_at as string) ?? '1970-01-01T00:00:00Z')
+  }
+
+  const { data: messages } = await admin
     .from('gids_chat_messages')
-    .select('id', { count: 'exact', head: true })
-    .eq('thread_id', threadId)
-    .gt('created_at', lastRead)
+    .select('thread_id, created_at, sender_listing_id')
+    .in('thread_id', threadIds)
     .neq('sender_listing_id', myListingId)
-  return (count ?? 0) > 0
+    .order('created_at', { ascending: false })
+    .limit(1000)
+
+  for (const m of messages ?? []) {
+    const tid = m.thread_id as string
+    if (map.get(tid)) continue
+    const lastRead = lastReadByThread.get(tid) ?? '1970-01-01T00:00:00Z'
+    if (new Date(m.created_at as string).getTime() > new Date(lastRead).getTime()) {
+      map.set(tid, true)
+    }
+  }
+  return map
 }
 
-async function contextTitleForThread(row: ThreadRow): Promise<string> {
+function contextTitleFromMaps(row: ThreadRow, zoekTitles: Map<string, string>, listings: Map<string, ListingBrief>): string {
   if (row.context_type === 'zoekertje') {
-    const admin = createGidsSupabaseAdmin()
-    if (!admin) return 'Zoekertje'
-    const { data } = await admin.from('gids_zoekertjes').select('title').eq('id', row.context_id).maybeSingle()
-    return ((data?.title as string | undefined) ?? 'Zoekertje').trim()
+    return zoekTitles.get(row.context_id) ?? 'Zoekertje'
   }
-  const brief = await fetchListingBriefAdmin(row.context_id)
-  return brief?.name ?? 'Leverancier'
+  return listings.get(row.context_id)?.name ?? 'Leverancier'
 }
 
-async function mapThreadSummary(row: ThreadRow, myListingId: string): Promise<GidsChatThreadSummary | null> {
-  const peerId =
-    row.seller_listing_id === myListingId ? row.buyer_listing_id : row.seller_listing_id
-  const peer = await fetchListingBriefAdmin(peerId)
-  if (!peer) return null
-  const last = await lastMessageForThread(row.id)
-  const unread = await unreadForThread(row.id, myListingId)
-  const contextTitle = await contextTitleForThread(row)
+async function mapThreadSummariesBatch(rows: ThreadRow[], myListingId: string): Promise<GidsChatThreadSummary[]> {
+  if (rows.length === 0) return []
 
-  return {
-    id: row.id,
-    contextType: row.context_type as GidsChatThreadSummary['contextType'],
-    contextId: row.context_id,
-    sellerListingId: row.seller_listing_id,
-    buyerListingId: row.buyer_listing_id,
-    status: row.status === 'closed' ? 'closed' : 'open',
-    lastMessageAt: row.last_message_at,
-    createdAt: row.created_at,
-    peerName: peer.name,
-    peerCity: peer.city,
-    peerSlug: peer.slug,
-    contextTitle,
-    unread,
-    lastMessagePreview: last ? last.body.slice(0, 120) : null,
+  const peerIds = rows.map((r) =>
+    r.seller_listing_id === myListingId ? r.buyer_listing_id : r.seller_listing_id,
+  )
+  const zoekIds = rows.filter((r) => r.context_type === 'zoekertje').map((r) => r.context_id)
+  const dienstenIds = rows.filter((r) => r.context_type === 'diensten_listing').map((r) => r.context_id)
+  const threadIds = rows.map((r) => r.id)
+
+  const listingIds = [...new Set([...peerIds, ...dienstenIds])]
+  const [listings, zoekTitles, lastMsgs, unreadMap] = await Promise.all([
+    fetchListingBriefsByIds(listingIds),
+    fetchZoekertjeTitlesByIds(zoekIds),
+    fetchLastMessagesByThreadIds(threadIds),
+    fetchUnreadFlagsByThreadIds(threadIds, myListingId),
+  ])
+
+  const out: GidsChatThreadSummary[] = []
+  for (const row of rows) {
+    const peerId = row.seller_listing_id === myListingId ? row.buyer_listing_id : row.seller_listing_id
+    const peer = listings.get(peerId)
+    if (!peer) continue
+    const last = lastMsgs.get(row.id)
+    out.push({
+      id: row.id,
+      contextType: row.context_type as GidsChatThreadSummary['contextType'],
+      contextId: row.context_id,
+      sellerListingId: row.seller_listing_id,
+      buyerListingId: row.buyer_listing_id,
+      status: row.status === 'closed' ? 'closed' : 'open',
+      lastMessageAt: row.last_message_at,
+      createdAt: row.created_at,
+      peerName: peer.name,
+      peerCity: peer.city,
+      peerSlug: peer.slug,
+      contextTitle: contextTitleFromMaps(row, zoekTitles, listings),
+      unread: unreadMap.get(row.id) ?? false,
+      lastMessagePreview: last ? last.body.slice(0, 120) : null,
+    })
   }
+  return out
 }
 
 export async function findOrCreateGidsChatThreadAdmin(opts: {
@@ -179,17 +252,14 @@ export async function listGidsChatThreadsForListingAdmin(
 
   if (error) return { ok: false, error: friendlyGidsChatDbError(error.message) }
 
-  const threads: GidsChatThreadSummary[] = []
-  for (const row of data ?? []) {
-    const mapped = await mapThreadSummary(row as ThreadRow, listingId)
-    if (mapped) threads.push(mapped)
-  }
+  const threads = await mapThreadSummariesBatch((data ?? []) as ThreadRow[], listingId)
   return { ok: true, threads }
 }
 
 export async function fetchGidsChatThreadDetailAdmin(
   threadId: string,
   myListingId: string,
+  opts?: { markRead?: boolean },
 ): Promise<{ ok: true; detail: GidsChatThreadDetail } | { ok: false; error: string; status: number }> {
   const admin = createGidsSupabaseAdmin()
   if (!admin) return { ok: false, error: 'Database niet geconfigureerd.', status: 503 }
@@ -203,19 +273,34 @@ export async function fetchGidsChatThreadDetailAdmin(
     return { ok: false, error: 'Geen toegang tot dit gesprek.', status: 403 }
   }
 
-  const summary = await mapThreadSummary(t, myListingId)
-  if (!summary) return { ok: false, error: 'Gesprek kon niet geladen worden.', status: 500 }
+  const peerId = t.seller_listing_id === myListingId ? t.buyer_listing_id : t.seller_listing_id
 
-  const { data: messages, error: msgErr } = await admin
+  const messagesPromise = admin
     .from('gids_chat_messages')
-    .select('*')
+    .select('id, thread_id, sender_listing_id, body, created_at')
     .eq('thread_id', threadId)
     .order('created_at', { ascending: true })
     .limit(500)
 
-  if (msgErr) return { ok: false, error: friendlyGidsChatDbError(msgErr.message), status: 500 }
+  const listingsPromise = fetchListingBriefsByIds([peerId, ...(t.context_type === 'diensten_listing' ? [t.context_id] : [])])
+  const zoekPromise =
+    t.context_type === 'zoekertje' ? fetchZoekertjeTitlesByIds([t.context_id]) : Promise.resolve(new Map<string, string>())
 
-  const mappedMessages: GidsChatMessage[] = (messages ?? []).map((m) => {
+  const [messagesResult, listings, zoekTitles] = await Promise.all([messagesPromise, listingsPromise, zoekPromise])
+
+  if (messagesResult.error) {
+    return { ok: false, error: friendlyGidsChatDbError(messagesResult.error.message), status: 500 }
+  }
+
+  const peer = listings.get(peerId)
+  if (!peer) return { ok: false, error: 'Gesprek kon niet geladen worden.', status: 500 }
+
+  const contextTitle =
+    t.context_type === 'zoekertje'
+      ? (zoekTitles.get(t.context_id) ?? 'Zoekertje')
+      : (listings.get(t.context_id)?.name ?? 'Leverancier')
+
+  const mappedMessages: GidsChatMessage[] = (messagesResult.data ?? []).map((m) => {
     const msg = m as MessageRow
     return {
       id: msg.id,
@@ -227,12 +312,29 @@ export async function fetchGidsChatThreadDetailAdmin(
     }
   })
 
-  await markGidsChatThreadReadAdmin(threadId, myListingId)
+  if (opts?.markRead !== false) {
+    void markGidsChatThreadReadAdmin(threadId, myListingId)
+  }
 
   return {
     ok: true,
     detail: {
-      ...summary,
+      id: t.id,
+      contextType: t.context_type as GidsChatThreadSummary['contextType'],
+      contextId: t.context_id,
+      sellerListingId: t.seller_listing_id,
+      buyerListingId: t.buyer_listing_id,
+      status: t.status === 'closed' ? 'closed' : 'open',
+      lastMessageAt: t.last_message_at,
+      createdAt: t.created_at,
+      peerName: peer.name,
+      peerCity: peer.city,
+      peerSlug: peer.slug,
+      contextTitle,
+      unread: false,
+      lastMessagePreview: mappedMessages.length
+        ? mappedMessages[mappedMessages.length - 1]!.body.slice(0, 120)
+        : null,
       messages: mappedMessages,
       myListingId,
     },
@@ -247,11 +349,10 @@ export async function postGidsChatMessageAdmin(opts: {
   const admin = createGidsSupabaseAdmin()
   if (!admin) return { ok: false, error: 'Database niet geconfigureerd.', status: 503 }
 
-  const { data: row } = await admin.from('gids_chat_threads').select('*').eq('id', opts.threadId).maybeSingle()
+  const { data: row } = await admin.from('gids_chat_threads').select('status, seller_listing_id, buyer_listing_id').eq('id', opts.threadId).maybeSingle()
   if (!row) return { ok: false, error: 'Gesprek niet gevonden.', status: 404 }
-  const t = row as ThreadRow
-  if (t.status === 'closed') return { ok: false, error: 'Dit gesprek is gesloten.', status: 403 }
-  if (t.seller_listing_id !== opts.senderListingId && t.buyer_listing_id !== opts.senderListingId) {
+  if (row.status === 'closed') return { ok: false, error: 'Dit gesprek is gesloten.', status: 403 }
+  if (row.seller_listing_id !== opts.senderListingId && row.buyer_listing_id !== opts.senderListingId) {
     return { ok: false, error: 'Geen toegang.', status: 403 }
   }
 
@@ -263,12 +364,12 @@ export async function postGidsChatMessageAdmin(opts: {
       sender_listing_id: opts.senderListingId,
       body: opts.body,
     })
-    .select('*')
+    .select('id, thread_id, sender_listing_id, body, created_at')
     .single()
 
   if (error) return { ok: false, error: friendlyGidsChatDbError(error.message), status: 500 }
 
-  await admin.from('gids_chat_threads').update({ last_message_at: now }).eq('id', opts.threadId)
+  void admin.from('gids_chat_threads').update({ last_message_at: now }).eq('id', opts.threadId)
 
   const msg = inserted as MessageRow
   return {
