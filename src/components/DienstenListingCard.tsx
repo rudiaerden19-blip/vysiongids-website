@@ -27,18 +27,18 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
   const mailHref = contactMail(listing.email)
 
   return (
-    <article className="vysiongids-diensten-card">
-      <div className="vysiongids-diensten-card-row">
-        <Link href={profileHref} className="vysiongids-diensten-card-photo">
+    <article className="vysiongids-listing-panel vysiongids-diensten-listing-panel">
+      <div className="vysiongids-listing-panel-row">
+        <Link href={profileHref} className="vysiongids-listing-panel-photo vysiongids-diensten-panel-photo">
           <ListingPhotoSlider
             urls={listingPhotoUrls(listing)}
             alt={listing.name}
-            sizes="(max-width: 640px) 100vw, 42rem"
+            sizes="(max-width: 640px) 100vw, 30rem"
             showControls
             layout="intrinsic"
           />
         </Link>
-        <div className="vysiongids-diensten-card-body">
+        <div className="vysiongids-listing-panel-body vysiongids-diensten-card-body">
           <Link href={profileHref} className="vysiongids-diensten-card-title-link">
             <h2 className="vysiongids-diensten-card-title">{listing.name}</h2>
           </Link>
