@@ -3409,6 +3409,22 @@ body {
   color: var(--accent);
 }
 
+.vysiongids-zaak-intro-promo-title {
+  margin: 0 0 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1.35;
+}
+
+.vysiongids-zaak-intro-promo-text {
+  margin: 0 0 0.65rem;
+}
+
+.vysiongids-zaak-intro-promo-text:last-child {
+  margin-bottom: 0;
+}
+
 .vysiongids-zaak-intro-platform-btns {
   display: flex;
   flex-direction: column;

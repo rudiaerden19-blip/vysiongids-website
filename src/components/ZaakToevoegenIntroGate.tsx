@@ -95,6 +95,22 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
             Heb je wél al een reserverings- en online bestelplatform? Perfect — dit kan je rechtstreeks koppelen aan je
             bestelknop in Vysiongids. Met <strong>één klik</strong> zit de klant op jouw software.
           </p>
+          <div className="vysiongids-zaak-intro-promo">
+            <h3 className="vysiongids-zaak-intro-promo-title">Wat is de Vysiongids</h3>
+            <p className="vysiongids-zaak-intro-promo-text">
+              Als je lid bent van Vysiongids, maak je vanaf dan je eigen kaart met je gegevens, foto&apos;s, QR-code en
+              meer. Duizenden klanten kunnen je dan in onze gids zoeken. Je kan jobs en advertenties plaatsen, en ook een
+              zoekertje als je iets te koop hebt — dat zoekertje is meteen in heel Vysiongids zichtbaar. Bij interesse kan
+              je chatten met de verkoper.
+            </p>
+            <p className="vysiongids-zaak-intro-promo-text">
+              Jouw zaak wordt meteen gekoppeld aan je online bestelplatform, reserveringssoftware, website, Facebook en
+              dergelijke. Heb je nog geen software? Dan kan je die via Vysiongids bekomen. Zoek je een nieuwe toonbank,
+              friteuse, kassa, tafels en stoelen, …? Onder <strong>Diensten</strong> staan alle verkopers in één gids: contact
+              opnemen of een vraag stellen via chat. Het lidmaatschap kost <strong>€49 per jaar</strong> en heeft zijn doel al
+              ruimschoots bewezen.
+            </p>
+          </div>
           <p className="vysiongids-zaak-intro-lead">
             Voordat je je zaak online zet in Vysiongids, lees onderstaande punten. Zo blijft de gids betrouwbaar voor
             klanten en voor alle horeca-zaken in België.
