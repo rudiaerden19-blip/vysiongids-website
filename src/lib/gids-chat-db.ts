@@ -422,6 +422,37 @@ export async function markGidsChatThreadReadAdmin(threadId: string, listingId: s
   )
 }
 
+export async function deleteGidsChatThreadForParticipantAdmin(
+  threadId: string,
+  listingId: string,
+): Promise<{ ok: true } | { ok: false; error: string; status: number }> {
+  const admin = createGidsSupabaseAdmin()
+  if (!admin) return { ok: false, error: 'Database niet geconfigureerd.', status: 503 }
+
+  const { data: row, error: fetchErr } = await admin
+    .from('gids_chat_threads')
+    .select('seller_listing_id, buyer_listing_id')
+    .eq('id', threadId)
+    .maybeSingle()
+
+  if (fetchErr) return { ok: false, error: friendlyGidsChatDbError(fetchErr.message), status: 500 }
+  if (!row) return { ok: false, error: 'Gesprek niet gevonden.', status: 404 }
+  if (row.seller_listing_id !== listingId && row.buyer_listing_id !== listingId) {
+    return { ok: false, error: 'Geen toegang tot dit gesprek.', status: 403 }
+  }
+
+  const { error } = await admin.from('gids_chat_threads').delete().eq('id', threadId)
+  if (error) return { ok: false, error: friendlyGidsChatDbError(error.message), status: 500 }
+  return { ok: true }
+}
+
+/** Alle chats over een zoekertje (bijv. na verkocht/verwijderd). */
+export async function deleteGidsChatThreadsForZoekertjeAdmin(zoekertjeId: string): Promise<void> {
+  const admin = createGidsSupabaseAdmin()
+  if (!admin) return
+  await admin.from('gids_chat_threads').delete().eq('context_type', 'zoekertje').eq('context_id', zoekertjeId)
+}
+
 export async function countGidsChatUnreadAdmin(listingId: string): Promise<number> {
   const admin = createGidsSupabaseAdmin()
   if (!admin) return 0

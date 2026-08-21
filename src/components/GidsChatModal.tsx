@@ -10,6 +10,7 @@ type Props = {
   open: boolean
   onClose: () => void
   initialContextTitle?: string
+  onDeleted?: () => void | Promise<void>
 }
 
 function formatChatTime(iso: string): string {
@@ -23,11 +24,12 @@ function formatChatTime(iso: string): string {
   })
 }
 
-export default function GidsChatModal({ threadId, open, onClose, initialContextTitle }: Props) {
+export default function GidsChatModal({ threadId, open, onClose, initialContextTitle, onDeleted }: Props) {
   const [detail, setDetail] = useState<GidsChatThreadDetail | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [draft, setDraft] = useState('')
   const [sending, setSending] = useState(false)
+  const [deleting, setDeleting] = useState(false)
   const scrollRef = useRef<HTMLDivElement>(null)
   const refreshGenRef = useRef(0)
   const sendingRef = useRef(false)
@@ -119,6 +121,30 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
       document.body.style.overflow = prev
     }
   }, [open, onClose])
+
+  async function handleDeleteThread() {
+    if (!threadId || deleting) return
+    const ok = window.confirm(
+      'Dit gesprek en alle berichten permanent verwijderen?\n\nHandig als het product verkocht is of je de chat niet meer nodig hebt.',
+    )
+    if (!ok) return
+    setDeleting(true)
+    try {
+      const r = await fetch(`/api/gids/chat/threads/${encodeURIComponent(threadId)}`, {
+        method: 'DELETE',
+        credentials: 'same-origin',
+      })
+      const data = (await r.json()) as { error?: string }
+      if (!r.ok) {
+        alert(data.error ?? 'Verwijderen mislukt.')
+        return
+      }
+      if (onDeleted) await onDeleted()
+      onClose()
+    } finally {
+      setDeleting(false)
+    }
+  }
 
   if (!open) return null
   if (typeof document === 'undefined') return null
@@ -222,6 +248,16 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
             {sending ? 'Bezig…' : 'Verstuur'}
           </button>
         </form>
+        {onDeleted ? (
+          <button
+            type="button"
+            className="vysiongids-gids-chat-delete"
+            disabled={deleting || sending}
+            onClick={() => void handleDeleteThread()}
+          >
+            {deleting ? 'Bezig…' : 'Gesprek verwijderen'}
+          </button>
+        ) : null}
       </div>
     </div>
   )

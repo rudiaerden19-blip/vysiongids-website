@@ -5541,6 +5541,51 @@ body {
   cursor: not-allowed;
 }
 
+.vysiongids-gids-chat-delete {
+  margin-top: 0.75rem;
+  align-self: center;
+  border: none;
+  background: transparent;
+  color: #b91c1c;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.vysiongids-gids-chat-delete:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.vysiongids-gids-chat-inbox-row {
+  display: flex;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+
+.vysiongids-gids-chat-inbox-row .vysiongids-gids-chat-inbox-item {
+  flex: 1;
+  min-width: 0;
+}
+
+.vysiongids-gids-chat-inbox-delete {
+  flex-shrink: 0;
+  align-self: center;
+  border: 1px solid #fecaca;
+  border-radius: 0.5rem;
+  background: #fff;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.6875rem;
+  font-weight: 700;
+  color: #b91c1c;
+  cursor: pointer;
+}
+
+.vysiongids-gids-chat-inbox-delete:hover {
+  background: #fef2f2;
+}
+
 .vysiongids-gids-chat-inbox {
   list-style: none;
   margin: 0;

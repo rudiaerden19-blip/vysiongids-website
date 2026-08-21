@@ -98,6 +98,31 @@ export default function BeheerGidsChatSection({ initialThreadId }: Props) {
   const badgeCount =
     threads.length > 0 ? unreadConversationCount : unreadPollCount
 
+  const deleteThread = useCallback(
+    async (id: string) => {
+      const ok = window.confirm(
+        'Dit gesprek en alle berichten permanent verwijderen?\n\nHandig als het product verkocht is.',
+      )
+      if (!ok) return
+      const r = await fetch(`/api/gids/chat/threads/${encodeURIComponent(id)}`, {
+        method: 'DELETE',
+        credentials: 'same-origin',
+      })
+      const data = (await r.json()) as { error?: string }
+      if (!r.ok) {
+        alert(data.error ?? 'Verwijderen mislukt.')
+        return
+      }
+      if (activeThreadId === id) {
+        setModalOpen(false)
+        setActiveThreadId(null)
+      }
+      await refresh()
+      await refreshUnreadOnly()
+    },
+    [activeThreadId, refresh, refreshUnreadOnly],
+  )
+
   return (
     <section ref={sectionRef} className="vysiongids-surface-card rounded-xl bg-white p-5">
       <div className="vysiongids-gids-chat-section-head">
@@ -121,7 +146,7 @@ export default function BeheerGidsChatSection({ initialThreadId }: Props) {
       {loadError ? <p className="mt-3 text-sm text-amber-800">{loadError}</p> : null}
       <ul className="vysiongids-gids-chat-inbox mt-4">
         {threads.map((t) => (
-          <li key={t.id}>
+          <li key={t.id} className="vysiongids-gids-chat-inbox-row">
             <button
               type="button"
               className={`vysiongids-gids-chat-inbox-item${t.unread ? ' vysiongids-gids-chat-inbox-item--unread' : ''}`}
@@ -145,6 +170,14 @@ export default function BeheerGidsChatSection({ initialThreadId }: Props) {
                 <span className="vysiongids-gids-chat-inbox-preview">{t.lastMessagePreview}</span>
               ) : null}
             </button>
+            <button
+              type="button"
+              className="vysiongids-gids-chat-inbox-delete"
+              aria-label={`Gesprek over ${t.contextTitle} verwijderen`}
+              onClick={() => void deleteThread(t.id)}
+            >
+              Verwijder
+            </button>
           </li>
         ))}
       </ul>
@@ -154,6 +187,11 @@ export default function BeheerGidsChatSection({ initialThreadId }: Props) {
       <GidsChatModal
         threadId={activeThreadId}
         open={modalOpen}
+        onDeleted={async () => {
+          setActiveThreadId(null)
+          await refresh()
+          await refreshUnreadOnly()
+        }}
         onClose={() => {
           setModalOpen(false)
           void refresh()

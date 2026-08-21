@@ -1,5 +1,6 @@
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { GIDS_LISTING_PHOTOS_BUCKET } from '@/lib/gids-listing-photos-server'
+import { deleteGidsChatThreadsForZoekertjeAdmin } from '@/lib/gids-chat-db'
 import type { GidsZoekertje, GidsZoekertjePhoto } from '@/lib/gids-zoekertjes-types'
 import { friendlyGidsZoekertjesDbError, isMissingGidsZoekertjesTable } from '@/lib/gids-zoekertjes-db-errors'
 
@@ -274,6 +275,9 @@ export async function deleteGidsZoekertjeAdmin(
     console.error('[gids zoekertjes delete]', error.message)
     return { ok: false, error: error.message }
   }
+
+  await deleteGidsChatThreadsForZoekertjeAdmin(id)
+
   return { ok: true }
 }
 
