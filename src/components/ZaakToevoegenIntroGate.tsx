@@ -98,16 +98,16 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
           <div className="vysiongids-zaak-intro-promo">
             <h3 className="vysiongids-zaak-intro-promo-title">Wat is de Vysiongids</h3>
             <p className="vysiongids-zaak-intro-promo-text">
-              Als je lid bent van Vysiongids, maak je vanaf dan je eigen kaart met je gegevens, foto&apos;s, QR-code en
-              meer. Duizenden klanten kunnen je dan in onze gids zoeken. Je kan jobs en advertenties plaatsen, en ook een
-              zoekertje als je iets te koop hebt — dat zoekertje is meteen in heel Vysiongids zichtbaar. Bij interesse kan
-              je chatten met de verkoper.
+              Als je lid bent van Vysiongids, kan je vanaf dan je eigen kaart met je gegevens, foto&apos;s, QR-code en
+              meer aanmaken. Duizenden klanten kunnen je dan in onze gids zoeken. Je kan jobs en advertenties plaatsen, en ook een
+              zoekertje als je iets te koop hebt, dat zoekertje is meteen in heel Vysiongids zichtbaar. Bij interesse kan
+              je chatten met de koper.
             </p>
             <p className="vysiongids-zaak-intro-promo-text">
-              Jouw zaak wordt meteen gekoppeld aan je online bestelplatform, reserveringssoftware, website, Facebook en
-              dergelijke. Heb je nog geen software? Dan kan je die via Vysiongids bekomen. Zoek je een nieuwe toonbank,
-              friteuse, kassa, tafels en stoelen, …? Onder <strong>Diensten</strong> staan alle verkopers in één gids: contact
-              opnemen of een vraag stellen via chat. Het lidmaatschap kost <strong>€49 per jaar</strong> en heeft zijn doel al
+              Jouw zaak wordt meteen gekoppeld aan je online bestelplatform, reserveringssoftware, website, Facebook, enz.
+              Heb je nog geen software? Dan kan je die via Vysiongids bekomen. Zoek je een nieuwe toonbank, friteuse, kassa,
+              tafels en stoelen, enz.? Onder <strong>Diensten</strong> staan alle verkopers in één gids: contact opnemen of
+              een vraag stellen via de chat. Het lidmaatschap kost <strong>€49 per jaar</strong> en heeft zijn doel al
               ruimschoots bewezen.
             </p>
           </div>
