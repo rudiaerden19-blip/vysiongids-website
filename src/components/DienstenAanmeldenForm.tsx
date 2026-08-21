@@ -99,9 +99,14 @@ export default function DienstenAanmeldenForm() {
         checkoutUrl?: string
         url?: string
         slug?: string
+        message?: string
       }
       if (!res.ok) {
         setError(data.error ?? 'Registratie mislukt.')
+        return
+      }
+      if (data.message && data.url) {
+        router.push(data.url)
         return
       }
       if (data.checkoutUrl) {

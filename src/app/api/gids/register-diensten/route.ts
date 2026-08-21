@@ -3,7 +3,7 @@ import { revalidatePath, revalidateTag } from 'next/cache'
 import Stripe from 'stripe'
 import { hashGidsPin } from '@/lib/gids-pin'
 import { normalizeGidsBusinessName, slugifyListing } from '@/lib/gids-text'
-import { fetchListingByNormalizedNameAdmin } from '@/lib/gids-listings-db'
+import { fetchListingByNormalizedNameAdmin, fetchListingRowByIdAdmin } from '@/lib/gids-listings-db'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { parseGidsDienstenFormData } from '@/lib/gids-diensten-form-server'
 import { buildGidsDienstenInsertRow } from '@/lib/gids-diensten-db-write'
@@ -57,7 +57,36 @@ async function handleRegisterDienstenPost(req: Request) {
   const nameNormalized = normalizeGidsBusinessName(d.name)
   const existing = await fetchListingByNormalizedNameAdmin(nameNormalized)
   if (existing) {
-    return NextResponse.json({ error: 'Deze bedrijfsnaam staat al in de gids.' }, { status: 409 })
+    const existingRow = await fetchListingRowByIdAdmin(existing.id)
+    const complimentaryRetry = isDienstenComplimentaryRegistration({ name: d.name, email: d.email })
+    if (
+      existingRow &&
+      existingRow.listing_segment === 'diensten' &&
+      complimentaryRetry &&
+      (existingRow.status === 'hidden' || !existingRow.diensten_expires_at)
+    ) {
+      await admin
+        .from('gids_listings')
+        .update({ diensten_complimentary: true })
+        .eq('id', existing.id)
+      await grantDienstenMembershipDevByIdAdmin(existing.id)
+      revalidateTag('gids-listings', 'max')
+      revalidatePath('/diensten')
+      return NextResponse.json({
+        ok: true,
+        slug: existingRow.slug,
+        url: `/diensten/${existingRow.slug}`,
+        reactivated: true,
+        message: 'Je profiel stond al in de gids — we hebben het gratis geactiveerd. Log in via Beheer met je PIN.',
+      })
+    }
+    return NextResponse.json(
+      {
+        error:
+          'Deze bedrijfsnaam staat al in de gids. Log in via Beheer (Login) met je zaaknaam en PIN, of neem contact op als je vastzit na een geannuleerde betaling.',
+      },
+      { status: 409 },
+    )
   }
 
   let slug = slugifyListing(d.name, d.city)
