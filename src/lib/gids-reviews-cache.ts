@@ -9,7 +9,7 @@ export async function getCachedReviewsByListingSlug(slug: string, limit = 50): P
   return unstable_cache(
     async () => fetchReviewsByListingSlug(slug, limit),
     ['gids-reviews-by-slug', slug, String(limit)],
-    { revalidate: 60, tags: ['gids-listings', `gids-listing-${slug}`] },
+    { revalidate: 60, tags: ['gids-reviews', `gids-reviews-${slug}`, 'gids-listings', `gids-listing-${slug}`] },
   )()
 }
 

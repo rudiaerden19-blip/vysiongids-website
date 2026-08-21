@@ -1,8 +1,6 @@
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
-import ListingStarRating from '@/components/ListingStarRating'
-import ReviewList from '@/components/ReviewList'
-import ReviewSubmitForm from '@/components/ReviewSubmitForm'
+import ZaakReviewsLive from '@/components/ZaakReviewsLive'
 import SiteHeader from '@/components/SiteHeader'
 import { getCachedListingIdBySlug, getCachedReviewsByListingSlug } from '@/lib/gids-reviews-cache'
 import { formatListingAddressLines, getListingBySlug, getListingTypeLabel } from '@/lib/listings'
@@ -10,7 +8,7 @@ import { formatListingAddressLines, getListingBySlug, getListingTypeLabel } from
 type Props = { params: Promise<{ slug: string }> }
 
 export const dynamicParams = true
-export const revalidate = 60
+export const dynamic = 'force-dynamic'
 
 export async function generateMetadata({ params }: Props) {
   const { slug } = await params
@@ -57,30 +55,16 @@ export default async function ZaakReviewsPage({ params }: Props) {
           <p className="mt-1 text-sm text-gray-600">
             {typeLabel} · {cityLine}
           </p>
-          <div className="mt-4">
-            <ListingStarRating slug={slug} avg={ratingAvg} count={ratingCount} size="md" linkToReviews={false} />
-          </div>
         </header>
 
-        <section className="mt-8">
-          <h2 className="text-lg font-bold text-gray-900">Alle beoordelingen</h2>
-          <div className="mt-4">
-            <ReviewList reviews={reviews} />
-          </div>
-        </section>
-
-        <section className="mt-10 border-t border-gray-200 pt-8">
-          <h2 className="text-lg font-bold text-gray-900">Geef je review</h2>
-          {canSubmit ? (
-            <div className="mt-4">
-              <ReviewSubmitForm slug={slug} listingName={listing.name} />
-            </div>
-          ) : (
-            <p className="mt-3 text-sm text-gray-600">
-              Online reviews zijn beschikbaar zodra deze zaak in de gids-database staat. Bekijk intussen de score hierboven.
-            </p>
-          )}
-        </section>
+        <ZaakReviewsLive
+          slug={slug}
+          listingName={listing.name}
+          initialReviews={reviews}
+          initialAvg={ratingAvg}
+          initialCount={ratingCount}
+          canSubmit={canSubmit}
+        />
 
         <p className="mt-10 text-center text-sm">
           <Link href={`/zaak/${slug}`} className="font-semibold text-accent hover:underline">

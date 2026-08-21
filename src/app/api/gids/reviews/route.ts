@@ -67,8 +67,12 @@ export async function POST(req: Request) {
   }
 
   revalidateTag('gids-listings', 'max')
+  revalidateTag('gids-reviews', 'max')
+  revalidateTag(`gids-reviews-${slug}`, 'max')
+  revalidateTag(`gids-listing-${slug}`, 'max')
   revalidatePath(`/zaak/${slug}`)
   revalidatePath(`/zaak/${slug}/reviews`)
+  revalidatePath(`/diensten/${slug}`)
 
-  return NextResponse.json({ ok: true, id: result.id })
+  return NextResponse.json({ ok: true, id: result.id, review: result.review })
 }

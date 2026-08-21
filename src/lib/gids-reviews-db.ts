@@ -140,7 +140,10 @@ export async function insertReviewAdmin(input: {
   rating: number
   reviewerName: string | null
   body: string
-}): Promise<{ ok: true; id: string } | { ok: false; error: string }> {
+}): Promise<
+  | { ok: true; id: string; review: GidsReview }
+  | { ok: false; error: string }
+> {
   const supabase = createGidsSupabaseAdmin()
   if (!supabase) return { ok: false, error: 'Database niet geconfigureerd.' }
 
@@ -152,7 +155,7 @@ export async function insertReviewAdmin(input: {
       reviewer_name: input.reviewerName,
       body: input.body,
     })
-    .select('id')
+    .select('id, rating, reviewer_name, body, created_at')
     .single()
 
   if (error || !data) {
@@ -162,7 +165,11 @@ export async function insertReviewAdmin(input: {
 
   await refreshListingRatingAdmin(input.listingId)
 
-  return { ok: true, id: data.id as string }
+  return {
+    ok: true,
+    id: data.id as string,
+    review: mapReview(data as ReviewRow),
+  }
 }
 
 /** Verwijder reviews voor gegeven slugs (max. rating = drempel). Herberekent rating via DB-trigger. */

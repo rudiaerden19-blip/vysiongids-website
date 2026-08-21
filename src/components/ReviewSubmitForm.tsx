@@ -6,12 +6,15 @@ import { formatGidsTitleCase, formatReviewCommentText } from '@/lib/gids-text'
 import { useRouter } from 'next/navigation'
 import { useState } from 'react'
 
+import type { GidsReview } from '@/lib/gids-reviews-db'
+
 type Props = {
   slug: string
   listingName: string
+  onReviewPosted?: (review: GidsReview) => void
 }
 
-export default function ReviewSubmitForm({ slug, listingName }: Props) {
+export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: Props) {
   const router = useRouter()
   const [rating, setRating] = useState<number | null>(null)
   const [bodyLen, setBodyLen] = useState(0)
@@ -42,10 +45,13 @@ export default function ReviewSubmitForm({ slug, listingName }: Props) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ slug, rating, reviewerName, body: reviewBody }),
       })
-      const data = (await res.json()) as { error?: string; ok?: boolean }
+      const data = (await res.json()) as { error?: string; ok?: boolean; review?: GidsReview }
       if (!res.ok) {
         setError(data.error ?? 'Review plaatsen mislukt.')
         return
+      }
+      if (data.review) {
+        onReviewPosted?.(data.review)
       }
       setDone(true)
       router.refresh()
