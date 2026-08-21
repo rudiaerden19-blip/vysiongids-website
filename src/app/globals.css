@@ -5012,43 +5012,28 @@ body {
   gap: 1.25rem;
 }
 
-/* Dienstenkaart: vaste fotocel (contain), geen intrinsic height-loop in grid */
+/* Dienstenkaart: foto vult het hele vak (cover, zoals horeca) */
 .vysiongids-diensten-listing-panel .vysiongids-listing-panel-row {
-  align-items: start;
+  align-items: stretch;
 }
 
 @media (min-width: 640px) {
   .vysiongids-diensten-listing-panel .vysiongids-listing-panel-row {
-    grid-template-columns: min(50%, 30rem) minmax(0, 1fr);
+    grid-template-columns: min(48%, 30rem) minmax(0, 1fr);
   }
 }
 
 .vysiongids-diensten-panel-photo {
-  background: #f3f4f6;
+  background: #1f2937;
   aspect-ratio: 4 / 3;
-}
-
-@media (max-width: 639px) {
-  /* Portret-promo’s: hogere cel = foto vult breedte i.p.v. mini-streep in 4:3 */
-  .vysiongids-diensten-listing-panel .vysiongids-diensten-panel-photo {
-    aspect-ratio: 3 / 4;
-    min-height: min(118vw, 28rem);
-    width: 100%;
-    overflow: hidden;
-  }
-
-  .vysiongids-diensten-panel-photo img {
-    object-position: center top !important;
-  }
 }
 
 @media (min-width: 640px) {
   .vysiongids-diensten-listing-panel .vysiongids-diensten-panel-photo {
-    height: auto;
-    min-height: 0;
-    max-height: none;
-    aspect-ratio: 4 / 3;
-    align-self: start;
+    height: 100%;
+    min-height: 100%;
+    aspect-ratio: auto;
+    align-self: stretch;
   }
 }
 
@@ -5060,7 +5045,7 @@ body {
 }
 
 .vysiongids-diensten-panel-photo img {
-  object-fit: contain !important;
+  object-fit: cover !important;
   object-position: center center !important;
 }
 
