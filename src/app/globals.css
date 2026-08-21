@@ -5012,29 +5012,6 @@ body {
   gap: 1.25rem;
 }
 
-/* Dienstenkaart: zelfde fotovak als frituren (grid + stretch), volledige foto zichtbaar */
-.vysiongids-diensten-listing-panel .vysiongids-listing-panel-photo {
-  background: #fff;
-}
-
-.vysiongids-diensten-listing-panel .vysiongids-listing-panel-photo img {
-  object-fit: contain !important;
-  object-position: center center !important;
-}
-
-@media (max-width: 639px) {
-  .vysiongids-diensten-listing-panel .vysiongids-listing-panel-photo {
-    aspect-ratio: 1 / 1;
-    min-height: min(100vw, 22rem);
-  }
-}
-
-@media (min-width: 640px) {
-  .vysiongids-diensten-listing-panel .vysiongids-listing-panel-photo {
-    min-height: 18rem;
-  }
-}
-
 .vysiongids-diensten-verified-bar .vysiongids-listing-panel-hiring-inner {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
