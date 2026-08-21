@@ -46,8 +46,19 @@ function setRegionCookie(slug: ProvinceSlug) {
   document.cookie = `${REGION_COOKIE}=${slug};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`
 }
 
-function HeaderNavNewBadge() {
-  return <span className="vysiongids-header-nav-new-badge">nieuw</span>
+function HeaderNavNewBadge({ inline }: { inline?: boolean }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/images/nieuw-sticker.png"
+      alt=""
+      className={
+        inline
+          ? 'vysiongids-header-nav-new-sticker vysiongids-header-nav-new-sticker--inline'
+          : 'vysiongids-header-nav-new-sticker'
+      }
+    />
+  )
 }
 
 function HeaderNavLink({
@@ -162,9 +173,7 @@ function MobileNavSheet({
           <li key={item.href}>
             <Link href={item.href} className="vysiongids-mobile-nav-link" onClick={onClose}>
               {item.label}
-              {'isNew' in item && item.isNew ? (
-                <span className="vysiongids-header-nav-new-badge vysiongids-header-nav-new-badge--inline">nieuw</span>
-              ) : null}
+              {'isNew' in item && item.isNew ? <HeaderNavNewBadge inline /> : null}
             </Link>
           </li>
         ))}
@@ -182,9 +191,7 @@ function MobileNavSheet({
           <li key={item.href}>
             <Link href={item.href} className="vysiongids-mobile-nav-link" onClick={onClose}>
               {item.label}
-              {'isNew' in item && item.isNew ? (
-                <span className="vysiongids-header-nav-new-badge vysiongids-header-nav-new-badge--inline">nieuw</span>
-              ) : null}
+              {'isNew' in item && item.isNew ? <HeaderNavNewBadge inline /> : null}
             </Link>
           </li>
         ))}

@@ -135,8 +135,10 @@ body {
 @media (min-width: 900px) {
   .vysiongids-header-nav--desktop {
     display: flex;
-    font-size: 1rem;
+    align-items: center;
+    font-size: 1.0625rem;
     gap: 0;
+    min-height: 3.5rem;
   }
 
   .vysiongids-mobile-menu-btn {
@@ -205,11 +207,11 @@ body {
 
 @media (min-width: 900px) {
   .vysiongids-header-nav--desktop a:not(.vysiongids-header-nav-cta) {
-    padding: 0.35rem 0.85rem;
+    padding: 0.55rem 0.9rem;
   }
 
   .vysiongids-header-nav--desktop button.vysiongids-header-nav-platform {
-    padding: 0.35rem 0.85rem;
+    padding: 0.55rem 0.9rem;
   }
 }
 
@@ -218,31 +220,32 @@ body {
 }
 
 .vysiongids-header-nav-link-new {
+  position: relative;
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.12rem;
-  padding-top: 0.1rem;
-  vertical-align: top;
+  justify-content: flex-end;
+  padding: 1.35rem 0.65rem 0.45rem;
+  vertical-align: bottom;
 }
 
-.vysiongids-header-nav-new-badge {
-  display: block;
-  padding: 0.05rem 0.35rem;
-  border: 1px solid var(--accent);
-  border-radius: 0.25rem;
-  font-size: 0.5625rem;
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: 0.02em;
-  text-transform: lowercase;
-  color: var(--accent);
-  background: #fff;
+.vysiongids-header-nav-new-sticker {
+  position: absolute;
+  top: -0.35rem;
+  left: 50%;
+  width: 3.35rem;
+  max-width: none;
+  height: auto;
+  transform: translateX(-50%);
+  pointer-events: none;
+  user-select: none;
 }
 
-.vysiongids-header-nav-new-badge--inline {
-  display: inline-block;
-  margin-left: 0.45rem;
+.vysiongids-header-nav-new-sticker--inline {
+  position: static;
+  transform: none;
+  width: 2.65rem;
+  margin-left: 0.5rem;
   vertical-align: middle;
 }
 
@@ -315,19 +318,22 @@ body {
   width: 100%;
   max-width: var(--vysiongids-content-max);
   margin: 0 auto;
-  padding: 0.75rem 1rem;
+  padding: 1rem 1rem;
+  min-height: 4rem;
   box-sizing: border-box;
 }
 
 @media (min-width: 640px) {
   .vysiongids-site-header-inner {
-    padding: 1rem 1.5rem;
+    padding: 1.15rem 1.5rem;
+    min-height: 4.25rem;
   }
 }
 
 @media (min-width: 1024px) {
   .vysiongids-site-header-inner {
-    padding: 1.1rem 2.5rem;
+    padding: 1.35rem 2.5rem;
+    min-height: 4.5rem;
   }
 }
 
