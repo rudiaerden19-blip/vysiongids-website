@@ -120,6 +120,18 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
             <li>
               <strong>Verwijderen:</strong> wil je offline? Log in en kies <em>Verwijder je zaak</em> in je account.
             </li>
+            <li>
+              <strong>Zoekertjes:</strong> plaats geen zoekertjes die niet stroken met onze regels — deze worden dan
+              onmiddellijk verwijderd.
+            </li>
+            <li>
+              <strong>Jobadvertenties:</strong> plaats geen vacatures die niet voldoen aan onze regels — deze worden dan
+              onmiddellijk verwijderd.
+            </li>
+            <li>
+              <strong>Veiligheid:</strong> geef nooit bankgegevens of andere gevoelige financiële informatie vrij via
+              Vysiongids.
+            </li>
           </ul>
           <p className="text-sm text-gray-600">
             Door verder te gaan bevestig je dat je deze info gelezen hebt en dat je bevoegd bent om namens deze zaak te
