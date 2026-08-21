@@ -1,7 +1,7 @@
 import Link from 'next/link'
 import SiteHeader from '@/components/SiteHeader'
 
-export const metadata = { title: 'Diensten' }
+export const metadata = { title: 'Diensten en reclame' }
 
 export default function DienstenPage() {
   return (
@@ -16,19 +16,17 @@ export default function DienstenPage() {
             color: '#111827',
           }}
         >
-          Diensten
+          Diensten en reclame
         </h1>
-        <p style={{ margin: '0 0 1.25rem', maxWidth: '40rem', color: '#4b5563', lineHeight: 1.6 }}>
-          Voor horeca-ondernemers: website, bestelplatform, kassa, menu online, reviews en vindbaarheid via
-          Vysiongids. Meer diensten van WebVysion volgen hier.
+        <p style={{ margin: '0 0 1.25rem', maxWidth: '42rem', color: '#4b5563', lineHeight: 1.65 }}>
+          Heb je een onderneming die diensten verkoopt, bijv. kassasystemen, horecameubilair, inrichting horeca, of ben
+          je een groothandel of leverancier? Dan zit je hier op de juiste plek. Druk op de knop{' '}
+          <strong>Jouw zaak toevoegen</strong> en kies voor diensten. Met een zaakprofiel val je als verkoper 20× meer
+          op.
         </p>
         <p style={{ margin: 0 }}>
-          <Link
-            href="mailto:contact@webvysion.tech?subject=Diensten%20Vysiongids"
-            className="vysiongids-header-nav-cta"
-            style={{ display: 'inline-block', textDecoration: 'none' }}
-          >
-            Vraag informatie
+          <Link href="/zaak-toevoegen" className="vysiongids-header-nav-cta" style={{ display: 'inline-block', textDecoration: 'none' }}>
+            Jouw zaak toevoegen
           </Link>
         </p>
       </main>
