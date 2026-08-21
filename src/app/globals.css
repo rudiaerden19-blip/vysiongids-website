@@ -3734,6 +3734,55 @@ body {
   gap: 2.75rem;
 }
 
+.vysiongids-zaak-info-zoekertjes-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 11.5rem), 1fr));
+  gap: 1rem;
+}
+
+.vysiongids-zoekertje-card--zaak-info {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  padding: 0;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background: #fff;
+  border: var(--vysiongids-card-border);
+  box-shadow: var(--vysiongids-card-shadow);
+  transition: box-shadow 0.15s ease;
+}
+
+.vysiongids-zoekertje-card--zaak-info:hover {
+  box-shadow: var(--vysiongids-card-shadow-hover);
+}
+
+.vysiongids-zoekertje-card-media--zaak-info {
+  aspect-ratio: 4 / 3;
+  width: 100%;
+  overflow: hidden;
+  background: #e5e7eb;
+}
+
+.vysiongids-zoekertje-card-media--zaak-info img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.vysiongids-zoekertje-card-body--zaak-info {
+  padding: 0.65rem 0.75rem 0.5rem;
+}
+
+.vysiongids-zoekertje-card-title--zaak-info {
+  font-size: 0.9375rem;
+  margin: 0.15rem 0 0;
+}
+
 .vysiongids-review-list {
   list-style: none;
   margin: 0;

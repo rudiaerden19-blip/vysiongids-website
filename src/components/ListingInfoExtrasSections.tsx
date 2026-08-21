@@ -1,15 +1,19 @@
+import ListingInfoZoekertjesSection from '@/components/ListingInfoZoekertjesSection'
 import type { Listing } from '@/lib/listing-types'
 import { belgiumPhoneTelHref } from '@/lib/belgium-phone'
 import { listingHasInfoExtras } from '@/lib/listing-info-extras'
 import { hiringJobTypeLabels } from '@/lib/listing-hiring'
+import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
 
 type Props = {
   listing: Listing
+  zoekertjes?: GidsZoekertje[]
 }
 
-export default function ListingInfoExtrasSections({ listing }: Props) {
+export default function ListingInfoExtrasSections({ listing, zoekertjes = [] }: Props) {
   const extras = listing.infoExtras
-  if (!listingHasInfoExtras(extras)) return null
+  const hasZoekertjes = zoekertjes.length > 0
+  if (!listingHasInfoExtras(extras) && !hasZoekertjes) return null
 
   const specialties = extras?.specialties?.filter((s) => s.caption || s.imageUrl) ?? []
   const hiring = extras?.hiring?.enabled ? extras.hiring : null
@@ -91,6 +95,8 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
           </div>
         </section>
       ) : null}
+
+      {hasZoekertjes ? <ListingInfoZoekertjesSection zoekertjes={zoekertjes} /> : null}
 
       {gift ? (
         <section className="vysiongids-info-block vysiongids-info-block--gift">

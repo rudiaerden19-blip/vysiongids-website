@@ -13,6 +13,7 @@ import {
 } from '@/lib/listing-info'
 import { useEffect, useState } from 'react'
 import type { Listing } from '@/lib/listing-types'
+import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
 
 function ContactIcon({ kind }: { kind: 'web' | 'phone' | 'email' }) {
   const common = { width: 18, height: 18, fill: 'none', stroke: 'var(--accent)', strokeWidth: 1.8 }
@@ -63,7 +64,13 @@ function OpenStatus({ listing }: { listing: Listing }) {
   )
 }
 
-export default function ListingInfoSection({ listing }: { listing: Listing }) {
+export default function ListingInfoSection({
+  listing,
+  zoekertjes = [],
+}: {
+  listing: Listing
+  zoekertjes?: GidsZoekertje[]
+}) {
   const hoursRows = resolveHoursByDay(listing)
   const schedule = listing.infoExtras?.schedule
   const website = listing.website?.trim()
@@ -144,7 +151,7 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
           </ul>
         </div>
       </div>
-      <ListingInfoExtrasSections listing={listing} />
+      <ListingInfoExtrasSections listing={listing} zoekertjes={zoekertjes} />
     </section>
   )
 }
