@@ -3781,6 +3781,9 @@ body {
 
 .vysiongids-job-card--clickable {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   padding: 0;
   overflow: hidden;
   border: var(--vysiongids-card-border);
@@ -3788,7 +3791,16 @@ body {
 }
 
 .vysiongids-job-card--clickable .vysiongids-job-card-open {
-  flex: 1;
+  flex: 1 1 auto;
+  min-height: 0;
+  height: auto;
+  min-height: unset;
+}
+
+.vysiongids-job-card--clickable .vysiongids-zoekertje-card-placed {
+  flex-shrink: 0;
+  width: 100%;
+  border-radius: 0;
 }
 
 .vysiongids-job-card-open {
