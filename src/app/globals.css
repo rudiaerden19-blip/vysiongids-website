@@ -5048,6 +5048,14 @@ body {
   display: block;
 }
 
+@media (max-width: 639px) {
+  .vysiongids-diensten-panel-photo {
+    aspect-ratio: auto;
+    height: auto;
+    overflow: visible;
+  }
+}
+
 @media (min-width: 640px) {
   .vysiongids-diensten-panel-photo {
     height: auto;
@@ -5056,8 +5064,6 @@ body {
     align-self: start;
   }
 }
-
-.vysiongids-diensten-card-body {
 
 .vysiongids-diensten-card-title-link {
   text-decoration: none;

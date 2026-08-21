@@ -94,6 +94,15 @@ export default function ListingPhotoSlider({
     onSlideIndexChange?.(index)
   }, [index, onSlideIndexChange])
 
+  useEffect(() => {
+    if (activeIndex === undefined || total === 0) return
+    const next = ((activeIndex % total) + total) % total
+    if (next !== index) {
+      setIndex(next)
+      setVisible(true)
+    }
+  }, [activeIndex, total, index])
+
   if (total === 0) {
     return (
       <ListingPhoto
