@@ -18,7 +18,11 @@ import { enforceRateLimit } from '@/lib/gids-rate-limit'
 export const maxDuration = 60
 
 const REGISTER_WINDOW_MS = 60 * 60 * 1000
-const REGISTER_MAX_PER_IP = 5
+/** Geslaagde registraties per IP per uur (mislukte pogingen tellen niet mee). */
+const REGISTER_SUCCESS_MAX_PER_IP = 30
+/** Ruwe POST-limiet tegen spam (formulier-fouten, bots). */
+const REGISTER_BURST_WINDOW_MS = 15 * 60 * 1000
+const REGISTER_BURST_MAX_PER_IP = 25
 
 export async function POST(req: Request) {
   try {
@@ -30,8 +34,13 @@ export async function POST(req: Request) {
 }
 
 async function handleRegisterPost(req: Request) {
-  const limited = enforceRateLimit(req, 'gids-register', REGISTER_WINDOW_MS, REGISTER_MAX_PER_IP)
-  if (limited) return limited
+  const burstLimited = enforceRateLimit(
+    req,
+    'gids-register-burst',
+    REGISTER_BURST_WINDOW_MS,
+    REGISTER_BURST_MAX_PER_IP,
+  )
+  if (burstLimited) return burstLimited
 
   const admin = createGidsSupabaseAdmin()
   if (!admin) {
@@ -71,6 +80,14 @@ async function handleRegisterPost(req: Request) {
     postcode: d.postcode,
     city: d.city,
   })
+
+  const successLimited = enforceRateLimit(
+    req,
+    'gids-register-success',
+    REGISTER_WINDOW_MS,
+    REGISTER_SUCCESS_MAX_PER_IP,
+  )
+  if (successLimited) return successLimited
 
   const { data: inserted, error: insertErr } = await admin
     .from('gids_listings')

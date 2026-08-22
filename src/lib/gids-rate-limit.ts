@@ -6,13 +6,21 @@ type Bucket = { count: number; resetAt: number }
 const buckets = new Map<string, Bucket>()
 
 export function clientIpFromRequest(req: Request): string {
+  const ordered = [
+    req.headers.get('cf-connecting-ip'),
+    req.headers.get('x-real-ip'),
+    req.headers.get('true-client-ip'),
+    req.headers.get('x-vercel-forwarded-for'),
+  ]
+  for (const h of ordered) {
+    const v = h?.split(',')[0]?.trim()
+    if (v) return v
+  }
   const xff = req.headers.get('x-forwarded-for')
   if (xff) {
     const first = xff.split(',')[0]?.trim()
     if (first) return first
   }
-  const real = req.headers.get('x-real-ip')?.trim()
-  if (real) return real
   return 'unknown'
 }
 
@@ -34,8 +42,14 @@ export function consumeRateLimit(
 }
 
 export function rateLimitResponse(retryAfterSec: number): NextResponse {
+  const minutes = Math.max(1, Math.ceil(retryAfterSec / 60))
   return NextResponse.json(
-    { error: 'Te veel verzoeken. Probeer later opnieuw.' },
+    {
+      error:
+        retryAfterSec <= 120
+          ? `Te veel verzoeken. Probeer over ${retryAfterSec} seconden opnieuw.`
+          : `Te veel verzoeken. Probeer over ongeveer ${minutes} minuten opnieuw.`,
+    },
     { status: 429, headers: { 'Retry-After': String(retryAfterSec) } },
   )
 }

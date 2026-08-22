@@ -18,7 +18,9 @@ import { gidsDienstenRequiresCheckout, gidsDienstenUnitAmountCents } from '@/lib
 export const maxDuration = 60
 
 const REGISTER_WINDOW_MS = 60 * 60 * 1000
-const REGISTER_MAX_PER_IP = 5
+const REGISTER_SUCCESS_MAX_PER_IP = 30
+const REGISTER_BURST_WINDOW_MS = 15 * 60 * 1000
+const REGISTER_BURST_MAX_PER_IP = 25
 
 export async function POST(req: Request) {
   try {
@@ -30,8 +32,13 @@ export async function POST(req: Request) {
 }
 
 async function handleRegisterDienstenPost(req: Request) {
-  const limited = enforceRateLimit(req, 'gids-register-diensten', REGISTER_WINDOW_MS, REGISTER_MAX_PER_IP)
-  if (limited) return limited
+  const burstLimited = enforceRateLimit(
+    req,
+    'gids-register-diensten-burst',
+    REGISTER_BURST_WINDOW_MS,
+    REGISTER_BURST_MAX_PER_IP,
+  )
+  if (burstLimited) return burstLimited
 
   const admin = createGidsSupabaseAdmin()
   if (!admin) {
@@ -103,6 +110,14 @@ async function handleRegisterDienstenPost(req: Request) {
   const complimentary = isDienstenComplimentaryRegistration({ name: d.name, email: d.email })
   const requireCheckout = gidsDienstenRequiresCheckout() && !complimentary
   const initialStatus = requireCheckout ? 'hidden' : 'published'
+
+  const successLimited = enforceRateLimit(
+    req,
+    'gids-register-diensten-success',
+    REGISTER_WINDOW_MS,
+    REGISTER_SUCCESS_MAX_PER_IP,
+  )
+  if (successLimited) return successLimited
 
   const { data: inserted, error: insertErr } = await admin
     .from('gids_listings')
