@@ -1,6 +1,14 @@
 /** Publieke KPI’s op de homepage */
 
-/** Publiek getoonde horeca-telling: exact aantal gepubliceerde horeca-zaken in Supabase. */
+/**
+ * Homepage «Actieve ondernemers»: alle gepubliceerde zaken (horeca + diensten).
+ * Geen kunstmatige vloer — elke nieuwe listing +1 (287 → 288, …).
+ */
+export function publicActiveOndernemersDisplayCount(actualCount: number): number {
+  return Math.max(0, Math.floor(actualCount))
+}
+
+/** Zoekpagina horeca-totalen (zelfde als werkelijk aantal, geen vloer). */
 export function publicHorecaZakenDisplayCount(actualCount: number): number {
   return Math.max(0, Math.floor(actualCount))
 }

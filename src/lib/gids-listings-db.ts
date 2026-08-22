@@ -342,6 +342,21 @@ export async function fetchPublishedListingCountFromDb(): Promise<number> {
   return count ?? 0
 }
 
+/** Server-only: alle gepubliceerde listings (horeca + diensten), zonder RLS-beperking. */
+export async function fetchPublishedListingCountAdmin(): Promise<number | null> {
+  const admin = createGidsSupabaseAdmin()
+  if (!admin) return null
+  const { count, error } = await admin
+    .from('gids_listings')
+    .select('id', { count: 'exact', head: true })
+    .eq('status', 'published')
+  if (error) {
+    console.error('[gids] count listings admin:', error.message)
+    return null
+  }
+  return count ?? 0
+}
+
 /** Gepubliceerde horeca-zaken (geen diensten/leveranciers). */
 export async function fetchPublishedHorecaListingCountFromDb(): Promise<number> {
   if (!isGidsSupabaseConfigured()) return 0

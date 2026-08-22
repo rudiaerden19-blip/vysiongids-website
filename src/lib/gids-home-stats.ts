@@ -1,23 +1,22 @@
 import { unstable_cache } from 'next/cache'
-import { fetchPublishedHorecaListingCountFromDb, fetchPublishedListingCountFromDb } from '@/lib/gids-listings-db'
-import { jsonHorecaListingCount } from '@/lib/listings'
-import { publicHorecaZakenDisplayCount, zoekactiesPerDagDisplay } from '@/lib/gids-public-stats'
+import {
+  fetchPublishedListingCountAdmin,
+  fetchPublishedListingCountFromDb,
+} from '@/lib/gids-listings-db'
+import { publicActiveOndernemersDisplayCount, zoekactiesPerDagDisplay } from '@/lib/gids-public-stats'
 
 const cachedHomeStats = unstable_cache(
   async () => {
-    let activeZaken = await fetchPublishedHorecaListingCountFromDb()
+    let activeZaken = (await fetchPublishedListingCountAdmin()) ?? 0
     if (activeZaken <= 0) {
       activeZaken = await fetchPublishedListingCountFromDb()
     }
-    if (activeZaken <= 0) {
-      activeZaken = jsonHorecaListingCount()
-    }
     return {
-      activeZaken: publicHorecaZakenDisplayCount(activeZaken),
+      activeZaken: publicActiveOndernemersDisplayCount(activeZaken),
       zoekactiesPerDag: zoekactiesPerDagDisplay(),
     }
   },
-  ['gids-home-public-stats'],
+  ['gids-home-public-stats-v2-all-published'],
   { revalidate: 60, tags: ['gids-listings'] },
 )
 
