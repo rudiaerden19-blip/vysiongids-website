@@ -268,6 +268,7 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
   if (!compact) {
     return (
       <form ref={formRef} onSubmit={onSubmit} className="vysiongids-hero-search" style={heroFormStyle}>
+        <h2 className="vysiongids-hero-search-title">Eten bestellen</h2>
         <div className="vysiongids-hero-search-grow" style={heroGrowStyle}>
           <label htmlFor="search-q" style={heroFieldLabel}>
             Stad, postcode of naam

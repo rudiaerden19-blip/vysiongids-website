@@ -1384,6 +1384,17 @@ body {
   box-shadow: var(--vysiongids-card-shadow);
 }
 
+.vysiongids-hero-search-title {
+  flex: 1 1 100%;
+  width: 100%;
+  margin: 0 0 0.15rem;
+  font-size: clamp(1.2rem, 2.5vw, 1.45rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: var(--accent, #0e5d82);
+  line-height: 1.2;
+}
+
 .vysiongids-hero-search-grow {
   flex: 1 1 14rem;
   min-width: min(100%, 11rem);
