@@ -1,5 +1,6 @@
 import type { ListingAmenityId } from '@/lib/listing-types'
 import type { ParsedGidsListingForm } from '@/lib/gids-listing-form-server'
+import { horecaTypesForDbWrite } from '@/lib/listing-horeca-types'
 
 export function gidsListingSaveErrorMessage(message: string | undefined): string {
   if (!message) return 'Opslaan mislukt. Probeer later opnieuw.'
@@ -19,6 +20,9 @@ export function gidsListingSaveErrorMessage(message: string | undefined): string
   if (/info_extras/i.test(message)) {
     return 'INFO-blokken kunnen niet opgeslagen worden: voer in Supabase SQL uit: supabase/migrations/011_gids_listings_info_extras.sql'
   }
+  if (/horeca_types/i.test(message)) {
+    return 'Meerdere zaaktypes kunnen niet opgeslagen worden: voer in Supabase SQL uit: supabase/migrations/021_gids_listings_horeca_types.sql'
+  }
   if (/gids_menu_|menu_catalog_active/i.test(message)) {
     return 'Menu-catalogus kan niet opgeslagen worden: voer in Supabase SQL uit: supabase/migrations/009_gids_menu_catalog.sql.'
   }
@@ -35,12 +39,14 @@ type InsertExtras = {
 
 /** Geen `cuisine_type: null` — anders faalt insert als kolom nog niet bestaat. */
 export function buildGidsListingInsertRow(d: ParsedGidsListingForm, extras: InsertExtras): Record<string, unknown> {
+  const typeFields = horecaTypesForDbWrite(d.horecaTypes)
   const row: Record<string, unknown> = {
     slug: extras.slug,
     name: d.name,
     name_normalized: extras.nameNormalized,
     pin_hash: extras.pinHash,
-    type: d.type,
+    type: typeFields.type,
+    horeca_types: typeFields.horeca_types,
     city: d.city,
     postcode: d.postcode,
     province: d.province,

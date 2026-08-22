@@ -11,6 +11,7 @@ import {
   listingMatchesSearchLocation,
 } from '@/lib/gids-search-locations'
 import { canonicalizeSearchToken } from '@/lib/gids-search-vocabulary'
+import { listingAllHorecaTypes, listingHasHorecaType, listingHorecaTypeLabels } from '@/lib/listing-horeca-types'
 
 /** Extra zoektermen naast het formulierlabel (typo’s, synoniemen, spraak). */
 const AMENITY_EXTRA_TERMS: Partial<Record<ListingAmenityId, string[]>> = {
@@ -331,6 +332,8 @@ export function listingSearchHaystack(listing: Listing): string {
     .join(' ')
   const provLabel = listing.province ? provinceLabel(listing.province) : ''
 
+  const typeLabels = listingHorecaTypeLabels(listing).join(' ')
+
   return normalizeSearchText(
     [
       listing.name,
@@ -340,7 +343,9 @@ export function listingSearchHaystack(listing: Listing): string {
       listing.province ?? '',
       provLabel,
       listing.type,
+      ...listingAllHorecaTypes(listing),
       LISTING_TYPES.find((t) => t.id === listing.type)?.label ?? listing.type,
+      typeLabels,
       listing.cuisineType ?? '',
       cuisineLabel,
       amenityLabels,
@@ -364,7 +369,8 @@ export function listingMatchesTextSearch(listing: Listing, freeText: string): bo
 
 function listingMatchesTypeIds(listing: Listing, typeIds: ListingTypeSearchId[]): boolean {
   if (typeIds.length === 0) return true
-  if (typeIds.includes(listing.type)) return true
+  const listingTypes = listingAllHorecaTypes(listing)
+  if (typeIds.some((id) => listingTypes.includes(id))) return true
   const hay = listingSearchHaystack(listing)
   for (const typeId of typeIds) {
     const entry = LISTING_TYPE_SEARCH.find((e) => e.type === typeId)

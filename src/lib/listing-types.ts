@@ -56,6 +56,8 @@ export type Listing = {
   slug: string
   name: string
   type: Exclude<ListingTypeId, 'all'>
+  /** Alle gekozen horeca-types (primair = `type`); leeg in DB = alleen `type`. */
+  horecaTypes?: Exclude<ListingTypeId, 'all'>[]
   /** horeca (default) of diensten/leverancier */
   listingSegment?: 'horeca' | 'diensten'
   serviceCategories?: string[]

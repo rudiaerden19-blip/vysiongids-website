@@ -111,7 +111,8 @@ export async function fetchHorecaListingsForSearchFromDb(plan: HorecaSearchDbPla
     query = query.eq('province', plan.province)
   }
   if (plan.listingType) {
-    query = query.eq('type', plan.listingType)
+    const t = plan.listingType
+    query = query.or(`type.eq.${t},horeca_types.cs.{${t}}`)
   }
   if (plan.cuisineType) {
     query = query.eq('cuisine_type', plan.cuisineType)

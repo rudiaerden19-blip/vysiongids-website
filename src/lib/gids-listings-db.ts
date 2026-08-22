@@ -4,6 +4,7 @@ import { gidsBusinessNameLookupKeys } from '@/lib/gids-text'
 import { resolveListingPremiumActive } from '@/lib/gids-premium'
 import { resolveDienstenListingActive } from '@/lib/gids-diensten-membership'
 import { LISTING_SEGMENT_HORECA } from '@/lib/listing-segment'
+import { horecaTypesFromDbRow } from '@/lib/listing-horeca-types'
 import { createGidsSupabaseAdmin, createGidsSupabasePublic, isGidsSupabaseConfigured } from '@/lib/supabase-gids'
 
 type PhotoRow = { sort_order: number; public_url: string }
@@ -16,6 +17,7 @@ export type GidsListingRow = {
   pin_hash?: string
   status?: string
   type: string
+  horeca_types?: string[] | null
   cuisine_type?: string | null
   city: string
   postcode: string
@@ -67,6 +69,7 @@ const PUBLIC_LISTING_COLUMNS = `
   name,
   status,
   type,
+  horeca_types,
   cuisine_type,
   city,
   postcode,
@@ -118,6 +121,7 @@ export const LISTING_BROWSE_SELECT = `
   name,
   status,
   type,
+  horeca_types,
   cuisine_type,
   city,
   postcode,
@@ -276,6 +280,7 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
     slug: row.slug,
     name: row.name,
     type: row.type as Listing['type'],
+    horecaTypes: horecaTypesFromDbRow(row.type, row.horeca_types),
     cuisineType: (row.cuisine_type as Listing['cuisineType']) ?? undefined,
     city: row.city,
     postcode: row.postcode,
@@ -357,6 +362,30 @@ export async function fetchPublishedListingCountAdmin(): Promise<number | null> 
   return count ?? 0
 }
 
+/** Server-only: som van horeca-type-slots (kebab+frituur = 2) + 1 per diensten-zaak. */
+export async function fetchPublishedListingTypeSlotsAdmin(): Promise<number | null> {
+  const admin = createGidsSupabaseAdmin()
+  if (!admin) return null
+  const { data, error } = await admin
+    .from('gids_listings')
+    .select('type, horeca_types, listing_segment')
+    .eq('status', 'published')
+  if (error) {
+    console.error('[gids] type slots admin:', error.message)
+    return null
+  }
+  let total = 0
+  for (const row of data ?? []) {
+    if (row.listing_segment === 'diensten') {
+      total += 1
+      continue
+    }
+    const slots = horecaTypesFromDbRow(row.type as string, row.horeca_types as string[] | null).length
+    total += slots > 0 ? slots : 1
+  }
+  return total
+}
+
 /** Gepubliceerde horeca-zaken (geen diensten/leveranciers). */
 export async function fetchPublishedHorecaListingCountFromDb(): Promise<number> {
   if (!isGidsSupabaseConfigured()) return 0
@@ -393,7 +422,8 @@ export async function fetchPublishedListingsFromDb(
     query = query.eq('province', filter.province.trim())
   }
   if (filter?.type?.trim()) {
-    query = query.eq('type', filter.type.trim())
+    const t = filter.type.trim()
+    query = query.or(`type.eq.${t},horeca_types.cs.{${t}}`)
   }
 
   const { data, error } = await query.order('name')

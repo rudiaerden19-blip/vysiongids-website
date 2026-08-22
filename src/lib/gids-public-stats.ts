@@ -1,8 +1,8 @@
 /** Publieke KPI’s op de homepage */
 
 /**
- * Kalibratie homepage «Actieve ondernemers»: publiek cijfer vs. Supabase published-telling.
- * Elke extra gepubliceerde zaak (horeca + diensten) telt +1 op het publieke cijfer.
+ * Kalibratie homepage «Actieve ondernemers»: publiek cijfer vs. type-slots (meerdere types = meerdere).
+ * Elke extra type-keuze of nieuwe zaak telt +1 op het publieke cijfer.
  * Na bulk-import in Supabase: pas beide constanten aan (zelfde verschil behouden of op 1:1 zetten).
  */
 export const STATS_ACTIVE_ONDERNEMERS_CALIBRATION_DB = 83

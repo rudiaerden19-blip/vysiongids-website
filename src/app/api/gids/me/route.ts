@@ -15,6 +15,7 @@ import {
 import { parseGidsListingFormData } from '@/lib/gids-listing-form-server'
 import { mergeListingAmenitiesWithOwnerChoices } from '@/lib/gids-owner-amenities'
 import { applyCuisineTypeToUpdatePayload, applyDeliveryRadiusToUpdatePayload, gidsListingSaveErrorMessage } from '@/lib/gids-listing-db-write'
+import { horecaTypesForDbWrite } from '@/lib/listing-horeca-types'
 import { hashGidsPin } from '@/lib/gids-pin'
 import { normalizeGidsBusinessName, slugifyListing } from '@/lib/gids-text'
 import {
@@ -230,11 +231,14 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: message }, { status: 400 })
   }
 
+  const typeFields = horecaTypesForDbWrite(d.horecaTypes)
+
   const updatePayload: Record<string, unknown> = {
     name: d.name,
     name_normalized: nameNormalized,
     slug,
-    type: d.type,
+    type: typeFields.type,
+    horeca_types: typeFields.horeca_types,
     city: d.city,
     postcode: d.postcode,
     province: d.province,

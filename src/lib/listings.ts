@@ -16,6 +16,7 @@ import {
 import { isGidsSupabaseConfigured } from '@/lib/supabase-gids'
 import { normalizeSearchText } from '@/lib/gids-text'
 import { parseListingSearchQuery, listingMatchesParsedSearch } from '@/lib/gids-listing-search'
+import { listingHasHorecaType, listingHorecaTypeLabels } from '@/lib/listing-horeca-types'
 import { isHorecaListing } from '@/lib/listing-segment'
 import { compareListingsByName } from '@/lib/listing-alphabetical-sort'
 import { listingDistanceKmFrom } from '@/lib/listing-display'
@@ -152,6 +153,11 @@ export function getListingTypeLabel(type: Listing['type']): string {
   return LISTING_TYPES.find((t) => t.id === type)?.label ?? type
 }
 
+export function getListingHorecaTypesLabel(listing: Pick<Listing, 'type' | 'horecaTypes'>): string {
+  const labels = listingHorecaTypeLabels(listing)
+  return labels.length > 0 ? labels.join(' · ') : getListingTypeLabel(listing.type)
+}
+
 function mergeDbWithJsonHoreca(fromDb: Listing[]): Listing[] {
   const bySlug = new Map<string, Listing>()
   for (const listing of jsonFallback) {
@@ -219,7 +225,7 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
   let results = listings.filter((listing) => {
     if (!isHorecaListing(listing)) return false
     const formType = (params.type ?? 'all') as ListingTypeId
-    if (formType !== 'all' && parsed.typeIds.length === 0 && listing.type !== formType) {
+    if (formType !== 'all' && parsed.typeIds.length === 0 && !listingHasHorecaType(listing, formType)) {
       return false
     }
     if (prov) {

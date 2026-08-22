@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useCallback, useRef, useState } from 'react'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
-import { LISTING_TYPES, type Listing, type ListingDayHours } from '@/lib/listing-types'
+import { type Listing, type ListingDayHours } from '@/lib/listing-types'
 import OpeningHoursEditor, { type OpeningHoursPayload } from '@/components/OpeningHoursEditor'
 import OpeningScheduleExtrasEditor from '@/components/OpeningScheduleExtrasEditor'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
@@ -14,6 +14,7 @@ import ListingOwnerOptionsFields from '@/components/ListingOwnerOptionsFields'
 import ListingMenuOwnerFields from '@/components/ListingMenuOwnerFields'
 import BeheerInfoExtrasFields from '@/components/BeheerInfoExtrasFields'
 import KitchenTypeSelect from '@/components/KitchenTypeSelect'
+import HorecaTypesCheckboxGroup from '@/components/HorecaTypesCheckboxGroup'
 import TitleCaseTextInput, { applyTitleCaseFormFields } from '@/components/TitleCaseTextInput'
 import BeheerZaakQrCard from '@/components/BeheerZaakQrCard'
 
@@ -250,8 +251,6 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
     }
   }
 
-  const types = LISTING_TYPES.filter((t) => t.id !== 'all')
-
   return (
     <section className="vysiongids-surface-card rounded-xl bg-white p-5">
       <h2 className="text-xl font-bold text-gray-900">Gegevens bewerken</h2>
@@ -297,23 +296,17 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
           />
         </div>
 
+        <div>
+          <p className="vysiongids-form-label">
+            Type zaak (meerdere mogelijk)
+            <span className="vysiongids-form-required" aria-hidden>
+              *
+            </span>
+          </p>
+          <HorecaTypesCheckboxGroup idPrefix="edit" listing={listing} disabled={loading} />
+        </div>
+
         <div className="grid gap-4 sm:grid-cols-2">
-          <div>
-            <RequiredLabel htmlFor="edit-type">Type zaak</RequiredLabel>
-            <select
-              id="edit-type"
-              name="type"
-              required
-              defaultValue={listing.type}
-              className="vysiongids-form-input mt-1"
-            >
-              {types.map((t) => (
-                <option key={t.id} value={t.id}>
-                  {t.label}
-                </option>
-              ))}
-            </select>
-          </div>
           <div>
             <RequiredLabel htmlFor="edit-province">Provincie</RequiredLabel>
             <select

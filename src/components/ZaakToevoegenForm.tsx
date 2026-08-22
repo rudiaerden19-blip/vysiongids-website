@@ -6,7 +6,7 @@ import { GidsButtonLoadingContent } from '@/components/GidsLoadingSpinner'
 import GidsPageLoadingOverlay from '@/components/GidsPageLoadingOverlay'
 import { useGidsBusyUntilNav } from '@/hooks/use-gids-busy-until-nav'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
-import { LISTING_TYPES, type ListingDayHours } from '@/lib/listing-types'
+import { type ListingDayHours } from '@/lib/listing-types'
 import OpeningHoursEditor, { type OpeningHoursPayload } from '@/components/OpeningHoursEditor'
 import OpeningScheduleExtrasEditor from '@/components/OpeningScheduleExtrasEditor'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
@@ -17,6 +17,7 @@ import BeheerInfoExtrasFields from '@/components/BeheerInfoExtrasFields'
 import ListingMenuOwnerFields from '@/components/ListingMenuOwnerFields'
 import DeliveryRadiusKmField from '@/components/DeliveryRadiusKmField'
 import KitchenTypeSelect from '@/components/KitchenTypeSelect'
+import HorecaTypesCheckboxGroup from '@/components/HorecaTypesCheckboxGroup'
 import TitleCaseTextInput, { applyTitleCaseFormFields } from '@/components/TitleCaseTextInput'
 
 function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
@@ -227,8 +228,6 @@ export default function ZaakToevoegenForm() {
     }
   }
 
-  const types = LISTING_TYPES.filter((t) => t.id !== 'all')
-
   return (
     <form
       onSubmit={onSubmit}
@@ -271,18 +270,18 @@ export default function ZaakToevoegenForm() {
         />
       </div>
 
+      <div>
+        <p className="vysiongids-form-label">
+          Type zaak (meerdere mogelijk)
+          <span className="vysiongids-form-required" aria-hidden>
+            *
+          </span>
+        </p>
+        <HorecaTypesCheckboxGroup disabled={busy} />
+      </div>
+
       <div className="grid gap-4 sm:grid-cols-2">
-        <div>
-          <RequiredLabel htmlFor="type">Type zaak</RequiredLabel>
-          <select id="type" name="type" required className="vysiongids-form-input mt-1">
-            {types.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.label}
-              </option>
-            ))}
-          </select>
-        </div>
-        <div>
+        <div className="sm:col-span-2 sm:max-w-md">
           <RequiredLabel htmlFor="province">Provincie</RequiredLabel>
           <select id="province" name="province" required className="vysiongids-form-input mt-1" defaultValue="">
             <option value="" disabled>

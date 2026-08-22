@@ -9,6 +9,7 @@ import { parseOwnerAmenitiesFromForm } from '@/lib/gids-owner-amenities'
 import { isAllowedDeliveryRadiusKm, parseDeliveryRadiusKmFromForm } from '@/lib/listing-delivery-radius'
 import { WEEKDAYS_NL } from '@/lib/listing-info'
 import { formatGidsTitleCase } from '@/lib/gids-text'
+import { parseHorecaTypesFromForm, type HorecaListingTypeId } from '@/lib/listing-horeca-types'
 
 const VALID_TYPES = LISTING_TYPES.filter((t) => t.id !== 'all').map((t) => t.id)
 
@@ -16,6 +17,7 @@ export type ParsedGidsListingForm = {
   name: string
   pin: string | null
   type: string
+  horecaTypes: HorecaListingTypeId[]
   city: string
   postcode: string
   address: string
@@ -56,7 +58,7 @@ export async function parseGidsListingFormData(
   const newPinRaw = String(form.get('newPin') ?? '').trim()
   const pin = opts.requirePin ? pinRaw : newPinRaw || null
 
-  const type = String(form.get('type') ?? '').trim()
+  const horecaTypes = parseHorecaTypesFromForm(form)
   const city = formatGidsTitleCase(String(form.get('city') ?? '').trim())
   const postcode = String(form.get('postcode') ?? '').trim()
   const address = formatGidsTitleCase(String(form.get('address') ?? '').trim())
@@ -89,8 +91,12 @@ export async function parseGidsListingFormData(
     return { ok: false, error: 'Nieuwe PIN moet 6 cijfers zijn.', status: 400 }
   }
 
-  if (!VALID_TYPES.includes(type as (typeof VALID_TYPES)[number])) {
-    return { ok: false, error: 'Kies een type zaak.', status: 400 }
+  if (horecaTypes.length === 0) {
+    return { ok: false, error: 'Kies minstens één type zaak (bv. kebab en frituur).', status: 400 }
+  }
+  const primaryType = horecaTypes[0]
+  if (!VALID_TYPES.includes(primaryType)) {
+    return { ok: false, error: 'Ongeldig type zaak.', status: 400 }
   }
   if (!province) return { ok: false, error: 'Kies een provincie.', status: 400 }
   if (!city || !postcode || !address) {
@@ -294,7 +300,8 @@ export async function parseGidsListingFormData(
     data: {
       name,
       pin: opts.requirePin ? pinRaw : newPinRaw || null,
-      type,
+      type: primaryType,
+      horecaTypes,
       city,
       postcode,
       address,
