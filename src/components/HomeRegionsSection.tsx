@@ -3,6 +3,9 @@ import Link from 'next/link'
 import { BELGIUM_CITIES, BELGIUM_PROVINCES } from '@/lib/belgium-locations'
 import { provinceImageUrl } from '@/lib/province-images'
 
+/** Geen kaart op homepage (wel nog in zoeken/registratie). */
+const HOME_PROVINCE_SLUGS_HIDDEN = new Set(['henegouwen', 'luik', 'luxemburg', 'namen'])
+
 export default function HomeRegionsSection() {
   return (
     <section className="vysiongids-home-regions" aria-labelledby="home-regions-title">
@@ -17,7 +20,7 @@ export default function HomeRegionsSection() {
         </header>
 
         <ul className="vysiongids-home-regions-grid">
-          {BELGIUM_PROVINCES.map((prov) => {
+          {BELGIUM_PROVINCES.filter((prov) => !HOME_PROVINCE_SLUGS_HIDDEN.has(prov.slug)).map((prov) => {
             const img = provinceImageUrl(prov.slug)
             return (
               <li key={prov.slug}>
