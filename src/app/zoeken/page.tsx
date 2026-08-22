@@ -71,8 +71,14 @@ export default async function ZoekenPage({ searchParams }: Props) {
           {title}
         </h1>
         <p style={{ margin: '0 0 1.5rem', color: '#4b5563', fontSize: '1rem' }}>
-          {displayTotal} {displayTotal === 1 ? 'zaak' : 'zaken'}
-          {search.capped ? ` (eerste ${results.length} getoond — verfijn je zoekopdracht)` : ''} · Bestel rechtstreeks bij de zaak
+          {!sp.prov?.trim() ? (
+            <>
+              {displayTotal} {displayTotal === 1 ? 'zaak' : 'zaken'}
+              {search.capped ? ` (eerste ${results.length} getoond — verfijn je zoekopdracht)` : ''}
+              {' · '}
+            </>
+          ) : null}
+          Bestel rechtstreeks bij de zaak
         </p>
 
         <Suspense fallback={null}>

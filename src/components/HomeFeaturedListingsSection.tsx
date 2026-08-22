@@ -13,9 +13,6 @@ export default async function HomeFeaturedListingsSection() {
           <h2 id="home-featured-title" className="vysiongids-home-featured-title">
             Horecazaken in de kijker
           </h2>
-          <p className="vysiongids-home-featured-lead">
-            Ontdek de populairste zaken die deze week de meeste ratings gekregen hebben van klanten
-          </p>
         </header>
 
         <HomeFeaturedCarousel listings={listings} />

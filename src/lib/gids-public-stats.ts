@@ -91,35 +91,22 @@ function brusselsHourAndMinute(now: Date): { hour: number; minute: number } {
   return { hour, minute }
 }
 
-/** ~210 bezoekers per uur na 9u, stabiel per dag+uur-slot (niet elk uur hetzelfde getal). */
-function bezoekersHourlyDelta(dateKey: string, hourSlotIndex: number): number {
-  const hash = hashDateKey(`${dateKey}|bezoekers-uur|${hourSlotIndex}`)
-  return 175 + (hash % 71)
-}
-
 /**
- * Bezoekers vandaag: om 9:00 (Brussel) = 80, daarna per uur ~210 extra (175–245), geen count-up animatie.
+ * Bezoekers vandaag: 9:00 (Brussel) = 180, lineair oplopend tot 21:00 = 9800; daarvoor/daarna vast.
  */
 export function zoekactiesPerDagDisplay(now = new Date()): number {
-  const dateKey = brusselsDateKey(now)
   const { hour, minute } = brusselsHourAndMinute(now)
   const startHour = 9
-  const baseAtNine = 80
+  const endHour = 21
+  const baseAtNine = 180
+  const endTotal = 9800
+  const windowHours = endHour - startHour
 
   if (hour < startHour) return baseAtNine
 
   const hoursSinceNine = hour - startHour + minute / 60
-  const fullHours = Math.floor(hoursSinceNine)
-  let total = baseAtNine
+  if (hoursSinceNine >= windowHours) return endTotal
 
-  for (let slot = 0; slot < fullHours; slot++) {
-    total += bezoekersHourlyDelta(dateKey, slot)
-  }
-
-  const fraction = hoursSinceNine - fullHours
-  if (fraction > 0) {
-    total += Math.round(bezoekersHourlyDelta(dateKey, fullHours) * fraction)
-  }
-
-  return total
+  const progress = hoursSinceNine / windowHours
+  return Math.round(baseAtNine + (endTotal - baseAtNine) * progress)
 }
