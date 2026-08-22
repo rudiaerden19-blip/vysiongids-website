@@ -50,14 +50,6 @@ export default function ZoekertjesPageClient({
     })
   }, [zoekertjes, kindFilter, categoryFilter, provinceFilter])
 
-  const provinceCounts = useMemo(() => {
-    const bySlug: Record<string, number> = {}
-    for (const prov of BELGIUM_PROVINCES) {
-      bySlug[prov.slug] = zoekertjes.filter((z) => z.listingProvince === prov.slug).length
-    }
-    return { total: zoekertjes.length, bySlug }
-  }, [zoekertjes])
-
   const loadList = useCallback(async () => {
     setLoading(true)
     setLoadError(null)
@@ -164,10 +156,10 @@ export default function ZoekertjesPageClient({
               value={provinceFilter}
               onChange={(e) => setProvinceFilter(e.target.value)}
             >
-              <option value={ALL_PROVINCES}>Heel België ({provinceCounts.total})</option>
+              <option value={ALL_PROVINCES}>Heel België</option>
               {BELGIUM_PROVINCES.map((prov) => (
                 <option key={prov.slug} value={prov.slug}>
-                  {prov.label} ({provinceCounts.bySlug[prov.slug] ?? 0})
+                  {prov.label}
                 </option>
               ))}
             </select>

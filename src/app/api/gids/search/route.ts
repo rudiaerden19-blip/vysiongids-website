@@ -21,8 +21,7 @@ export async function GET(request: Request) {
   const top = search.listings[0]
   return NextResponse.json(
     {
-      count: search.total,
-      shown: search.listings.length,
+      hasResults: search.listings.length > 0,
       capped: search.capped,
       top: top ? { slug: top.slug, name: top.name } : null,
     },

@@ -123,9 +123,12 @@ async function fetchSearchSummary(
   appendGidsSearchParams(params, { q, type, prov, near: near ?? null })
   const res = await fetch(`/api/gids/search?${params.toString()}`)
   if (!res.ok) return { count: 0, top: null }
-  const data = (await res.json()) as { count?: number; top?: { slug: string; name: string } | null }
+  const data = (await res.json()) as {
+    hasResults?: boolean
+    top?: { slug: string; name: string } | null
+  }
   return {
-    count: typeof data.count === 'number' ? data.count : 0,
+    count: data.hasResults ? 1 : 0,
     top: data.top ?? null,
   }
 }

@@ -1,19 +1,13 @@
-/** Korte TTS na spraakzoeken — geen zaaktype of «in kebab» uit zoekterm. */
+/** Korte TTS na spraakzoeken — geen aantallen, geen zaaktype uit zoekterm. */
 export function buildSearchResultsSpeechMessage(input: {
   count: number
   topName?: string
 }): string {
   if (input.count === 0) {
-    return 'Wij hebben geen zaken gevonden.'
-  }
-  if (input.count === 1 && input.topName) {
-    return `Ik vond ${input.topName}. Zeg waze er naartoe om te rijden.`
-  }
-  if (input.count === 1) {
-    return 'Wij hebben één zaak gevonden. Zeg waze er naartoe om te rijden.'
+    return 'Geen resultaat. Probeer een andere zoekterm.'
   }
   if (input.topName) {
-    return `Wij hebben ${input.count} zaken gevonden. De dichtstbij is ${input.topName}. Zeg waze er naartoe.`
+    return `Ik vond ${input.topName}. Zeg waze er naartoe om te rijden.`
   }
-  return `Wij hebben ${input.count} zaken gevonden.`
+  return 'Zoekresultaten staan klaar. Kies een zaak of zeg waze er naartoe.'
 }

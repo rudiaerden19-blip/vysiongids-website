@@ -198,14 +198,7 @@ function StaffListingsTable({
         ) : null}
       </div>
       <p className="text-xs text-gray-500">
-        Pagina {state.page} van {totalPages} · {state.total}{' '}
-        {state.total === 1
-          ? segment === 'diensten'
-            ? 'bedrijf'
-            : 'zaak'
-          : segment === 'diensten'
-            ? 'bedrijven'
-            : 'zaken'}
+        Pagina {state.page} van {totalPages}
       </p>
       {totalPages > 1 ? (
         <div className="flex flex-wrap gap-2">

@@ -57,7 +57,7 @@ export default async function ZoekenPage({ searchParams }: Props) {
         </h1>
         <p style={{ margin: '0 0 1.5rem', color: '#4b5563', fontSize: '1rem' }}>
           Bestel rechtstreeks bij de zaak
-          {search.capped ? ` · Eerste ${results.length} getoond — verfijn je zoekopdracht` : ''}
+          {search.capped ? ' · Verfijn je zoekopdracht voor meer resultaten' : ''}
         </p>
 
         <Suspense fallback={null}>

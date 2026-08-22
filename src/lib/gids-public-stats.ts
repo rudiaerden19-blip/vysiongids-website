@@ -14,12 +14,6 @@ export function publicActiveOndernemersDisplayCount(actualCount: number): number
   return STATS_ACTIVE_ONDERNEMERS_CALIBRATION_PUBLIC + (n - STATS_ACTIVE_ONDERNEMERS_CALIBRATION_DB)
 }
 
-/** Zoekpagina horeca-totalen (zelfde als werkelijk aantal, geen vloer). */
-export function publicHorecaZakenDisplayCount(actualCount: number): number {
-  return Math.max(0, Math.floor(actualCount))
-}
-
-
 const STATS_SEARCH_LAUNCH_KEY = '2026-08-15'
 
 export function formatStatNumber(n: number): string {
