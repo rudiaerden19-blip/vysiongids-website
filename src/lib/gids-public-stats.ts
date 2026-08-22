@@ -19,7 +19,6 @@ export function publicHorecaZakenDisplayCount(actualCount: number): number {
   return Math.max(0, Math.floor(actualCount))
 }
 
-export const STATS_SEARCH_BASE = 3240
 
 const STATS_SEARCH_LAUNCH_KEY = '2026-08-15'
 
@@ -34,26 +33,6 @@ function brusselsDateKey(now: Date): string {
     month: '2-digit',
     day: '2-digit',
   }).format(now)
-}
-
-/** Maandag = 0 … zondag = 6 (Europe/Brussels). */
-function brusselsWeekdayIndex(now: Date): number {
-  const weekday = new Intl.DateTimeFormat('en-US', {
-    timeZone: 'Europe/Brussels',
-    weekday: 'long',
-  })
-    .format(now)
-    .toLowerCase()
-  const map: Record<string, number> = {
-    monday: 0,
-    tuesday: 1,
-    wednesday: 2,
-    thursday: 3,
-    friday: 4,
-    saturday: 5,
-    sunday: 6,
-  }
-  return map[weekday] ?? 0
 }
 
 function daysSinceLaunch(now: Date, anchorKey = STATS_SEARCH_LAUNCH_KEY): number {
@@ -104,24 +83,47 @@ function hashDateKey(key: string): number {
   return hash
 }
 
+function brusselsHourAndMinute(now: Date): { hour: number; minute: number } {
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone: 'Europe/Brussels',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false,
+  }).formatToParts(now)
+  const hour = Number(parts.find((p) => p.type === 'hour')?.value ?? 0)
+  const minute = Number(parts.find((p) => p.type === 'minute')?.value ?? 0)
+  return { hour, minute }
+}
+
+/** ~210 bezoekers per uur na 9u, stabiel per dag+uur-slot (niet elk uur hetzelfde getal). */
+function bezoekersHourlyDelta(dateKey: string, hourSlotIndex: number): number {
+  const hash = hashDateKey(`${dateKey}|bezoekers-uur|${hourSlotIndex}`)
+  return 175 + (hash % 71)
+}
+
 /**
- * Zoekacties vandaag: elke dag iets hoger; vr–zo duidelijk boven ma–do.
+ * Bezoekers vandaag: om 9:00 (Brussel) = 80, daarna per uur ~210 extra (175–245), geen count-up animatie.
  */
 export function zoekactiesPerDagDisplay(now = new Date()): number {
-  const key = brusselsDateKey(now)
-  const hash = hashDateKey(key)
-  const weekday = brusselsWeekdayIndex(now)
-  const dayIndex = daysSinceLaunchSearch(now)
+  const dateKey = brusselsDateKey(now)
+  const { hour, minute } = brusselsHourAndMinute(now)
+  const startHour = 9
+  const baseAtNine = 80
 
-  /** ~12–18 extra per kalenderdag t.o.v. lancering */
-  const dailyGrowth = dayIndex * 15
+  if (hour < startHour) return baseAtNine
 
-  /** Variatie binnen de week (ma–do lager band) */
-  const weekdayBand = hash % 200
+  const hoursSinceNine = hour - startHour + minute / 60
+  const fullHours = Math.floor(hoursSinceNine)
+  let total = baseAtNine
 
-  /** Vrijdag, zaterdag, zondag: +450–820 boven doordeweeks niveau */
-  const isWeekendPeak = weekday >= 4
-  const weekendBoost = isWeekendPeak ? 450 + (hash % 370) : 0
+  for (let slot = 0; slot < fullHours; slot++) {
+    total += bezoekersHourlyDelta(dateKey, slot)
+  }
 
-  return STATS_SEARCH_BASE + dailyGrowth + weekdayBand + weekendBoost
+  const fraction = hoursSinceNine - fullHours
+  if (fraction > 0) {
+    total += Math.round(bezoekersHourlyDelta(dateKey, fullHours) * fraction)
+  }
+
+  return total
 }
