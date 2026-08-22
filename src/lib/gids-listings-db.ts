@@ -69,7 +69,6 @@ const PUBLIC_LISTING_COLUMNS = `
   name,
   status,
   type,
-  horeca_types,
   cuisine_type,
   city,
   postcode,
@@ -121,7 +120,6 @@ export const LISTING_BROWSE_SELECT = `
   name,
   status,
   type,
-  horeca_types,
   cuisine_type,
   city,
   postcode,
@@ -162,6 +160,28 @@ export const LISTING_BROWSE_SELECT = `
   created_at,
   updated_at
 `.replace(/\s+/g, ' ')
+
+/** Service role: anon heeft kolom-grants (017) — horeca_types alleen via admin of extra GRANT. */
+const LISTING_BROWSE_HORECA_TYPES_SUFFIX = ', horeca_types'
+
+export function listingBrowseSelect(includeHorecaTypes: boolean): string {
+  return includeHorecaTypes ? `${LISTING_BROWSE_SELECT}${LISTING_BROWSE_HORECA_TYPES_SUFFIX}` : LISTING_BROWSE_SELECT
+}
+
+/** Server-side listing reads: admin (incl. horeca_types) → anders anon zonder horeca_types. */
+export function gidsListingBrowseReader(): {
+  client: NonNullable<ReturnType<typeof createGidsSupabasePublic>>
+  select: string
+} | null {
+  if (!isGidsSupabaseConfigured()) return null
+  const admin = createGidsSupabaseAdmin()
+  if (admin) {
+    return { client: admin, select: listingBrowseSelect(true) }
+  }
+  const pub = createGidsSupabasePublic()
+  if (!pub) return null
+  return { client: pub, select: listingBrowseSelect(false) }
+}
 
 const LISTING_VOICE_SELECT = `
   id,
@@ -403,14 +423,25 @@ export async function fetchPublishedHorecaListingCountFromDb(): Promise<number> 
   return count ?? 0
 }
 
+function applyPublishedListingTypeFilter<T extends { or: (f: string) => T; eq: (c: string, v: string) => T }>(
+  query: T,
+  typeId: string,
+  includeHorecaTypes: boolean,
+): T {
+  if (includeHorecaTypes) {
+    return query.or(`type.eq.${typeId},horeca_types.cs.{${typeId}}`)
+  }
+  return query.eq('type', typeId)
+}
+
 export async function fetchPublishedListingsFromDb(
   filter?: GidsPublishedListingsFilter,
 ): Promise<Listing[] | null> {
-  if (!isGidsSupabaseConfigured()) return null
-  const supabase = createGidsSupabasePublic()
-  if (!supabase) return null
+  const reader = gidsListingBrowseReader()
+  if (!reader) return null
+  const includeHorecaTypes = reader.select.includes('horeca_types')
 
-  let query = supabase.from('gids_listings').select(LISTING_BROWSE_SELECT).eq('status', 'published')
+  let query = reader.client.from('gids_listings').select(reader.select).eq('status', 'published')
 
   if (filter?.listingSegment === 'diensten') {
     query = query.eq('listing_segment', 'diensten')
@@ -422,11 +453,22 @@ export async function fetchPublishedListingsFromDb(
     query = query.eq('province', filter.province.trim())
   }
   if (filter?.type?.trim()) {
-    const t = filter.type.trim()
-    query = query.or(`type.eq.${t},horeca_types.cs.{${t}}`)
+    query = applyPublishedListingTypeFilter(query, filter.type.trim(), includeHorecaTypes)
   }
 
-  const { data, error } = await query.order('name')
+  let { data, error } = await query.order('name')
+
+  if (error && includeHorecaTypes && filter?.type?.trim()) {
+    console.error('[gids] fetch listings type filter:', error.message)
+    let fallback = reader.client.from('gids_listings').select(reader.select).eq('status', 'published')
+    if (filter?.listingSegment === 'diensten') fallback = fallback.eq('listing_segment', 'diensten')
+    else if (filter?.listingSegment === 'horeca') {
+      fallback = fallback.or('listing_segment.is.null,listing_segment.eq.horeca')
+    }
+    if (filter?.province?.trim()) fallback = fallback.eq('province', filter.province.trim())
+    fallback = fallback.eq('type', filter.type.trim())
+    ;({ data, error } = await fallback.order('name'))
+  }
 
   if (error) {
     console.error('[gids] fetch listings:', error.message)
@@ -435,7 +477,7 @@ export async function fetchPublishedListingsFromDb(
 
   const rawRows = (data ?? []) as unknown as GidsListingRow[]
   const photosById = await fetchFirstListingPhotosMap(
-    supabase,
+    reader.client,
     rawRows.map((r) => r.id),
   )
   let rows = rowsToListings(rawRows, photosById)
@@ -499,14 +541,13 @@ export async function fetchPublishedJobListingsFromDb(): Promise<Listing[] | nul
 
 /** Homepage «in de kijker» — geen volledige catalogus laden. */
 export async function fetchFeaturedHorecaListingsFromDb(limit: number): Promise<Listing[] | null> {
-  if (!isGidsSupabaseConfigured()) return null
-  const supabase = createGidsSupabasePublic()
-  if (!supabase) return null
+  const reader = gidsListingBrowseReader()
+  if (!reader) return null
   const take = Math.min(50, Math.max(4, limit * 4))
 
-  const { data, error } = await supabase
+  const { data, error } = await reader.client
     .from('gids_listings')
-    .select(LISTING_BROWSE_SELECT)
+    .select(reader.select)
     .eq('status', 'published')
     .or('listing_segment.is.null,listing_segment.eq.horeca')
     .order('rating_avg', { ascending: false })
@@ -520,7 +561,7 @@ export async function fetchFeaturedHorecaListingsFromDb(limit: number): Promise<
 
   const rawRows = (data ?? []) as unknown as GidsListingRow[]
   const photosById = await fetchFirstListingPhotosMap(
-    supabase,
+    reader.client,
     rawRows.map((r) => r.id),
   )
   return rowsToListings(rawRows, photosById).slice(0, limit)
@@ -552,20 +593,22 @@ export async function fetchPublishedListingSlugsBatchAdmin(
 }
 
 export async function fetchListingBySlugFromDb(slug: string): Promise<Listing | null> {
-  if (!isGidsSupabaseConfigured()) return null
-  const supabase = createGidsSupabasePublic()
-  if (!supabase) return null
+  const reader = gidsListingBrowseReader()
+  if (!reader) return null
 
-  const { data, error } = await supabase
+  const { data, error } = await reader.client
     .from('gids_listings')
-    .select(LISTING_BROWSE_SELECT)
+    .select(reader.select)
     .eq('status', 'published')
     .eq('slug', slug)
     .maybeSingle()
 
-  if (error || !data) return null
+  if (error || !data) {
+    if (error) console.error('[gids] listing by slug:', error.message)
+    return null
+  }
   const row = data as unknown as GidsListingRow
-  const photos = await fetchAllListingPhotosForId(supabase, row.id)
+  const photos = await fetchAllListingPhotosForId(reader.client, row.id)
   return mapGidsRowToListing({ ...row, gids_listing_photos: photos })
 }
 

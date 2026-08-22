@@ -3,12 +3,11 @@ import type { Listing, ListingSearchParams, ListingTypeId } from '@/lib/listing-
 import type { ParsedListingSearchQuery } from '@/lib/gids-listing-search'
 import {
   fetchFirstListingPhotosMap,
-  LISTING_BROWSE_SELECT,
+  gidsListingBrowseReader,
   rowsToListings,
   type GidsListingRow,
 } from '@/lib/gids-listings-db'
 import { normalizeSearchText } from '@/lib/gids-text'
-import { createGidsSupabasePublic, isGidsSupabaseConfigured } from '@/lib/supabase-gids'
 
 /** Max rijen uit Supabase vóór amenity/openNow-filter in Node (complexe queries). */
 export const GIDS_SEARCH_DB_PREFETCH_MAX = 500
@@ -97,13 +96,13 @@ export function planHorecaSearchDbQuery(
 }
 
 export async function fetchHorecaListingsForSearchFromDb(plan: HorecaSearchDbPlan): Promise<Listing[] | null> {
-  if (!isGidsSupabaseConfigured()) return null
-  const supabase = createGidsSupabasePublic()
-  if (!supabase) return null
+  const reader = gidsListingBrowseReader()
+  if (!reader) return null
+  const includeHorecaTypes = reader.select.includes('horeca_types')
 
-  let query = supabase
+  let query = reader.client
     .from('gids_listings')
-    .select(LISTING_BROWSE_SELECT)
+    .select(reader.select)
     .eq('status', 'published')
     .or('listing_segment.is.null,listing_segment.eq.horeca')
 
@@ -112,7 +111,9 @@ export async function fetchHorecaListingsForSearchFromDb(plan: HorecaSearchDbPla
   }
   if (plan.listingType) {
     const t = plan.listingType
-    query = query.or(`type.eq.${t},horeca_types.cs.{${t}}`)
+    query = includeHorecaTypes
+      ? query.or(`type.eq.${t},horeca_types.cs.{${t}}`)
+      : query.eq('type', t)
   }
   if (plan.cuisineType) {
     query = query.eq('cuisine_type', plan.cuisineType)
@@ -149,7 +150,7 @@ export async function fetchHorecaListingsForSearchFromDb(plan: HorecaSearchDbPla
 
   const rawRows = (data ?? []) as unknown as GidsListingRow[]
   const photosById = await fetchFirstListingPhotosMap(
-    supabase,
+    reader.client,
     rawRows.map((r) => r.id),
   )
   return rowsToListings(rawRows, photosById)
