@@ -10,8 +10,6 @@ import SiteHeader from '@/components/SiteHeader'
 import { parseListingSearchQuery } from '@/lib/gids-listing-search'
 import { parseNearPointFromSearchParams } from '@/lib/gids-search-url'
 import { searchListings } from '@/lib/listings'
-import { fetchPublishedHorecaListingCountFromDb } from '@/lib/gids-listings-db'
-import { publicHorecaZakenDisplayCount } from '@/lib/gids-public-stats'
 import { provinceLabel } from '@/lib/belgium-locations'
 
 type Props = {
@@ -43,19 +41,6 @@ export default async function ZoekenPage({ searchParams }: Props) {
       ? `Zaken in ${provLabel}`
       : 'Alle zaken'
 
-  const isAllHorecaZaken =
-    !qLabel &&
-    !provLabel &&
-    !(near && (parsedQ.nearby || parsedQ.openNow)) &&
-    (sp.type ?? 'all') === 'all'
-
-  let displayTotal = search.total
-  if (isAllHorecaZaken) {
-    const dbHoreca = await fetchPublishedHorecaListingCountFromDb()
-    const actual = dbHoreca > 0 ? dbHoreca : search.total
-    displayTotal = publicHorecaZakenDisplayCount(actual)
-  }
-
   return (
     <>
       <SiteHeader />
@@ -71,14 +56,8 @@ export default async function ZoekenPage({ searchParams }: Props) {
           {title}
         </h1>
         <p style={{ margin: '0 0 1.5rem', color: '#4b5563', fontSize: '1rem' }}>
-          {!sp.prov?.trim() ? (
-            <>
-              {displayTotal} {displayTotal === 1 ? 'zaak' : 'zaken'}
-              {search.capped ? ` (eerste ${results.length} getoond — verfijn je zoekopdracht)` : ''}
-              {' · '}
-            </>
-          ) : null}
           Bestel rechtstreeks bij de zaak
+          {search.capped ? ` · Eerste ${results.length} getoond — verfijn je zoekopdracht` : ''}
         </p>
 
         <Suspense fallback={null}>
