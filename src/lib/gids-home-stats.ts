@@ -1,27 +1,12 @@
 import { unstable_cache } from 'next/cache'
-import {
-  fetchPublishedListingCountAdmin,
-  fetchPublishedListingCountFromDb,
-  fetchPublishedListingTypeSlotsAdmin,
-} from '@/lib/gids-listings-db'
-import { publicActiveOndernemersDisplayCount, zoekactiesPerDagDisplay } from '@/lib/gids-public-stats'
+import { zoekactiesPerDagDisplay } from '@/lib/gids-public-stats'
 
 const cachedHomeStats = unstable_cache(
-  async () => {
-    let activeZaken = (await fetchPublishedListingTypeSlotsAdmin()) ?? 0
-    if (activeZaken <= 0) {
-      activeZaken = (await fetchPublishedListingCountAdmin()) ?? 0
-    }
-    if (activeZaken <= 0) {
-      activeZaken = await fetchPublishedListingCountFromDb()
-    }
-    return {
-      activeZaken: publicActiveOndernemersDisplayCount(activeZaken),
-      zoekactiesPerDag: zoekactiesPerDagDisplay(),
-    }
-  },
-  ['gids-home-public-stats-v4-type-slots'],
-  { revalidate: 60, tags: ['gids-listings'] },
+  async () => ({
+    zoekactiesPerDag: zoekactiesPerDagDisplay(),
+  }),
+  ['gids-home-public-stats-v5-bezoekers-only'],
+  { revalidate: 60 },
 )
 
 export async function getHomePublicStats() {

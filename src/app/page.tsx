@@ -84,7 +84,7 @@ export default async function HomePage() {
           </div>
         </section>
       </div>
-      <HomeStatsBar activeZaken={stats.activeZaken} zoekactiesPerDag={stats.zoekactiesPerDag} />
+      <HomeStatsBar zoekactiesPerDag={stats.zoekactiesPerDag} />
       <HomeFeaturedListingsSection />
       <HomeRegionsSection />
     </>

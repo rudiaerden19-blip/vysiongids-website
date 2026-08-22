@@ -71,10 +71,6 @@ export function dienstenListingVisitorsDisplay(slug: string, now = new Date()): 
   return total
 }
 
-function daysSinceLaunchSearch(now: Date): number {
-  return daysSinceLaunch(now, STATS_SEARCH_LAUNCH_KEY)
-}
-
 function hashDateKey(key: string): number {
   let hash = 0
   for (let i = 0; i < key.length; i++) {

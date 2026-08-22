@@ -17,11 +17,10 @@ function Stat({ display, label }: StatProps) {
 }
 
 export type HomeStatsBarProps = {
-  activeZaken: number
   zoekactiesPerDag: number
 }
 
-export default function HomeStatsBar({ activeZaken, zoekactiesPerDag }: HomeStatsBarProps) {
+export default function HomeStatsBar({ zoekactiesPerDag }: HomeStatsBarProps) {
   const [bezoekers, setBezoekers] = useState(zoekactiesPerDag)
 
   useEffect(() => {
@@ -32,8 +31,8 @@ export default function HomeStatsBar({ activeZaken, zoekactiesPerDag }: HomeStat
 
   return (
     <section className="vysiongids-home-stats" aria-label="Platformcijfers">
+      <h2 className="vysiongids-home-stats-title">13000+ ondernemers staan voor u klaar</h2>
       <div className="vysiongids-home-stats-inner">
-        <Stat display={formatStatNumber(activeZaken)} label="Actieve ondernemers" />
         <Stat display={formatStatNumber(bezoekers)} label="Bezoekers vandaag" />
         <Stat display="0%" label="0% commissie" />
       </div>

@@ -972,6 +972,18 @@ body {
   padding: var(--vysiongids-home-section-y) var(--vysiongids-home-section-x);
 }
 
+.vysiongids-home-stats-title {
+  margin: 0 auto clamp(1.25rem, 3vw, 2rem);
+  max-width: min(52rem, 100%);
+  padding: 0 0.5rem;
+  text-align: center;
+  font-size: clamp(1.35rem, 3.5vw, 2rem);
+  font-weight: 800;
+  letter-spacing: -0.025em;
+  color: #0e5d82;
+  line-height: 1.25;
+}
+
 .vysiongids-home-section-intro {
   margin: 0 auto clamp(2.25rem, 5vw, 3.5rem);
   max-width: min(52rem, 100%);
@@ -1009,7 +1021,7 @@ body {
 
 @media (min-width: 640px) {
   .vysiongids-home-stats-inner {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: start;
     justify-items: center;
   }
