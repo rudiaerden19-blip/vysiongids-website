@@ -18,7 +18,7 @@ const cachedHomeStats = unstable_cache(
     }
   },
   ['gids-home-public-stats'],
-  { revalidate: 120, tags: ['gids-listings'] },
+  { revalidate: 60, tags: ['gids-listings'] },
 )
 
 export async function getHomePublicStats() {

@@ -1,11 +1,8 @@
 /** Publieke KPI’s op de homepage */
 
-export const STATS_ACTIVE_ONDERNEMERS_FLOOR = 284
-
-/** Publiek getoonde horeca-telling: min. vloer, daarna mee met echte groei (285, 286, …). */
+/** Publiek getoonde horeca-telling: exact aantal gepubliceerde horeca-zaken in Supabase. */
 export function publicHorecaZakenDisplayCount(actualCount: number): number {
-  const n = Math.max(0, Math.floor(actualCount))
-  return Math.max(n, STATS_ACTIVE_ONDERNEMERS_FLOOR)
+  return Math.max(0, Math.floor(actualCount))
 }
 
 export const STATS_SEARCH_BASE = 3240
