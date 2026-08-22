@@ -16,7 +16,7 @@ const cachedHomeStats = unstable_cache(
       zoekactiesPerDag: zoekactiesPerDagDisplay(),
     }
   },
-  ['gids-home-public-stats-v2-all-published'],
+  ['gids-home-public-stats-v3-calibrated'],
   { revalidate: 60, tags: ['gids-listings'] },
 )
 

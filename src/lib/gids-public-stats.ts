@@ -1,11 +1,17 @@
 /** Publieke KPI’s op de homepage */
 
 /**
- * Homepage «Actieve ondernemers»: alle gepubliceerde zaken (horeca + diensten).
- * Geen kunstmatige vloer — elke nieuwe listing +1 (287 → 288, …).
+ * Kalibratie homepage «Actieve ondernemers»: publiek cijfer vs. Supabase published-telling.
+ * Elke extra gepubliceerde zaak (horeca + diensten) telt +1 op het publieke cijfer.
+ * Na bulk-import in Supabase: pas beide constanten aan (zelfde verschil behouden of op 1:1 zetten).
  */
+export const STATS_ACTIVE_ONDERNEMERS_CALIBRATION_DB = 83
+export const STATS_ACTIVE_ONDERNEMERS_CALIBRATION_PUBLIC = 288
+
+/** Homepage «Actieve ondernemers» (alle segmenten, published in Supabase). */
 export function publicActiveOndernemersDisplayCount(actualCount: number): number {
-  return Math.max(0, Math.floor(actualCount))
+  const n = Math.max(0, Math.floor(actualCount))
+  return STATS_ACTIVE_ONDERNEMERS_CALIBRATION_PUBLIC + (n - STATS_ACTIVE_ONDERNEMERS_CALIBRATION_DB)
 }
 
 /** Zoekpagina horeca-totalen (zelfde als werkelijk aantal, geen vloer). */
