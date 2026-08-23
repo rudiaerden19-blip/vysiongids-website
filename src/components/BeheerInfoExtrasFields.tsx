@@ -1,6 +1,6 @@
 'use client'
 
-import { useRef, useState, type SyntheticEvent } from 'react'
+import { useEffect, useRef, useState, type SyntheticEvent } from 'react'
 import type { Listing } from '@/lib/listing-types'
 import { HIRING_JOB_TYPES } from '@/lib/listing-hiring'
 import TitleCaseTextInput from '@/components/TitleCaseTextInput'
@@ -23,17 +23,44 @@ function SpecialtyPhotoField({
 }) {
   const inputRef = useRef<HTMLInputElement>(null)
   const [fileLabel, setFileLabel] = useState<string | null>(null)
+  const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null)
   const id = `specialtyPhoto${index}`
+
+  useEffect(() => {
+    return () => {
+      if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl)
+    }
+  }, [localPreviewUrl])
+
+  const showExisting = existingUrl && !localPreviewUrl && !removeChecked
 
   return (
     <div className="vysiongids-info-specialty-photo">
       <label className="vysiongids-form-label text-sm" htmlFor={id}>
         Foto specialiteit {index + 1}
       </label>
-      {existingUrl && !fileLabel ? (
+      {localPreviewUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={existingUrl} alt="" className="mt-1 h-20 w-full max-w-[140px] rounded-lg object-cover" />
-      ) : null}
+        <img
+          src={localPreviewUrl}
+          alt=""
+          className="mt-2 aspect-[4/3] w-full rounded-lg border border-gray-200 object-cover"
+        />
+      ) : showExisting ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={existingUrl}
+          alt=""
+          className="mt-2 aspect-[4/3] w-full rounded-lg border border-gray-200 object-cover"
+        />
+      ) : (
+        <div
+          className="mt-2 flex aspect-[4/3] w-full items-center justify-center rounded-lg border border-dashed border-gray-300 bg-gray-50 text-xs text-gray-500"
+          aria-hidden
+        >
+          Geen foto
+        </div>
+      )}
       <input
         ref={inputRef}
         id={id}
@@ -45,16 +72,40 @@ function SpecialtyPhotoField({
         onChange={(e) => {
           const f = e.target.files?.[0]
           setFileLabel(f ? f.name : null)
+          if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl)
+          setLocalPreviewUrl(f ? URL.createObjectURL(f) : null)
           if (f) onRemoveChange(false)
         }}
       />
       <input type="hidden" name={`removeSpecialtyPhoto${index}`} value={removeChecked ? '1' : '0'} />
-      <button type="button" className="vysiongids-photo-pick-btn mt-1 text-sm" disabled={disabled} onClick={() => inputRef.current?.click()}>
-        {existingUrl ? 'Vervang' : 'Kies foto'}
+      <button type="button" className="vysiongids-photo-pick-btn mt-2 w-full text-sm" disabled={disabled} onClick={() => inputRef.current?.click()}>
+        {existingUrl || localPreviewUrl ? 'Vervang foto' : 'Kies foto'}
       </button>
-      {existingUrl ? (
+      <p className="mt-1 text-xs text-gray-500" aria-live="polite">
+        {localPreviewUrl
+          ? 'Nieuwe foto — klik Opslaan om te publiceren'
+          : showExisting
+            ? 'Huidige foto'
+            : fileLabel
+              ? fileLabel
+              : null}
+      </p>
+      {existingUrl || localPreviewUrl ? (
         <label className="mt-1 flex items-center gap-2 text-xs text-gray-600">
-          <input type="checkbox" checked={removeChecked} disabled={disabled} onChange={(e) => onRemoveChange(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={removeChecked}
+            disabled={disabled}
+            onChange={(e) => {
+              onRemoveChange(e.target.checked)
+              if (e.target.checked) {
+                if (localPreviewUrl) URL.revokeObjectURL(localPreviewUrl)
+                setLocalPreviewUrl(null)
+                setFileLabel(null)
+                if (inputRef.current) inputRef.current.value = ''
+              }
+            }}
+          />
           Foto verwijderen
         </label>
       ) : null}
