@@ -1525,6 +1525,21 @@ body {
   color: #374151;
 }
 
+.vysiongids-search-query-examples {
+  display: none;
+  margin: 0 0 0.4rem;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.4;
+  color: #6b7280;
+}
+
+@media (max-width: 639px) {
+  .vysiongids-search-query-examples {
+    display: block;
+  }
+}
+
 .vysiongids-hero-search input,
 .vysiongids-hero-search select {
   display: block;

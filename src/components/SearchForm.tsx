@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
-import { FormEvent, useCallback, useEffect, useRef, type CSSProperties } from 'react'
+import { FormEvent, useCallback, useEffect, useRef, useState, type CSSProperties, type RefObject } from 'react'
 import { LISTING_TYPES } from '@/lib/listing-types'
 import { buildSearchResultsSpeechMessage } from '@/lib/search-results-speech'
 import { useVoiceSearch } from '@/lib/use-voice-search'
@@ -92,6 +92,59 @@ const heroSubmitStyle: CSSProperties = {
   cursor: 'pointer',
   whiteSpace: 'nowrap',
   width: '100%',
+}
+
+/** Smalle telefoons: lange placeholder past niet in het veld — voorbeelden erboven. */
+function useNarrowSearchField(): boolean {
+  const [narrow, setNarrow] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 639px)')
+    const sync = () => setNarrow(mq.matches)
+    sync()
+    mq.addEventListener('change', sync)
+    return () => mq.removeEventListener('change', sync)
+  }, [])
+  return narrow
+}
+
+type SearchQueryFieldProps = {
+  id: string
+  q: string
+  qInputRef: React.RefObject<HTMLInputElement | null>
+  inputStyle: CSSProperties
+  labelStyle: CSSProperties
+}
+
+function SearchQueryField({ id, q, qInputRef, inputStyle, labelStyle }: SearchQueryFieldProps) {
+  const { t } = useLanguage()
+  const narrow = useNarrowSearchField()
+  const examplesId = `${id}-examples`
+  const placeholder = narrow ? t('search.placeholderMobile') : t('search.placeholder')
+
+  return (
+    <>
+      <label htmlFor={id} style={labelStyle}>
+        {t('search.queryLabel')}
+      </label>
+      {narrow ? (
+        <p id={examplesId} className="vysiongids-search-query-examples">
+          {t('search.queryExamples')}
+        </p>
+      ) : null}
+      <TitleCaseTextInput
+        key={`${id}-${q}`}
+        ref={qInputRef}
+        id={id}
+        name="q"
+        type="search"
+        defaultValue={q}
+        placeholder={placeholder}
+        autoComplete="off"
+        style={inputStyle}
+        aria-describedby={narrow ? examplesId : undefined}
+      />
+    </>
+  )
 }
 
 function buildSearchPath(
@@ -279,19 +332,12 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
       <form ref={formRef} onSubmit={onSubmit} className="vysiongids-hero-search" style={heroFormStyle}>
         <h2 className="vysiongids-hero-search-title">{t('search.heroTitle')}</h2>
         <div className="vysiongids-hero-search-grow" style={heroGrowStyle}>
-          <label htmlFor="search-q" style={heroFieldLabel}>
-            {t('search.queryLabel')}
-          </label>
-          <TitleCaseTextInput
-            key={`search-q-${q}`}
-            ref={qInputRef}
+          <SearchQueryField
             id="search-q"
-            name="q"
-            type="search"
-            defaultValue={q}
-            placeholder={t('search.placeholder')}
-            autoComplete="off"
-            style={heroFieldInput}
+            q={q}
+            qInputRef={qInputRef}
+            inputStyle={heroFieldInput}
+            labelStyle={heroFieldLabel}
           />
         </div>
         <div className="vysiongids-hero-search-type" style={heroTypeStyle}>
@@ -325,19 +371,12 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
       }}
     >
       <div style={{ flex: '1 1 16rem', minWidth: 'min(100%, 14rem)' }}>
-        <label htmlFor="search-q-compact" style={fieldLabel}>
-          {t('search.queryLabel')}
-        </label>
-        <TitleCaseTextInput
-          key={`search-q-compact-${q}`}
-          ref={qInputRef}
+        <SearchQueryField
           id="search-q-compact"
-          name="q"
-          type="search"
-          defaultValue={q}
-          placeholder={t('search.placeholder')}
-          style={fieldInput}
-          autoComplete="off"
+          q={q}
+          qInputRef={qInputRef}
+          inputStyle={fieldInput}
+          labelStyle={fieldLabel}
         />
       </div>
       <div style={{ flex: '0 1 12rem', minWidth: 'min(100%, 10rem)' }}>

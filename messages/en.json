@@ -129,6 +129,8 @@
     "queryLabel": "City, postcode or name",
     "typeLabel": "Business type",
     "placeholder": "E.g. chip shop, pizzeria, sandwiches, bakery, butcher, city, open now",
+    "placeholderMobile": "Type here to search",
+    "queryExamples": "E.g. chip shop, pizzeria, sandwiches, bakery, butcher, city, open now",
     "submit": "Search",
     "voiceListening": "Listening…",
     "voiceSpeak": "Speak",

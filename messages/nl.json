@@ -129,6 +129,8 @@
     "queryLabel": "Stad, postcode of naam",
     "typeLabel": "Type zaak",
     "placeholder": "Bv frituur, pizzeria, broodjes, bakker, slager, stad, nu open",
+    "placeholderMobile": "Typ hier om te zoeken",
+    "queryExamples": "Bv frituur, pizzeria, broodjes, bakker, slager, stad, nu open",
     "submit": "Zoeken",
     "voiceListening": "Luisteren…",
     "voiceSpeak": "Inspreken",
