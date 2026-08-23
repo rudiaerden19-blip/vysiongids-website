@@ -74,10 +74,15 @@ const LISTING_TYPE_SEARCH: Array<{ type: ListingTypeSearchId; phrases: string[] 
   { type: 'broodjeszaak', phrases: ['broodjeszaak', 'broodjes', 'sandwich'] },
   { type: 'chinees', phrases: ['chinees restaurant', 'chinees'] },
   { type: 'sushi', phrases: ['sushi restaurant'] },
-  { type: 'cafe', phrases: ['cafe', 'café', 'koffiehuis'] },
+  { type: 'cafe', phrases: ['cafe', 'café'] },
   { type: 'bistro', phrases: ['bistro'] },
   { type: 'bakkerij', phrases: ['bakkerij', 'bakker', 'brood', 'patisserie', 'patissier'] },
   { type: 'slagerij', phrases: ['slagerij', 'slager', 'charcuterie', 'beenhouwer', 'beenhouwerij'] },
+  { type: 'koffiehuis', phrases: ['koffiehuis', 'koffiebar', 'coffee bar', 'coffeehouse'] },
+  { type: 'lunchroom', phrases: ['lunchroom', 'lunch room', 'lunchbar'] },
+  { type: 'foodtruck', phrases: ['foodtruck', 'food truck', 'foodtrucks', 'street food'] },
+  { type: 'ijssalon', phrases: ['ijssalon', 'ijs salon', 'ijssalons', 'ijs', 'softijs', 'gelato'] },
+  { type: 'wijnhandel', phrases: ['wijnhandel', 'wijn handel', 'wijnwinkel', 'wijn bar', 'wine shop'] },
 ]
 
 const OPEN_NOW_PHRASES = [

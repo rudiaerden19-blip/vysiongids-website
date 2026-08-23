@@ -146,7 +146,12 @@
       "cafe": "Café",
       "bistro": "Bistro",
       "bakkerij": "Bakery",
-      "slagerij": "Butcher's shop"
+      "slagerij": "Butcher's shop",
+      "koffiehuis": "Coffee house",
+      "lunchroom": "Lunch room",
+      "foodtruck": "Food truck",
+      "ijssalon": "Ice cream shop",
+      "wijnhandel": "Wine shop"
     },
     "nearbyHintNeedLocation": "For {label} we need your location.",
     "nearbyHintAllowLocation": "Allow location",

@@ -26,6 +26,11 @@ const NAME_SORT_PREFIXES = [
   'sterrenzaak',
   'bakkerij',
   'slagerij',
+  'koffiehuis',
+  'lunchroom',
+  'foodtruck',
+  'ijssalon',
+  'wijnhandel',
 ]
 
 /** Sorteersleutel: echte naam (bv. «Nolim Pelt»), niet «Frituur Nolim Pelt». */
