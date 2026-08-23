@@ -55,7 +55,8 @@ function StaffListingsTable({
       <div>
         <h2 className="text-lg font-bold text-gray-900">{title}</h2>
         <p className="text-sm text-gray-600">
-          Lidmaatschap €{priceLabel}/jaar · volgende betaling +365 dagen na «Betaald».
+          Lidmaatschap €{priceLabel}/jaar · volgende betaling +365 dagen na «Betaald». Geclaimde zaken staan
+          bovenaan (groene rij).
         </p>
       </div>
 

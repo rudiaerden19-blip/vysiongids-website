@@ -143,7 +143,10 @@ export async function fetchGidsListingsForStaffAdminPaginated(opts: {
     }
   }
 
-  const { data, error, count } = await query.order('name').range(from, to)
+  const { data, error, count } = await query
+    .order('claimed_at', { ascending: false, nullsFirst: false })
+    .order('name', { ascending: true })
+    .range(from, to)
 
   if (error) {
     console.error('[gids-staff] list:', error.message)
