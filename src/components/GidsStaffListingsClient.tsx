@@ -13,6 +13,7 @@ import {
   staffListingMembershipPaidLabel,
   staffListingPaidAt,
 } from '@/lib/gids-staff-listings-db'
+import { staffListingDisplayEmail } from '@/lib/gids-staff-claim-email'
 
 type StaffLoginState = 'loading' | 'login' | 'ready' | 'unconfigured'
 
@@ -102,13 +103,16 @@ function StaffListingsTable({
                   </td>
                   {segment === 'diensten' ? (
                     <td className="text-sm text-gray-700">
-                      {row.email ? (
-                        <a href={`mailto:${row.email}`} className="break-all text-accent hover:underline">
-                          {row.email}
-                        </a>
-                      ) : (
-                        <span className="text-gray-400">—</span>
-                      )}
+                      {(() => {
+                        const mail = staffListingDisplayEmail(row)
+                        return mail ? (
+                          <a href={`mailto:${mail}`} className="break-all text-accent hover:underline">
+                            {mail}
+                          </a>
+                        ) : (
+                          <span className="text-gray-400">—</span>
+                        )
+                      })()}
                     </td>
                   ) : null}
                   <td>{paidLabel}</td>

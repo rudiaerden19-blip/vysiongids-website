@@ -5,6 +5,7 @@ import { activateGidsDienstenMembershipByIdAdmin } from '@/lib/gids-diensten-db'
 import { resolveDienstenListingActive } from '@/lib/gids-diensten-membership'
 import { LISTING_SEGMENT_DIENSTEN } from '@/lib/listing-segment'
 import type { ListingSegment } from '@/lib/listing-segment'
+import { fetchLatestClaimEmailByListingIds } from '@/lib/gids-staff-claim-email'
 
 export type GidsStaffListingRow = {
   id: string
@@ -26,6 +27,8 @@ export type GidsStaffListingRow = {
   dienstenActive: boolean
   created_at: string
   claimed_at: string | null
+  /** Nieuwste e-mail uit claim-aanvraag (fallback voor staff-lijst). */
+  claim_contact_email?: string | null
 }
 
 const STAFF_LISTING_SELECT =
@@ -155,8 +158,18 @@ export async function fetchGidsListingsForStaffAdminPaginated(opts: {
     throw new Error(error.message)
   }
 
+  const rawRows = (data ?? []) as Record<string, unknown>[]
+  const claimEmails = await fetchLatestClaimEmailByListingIds(
+    admin,
+    rawRows.map((r) => r.id as string),
+  )
+
   return {
-    rows: (data ?? []).map((row) => mapStaffListingRow(row as Record<string, unknown>)),
+    rows: rawRows.map((row) => {
+      const mapped = mapStaffListingRow(row)
+      const claimEmail = claimEmails.get(mapped.id)
+      return claimEmail ? { ...mapped, claim_contact_email: claimEmail } : mapped
+    }),
     total: count ?? 0,
   }
 }

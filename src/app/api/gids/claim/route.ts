@@ -85,6 +85,13 @@ export async function POST(req: Request) {
     )
   }
 
+  async function syncListingContactFromClaim(supabase: NonNullable<typeof admin>, listingId: string) {
+    const patch: { email: string; phone?: string } = { email: contactEmail }
+    if (contactPhone.length >= 6) patch.phone = contactPhone
+    const { error: syncErr } = await supabase.from('gids_listings').update(patch).eq('id', listingId)
+    if (syncErr) console.warn('[gids claim] listing contact sync:', syncErr.message)
+  }
+
   const { data: pendingDup } = await admin
     .from('gids_listing_claim_requests')
     .select('id')
@@ -105,6 +112,7 @@ export async function POST(req: Request) {
   }
 
   if (pendingDup) {
+    await syncListingContactFromClaim(admin, listing.id)
     const mailConfigured = isGidsMailConfigured()
     let confirmationSent = false
     if (mailConfigured) {
@@ -137,6 +145,8 @@ export async function POST(req: Request) {
     }
     return NextResponse.json({ error: 'Aanvraag kon niet worden opgeslagen. Probeer later opnieuw.' }, { status: 500 })
   }
+
+  await syncListingContactFromClaim(admin, listing.id)
 
   const mailConfigured = isGidsMailConfigured()
   let confirmationSent = false
