@@ -1,5 +1,5 @@
 import type { Listing } from '@/lib/listing-types'
-import { fetchListingSessionByIdAdmin } from '@/lib/gids-listings-db'
+import { fetchListingRowByIdAdmin, fetchListingSessionByIdAdmin, mapGidsRowToListing } from '@/lib/gids-listings-db'
 import { resolveListingPremiumActive } from '@/lib/gids-premium'
 import { getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
 
@@ -9,12 +9,32 @@ export type BeheerServerSession = {
   slug?: string
   name?: string
   premiumMember?: boolean
-  /** Volledige listing alleen via client `/api/gids/me` — snellere beheer-pagina na login. */
   listing?: Listing
 }
 
-/** Snelle cookie-check + minimale listing-kolom — geen foto-join (beheer-formulier laadt via API). */
+/** Cookie + volledige listing voor beheer-formulier (één server-trip, geen wachten op client-API). */
 export async function loadBeheerServerSession(): Promise<BeheerServerSession> {
+  const listingId = await getGidsOwnerListingIdFromCookies()
+  if (!listingId) return { authenticated: false }
+
+  const row = await fetchListingRowByIdAdmin(listingId)
+  if (!row) return { authenticated: false }
+
+  const listing = mapGidsRowToListing(row)
+  const premiumMember = listing.premiumMember === true
+
+  return {
+    authenticated: true,
+    listingId: row.id,
+    slug: listing.slug,
+    name: listing.name,
+    premiumMember,
+    listing,
+  }
+}
+
+/** Alleen sessie-kolom — bv. health; beheer gebruikt loadBeheerServerSession. */
+export async function loadBeheerServerSessionBrief(): Promise<BeheerServerSession> {
   const listingId = await getGidsOwnerListingIdFromCookies()
   if (!listingId) return { authenticated: false }
 

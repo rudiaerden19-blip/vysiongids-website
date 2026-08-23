@@ -5,7 +5,7 @@ import { loadBeheerServerSession } from '@/lib/gids-beheer-server'
 
 export const metadata = { title: 'Beheer' }
 
-/** Sessie uit cookie — geen static cache; wel direct Supabase op de server i.p.v. dubbele client-API. */
+/** Sessie + listing op server — formulier meteen ingevuld na inloggen. */
 export const dynamic = 'force-dynamic'
 
 export default async function BeheerPage() {

@@ -6,6 +6,8 @@ import { useRouter, useSearchParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import VerwijderZaakButton from '@/components/VerwijderZaakButton'
 import ListingOwnerDailyViews from '@/components/ListingOwnerDailyViews'
+import BeheerEditForm from '@/components/BeheerEditForm'
+import BeheerDienstenEditForm from '@/components/BeheerDienstenEditForm'
 import {
   clearGidsBeheerLoginHint,
   readGidsBeheerLoginHint,
@@ -25,14 +27,6 @@ const BeheerGidsChatSection = dynamic(() => import('@/components/BeheerGidsChatS
     </section>
   ),
   ssr: false,
-})
-
-const BeheerEditForm = dynamic(() => import('@/components/BeheerEditForm'), {
-  loading: () => <p className="text-sm text-gray-600">Formulier laden…</p>,
-})
-
-const BeheerDienstenEditForm = dynamic(() => import('@/components/BeheerDienstenEditForm'), {
-  loading: () => <p className="text-sm text-gray-600">Dienstenformulier laden…</p>,
 })
 
 type MeResponse = {
@@ -60,15 +54,18 @@ export default function BeheerClient({ serverSession }: Props) {
           name: serverSession.name,
           slug: serverSession.slug,
           premiumMember: serverSession.premiumMember,
+          listing: serverSession.listing,
         }
       : loginHint
         ? { authenticated: true, name: loginHint.name, slug: loginHint.slug }
         : { authenticated: false },
   )
-  const [listing, setListing] = useState<Listing | null>(null)
-  const [sessionReady, setSessionReady] = useState(() => serverSession.authenticated || !loginHint)
+  const [listing, setListing] = useState<Listing | null>(serverSession.listing ?? null)
+  const [sessionReady, setSessionReady] = useState(
+    () => serverSession.authenticated || !loginHint,
+  )
   const [listingLoading, setListingLoading] = useState(
-    () => serverSession.authenticated || Boolean(loginHint),
+    () => (serverSession.authenticated || Boolean(loginHint)) && !serverSession.listing,
   )
   const [publicSlug, setPublicSlug] = useState<string | undefined>(
     serverSession.slug ?? loginHint?.slug,
@@ -80,6 +77,13 @@ export default function BeheerClient({ serverSession }: Props) {
   const dienstenAccount = listing ? isDienstenListing(listing) : false
 
   useEffect(() => {
+    if (serverSession.listing) {
+      setSessionReady(true)
+      setListingLoading(false)
+      clearGidsBeheerLoginHint()
+      return
+    }
+
     if (!serverSession.authenticated && !loginHint) {
       setSessionReady(true)
       setListingLoading(false)
@@ -111,7 +115,7 @@ export default function BeheerClient({ serverSession }: Props) {
     })()
 
     return () => controller.abort()
-  }, [serverSession.authenticated, loginHint])
+  }, [serverSession.authenticated, serverSession.listing, loginHint])
 
   /** Na Stripe: premium via webhook — knop «Claim» verdwijnt zodra DB actief is (geen auto-verleng-UI). */
   useEffect(() => {
