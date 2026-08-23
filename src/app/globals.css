@@ -427,7 +427,6 @@ body {
   flex-wrap: nowrap;
   align-items: center;
   gap: 0.35rem 0.5rem;
-  overflow: hidden;
 }
 
 .vysiongids-site-logo {
@@ -458,31 +457,15 @@ body {
 
 .vysiongids-site-header-region {
   display: inline-flex;
+  flex: 0 0 auto;
   min-width: 0;
-  flex: 0 1 auto;
-  max-width: min(42vw, 11.5rem);
   align-items: center;
   gap: 0.15rem;
 }
 
-@media (min-width: 640px) {
-  .vysiongids-site-header-region {
-    max-width: min(36vw, 14rem);
-  }
-}
-
-@media (min-width: 1024px) {
-  .vysiongids-site-header-region {
-    max-width: none;
-  }
-}
-
 .vysiongids-site-header-region-label {
-  display: block;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
   white-space: nowrap;
+  font-size: clamp(0.9375rem, 2.8vw, 1.125rem);
 }
 
 .vysiongids-region-toggle {
