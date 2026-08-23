@@ -5,7 +5,7 @@ import { resolveListingPremiumActive } from '@/lib/gids-premium'
 import { resolveDienstenListingActive } from '@/lib/gids-diensten-membership'
 import { LISTING_SEGMENT_HORECA } from '@/lib/listing-segment'
 import { horecaTypesFromDbRow } from '@/lib/listing-horeca-types'
-import { listingAcceptsPublicClaim } from '@/lib/listing-claimable'
+import { listingShowsClaimUi } from '@/lib/listing-claimable'
 import { createGidsSupabaseAdmin, createGidsSupabasePublic, isGidsSupabaseConfigured } from '@/lib/supabase-gids'
 
 type PhotoRow = { sort_order: number; public_url: string }
@@ -359,10 +359,7 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
     lng: row.lng ?? undefined,
     updatedAt: row.updated_at ?? undefined,
     claimedAt: row.claimed_at ?? undefined,
-    showClaimButton: listingAcceptsPublicClaim({
-      claimed_at: row.claimed_at,
-      pin_hash: row.pin_hash,
-    }),
+    showClaimButton: listingShowsClaimUi(row.claimed_at),
     hasOwnerPin: Boolean(String(row.pin_hash ?? '').trim()),
   }
 }

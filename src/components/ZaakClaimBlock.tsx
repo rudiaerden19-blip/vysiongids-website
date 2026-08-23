@@ -1,6 +1,5 @@
 'use client'
 
-import Link from 'next/link'
 import { useState } from 'react'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import ListingClaimModal from '@/components/ListingClaimModal'
@@ -13,39 +12,13 @@ type Props = {
   variant?: 'sidebar' | 'banner' | 'panelTitle'
 }
 
-function listingShouldOfferClaim(listing: Listing): boolean {
-  if (listing.showClaimButton === true) return true
-  if (listing.showClaimButton === false) return false
-  return listingShowsClaimUi(listing.claimedAt)
-}
-
-function ZaakOwnerLoginHint({ variant }: { variant: Props['variant'] }) {
-  const { t } = useLanguage()
-  const isPanel = variant === 'panelTitle'
-  return (
-    <p className={isPanel ? 'vysiongids-listing-panel-owner-login-hint' : 'vysiongids-zaak-owner-login-hint'}>
-      {t('claim.ownerLoginHint')}{' '}
-      <Link href="/login" className="vysiongids-zaak-owner-login-link">
-        {t('claim.ownerLoginLink')}
-      </Link>
-    </p>
-  )
-}
-
 export default function ZaakClaimBlock({ listing, variant = 'sidebar' }: Props) {
   const { t } = useLanguage()
   const { ownerSlug, authChecked } = useGidsOwnerSlug()
   const [open, setOpen] = useState(false)
 
-  if (listing.claimedAt) return null
+  if (!listingShowsClaimUi(listing.claimedAt)) return null
   if (authChecked && ownerSlug === listing.slug) return null
-
-  if (!listingShouldOfferClaim(listing)) {
-    if (listing.hasOwnerPin) {
-      return <ZaakOwnerLoginHint variant={variant} />
-    }
-    return null
-  }
 
   if (variant === 'panelTitle') {
     return (
