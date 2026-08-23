@@ -31,7 +31,6 @@ type ListingRow = {
   name: string
   city: string | null
   claimed_at: string | null
-  pin_hash: string | null
   status: string
 }
 
@@ -80,7 +79,7 @@ export async function POST(req: Request) {
 
   const { data: listing, error: listingErr } = await admin
     .from('gids_listings')
-    .select('id, slug, name, city, claimed_at, pin_hash, status')
+    .select('id, slug, name, city, claimed_at, status')
     .eq('slug', slug)
     .maybeSingle()
 
