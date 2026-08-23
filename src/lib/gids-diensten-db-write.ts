@@ -38,7 +38,6 @@ export function buildGidsDienstenInsertRow(
     hours_by_day: null,
     amenities: [],
     status: extras.status,
-    claimed_at: new Date().toISOString(),
     rating_avg: 0,
     rating_count: 0,
     pickup_enabled: false,

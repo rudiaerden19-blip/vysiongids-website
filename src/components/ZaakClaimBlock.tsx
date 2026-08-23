@@ -5,6 +5,7 @@ import { useLanguage } from '@/i18n/LanguageProvider'
 import ListingClaimModal from '@/components/ListingClaimModal'
 import { useGidsOwnerSlug } from '@/lib/use-gids-owner-slug'
 import type { Listing } from '@/lib/listing-types'
+import { listingShowsClaimUi } from '@/lib/listing-claimable'
 
 type Props = {
   listing: Listing
@@ -16,7 +17,7 @@ export default function ZaakClaimBlock({ listing, variant = 'sidebar' }: Props) 
   const { ownerSlug, authChecked } = useGidsOwnerSlug()
   const [open, setOpen] = useState(false)
 
-  if (listing.claimedAt) return null
+  if (!listingShowsClaimUi(listing.claimedAt)) return null
   if (authChecked && ownerSlug === listing.slug) return null
 
   if (variant === 'panelTitle') {

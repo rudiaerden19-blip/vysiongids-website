@@ -61,7 +61,6 @@ export function buildGidsListingInsertRow(d: ParsedGidsListingForm, extras: Inse
     hours_by_day: d.hoursByDay,
     amenities: d.ownerAmenities as ListingAmenityId[],
     status: 'published',
-    claimed_at: new Date().toISOString(),
     rating_avg: 0,
     rating_count: 0,
     pickup_enabled: true,

@@ -27,12 +27,13 @@ export type GidsStaffListingRow = {
   dienstenActive: boolean
   created_at: string
   claimed_at: string | null
+  pin_hash?: string | null
   /** Nieuwste e-mail uit claim-aanvraag (fallback voor staff-lijst). */
   claim_contact_email?: string | null
 }
 
 const STAFF_LISTING_SELECT =
-  'id, slug, name, address, city, postcode, status, email, listing_segment, premium_member, premium_paid_at, premium_expires_at, premium_paused, diensten_paid_at, diensten_expires_at, created_at, claimed_at'
+  'id, slug, name, address, city, postcode, status, email, listing_segment, premium_member, premium_paid_at, premium_expires_at, premium_paused, diensten_paid_at, diensten_expires_at, created_at, claimed_at, pin_hash'
 
 function mapStaffListingRow(row: Record<string, unknown>): GidsStaffListingRow {
   const premium_member = row.premium_member === true
@@ -71,11 +72,13 @@ function mapStaffListingRow(row: Record<string, unknown>): GidsStaffListingRow {
     }),
     created_at: row.created_at as string,
     claimed_at: (row.claimed_at as string | null) ?? null,
+    pin_hash: (row.pin_hash as string | null) ?? null,
   }
 }
 
 export function staffListingIsClaimed(row: GidsStaffListingRow): boolean {
-  return Boolean(row.claimed_at)
+  if (row.claimed_at) return true
+  return Boolean(String(row.pin_hash ?? '').trim())
 }
 
 export function staffListingIsDiensten(row: GidsStaffListingRow): boolean {

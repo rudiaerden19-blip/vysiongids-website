@@ -67,7 +67,7 @@ export async function POST(req: Request) {
 
   const { data: listing, error: listingErr } = await admin
     .from('gids_listings')
-    .select('id, slug, name, city, claimed_at, status')
+    .select('id, slug, name, city, claimed_at, pin_hash, status')
     .eq('slug', slug)
     .maybeSingle()
 
@@ -81,6 +81,15 @@ export async function POST(req: Request) {
   if (listing.claimed_at) {
     return NextResponse.json(
       { error: 'Deze zaak is al geclaimd. Log in met je zaaknaam en PIN, of neem contact op met Vysiongids.' },
+      { status: 409 },
+    )
+  }
+  if (String(listing.pin_hash ?? '').trim()) {
+    return NextResponse.json(
+      {
+        error:
+          'Deze zaak heeft al een eigenaar via zaak toevoegen. Log in met je zaaknaam en PIN, of neem contact op met Vysiongids.',
+      },
       { status: 409 },
     )
   }
