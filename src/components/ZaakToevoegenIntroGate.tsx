@@ -65,7 +65,7 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
         <div className="vysiongids-zaak-intro-body">
           <p className="vysiongids-zaak-intro-promo">
             Wil je lid worden van Vysiongids? Druk dan bovenaan op de knop <strong>Zaak toevoegen</strong> en volg alle
-            stappen. Het lidmaatschap kost <strong>€49 per jaar</strong>. Hiervoor ontvang je alle premiumfuncties
+            stappen. Het lidmaatschap is <strong>gratis</strong>. Hiervoor ontvang je alle premiumfuncties
             zonder limieten. Je zaak wordt dan direct zichtbaar voor duizenden klanten in de buurt, maar ook in heel
             België.
           </p>
