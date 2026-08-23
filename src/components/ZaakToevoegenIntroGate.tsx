@@ -108,7 +108,7 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
               Jouw zaak wordt meteen gekoppeld aan je online bestelplatform, reserveringssoftware, website, Facebook, enz.
               Heb je nog geen software? Dan kan je die via Vysiongids bekomen. Zoek je een nieuwe toonbank, friteuse, kassa,
               tafels en stoelen, enz.? Onder <strong>Diensten</strong> staan alle verkopers in één gids: contact opnemen of
-              een vraag stellen via de chat. Het lidmaatschap kost <strong>€49 per jaar</strong> en heeft zijn doel al
+              een vraag stellen via de chat. Het lidmaatschap is <strong>gratis</strong> en heeft zijn doel al
               ruimschoots bewezen.
             </p>
           </div>
