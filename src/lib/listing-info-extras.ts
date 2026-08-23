@@ -33,6 +33,11 @@ export type ListingInfoExtras = {
     orderUrl?: string
     valueEur?: number | null
   }
+  promotion?: {
+    enabled: boolean
+    text?: string
+    imageUrl?: string
+  }
   schedule?: import('@/lib/listing-schedule-extras').ListingScheduleExtras
 }
 
@@ -107,6 +112,21 @@ export function normalizeListingInfoExtras(raw: unknown): ListingInfoExtras | un
     }
   }
 
+  if (o.promotion && typeof o.promotion === 'object') {
+    const p = o.promotion as Record<string, unknown>
+    if (p.enabled === true) {
+      const text = formatGidsSentenceText(String(p.text ?? '').trim()).slice(0, 500)
+      const imageUrl = String(p.imageUrl ?? '').trim()
+      if (text || imageUrl) {
+        out.promotion = {
+          enabled: true,
+          text: text || undefined,
+          ...(imageUrl ? { imageUrl } : {}),
+        }
+      }
+    }
+  }
+
   const schedule = normalizeListingScheduleExtras(o.schedule)
   if (schedule) out.schedule = schedule
 
@@ -118,6 +138,7 @@ export function listingHasInfoExtras(extras: ListingInfoExtras | undefined): boo
   if (extras.specialties?.length) return true
   if (extras.hiring?.enabled) return true
   if (extras.giftCard?.enabled) return true
+  if (extras.promotion?.enabled) return true
   return false
 }
 
@@ -164,6 +185,10 @@ export type ParsedInfoExtrasForm = {
   giftIntro: string
   giftOrderUrl: string
   giftValueEur: number | null
+  promotionEnabled: boolean
+  promotionText: string
+  promotionPhoto: File | null
+  removePromotionPhoto: boolean
   specialtyPhotos: { index: number; file: File }[]
   removeSpecialtyPhoto: boolean[]
   scheduleExtrasJson: string
@@ -203,6 +228,13 @@ export function parseInfoExtrasFromForm(form: FormData): ParsedInfoExtrasForm {
       const n = Number(raw)
       return Number.isFinite(n) && n >= 0 ? n : null
     })(),
+    promotionEnabled: form.get('infoPromotionEnabled') === 'on',
+    promotionText: formatGidsSentenceText(String(form.get('infoPromotionText') ?? '').trim()).slice(0, 500),
+    promotionPhoto: (() => {
+      const file = form.get('promotionPhoto0')
+      return file instanceof File && file.size > 0 ? file : null
+    })(),
+    removePromotionPhoto: String(form.get('removePromotionPhoto0') ?? '') === '1',
     specialtyPhotos,
     removeSpecialtyPhoto,
     scheduleExtrasJson: String(form.get('scheduleExtras') ?? ''),
@@ -214,6 +246,7 @@ export async function buildInfoExtrasPayload(
   parsed: ParsedInfoExtrasForm,
   existing: ListingInfoExtras | undefined,
   uploadSpecialty: (index: number, file: File) => Promise<string>,
+  uploadPromotion?: (file: File) => Promise<string>,
 ): Promise<ListingInfoExtras | null> {
   const prev = existing?.specialties ?? []
   const specialties: ListingSpecialtyItem[] = []
@@ -271,6 +304,22 @@ export async function buildInfoExtrasPayload(
       intro: parsed.giftIntro || undefined,
       orderUrl: orderUrl || undefined,
       valueEur: parsed.giftValueEur,
+    }
+  }
+
+  if (parsed.promotionEnabled && (parsed.promotionText || existing?.promotion?.imageUrl || parsed.promotionPhoto)) {
+    let imageUrl = existing?.promotion?.imageUrl
+    if (parsed.promotionPhoto && uploadPromotion) {
+      imageUrl = await uploadPromotion(parsed.promotionPhoto)
+    } else if (parsed.removePromotionPhoto) {
+      imageUrl = undefined
+    }
+    if (parsed.promotionText || imageUrl) {
+      payload.promotion = {
+        enabled: true,
+        text: parsed.promotionText || undefined,
+        ...(imageUrl ? { imageUrl } : {}),
+      }
     }
   }
 

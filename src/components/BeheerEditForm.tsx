@@ -17,6 +17,7 @@ import KitchenTypeSelect from '@/components/KitchenTypeSelect'
 import HorecaTypesCheckboxGroup from '@/components/HorecaTypesCheckboxGroup'
 import TitleCaseTextInput, { applyTitleCaseFormFields } from '@/components/TitleCaseTextInput'
 import BeheerZaakQrCard from '@/components/BeheerZaakQrCard'
+import BeheerPromotiesFields from '@/components/BeheerPromotiesFields'
 
 function RequiredLabel({ htmlFor, children }: { htmlFor: string; children: React.ReactNode }) {
   return (
@@ -561,16 +562,18 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
 
         <BeheerInfoExtrasFields listing={listing} disabled={loading} />
 
+        <BeheerZaakQrCard slug={listing.slug} listingName={listing.name} />
+
+        <BeheerPromotiesFields listing={listing} disabled={loading} />
+
         <button
           type="submit"
           disabled={loading}
-          className="vysiongids-form-submit w-full rounded-xl bg-accent py-3.5 text-lg font-bold text-white hover:bg-accent/90 disabled:opacity-60 sm:w-auto sm:px-10"
+          className="vysiongids-form-submit mt-8 w-full rounded-xl bg-accent py-3.5 text-lg font-bold text-white hover:bg-accent/90 disabled:opacity-60 sm:w-auto sm:px-10"
         >
           {loading ? (loadingHint ?? 'Bezig…') : 'Wijzigingen opslaan'}
         </button>
       </form>
-
-      <BeheerZaakQrCard slug={listing.slug} listingName={listing.name} />
     </section>
   )
 }

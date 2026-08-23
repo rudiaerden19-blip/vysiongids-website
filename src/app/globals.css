@@ -4712,6 +4712,31 @@ body {
   font-weight: 800;
 }
 
+.vysiongids-promotion-card {
+  margin-top: 1rem;
+  max-width: 28rem;
+  overflow: hidden;
+  border-radius: 0.75rem;
+  border: 2px solid var(--vysiongids-accent, #0c4a8a);
+  background: #fff;
+}
+
+.vysiongids-promotion-card-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.vysiongids-promotion-card-text {
+  margin: 0;
+  padding: 1rem 1.125rem;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #111827;
+}
+
 /* Zoekertjes — popup wizard + overzicht */
 .vysiongids-zoekertje-modal-panel .vysiongids-job-modal-title,
 .vysiongids-zoekertje-modal-fields .vysiongids-form-label,

@@ -15,6 +15,7 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
   const hiring = extras?.hiring?.enabled ? extras.hiring : null
   const hiringTypeLabels = hiring ? hiringJobTypeLabels(hiring.jobTypes) : []
   const gift = extras?.giftCard?.enabled ? extras.giftCard : null
+  const promotion = extras?.promotion?.enabled ? extras.promotion : null
   const giftValue =
     gift?.valueEur != null && Number.isFinite(gift.valueEur)
       ? `€${gift.valueEur.toFixed(0)}`
@@ -111,6 +112,20 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
                 <span className="vysiongids-gift-card-value">{giftValue}</span>
               </div>
             ) : null}
+          </div>
+        </section>
+      ) : null}
+
+      {promotion ? (
+        <section className="vysiongids-info-block vysiongids-info-block--promotion">
+          <p className="vysiongids-info-kicker">ACTIE</p>
+          <h2 className="vysiongids-info-title">Onze promotie</h2>
+          <div className="vysiongids-promotion-card">
+            {promotion.imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={promotion.imageUrl} alt="" className="vysiongids-promotion-card-img" />
+            ) : null}
+            {promotion.text ? <p className="vysiongids-promotion-card-text">{promotion.text}</p> : null}
           </div>
         </section>
       ) : null}

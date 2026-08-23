@@ -22,6 +22,7 @@ import {
   ensureGidsPhotosBucket,
   siteOriginFromRequest,
   uploadGidsListingSpecialtyPhoto,
+  uploadGidsListingPromotionPhoto,
 } from '@/lib/gids-listing-photos-server'
 import {
   buildInfoExtrasPayload,
@@ -143,8 +144,9 @@ export async function PATCH(req: Request) {
     )
   }
   const needsSpecialtyUpload = infoExtrasForm.specialtyPhotos.length > 0
+  const needsPromotionUpload = Boolean(infoExtrasForm.promotionPhoto)
   const needsMenuUpload = Boolean(d.menuPdfFile) || d.removeMenuPdf
-  if (needsPhotoUpload || needsMenuUpload || needsSpecialtyUpload) {
+  if (needsPhotoUpload || needsMenuUpload || needsSpecialtyUpload || needsPromotionUpload) {
     const bucketReady = await ensureGidsPhotosBucket(admin)
     if (!bucketReady.ok) {
       return NextResponse.json({ error: bucketReady.message }, { status: 503 })
@@ -225,6 +227,7 @@ export async function PATCH(req: Request) {
       infoExtrasForm,
       existingExtras,
       (index, file) => uploadGidsListingSpecialtyPhoto(admin, listingId, index, file, origin),
+      (file) => uploadGidsListingPromotionPhoto(admin, listingId, file, origin),
     )) as Record<string, unknown> | null
   } catch (infoErr) {
     const message = infoErr instanceof Error ? infoErr.message : 'INFO opslaan mislukt'
