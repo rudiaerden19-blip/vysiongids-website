@@ -4,6 +4,7 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useLanguage } from '@/i18n/LanguageProvider'
 import { BELGIUM_CITIES, BELGIUM_PROVINCES } from '@/lib/belgium-locations'
+import { localizedCityLabel, localizedProvinceLabel } from '@/lib/geo-i18n'
 import { provinceImageUrl } from '@/lib/province-images'
 
 /** Geen kaart op homepage (wel nog in zoeken/registratie). */
@@ -46,7 +47,7 @@ export default function HomeRegionsSection() {
                     )}
                     <span className="vysiongids-home-region-card-overlay" aria-hidden />
                   </span>
-                  <span className="vysiongids-home-region-card-label">{prov.label}</span>
+                  <span className="vysiongids-home-region-card-label">{localizedProvinceLabel(prov.slug, t)}</span>
                 </Link>
               </li>
             )
@@ -59,7 +60,7 @@ export default function HomeRegionsSection() {
             {BELGIUM_CITIES.map((city) => (
               <li key={city.q}>
                 <Link href={`/zoeken?q=${encodeURIComponent(city.q)}`} className="vysiongids-home-city-chip">
-                  {t('home.popularCityChip', { city: city.label })}
+                  {t('home.popularCityChip', { city: localizedCityLabel(city.q, t) })}
                 </Link>
               </li>
             ))}

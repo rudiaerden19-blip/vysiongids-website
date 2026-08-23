@@ -6,10 +6,11 @@ import DienstenProfielChatButton from '@/components/DienstenProfielChatButton'
 import { getDienstenListingBySlug } from '@/lib/listings-diensten'
 import { formatListingAddressLines, listingPhotoUrls } from '@/lib/listing-display'
 import { serviceCategoryLabel } from '@/lib/gids-service-categories'
-import { provinceLabel } from '@/lib/belgium-locations'
+import { getServerLocale } from '@/i18n/get-server-locale'
+import { tServer } from '@/i18n/server-translate'
+import { localizedProvinceLabelForLocale } from '@/lib/geo-i18n'
 import { belgiumPhoneTelHref, formatBelgiumPhoneDisplay } from '@/lib/belgium-phone'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
-import { tServer } from '@/i18n/server-translate'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -34,6 +35,8 @@ export default async function DienstenProfielPage({ params }: Props) {
   const websiteNorm = websiteRaw ? normalizeHttpsUrl(websiteRaw) : null
   const websiteHref = websiteNorm?.ok ? websiteNorm.url : null
   const reviewsHref = `/zaak/${listing.slug}/reviews#schrijven`
+
+  const locale = await getServerLocale()
 
   return (
     <>
@@ -63,7 +66,7 @@ export default async function DienstenProfielPage({ params }: Props) {
               {listing.province ? (
                 <>
                   <br />
-                  <span className="text-gray-500">{provinceLabel(listing.province)}</span>
+                  <span className="text-gray-500">{localizedProvinceLabelForLocale(listing.province, locale)}</span>
                 </>
               ) : null}
             </p>

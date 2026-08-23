@@ -8,10 +8,11 @@ import SearchResultsVoiceAnnouncement from '@/components/SearchResultsVoiceAnnou
 import ZoekenResultsList from '@/components/ZoekenResultsList'
 import SiteHeader from '@/components/SiteHeader'
 import { tServer } from '@/i18n/server-translate'
+import { getServerLocale } from '@/i18n/get-server-locale'
+import { localizedProvinceLabelForLocale } from '@/lib/geo-i18n'
 import { parseListingSearchQuery } from '@/lib/gids-listing-search'
 import { parseNearPointFromSearchParams } from '@/lib/gids-search-url'
 import { searchListings } from '@/lib/listings'
-import { provinceLabel } from '@/lib/belgium-locations'
 
 type Props = {
   searchParams: Promise<{ q?: string; type?: string; prov?: string; nearLat?: string; nearLng?: string }>
@@ -31,9 +32,10 @@ export default async function ZoekenPage({ searchParams }: Props) {
   })
   const results = search.listings
 
+  const locale = await getServerLocale()
   const parsedQ = parseListingSearchQuery(sp.q ?? '')
   const qLabel = sp.q?.trim()
-  const provLabel = sp.prov?.trim() ? provinceLabel(sp.prov) : null
+  const provLabel = sp.prov?.trim() ? localizedProvinceLabelForLocale(sp.prov, locale) : null
 
   let title: string
   if (qLabel) {

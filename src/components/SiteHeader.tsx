@@ -7,12 +7,12 @@ import { createPortal } from 'react-dom'
 import HeaderLanguagePicker from '@/components/HeaderLanguagePicker'
 import VysionPlatformPromoModal, { type VysionPlatformPromoKind } from '@/components/VysionPlatformPromoModal'
 import { useLanguage } from '@/i18n/LanguageProvider'
+import { localizedCityLabel, localizedProvinceLabel } from '@/lib/geo-i18n'
 import {
   BELGIUM_CITIES,
   BELGIUM_PROVINCES,
   DEFAULT_PROVINCE_SLUG,
   REGION_COOKIE,
-  provinceLabel,
   type ProvinceSlug,
 } from '@/lib/belgium-locations'
 
@@ -329,7 +329,7 @@ function SiteHeaderBar() {
     [router],
   )
 
-  const regionLabel = provinceLabel(region)
+  const regionLabel = localizedProvinceLabel(region, t)
   const onZoekenWithRegion = pathname === '/zoeken' && searchParams.get('prov') === region
   const labelClass =
     'vysiongids-site-header-region-label text-accent text-base font-bold tracking-tight hover:text-accent/85 sm:text-lg'
@@ -400,7 +400,7 @@ function SiteHeaderBar() {
                                 className="text-gray-800 hover:text-accent hover:underline"
                                 onClick={close}
                               >
-                                {city.label}
+                                {localizedCityLabel(city.q, t)}
                               </Link>
                             </li>
                           ))}
@@ -420,7 +420,7 @@ function SiteHeaderBar() {
                                 }
                                 onClick={() => pickProvince(prov.slug)}
                               >
-                                {prov.label}
+                                {localizedProvinceLabel(prov.slug, t)}
                               </button>
                             </li>
                           ))}

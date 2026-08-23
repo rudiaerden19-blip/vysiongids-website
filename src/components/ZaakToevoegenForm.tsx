@@ -7,6 +7,7 @@ import { GidsButtonLoadingContent } from '@/components/GidsLoadingSpinner'
 import GidsPageLoadingOverlay from '@/components/GidsPageLoadingOverlay'
 import { useGidsBusyUntilNav } from '@/hooks/use-gids-busy-until-nav'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
+import { localizedProvinceLabel } from '@/lib/geo-i18n'
 import { type ListingDayHours } from '@/lib/listing-types'
 import OpeningHoursEditor, { type OpeningHoursPayload } from '@/components/OpeningHoursEditor'
 import OpeningScheduleExtrasEditor from '@/components/OpeningScheduleExtrasEditor'
@@ -292,7 +293,7 @@ export default function ZaakToevoegenForm() {
             </option>
             {BELGIUM_PROVINCES.map((p) => (
               <option key={p.slug} value={p.slug}>
-                {p.label}
+                {localizedProvinceLabel(p.slug, t)}
               </option>
             ))}
           </select>

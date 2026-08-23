@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import DienstenListingCard from '@/components/DienstenListingCard'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
+import { localizedProvinceLabel } from '@/lib/geo-i18n'
 import { GIDS_SERVICE_CATEGORIES } from '@/lib/gids-service-categories'
 import type { Listing } from '@/lib/listing-types'
 
@@ -79,7 +80,7 @@ export default function DienstenZoekenClient({ initialListings }: Props) {
           <option value="">{t('common.allBelgium')}</option>
           {BELGIUM_PROVINCES.map((p) => (
             <option key={p.slug} value={p.slug}>
-              {p.label}
+              {localizedProvinceLabel(p.slug, t)}
             </option>
           ))}
         </select>

@@ -16,6 +16,7 @@ import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
 import { fetchGidsZoekertjeDetailClient } from '@/lib/fetch-gids-zoekertje-detail-client'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
+import { localizedProvinceLabel } from '@/lib/geo-i18n'
 import { GIDS_HORECA_YEARLY_EUR } from '@/lib/gids-premium'
 
 const ALL_PROVINCES = 'all'
@@ -157,7 +158,7 @@ export default function ZoekertjesPageClient({
               <option value={ALL_PROVINCES}>{t('common.allBelgium')}</option>
               {BELGIUM_PROVINCES.map((prov) => (
                 <option key={prov.slug} value={prov.slug}>
-                  {prov.label}
+                  {localizedProvinceLabel(prov.slug, t)}
                 </option>
               ))}
             </select>

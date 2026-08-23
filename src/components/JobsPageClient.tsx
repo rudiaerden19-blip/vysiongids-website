@@ -10,6 +10,7 @@ import {
   REGION_COOKIE,
   type ProvinceSlug,
 } from '@/lib/belgium-locations'
+import { localizedProvinceLabel } from '@/lib/geo-i18n'
 import { listingMatchesSearchLocation } from '@/lib/gids-search-locations'
 import { normalizeSearchText } from '@/lib/gids-text'
 import type { Listing } from '@/lib/listing-types'
@@ -83,7 +84,7 @@ export default function JobsPageClient({ listings }: Props) {
             <option value={ALL_PROVINCES}>{t('common.allBelgium')}</option>
             {BELGIUM_PROVINCES.map((prov) => (
               <option key={prov.slug} value={prov.slug}>
-                {prov.label}
+                {localizedProvinceLabel(prov.slug, t)}
               </option>
             ))}
           </select>

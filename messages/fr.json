@@ -725,6 +725,44 @@
       "validationAlert": "Pour chaque jour ouvert, renseignez au moins le shift 1 (de–à)."
     }
   },
+  "geo": {
+    "provinces": {
+      "antwerpen": "Anvers",
+      "brussel": "Bruxelles",
+      "henegouwen": "Hainaut",
+      "limburg": "Limbourg",
+      "luik": "Liège",
+      "luxemburg": "Luxembourg",
+      "namen": "Namur",
+      "oost-vlaanderen": "Flandre orientale",
+      "vlaams-brabant": "Brabant flamand",
+      "waals-brabant": "Brabant wallon",
+      "west-vlaanderen": "Flandre occidentale"
+    },
+    "cities": {
+      "antwerpen": "Anvers",
+      "gent": "Gand",
+      "hasselt": "Hasselt",
+      "brugge": "Bruges",
+      "kortrijk": "Courtrai",
+      "brussel": "Bruxelles",
+      "luik": "Liège",
+      "aalst": "Alost",
+      "mechelen": "Malines",
+      "leuven": "Louvain",
+      "lier": "Lierre",
+      "turnhout": "Turnhout",
+      "geel": "Geel",
+      "mol": "Mol",
+      "dendermonde": "Termonde",
+      "sint-niklaas": "Saint-Nicolas",
+      "pelt": "Pelt",
+      "genk": "Genk",
+      "lommel": "Lommel",
+      "overpelt": "Overpelt",
+      "neerpelt": "Neerpelt"
+    }
+  },
   "errors": {
     "loginFailed": "Échec de la connexion.",
     "network": "Erreur réseau.",

@@ -4,6 +4,7 @@ import { useLanguage } from '@/i18n/LanguageProvider'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
+import { localizedProvinceLabel } from '@/lib/geo-i18n'
 import { GIDS_SERVICE_CATEGORIES } from '@/lib/gids-service-categories'
 import { GIDS_DIENSTEN_MAX_PHOTOS, GIDS_DIENSTEN_MAX_TOTAL_PHOTO_BYTES } from '@/lib/gids-register-limits'
 import { compressListingPhoto } from '@/lib/compress-listing-photo'
@@ -256,7 +257,7 @@ export default function BeheerDienstenEditForm({ listing, onSaved }: Props) {
               <option value="">Kies…</option>
               {BELGIUM_PROVINCES.map((p) => (
                 <option key={p.slug} value={p.slug}>
-                  {p.label}
+                  {localizedProvinceLabel(p.slug, t)}
                 </option>
               ))}
             </select>

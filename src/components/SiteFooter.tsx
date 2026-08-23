@@ -7,6 +7,7 @@ import GidsAboutModal from '@/components/GidsAboutModal'
 import GidsContactModal from '@/components/GidsContactModal'
 import GidsPrivacyModal from '@/components/GidsPrivacyModal'
 import { useLanguage } from '@/i18n/LanguageProvider'
+import { localizedCityLabel } from '@/lib/geo-i18n'
 
 const FOOTER_CITIES = [
   'Brussel',
@@ -61,7 +62,7 @@ export default function SiteFooter() {
               <ul className="vysiongids-site-footer-list">
                 {FOOTER_CITIES.map((city) => (
                   <li key={city}>
-                    <Link href={cityHref(city)}>{t('footer.horecaInCity', { city })}</Link>
+                    <Link href={cityHref(city)}>{t('footer.horecaInCity', { city: localizedCityLabel(city, t) })}</Link>
                   </li>
                 ))}
               </ul>
