@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { useLanguage } from '@/i18n/LanguageProvider'
 
 type Props = {
   slug: string
@@ -17,9 +20,11 @@ function starGlyphs(avg: number): string {
 }
 
 export default function ListingStarRating({ slug, avg, count, size = 'sm', linkToReviews = true }: Props) {
+  const { t } = useLanguage()
   const reviewsHref = `/zaak/${slug}/reviews`
   const hasReviews = count > 0
-  const countLabel = count === 1 ? '1 beoordeling' : `${count} beoordelingen`
+  const countLabel =
+    count === 1 ? t('listing.panel.ratingCountOne') : t('listing.panel.ratingCountMany', { count })
 
   const content = hasReviews ? (
     <span className={`vysiongids-star-rating vysiongids-star-rating--${size}`}>
@@ -31,7 +36,7 @@ export default function ListingStarRating({ slug, avg, count, size = 'sm', linkT
     </span>
   ) : (
     <span className={`vysiongids-star-rating vysiongids-star-rating--${size} vysiongids-star-rating--empty`}>
-      <span className="vysiongids-star-rating-count">Nog geen reviews</span>
+      <span className="vysiongids-star-rating-count">{t('listing.panel.noReviewsYet')}</span>
     </span>
   )
 

@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import JobVacancyDetailModal from '@/components/JobVacancyDetailModal'
 import ListingStarRating from '@/components/ListingStarRating'
+import { useLanguage } from '@/i18n/LanguageProvider'
 import type { Listing } from '@/lib/listing-types'
 
 type Props = {
@@ -12,6 +13,7 @@ type Props = {
 }
 
 export default function ListingPanelHiringBar({ listing, message, active }: Props) {
+  const { t } = useLanguage()
   const [modalOpen, setModalOpen] = useState(false)
 
   return (
@@ -38,7 +40,7 @@ export default function ListingPanelHiringBar({ listing, message, active }: Prop
                 className="vysiongids-listing-panel-hiring-btn"
                 onClick={() => setModalOpen(true)}
               >
-                Open
+                {t('listing.panel.vacancyView')}
               </button>
             </div>
           ) : null}

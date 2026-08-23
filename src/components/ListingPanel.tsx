@@ -2,17 +2,26 @@
 
 import Link from 'next/link'
 import { useLanguage } from '@/i18n/LanguageProvider'
+import {
+  localizedDeliveryFeeLabel,
+  localizedDeliveryRadiusLabel,
+  localizedDistanceAndDriveTime,
+  localizedListingCuisineDisplay,
+  localizedListingDeliveryTime,
+  localizedListingHoursTime,
+  localizedListingPickupTime,
+  localizedListingServiceMode,
+  localizedListingWeekday,
+  localizedMinOrder,
+} from '@/lib/listing-i18n'
 import ListingPanelOpenStatus from '@/components/ListingPanelOpenStatus'
 import ListingPanelAmenityFooter from '@/components/ListingPanelAmenityFooter'
 import ListingPhotoSlider from '@/components/ListingPhotoSlider'
 import ListingTopZaakStamp from '@/components/ListingTopZaakStamp'
 import type { Listing } from '@/lib/listing-types'
-import { DAY_LABEL } from '@/lib/gids-opening-hours'
 import { resolveHoursByDay } from '@/lib/listing-info'
-import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
 import { isTopZaakListing } from '@/lib/listing-topzaak'
-import { formatDeliveryFee, formatDeliveryRadius, formatListingAddressLines, formatListingDeliveryTime, formatListingPickupTime, formatListingServiceMode, formatMinOrder, listingPhotoUrls } from '@/lib/listing-display'
-import { formatDistanceAndDriveTime } from '@/lib/listing-distance'
+import { formatListingAddressLines, listingPhotoUrls } from '@/lib/listing-display'
 import { listingWazeUrl } from '@/lib/gids-listing-navigation'
 import { resolveListingPanelHiring } from '@/lib/listing-info-extras'
 import ListingMenuButton from '@/components/ListingMenuButton'
@@ -34,14 +43,14 @@ export default function ListingPanel({
   driveMinutes?: number
 }) {
   const { t } = useLanguage()
-  const cuisineLine = getListingCuisineDisplay(listing.cuisineType)
-  const minOrder = formatMinOrder(listing)
-  const deliveryRadiusLabel = formatDeliveryRadius(listing)
-  const deliveryLabel = formatDeliveryFee(listing)
-  const pickupTimeLabel = formatListingPickupTime(listing)
-  const deliveryTimeLabel = formatListingDeliveryTime(listing)
+  const cuisineLine = localizedListingCuisineDisplay(t, listing.cuisineType)
+  const minOrder = localizedMinOrder(t, listing)
+  const deliveryRadiusLabel = localizedDeliveryRadiusLabel(t, listing)
+  const deliveryLabel = localizedDeliveryFeeLabel(t, listing)
+  const pickupTimeLabel = localizedListingPickupTime(t, listing)
+  const deliveryTimeLabel = localizedListingDeliveryTime(t, listing)
   const travelLabel =
-    typeof distanceKm === 'number' ? formatDistanceAndDriveTime(distanceKm, driveMinutes) : null
+    typeof distanceKm === 'number' ? localizedDistanceAndDriveTime(t, distanceKm, driveMinutes) : null
   const { street, cityLine } = formatListingAddressLines(listing)
   const hoursRows = resolveHoursByDay(listing)
   const profileHref = `/zaak/${listing.slug}`
@@ -50,6 +59,7 @@ export default function ListingPanel({
   const bodyTextSize = compact ? '0.8125rem' : '0.9375rem'
   const showTopZaakStamp = isTopZaakListing(listing)
   const hiring = resolveListingPanelHiring(listing.infoExtras, listing.premiumMember)
+  const hiringMessage = hiring.active ? hiring.message : t('jobs.hiringEmptyMessage')
 
   return (
     <article className={`vysiongids-listing-panel${compact ? ' vysiongids-listing-panel--compact' : ''}`}>
@@ -107,14 +117,14 @@ export default function ListingPanel({
             <ul className="vysiongids-listing-panel-hours">
               {hoursRows.map((row) => (
                 <li key={row.day}>
-                  <span className="vysiongids-listing-panel-hours-day">{DAY_LABEL[row.day]}</span>
-                  <span className="vysiongids-listing-panel-hours-time">{row.hours}</span>
+                  <span className="vysiongids-listing-panel-hours-day">{localizedListingWeekday(t, row.day)}</span>
+                  <span className="vysiongids-listing-panel-hours-time">{localizedListingHoursTime(t, row.hours)}</span>
                 </li>
               ))}
             </ul>
           </div>
           <div style={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: '0.5rem 0.85rem', fontSize: bodyTextSize }}>
-            <span className="vysiongids-listing-panel-service-mode">{formatListingServiceMode(listing)}</span>
+            <span className="vysiongids-listing-panel-service-mode">{localizedListingServiceMode(t, listing)}</span>
             {pickupTimeLabel ? <span style={{ color: '#6b7280' }}>{pickupTimeLabel}</span> : null}
             {deliveryTimeLabel ? <span style={{ color: '#6b7280' }}>{deliveryTimeLabel}</span> : null}
             {deliveryLabel ? <span style={{ fontWeight: 500, color: '#374151' }}>{deliveryLabel}</span> : null}
@@ -144,7 +154,7 @@ export default function ListingPanel({
           </div>
         </div>
       </div>
-      <ListingPanelHiringBar listing={listing} message={hiring.message} active={hiring.active} />
+      <ListingPanelHiringBar listing={listing} message={hiringMessage} active={hiring.active} />
     </article>
   )
 }

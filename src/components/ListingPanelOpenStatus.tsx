@@ -1,17 +1,19 @@
 'use client'
 
 import type { Listing } from '@/lib/listing-types'
-import { getListingOpenStatus } from '@/lib/listing-info'
+import { useLanguage } from '@/i18n/LanguageProvider'
+import { getLocalizedListingOpenStatus } from '@/lib/listing-i18n'
 import { useEffect, useState } from 'react'
 
 export default function ListingPanelOpenStatus({ listing }: { listing: Listing }) {
-  const [status, setStatus] = useState(() => getListingOpenStatus(listing))
+  const { t } = useLanguage()
+  const [status, setStatus] = useState(() => getLocalizedListingOpenStatus(listing, t))
 
   useEffect(() => {
-    setStatus(getListingOpenStatus(listing))
-    const id = window.setInterval(() => setStatus(getListingOpenStatus(listing)), 60_000)
+    setStatus(getLocalizedListingOpenStatus(listing, t))
+    const id = window.setInterval(() => setStatus(getLocalizedListingOpenStatus(listing, t)), 60_000)
     return () => window.clearInterval(id)
-  }, [listing])
+  }, [listing, t])
 
   return (
     <p

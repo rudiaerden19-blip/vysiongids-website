@@ -1,7 +1,10 @@
+'use client'
+
 import ListingAmenityIcon from '@/components/ListingAmenityIcon'
 import type { Listing } from '@/lib/listing-types'
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { resolveListingAmenityList } from '@/lib/listing-amenity-list'
-import { AMENITY_LABELS } from '@/lib/listing-info'
+import { localizedListingAmenityLabel } from '@/lib/listing-i18n'
 
 type Props = {
   listing: Listing
@@ -11,6 +14,7 @@ type Props = {
 }
 
 export default function ListingPanelAmenityFooter({ listing, variant = 'inline', className }: Props) {
+  const { t } = useLanguage()
   const amenityList = resolveListingAmenityList(listing)
   if (amenityList.length === 0) return null
 
@@ -25,7 +29,7 @@ export default function ListingPanelAmenityFooter({ listing, variant = 'inline',
             <span className="vysiongids-listing-panel-amenity-icon" aria-hidden>
               <ListingAmenityIcon id={id} />
             </span>
-            <span className="vysiongids-listing-panel-amenity-label">{AMENITY_LABELS[id]}</span>
+            <span className="vysiongids-listing-panel-amenity-label">{localizedListingAmenityLabel(t, id)}</span>
           </li>
         ))}
       </ul>

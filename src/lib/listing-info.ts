@@ -149,15 +149,47 @@ function isCalendarDayClosedForListing(listing: Listing, isoDate: string): boole
   return false
 }
 
-function dayLabelForOffset(offset: number, day: ListingWeekday): string {
-  if (offset === 0) return 'vandaag'
-  if (offset === 1) return 'morgen'
-  return day
+export type ListingOpenStatusLabelFns = {
+  closedLeave: () => string
+  openNow: () => string
+  closedNow: () => string
+  opensAt: (dayLabel: string, timeLabel: string) => string
+  dayToday: () => string
+  dayTomorrow: () => string
+  weekday: (day: ListingWeekday) => string
+}
+
+const DEFAULT_OPEN_STATUS_LABELS: ListingOpenStatusLabelFns = {
+  closedLeave: () => 'Gesloten (verlof)',
+  openNow: () => 'Nu open',
+  closedNow: () => 'Momenteel gesloten',
+  opensAt: (dayLabel, timeLabel) => `Opent ${dayLabel} om ${timeLabel}`,
+  dayToday: () => 'vandaag',
+  dayTomorrow: () => 'morgen',
+  weekday: (day) => {
+    const nl: Record<ListingWeekday, string> = {
+      maandag: 'maandag',
+      dinsdag: 'dinsdag',
+      woensdag: 'woensdag',
+      donderdag: 'donderdag',
+      vrijdag: 'vrijdag',
+      zaterdag: 'zaterdag',
+      zondag: 'zondag',
+    }
+    return nl[day]
+  },
+}
+
+function dayLabelForOffset(offset: number, day: ListingWeekday, labels: ListingOpenStatusLabelFns): string {
+  if (offset === 0) return labels.dayToday()
+  if (offset === 1) return labels.dayTomorrow()
+  return labels.weekday(day)
 }
 
 function findNextOpeningSlot(
   listing: Listing,
   now: Date,
+  labels: ListingOpenStatusLabelFns,
 ): { dayLabel: string; timeLabel: string } | null {
   const ctx = brusselsNow(now)
   if (!ctx) return null
@@ -175,7 +207,7 @@ function findNextOpeningSlot(
     for (const slot of slots) {
       if (offset === 0 && slot.start <= ctx.nowMins) continue
       return {
-        dayLabel: dayLabelForOffset(offset, day),
+        dayLabel: dayLabelForOffset(offset, day, labels),
         timeLabel: formatMinutesAsTime(slot.start),
       }
     }
@@ -189,19 +221,23 @@ export type ListingOpenStatus = {
 }
 
 /** Tekst voor zoeklijst / badges: «Nu open» of «Opent woensdag om 12:00». */
-export function getListingOpenStatus(listing: Listing, now = new Date()): ListingOpenStatus {
+export function getListingOpenStatus(
+  listing: Listing,
+  now = new Date(),
+  labels: ListingOpenStatusLabelFns = DEFAULT_OPEN_STATUS_LABELS,
+): ListingOpenStatus {
   const today = brusselsCalendarDate(now)
   if (isDateInAnnualLeave(today, listingSchedule(listing))) {
-    return { isOpen: false, label: 'Gesloten (verlof)' }
+    return { isOpen: false, label: labels.closedLeave() }
   }
   if (isListingOpenNow(listing, now)) {
-    return { isOpen: true, label: 'Nu open' }
+    return { isOpen: true, label: labels.openNow() }
   }
-  const next = findNextOpeningSlot(listing, now)
+  const next = findNextOpeningSlot(listing, now, labels)
   if (next) {
-    return { isOpen: false, label: `Opent ${next.dayLabel} om ${next.timeLabel}` }
+    return { isOpen: false, label: labels.opensAt(next.dayLabel, next.timeLabel) }
   }
-  return { isOpen: false, label: 'Momenteel gesloten' }
+  return { isOpen: false, label: labels.closedNow() }
 }
 
 /** Europe/Brussels — open-check met verlof/feestdagen */

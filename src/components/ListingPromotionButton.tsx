@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import type { Listing } from '@/lib/listing-types'
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { listingPanelPromotionActive } from '@/lib/listing-panel-promotion'
 import ListingPromotionModal from '@/components/ListingPromotionModal'
 
@@ -11,6 +12,7 @@ type Props = {
 }
 
 export default function ListingPromotionButton({ listing, className }: Props) {
+  const { t } = useLanguage()
   const hasActivePromotion = Boolean(listingPanelPromotionActive(listing.infoExtras))
   const [open, setOpen] = useState(false)
 
@@ -25,7 +27,7 @@ export default function ListingPromotionButton({ listing, className }: Props) {
           setOpen(true)
         }}
       >
-        Promoties
+        {t('listing.infoExtras.promoModalKicker')}
       </button>
       <ListingPromotionModal listing={listing} open={open} onClose={() => setOpen(false)} />
     </>
