@@ -65,10 +65,20 @@ export async function POST(req: Request) {
     )
   }
 
-  const { error: updateErr } = await admin
+  const pinPatch: Record<string, unknown> = {
+    pin_hash: hashGidsPin(newPin),
+    pin_must_change: false,
+  }
+  let { error: updateErr } = await admin
     .from('gids_listings')
-    .update({ pin_hash: hashGidsPin(newPin) })
+    .update(pinPatch)
     .eq('id', session.listingId)
+
+  if (updateErr && /pin_must_change/i.test(updateErr.message)) {
+    delete pinPatch.pin_must_change
+    const retry = await admin.from('gids_listings').update(pinPatch).eq('id', session.listingId)
+    updateErr = retry.error
+  }
 
   if (updateErr) {
     console.error('[gids change-pin]', updateErr.message)

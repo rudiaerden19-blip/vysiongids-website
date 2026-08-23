@@ -1,5 +1,5 @@
 import type { Listing } from '@/lib/listing-types'
-import { fetchListingSessionByIdAdmin } from '@/lib/gids-listings-db'
+import { fetchListingSessionByIdAdmin, fetchOwnerPinMustChangeAdmin } from '@/lib/gids-listings-db'
 import { getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
 import { LISTING_SEGMENT_DIENSTEN } from '@/lib/listing-segment'
 
@@ -24,6 +24,7 @@ export async function loadBeheerPageShell(): Promise<BeheerPageShell> {
 
   const listingSegment =
     row.listing_segment === LISTING_SEGMENT_DIENSTEN ? ('diensten' as const) : ('horeca' as const)
+  const pinMustChange = await fetchOwnerPinMustChangeAdmin(row.id)
 
   return {
     authenticated: true,
@@ -32,6 +33,6 @@ export async function loadBeheerPageShell(): Promise<BeheerPageShell> {
     name: row.name,
     premiumMember: row.premium_member,
     listingSegment,
-    pinMustChange: false,
+    pinMustChange,
   }
 }

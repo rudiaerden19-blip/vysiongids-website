@@ -689,7 +689,7 @@
     "submitFailed": "Échec de l'envoi. Réessayez plus tard.",
     "successTitle": "Activé",
     "successTitleDuplicate": "Renvoyé",
-    "successBody": "Votre établissement est activé. Consultez votre e-mail pour votre PIN à 6 chiffres et connectez-vous via /login. Au premier login, choisissez un nouveau PIN.",
+    "successBody": "Votre établissement est activé. Vous allez vers la gestion. Si le PIN est encore 123456, choisissez-en un nouveau tout de suite.",
     "successBodyNoMail": "Établissement activé, mais e-mail impossible. Contactez info@vysionhoreca.com avec le nom de votre établissement.",
     "successBodyDuplicate": "Demande déjà en cours ; nous avons renvoyé votre PIN par e-mail. Connectez-vous via /login.",
     "successBodyDuplicateNoMail": "Demande déjà en cours. Écrivez à info@vysionhoreca.com si vous n'avez pas reçu votre PIN.",

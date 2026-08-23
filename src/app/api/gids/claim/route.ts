@@ -5,6 +5,12 @@ import { enforceRateLimit } from '@/lib/gids-rate-limit'
 import { isGidsMailConfigured, sendListingClaimActivatedEmails } from '@/lib/gids-mail'
 import { listingAcceptsPublicClaim } from '@/lib/listing-claimable'
 import { activateGidsListingFromClaim, newClaimOwnerPin } from '@/lib/gids-claim-activate'
+import { GIDS_DEFAULT_STARTER_PIN, verifyGidsPin } from '@/lib/gids-pin'
+import {
+  GIDS_SESSION_COOKIE,
+  gidsSessionCookieOptions,
+  signGidsSession,
+} from '@/lib/gids-session'
 
 const WINDOW_MS = 60 * 60 * 1000
 const MAX_PER_IP = 8
@@ -32,6 +38,7 @@ type ListingRow = {
   city: string | null
   claimed_at: string | null
   status: string
+  pin_hash: string | null
 }
 
 export async function POST(req: Request) {
@@ -79,7 +86,7 @@ export async function POST(req: Request) {
 
   const { data: listing, error: listingErr } = await admin
     .from('gids_listings')
-    .select('id, slug, name, city, claimed_at, status')
+    .select('id, slug, name, city, claimed_at, status, pin_hash')
     .eq('slug', slug)
     .maybeSingle()
 
@@ -152,49 +159,19 @@ export async function POST(req: Request) {
     duplicate = false
   }
 
-  const pin = newClaimOwnerPin()
-  const mailConfigured = isGidsMailConfigured()
-
-  if (mailConfigured) {
-    const sent = await sendListingClaimActivatedEmails({
-      ...mailPayloadBase,
-      pin,
-      resubmit: duplicate,
-    })
-    if (!sent.applicantOk) {
-      if (!duplicate && claimRequestId) {
-        await admin.from('gids_listing_claim_requests').delete().eq('id', claimRequestId)
-      }
-      return NextResponse.json(
-        {
-          error:
-            'E-mail met je PIN kon niet verstuurd worden. Controleer je e-mailadres of mail info@vysionhoreca.com.',
-        },
-        { status: 503 },
-      )
-    }
-    if (!sent.staffOk) {
-      console.warn('[gids claim] staff notification failed after owner mail ok')
-    }
-  } else {
-    console.warn('[gids claim] mail not configured — cannot auto-activate without PIN delivery')
-    if (!duplicate && claimRequestId) {
-      await admin.from('gids_listing_claim_requests').delete().eq('id', claimRequestId)
-    }
-    return NextResponse.json(
-      {
-        error:
-          'Claim is tijdelijk niet beschikbaar (e-mail niet geconfigureerd). Mail info@vysionhoreca.com met je zaaknaam en BTW-nummer.',
-      },
-      { status: 503 },
-    )
-  }
+  const existingHash = row.pin_hash?.trim() ?? ''
+  const keepExistingPin = existingHash.length > 0
+  const pin = keepExistingPin
+    ? verifyGidsPin(GIDS_DEFAULT_STARTER_PIN, existingHash)
+      ? GIDS_DEFAULT_STARTER_PIN
+      : undefined
+    : newClaimOwnerPin()
 
   const activated = await activateGidsListingFromClaim(admin, {
     listingId: row.id,
     contactEmail,
     contactPhone,
-    pin,
+    pin: keepExistingPin ? undefined : pin,
   })
 
   if (!activated.ok) {
@@ -215,12 +192,35 @@ export async function POST(req: Request) {
     console.error('[gids claim] revalidate', revalidateErr)
   }
 
-  return NextResponse.json({
+  let confirmationSent = false
+  const mailConfigured = isGidsMailConfigured()
+  if (mailConfigured) {
+    const sent = await sendListingClaimActivatedEmails({
+      ...mailPayloadBase,
+      pin,
+      resubmit: duplicate,
+    })
+    confirmationSent = sent.applicantOk
+    if (!sent.applicantOk) {
+      console.warn('[gids claim] owner mail failed after activate — sessie + beheer blijven werken')
+    }
+    if (!sent.staffOk) {
+      console.warn('[gids claim] staff notification failed after owner mail')
+    }
+  }
+
+  const res = NextResponse.json({
     ok: true,
     activated: true,
     duplicate,
     listingName: row.name,
-    mailConfigured: true,
-    confirmationSent: true,
+    mailConfigured,
+    confirmationSent,
+    redirectTo: '/beheer',
   })
+  const token = signGidsSession(row.id)
+  if (token) {
+    res.cookies.set(GIDS_SESSION_COOKIE, token, gidsSessionCookieOptions())
+  }
+  return res
 }

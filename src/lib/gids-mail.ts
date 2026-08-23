@@ -44,7 +44,8 @@ export type ListingClaimMailPayload = {
 }
 
 export type ListingClaimActivatedMailPayload = ListingClaimMailPayload & {
-  pin: string
+  /** Weglaten als de bestaande staff-PIN (123456) behouden blijft. */
+  pin?: string
 }
 
 function siteOrigin(): string {
@@ -140,16 +141,18 @@ export async function sendListingClaimActivatedOwnerEmail(
   const text = [
     `Hallo ${payload.contactName},`,
     '',
-    `Je claim voor ${payload.listingName} is goedgekeurd. Je kan meteen inloggen en je zaak beheren.`,
+    `Je claim voor ${payload.listingName} is goedgekeurd. Je kan meteen je zaak beheren.`,
     '',
     `Zaaknaam (exact zo in de gids): ${payload.listingName}`,
-    `PIN (6 cijfers): ${payload.pin}`,
+    payload.pin
+      ? `PIN (6 cijfers): ${payload.pin}`
+      : 'PIN: dezelfde 6 cijfers als bij plaatsing in de gids (meestal 123456). Wijzig die meteen in beheer.',
     '',
-    `Inloggen: ${loginUrl}`,
     `Beheer: ${beheerUrl}`,
+    `Inloggen: ${loginUrl}`,
     `Je publieke pagina: ${zaakUrl}`,
     '',
-    'Bij eerste login moet je een nieuwe PIN kiezen (veiligheid).',
+    'Wijzig je PIN in beheer (veiligheid).',
     '',
     `Vragen? ${GIDS_CONTACT.email} · ${GIDS_CONTACT.phoneDisplay}`,
   ].join('\n')
@@ -157,12 +160,16 @@ export async function sendListingClaimActivatedOwnerEmail(
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto; padding: 20px; color: #111;">
       <h2 style="color: #0e5d82; margin: 0 0 16px;">Je zaak is geactiveerd</h2>
-      <p style="margin: 0 0 16px; line-height: 1.5;">Hallo ${escapeHtml(payload.contactName)}, je claim voor <strong>${escapeHtml(payload.listingName)}</strong> is goedgekeurd. Log in en beheer je zaak meteen.</p>
+      <p style="margin: 0 0 16px; line-height: 1.5;">Hallo ${escapeHtml(payload.contactName)}, je claim voor <strong>${escapeHtml(payload.listingName)}</strong> is goedgekeurd. Je kan meteen je zaak beheren.</p>
       <p style="margin: 0 0 8px;"><strong>Zaaknaam:</strong> ${escapeHtml(payload.listingName)}</p>
-      <p style="margin: 0 0 16px; font-size: 18px;"><strong>PIN:</strong> <code style="background:#f3f4f6;padding:4px 8px;border-radius:4px;">${escapeHtml(payload.pin)}</code></p>
-      <p style="margin: 0 0 12px;"><a href="${escapeHtml(loginUrl)}">Inloggen</a> · <a href="${escapeHtml(beheerUrl)}">Beheer</a></p>
+      <p style="margin: 0 0 16px; font-size: 18px;"><strong>PIN:</strong> ${
+        payload.pin
+          ? `<code style="background:#f3f4f6;padding:4px 8px;border-radius:4px;">${escapeHtml(payload.pin)}</code>`
+          : 'dezelfde code als bij plaatsing in de gids (meestal 123456). Wijzig die in beheer.'
+      }</p>
+      <p style="margin: 0 0 12px;"><a href="${escapeHtml(beheerUrl)}">Beheer</a> · <a href="${escapeHtml(loginUrl)}">Inloggen</a></p>
       <p style="margin: 0 0 16px;"><a href="${escapeHtml(zaakUrl)}">${escapeHtml(zaakUrl)}</a></p>
-      <p style="margin: 0; color: #6b7280; font-size: 14px;">Bij eerste login kies je een nieuwe PIN.</p>
+      <p style="margin: 0; color: #6b7280; font-size: 14px;">Wijzig je PIN in beheer.</p>
     </div>
   `
 

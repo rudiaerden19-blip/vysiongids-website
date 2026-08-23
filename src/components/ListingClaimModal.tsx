@@ -76,9 +76,15 @@ export default function ListingClaimModal({ listing, open, onClose }: Props) {
         ok?: boolean
         duplicate?: boolean
         confirmationSent?: boolean
+        redirectTo?: string
       }
       if (!res.ok) {
         setError(data.error ?? t('claim.submitFailed'))
+        return
+      }
+      const dest = data.redirectTo?.trim()
+      if (dest && dest.startsWith('/') && !dest.startsWith('//')) {
+        window.location.assign(dest)
         return
       }
       setDuplicate(Boolean(data.duplicate))

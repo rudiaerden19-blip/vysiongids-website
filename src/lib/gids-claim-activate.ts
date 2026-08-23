@@ -1,31 +1,36 @@
 import type { SupabaseClient } from '@supabase/supabase-js'
 import { listingAcceptsPublicClaim } from '@/lib/listing-claimable'
-import { generateGidsOwnerPin, hashGidsPin, isValidGidsPin } from '@/lib/gids-pin'
+import {
+  GIDS_DEFAULT_STARTER_PIN,
+  generateGidsOwnerPin,
+  hashGidsPin,
+  isValidGidsPin,
+  verifyGidsPin,
+} from '@/lib/gids-pin'
 
 export type ActivateGidsListingFromClaimInput = {
   listingId: string
   contactEmail: string
   contactPhone: string
-  /** PIN die al naar de klant gemaild is (zelfde hash in DB). */
-  pin: string
+  /** Alleen als de listing nog geen pin_hash heeft. */
+  pin?: string
 }
 
 export type ActivateGidsListingFromClaimResult =
-  | { ok: true }
+  | { ok: true; keptExistingPin: boolean }
   | { ok: false; reason: 'already_owned' | 'invalid_pin' | 'db_error'; message?: string }
 
-/** Zet eigenaar-PIN + claimed_at; keur pending claims goed. Alleen zonder bestaande eigenaar. */
+/**
+ * Na claim: claimed_at zetten (knop weg, staff-rij groen).
+ * Bestaande PIN (123456 van staff) blijft staan tot de ondernemer die in beheer wijzigt.
+ */
 export async function activateGidsListingFromClaim(
   admin: SupabaseClient,
   input: ActivateGidsListingFromClaimInput,
 ): Promise<ActivateGidsListingFromClaimResult> {
-  if (!isValidGidsPin(input.pin)) {
-    return { ok: false, reason: 'invalid_pin' }
-  }
-
   const { data: row, error: readErr } = await admin
     .from('gids_listings')
-    .select('id, claimed_at')
+    .select('id, claimed_at, pin_hash')
     .eq('id', input.listingId)
     .maybeSingle()
 
@@ -37,16 +42,26 @@ export async function activateGidsListingFromClaim(
     return { ok: false, reason: 'already_owned' }
   }
 
-  const pinHash = hashGidsPin(input.pin)
-  const now = new Date().toISOString()
+  const existingHash = typeof row.pin_hash === 'string' ? row.pin_hash.trim() : ''
+  const keptExistingPin = existingHash.length > 0
+  if (!keptExistingPin) {
+    if (!input.pin || !isValidGidsPin(input.pin)) {
+      return { ok: false, reason: 'invalid_pin' }
+    }
+  }
 
+  const isStarterPin = keptExistingPin && verifyGidsPin(GIDS_DEFAULT_STARTER_PIN, existingHash)
+  const now = new Date().toISOString()
   const patch: Record<string, unknown> = {
-    pin_hash: pinHash,
     claimed_at: now,
     email: input.contactEmail.trim().toLowerCase(),
     phone: input.contactPhone.trim(),
+    // Alleen 123456 of nieuwe PIN: eigen PIN van zaak-toevoegen niet forceren.
+    pin_must_change: !keptExistingPin || isStarterPin,
   }
-  patch.pin_must_change = true
+  if (!keptExistingPin && input.pin) {
+    patch.pin_hash = hashGidsPin(input.pin)
+  }
 
   const { error: updateErr } = await admin.from('gids_listings').update(patch).eq('id', input.listingId)
 
@@ -72,7 +87,7 @@ export async function activateGidsListingFromClaim(
     console.warn('[gids claim activate] approve requests:', approveErr.message)
   }
 
-  return { ok: true }
+  return { ok: true, keptExistingPin }
 }
 
 export function newClaimOwnerPin(): string {

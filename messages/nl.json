@@ -647,7 +647,7 @@
     "submitFailed": "Aanvraag mislukt. Probeer later opnieuw.",
     "successTitle": "Geactiveerd",
     "successTitleDuplicate": "Opnieuw verstuurd",
-    "successBody": "Je zaak is geactiveerd. Check je e-mail voor je 6-cijferige PIN en log in via /login. Bij eerste login kies je een nieuwe PIN.",
+    "successBody": "Je zaak is geactiveerd. Je gaat nu naar beheer. Staat je PIN nog op 123456, kies dan meteen een nieuwe.",
     "successBodyNoMail": "Je zaak is geactiveerd, maar we konden geen mail sturen. Bel of mail info@vysionhoreca.com (0492/129383) — vermeld je zaaknaam.",
     "successBodyDuplicate": "Je claim stond al open; we hebben je PIN opnieuw per e-mail gestuurd. Log in via /login.",
     "successBodyDuplicateNoMail": "Je claim stond al open. Mail info@vysionhoreca.com als je geen PIN ontving.",
