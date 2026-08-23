@@ -12,8 +12,18 @@ function resolveZohoEmail(): string {
   )
 }
 
+/** Zoho app-wachtwoord: alle witruimte/newlines strippen (Vercel plakt vaak enters mee). */
+function sanitizeZohoSecret(raw: string | undefined): string {
+  if (!raw) return ''
+  return raw.replace(/[\s\uFEFF\u200B]+/g, '')
+}
+
 function resolveZohoPassword(): string {
-  return process.env.ZOHO_PASSWORD?.trim() || process.env.ZOHO_PASS?.trim() || ''
+  return (
+    sanitizeZohoSecret(process.env.ZOHO_PASSWORD) ||
+    sanitizeZohoSecret(process.env.ZOHO_PASS) ||
+    ''
+  )
 }
 
 export function isGidsMailConfigured(): boolean {
@@ -77,7 +87,7 @@ export async function sendListingClaimNotificationEmail(payload: ListingClaimMai
     payload.btwNumber ? `BTW: ${payload.btwNumber}` : 'BTW: —',
     payload.message ? `Extra info: ${payload.message}` : 'Extra info: —',
     '',
-    'Actie: contact opnemen, PIN instellen, claimed_at zetten in Supabase.',
+    'Actie: PIN hash zetten (scripts/hash-gids-pin.mjs), claimed_at + pin_must_change via supabase/APPROVE_CLAIM_ACTIVATE_OWNER.sql',
   ]
 
   const html = `

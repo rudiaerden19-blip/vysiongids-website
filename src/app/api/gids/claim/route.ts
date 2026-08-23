@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { enforceRateLimit } from '@/lib/gids-rate-limit'
 import { isGidsMailConfigured, sendListingClaimEmails } from '@/lib/gids-mail'
+import { listingAcceptsPublicClaim } from '@/lib/listing-claimable'
 
 const WINDOW_MS = 60 * 60 * 1000
 const MAX_PER_IP = 8
@@ -78,17 +79,15 @@ export async function POST(req: Request) {
   if (!listing || listing.status !== 'published') {
     return NextResponse.json({ error: 'Zaak niet gevonden.' }, { status: 404 })
   }
-  if (listing.claimed_at) {
-    return NextResponse.json(
-      { error: 'Deze zaak is al geclaimd. Log in met je zaaknaam en PIN, of neem contact op met Vysiongids.' },
-      { status: 409 },
-    )
-  }
-  if (String(listing.pin_hash ?? '').trim()) {
+  if (
+    !listingAcceptsPublicClaim({ claimed_at: listing.claimed_at, pin_hash: listing.pin_hash })
+  ) {
+    const hasPin = Boolean(String(listing.pin_hash ?? '').trim())
     return NextResponse.json(
       {
-        error:
-          'Deze zaak heeft al een eigenaar via zaak toevoegen. Log in met je zaaknaam en PIN, of neem contact op met Vysiongids.',
+        error: hasPin
+          ? 'Deze zaak heeft al een eigenaar via zaak toevoegen. Log in met je zaaknaam en PIN, of neem contact op met Vysiongids.'
+          : 'Deze zaak is al geclaimd. Log in met je zaaknaam en PIN, of neem contact op met Vysiongids.',
       },
       { status: 409 },
     )

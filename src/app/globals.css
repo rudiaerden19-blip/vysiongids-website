@@ -2532,6 +2532,22 @@ body {
   outline-offset: 2px;
 }
 
+.vysiongids-listing-panel-owner-login-hint,
+.vysiongids-zaak-owner-login-hint {
+  margin: 0.35rem 0 0;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  line-height: 1.35;
+  color: #4b5563;
+}
+
+.vysiongids-zaak-owner-login-link {
+  font-weight: 700;
+  color: var(--accent, #0e5d82);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
 .vysiongids-listing-panel-title-rating {
   margin-top: 0.35rem;
 }

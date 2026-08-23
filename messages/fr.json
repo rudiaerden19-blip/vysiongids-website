@@ -692,7 +692,9 @@
     "successBody": "Merci ! Vous recevrez un e-mail de confirmation à l'adresse indiquée. Vysiongids vous contactera ensuite pour activer votre login (PIN), en général sous quelques jours ouvrables.",
     "successBodyNoMail": "Merci ! Votre demande est enregistrée. Envoi d'e-mail impossible — contactez info@vysionhoreca.com avec le nom de votre établissement.",
     "successBodyDuplicate": "Votre demande est déjà en cours. Vous recevrez à nouveau un court e-mail de confirmation à l'adresse indiquée.",
-    "successBodyDuplicateNoMail": "Votre demande est déjà en cours. Impossible d'envoyer l'e-mail (SMTP). Écrivez à info@vysionhoreca.com — nous avons déjà vos coordonnées."
+    "successBodyDuplicateNoMail": "Votre demande est déjà en cours. Impossible d'envoyer l'e-mail (SMTP). Écrivez à info@vysionhoreca.com — nous avons déjà vos coordonnées.",
+    "ownerLoginHint": "Déjà inscrit via ajouter votre établissement ?",
+    "ownerLoginLink": "Connexion beheer"
   },
   "reviews": {
     "pageTitle": "Avis — {name}",

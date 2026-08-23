@@ -1,6 +1,5 @@
--- Claim-knop op zoek/zaak: zichtbaar zolang claimed_at NULL is.
--- Zaak toevoegen zette ten onrechte meteen claimed_at; eigenaar = pin_hash.
--- Eenmalig: bestaande self-reg zaken weer claim-knop (claimed_at leeg, pin blijft).
+-- Verwijder ten onrechte gezet claimed_at (oude bug bij zaak toevoegen).
+-- Claim-knop voor Vysion-lijst: pin_hash moet leeg blijven; zaken mét PIN → beheer/login, geen claim-formulier.
 
 update public.gids_listings
 set claimed_at = null

@@ -1,6 +1,5 @@
 'use client'
 
-import { useLanguage } from '@/i18n/LanguageProvider'
 import { useEffect, useId } from 'react'
 import { createPortal } from 'react-dom'
 import type { Listing } from '@/lib/listing-types'
@@ -17,7 +16,6 @@ type Props = {
 }
 
 export default function ListingPromotionModal({ listing, open, onClose }: Props) {
-  const { t } = useLanguage()
   const titleId = useId()
   const promotion = listingPanelPromotionActive(listing.infoExtras)
   const emptyMessage = listingPromotionEmptyMessage(listing)
@@ -40,18 +38,18 @@ export default function ListingPromotionModal({ listing, open, onClose }: Props)
 
   const panel = (
     <div className="vysiongids-job-modal-root vysiongids-promotion-modal-root" role="presentation">
-      <button type="button" className="vysiongids-job-modal-backdrop" aria-label={t('common.close')} onClick={onClose} />
+      <button type="button" className="vysiongids-job-modal-backdrop" aria-label="Sluiten" onClick={onClose} />
       <div
         className="vysiongids-job-modal-panel vysiongids-promotion-modal-panel"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
       >
-        <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label={t('common.close')}>
+        <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label="Sluiten">
           ×
         </button>
         <div className="vysiongids-promotion-modal-scroll">
-          <p className="vysiongids-job-modal-kicker">{t('beheer.promoties.title')}</p>
+          <p className="vysiongids-job-modal-kicker">Promoties</p>
           <h2 id={titleId} className="vysiongids-job-modal-title">
             {listing.name}
           </h2>

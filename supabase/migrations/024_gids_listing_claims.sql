@@ -1,5 +1,5 @@
--- Zaak claimen: ~120 door Vysion geplaatste listings blijven claimed_at NULL tot eigenaar claimt.
--- Zelf-registratie zet claimed_at bij insert (zie app).
+-- Zaak claimen: Vysion-lijst blijft claimed_at NULL + geen pin_hash tot goedgekeurde claim.
+-- Zaak toevoegen zet pin_hash; claimed_at pas na goedgekeurde claim (zie APPROVE_CLAIM_ACTIVATE_OWNER.sql).
 
 alter table public.gids_listings
   add column if not exists claimed_at timestamptz;
