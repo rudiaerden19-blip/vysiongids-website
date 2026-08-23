@@ -1,13 +1,13 @@
 import { Suspense } from 'react'
 import SiteHeader from '@/components/SiteHeader'
 import BeheerChangePinPanel from '@/components/BeheerChangePinPanel'
-import BeheerOwnerViewsTop from '@/components/BeheerOwnerViewsTop'
-import BeheerListingEditor from '@/components/BeheerListingEditor'
-import BeheerClientExtras, { BeheerAuthFallback } from '@/components/BeheerClientExtras'
-import { BeheerLoggedInHeader, BeheerMenuCardLink } from '@/components/BeheerPageIntroServer'
+import { BeheerFormSkeleton } from '@/components/BeheerFormSkeleton'
+import { BeheerListingAndExtras } from '@/components/BeheerListingAndExtras'
+import { BeheerAuthFallback } from '@/components/BeheerClientExtras'
+import { BeheerLoggedInHeader } from '@/components/BeheerPageIntroServer'
+import { BeheerViewsStatsServer } from '@/components/BeheerViewsStatsServer'
 import { tServer } from '@/i18n/server-translate'
-import { isDienstenListing } from '@/lib/listing-segment'
-import { loadBeheerServerSession } from '@/lib/gids-beheer-server'
+import { loadBeheerPageShell } from '@/lib/gids-beheer-server'
 
 export async function generateMetadata() {
   return { title: await tServer('meta.pages.beheer') }
@@ -16,8 +16,7 @@ export async function generateMetadata() {
 export const dynamic = 'force-dynamic'
 
 export default async function BeheerPage() {
-  const serverSession = await loadBeheerServerSession()
-  const listing = serverSession.listing
+  const shell = await loadBeheerPageShell()
   const pageTitle = await tServer('beheer.pageTitle')
 
   return (
@@ -26,24 +25,25 @@ export default async function BeheerPage() {
       <main className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
         <h1 className="text-2xl font-bold text-gray-900">{pageTitle}</h1>
         <div className="mt-6 space-y-8">
-          {!serverSession.authenticated || !listing ? (
+          {!shell.authenticated || !shell.slug || !shell.name || !shell.listingId ? (
             <BeheerAuthFallback />
-          ) : serverSession.pinMustChange ? (
-            <>
-              <BeheerLoggedInHeader listing={listing} />
-              <BeheerOwnerViewsTop slug={listing.slug} />
-              <BeheerChangePinPanel businessName={listing.name} variant="firstLogin" />
-            </>
           ) : (
             <>
-              <BeheerLoggedInHeader listing={listing} />
-              <BeheerOwnerViewsTop slug={listing.slug} />
-              <BeheerChangePinPanel />
-              <BeheerListingEditor initialListing={listing} />
-              {!isDienstenListing(listing) ? <BeheerMenuCardLink /> : null}
-              <Suspense fallback={null}>
-                <BeheerClientExtras listing={listing} />
-              </Suspense>
+              <BeheerLoggedInHeader
+                name={shell.name}
+                slug={shell.slug}
+                listingSegment={shell.listingSegment}
+              />
+              <BeheerChangePinPanel
+                businessName={shell.name}
+                variant={shell.pinMustChange ? 'firstLogin' : 'beheer'}
+              />
+              <BeheerViewsStatsServer slug={shell.slug} />
+              {!shell.pinMustChange ? (
+                <Suspense fallback={<BeheerFormSkeleton />}>
+                  <BeheerListingAndExtras listingId={shell.listingId} />
+                </Suspense>
+              ) : null}
             </>
           )}
         </div>

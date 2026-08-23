@@ -1,59 +1,37 @@
 import type { Listing } from '@/lib/listing-types'
-import { fetchListingRowByIdAdmin, fetchListingSessionByIdAdmin, mapGidsRowToListing } from '@/lib/gids-listings-db'
-import { resolveListingPremiumActive } from '@/lib/gids-premium'
+import { fetchListingSessionByIdAdmin } from '@/lib/gids-listings-db'
 import { getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
+import { LISTING_SEGMENT_DIENSTEN } from '@/lib/listing-segment'
 
-export type BeheerServerSession = {
+export type BeheerPageShell = {
   authenticated: boolean
   listingId?: string
   slug?: string
   name?: string
   premiumMember?: boolean
+  listingSegment?: Listing['listingSegment']
+  /** Alleen waar kolom pin_must_change bestaat (migratie 025). */
   pinMustChange?: boolean
-  listing?: Listing
 }
 
-/** Cookie + volledige listing voor beheer-formulier (één server-trip, geen wachten op client-API). */
-export async function loadBeheerServerSession(): Promise<BeheerServerSession> {
-  const listingId = await getGidsOwnerListingIdFromCookies()
-  if (!listingId) return { authenticated: false }
-
-  const row = await fetchListingRowByIdAdmin(listingId)
-  if (!row) return { authenticated: false }
-
-  const listing = mapGidsRowToListing(row)
-  const premiumMember = listing.premiumMember === true
-
-  return {
-    authenticated: true,
-    listingId: row.id,
-    slug: listing.slug,
-    name: listing.name,
-    premiumMember,
-    pinMustChange: row.pin_must_change === true,
-    listing,
-  }
-}
-
-/** Alleen sessie-kolom — bv. health; beheer gebruikt loadBeheerServerSession. */
-export async function loadBeheerServerSessionBrief(): Promise<BeheerServerSession> {
+/** Cookie + lichte rij — geen foto’s, geen volledig formulier (streamt daarna). */
+export async function loadBeheerPageShell(): Promise<BeheerPageShell> {
   const listingId = await getGidsOwnerListingIdFromCookies()
   if (!listingId) return { authenticated: false }
 
   const row = await fetchListingSessionByIdAdmin(listingId)
   if (!row) return { authenticated: false }
 
-  const premiumMember = resolveListingPremiumActive({
-    premium_member: row.premium_member,
-    premium_paused: row.premium_paused,
-    premium_expires_at: row.premium_expires_at,
-  })
+  const listingSegment =
+    row.listing_segment === LISTING_SEGMENT_DIENSTEN ? ('diensten' as const) : ('horeca' as const)
 
   return {
     authenticated: true,
     listingId: row.id,
     slug: row.slug,
     name: row.name,
-    premiumMember,
+    premiumMember: row.premium_member,
+    listingSegment,
+    pinMustChange: false,
   }
 }

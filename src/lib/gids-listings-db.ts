@@ -620,13 +620,20 @@ export async function fetchListingBySlugFromDb(slug: string): Promise<Listing | 
 export async function fetchListingRowByIdAdmin(id: string): Promise<GidsListingRow | null> {
   const supabase = createGidsSupabaseAdmin()
   if (!supabase) return null
-  const { data, error } = await supabase
-    .from('gids_listings')
-    .select(`${LISTING_SELECT}, name_normalized`)
-    .eq('id', id)
-    .maybeSingle()
+  const [listingResult, photos] = await Promise.all([
+    supabase.from('gids_listings').select('*, name_normalized').eq('id', id).maybeSingle(),
+    fetchAllListingPhotosForId(supabase, id),
+  ])
+  const { data, error } = listingResult
   if (error || !data) return null
-  return data as GidsListingRow
+  return { ...(data as GidsListingRow), gids_listing_photos: photos }
+}
+
+/** Volledige listing voor beheer-formulier (parallel rij + foto’s, geen zware join). */
+export async function fetchListingForBeheerAdmin(id: string): Promise<Listing | null> {
+  const row = await fetchListingRowByIdAdmin(id)
+  if (!row) return null
+  return mapGidsRowToListing(row)
 }
 
 /** Snelle sessie-check voor beheer (geen foto-join). */
@@ -639,12 +646,13 @@ export async function fetchListingSessionByIdAdmin(
   premium_member: boolean
   premium_paused: boolean
   premium_expires_at: string | null
+  listing_segment: string | null
 } | null> {
   const supabase = createGidsSupabaseAdmin()
   if (!supabase) return null
   const { data, error } = await supabase
     .from('gids_listings')
-    .select('id, slug, name, premium_member, premium_paused, premium_expires_at')
+    .select('id, slug, name, premium_member, premium_paused, premium_expires_at, listing_segment')
     .eq('id', id)
     .maybeSingle()
   if (error || !data) return null
@@ -662,6 +670,7 @@ export async function fetchListingSessionByIdAdmin(
     }),
     premium_paused,
     premium_expires_at,
+    listing_segment: (data.listing_segment as string | null) ?? null,
   }
 }
 

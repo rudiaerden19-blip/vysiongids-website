@@ -3,21 +3,27 @@ import type { Listing } from '@/lib/listing-types'
 import { isDienstenListing } from '@/lib/listing-segment'
 import { tServer } from '@/i18n/server-translate'
 
+export type BeheerLoggedInHeaderProps = {
+  name: string
+  slug: string
+  listingSegment?: Listing['listingSegment']
+}
+
 /** Server — meteen zichtbaar vóór client-formulier hydrateert. */
-export async function BeheerLoggedInHeader({ listing }: { listing: Listing }) {
-  const dienstenAccount = isDienstenListing(listing)
-  const loggedInLine = await tServer('beheer.loggedInAs', { name: listing.name })
+export async function BeheerLoggedInHeader({ name, slug, listingSegment }: BeheerLoggedInHeaderProps) {
+  const dienstenAccount = isDienstenListing({ listingSegment })
+  const loggedInLine = await tServer('beheer.loggedInAs', { name })
   const dienstenLink = await tServer('beheer.viewDienstenProfile')
   const publicLink = await tServer('beheer.viewPublicPage')
   return (
     <div className="space-y-2">
       <p className="text-lg text-gray-800">{loggedInLine}</p>
       {dienstenAccount ? (
-        <Link href={`/diensten/${listing.slug}`} className="inline-block font-semibold text-accent hover:underline">
+        <Link href={`/diensten/${slug}`} className="inline-block font-semibold text-accent hover:underline">
           {dienstenLink}
         </Link>
       ) : (
-        <Link href={`/zaak/${listing.slug}`} className="inline-block font-semibold text-accent hover:underline">
+        <Link href={`/zaak/${slug}`} className="inline-block font-semibold text-accent hover:underline">
           {publicLink}
         </Link>
       )}
