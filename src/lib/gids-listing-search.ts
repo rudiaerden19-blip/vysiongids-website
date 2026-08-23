@@ -76,8 +76,35 @@ const LISTING_TYPE_SEARCH: Array<{ type: ListingTypeSearchId; phrases: string[] 
   { type: 'sushi', phrases: ['sushi restaurant'] },
   { type: 'cafe', phrases: ['cafe', 'café'] },
   { type: 'bistro', phrases: ['bistro'] },
-  { type: 'bakkerij', phrases: ['bakkerij', 'bakker', 'brood', 'patisserie', 'patissier'] },
-  { type: 'slagerij', phrases: ['slagerij', 'slager', 'charcuterie', 'beenhouwer', 'beenhouwerij'] },
+  {
+    type: 'bakkerij',
+    phrases: [
+      'bakkerij',
+      'bakker',
+      'bakkers',
+      'bakkerszaak',
+      'broodbakker',
+      'banketbakker',
+      'banketbakkerij',
+      'brood',
+      'patisserie',
+      'patissier',
+    ],
+  },
+  {
+    type: 'slagerij',
+    phrases: [
+      'slagerij',
+      'slager',
+      'slagers',
+      'beenhouwerij',
+      'beenhouwer',
+      'beenhouwen',
+      'beenhouwers',
+      'charcuterie',
+      'vleeswinkel',
+    ],
+  },
   { type: 'koffiehuis', phrases: ['koffiehuis', 'koffiebar', 'coffee bar', 'coffeehouse'] },
   { type: 'lunchroom', phrases: ['lunchroom', 'lunch room', 'lunchbar'] },
   { type: 'foodtruck', phrases: ['foodtruck', 'food truck', 'foodtrucks', 'street food'] },
@@ -181,6 +208,31 @@ function phraseInQuery(qNorm: string, phrase: string): boolean {
   })
 }
 
+/** Woorden uit q die bij phrase horen (o.a. «bakker» ↔ «bakkerij»). */
+function queryWordsMatchingPhrase(qNorm: string, phrase: string): string[] {
+  if (!qNorm) return []
+  const p = normalizeSearchText(phrase)
+  if (p.length < 3) return []
+  if (p.includes(' ')) {
+    return qNorm.includes(p) ? [p] : []
+  }
+  return qNorm.split(/\s+/).filter((w) => {
+    if (!w) return false
+    if (w === p) return true
+    if (w.startsWith(`${p}-`)) return true
+    if (p.length >= 5 && w.startsWith(p)) return true
+    if (w.length >= 5 && p.startsWith(w)) return true
+    return false
+  })
+}
+
+function pushStrippedSearchPhrase(qNorm: string, phrase: string, strippedPhrases: string[]): void {
+  strippedPhrases.push(normalizeSearchText(phrase))
+  for (const w of queryWordsMatchingPhrase(qNorm, phrase)) {
+    strippedPhrases.push(w)
+  }
+}
+
 function stripPhrasesFromQuery(qNorm: string, phrases: string[]): string {
   let out = qNorm
   for (const phrase of [...new Set(phrases)].sort((a, b) => b.length - a.length)) {
@@ -243,7 +295,7 @@ export function parseListingSearchQuery(raw: string): ParsedListingSearchQuery {
   for (const phrase of NEARBY_PHRASES) {
     if (phraseInQuery(qNorm, phrase)) {
       nearby = true
-      strippedPhrases.push(normalizeSearchText(phrase))
+      pushStrippedSearchPhrase(qNorm, phrase, strippedPhrases)
       break
     }
   }
@@ -252,7 +304,7 @@ export function parseListingSearchQuery(raw: string): ParsedListingSearchQuery {
     if (phraseInQuery(qNorm, phrase)) {
       freeDelivery = true
       if (!amenityIds.includes('delivery')) amenityIds.push('delivery')
-      strippedPhrases.push(normalizeSearchText(phrase))
+      pushStrippedSearchPhrase(qNorm, phrase, strippedPhrases)
       break
     }
   }
@@ -260,7 +312,7 @@ export function parseListingSearchQuery(raw: string): ParsedListingSearchQuery {
   for (const phrase of OPEN_NOW_PHRASES) {
     if (phraseInQuery(qNorm, phrase)) {
       openNow = true
-      strippedPhrases.push(normalizeSearchText(phrase))
+      pushStrippedSearchPhrase(qNorm, phrase, strippedPhrases)
       break
     }
   }
@@ -270,7 +322,7 @@ export function parseListingSearchQuery(raw: string): ParsedListingSearchQuery {
       for (const phrase of phrases) {
         if (phraseInQuery(qNorm, phrase)) {
           if (!typeIds.includes(type)) typeIds.push(type)
-          strippedPhrases.push(normalizeSearchText(phrase))
+          pushStrippedSearchPhrase(qNorm, phrase, strippedPhrases)
           break
         }
       }
@@ -286,7 +338,7 @@ export function parseListingSearchQuery(raw: string): ParsedListingSearchQuery {
       for (const phrase of phrases) {
         if (phraseInQuery(qNorm, phrase)) {
           if (!cuisineIds.includes(c.id)) cuisineIds.push(c.id)
-          strippedPhrases.push(normalizeSearchText(phrase))
+          pushStrippedSearchPhrase(qNorm, phrase, strippedPhrases)
           break
         }
       }
@@ -297,7 +349,7 @@ export function parseListingSearchQuery(raw: string): ParsedListingSearchQuery {
       for (const phrase of phrases) {
         if (phraseInQuery(qNorm, phrase)) {
           if (!amenityIds.includes(a.id)) amenityIds.push(a.id)
-          strippedPhrases.push(normalizeSearchText(phrase))
+          pushStrippedSearchPhrase(qNorm, phrase, strippedPhrases)
           break
         }
       }

@@ -22,9 +22,18 @@ export const PROTECTED_SEARCH_VOCABULARY = new Set([
   'bistro',
   'bakkerij',
   'bakker',
+  'bakkers',
+  'bakkerszaak',
   'slagerij',
   'slager',
+  'slagers',
   'beenhouwer',
+  'beenhouwen',
+  'beenhouwerij',
+  'beenhouwers',
+  'vleeswinkel',
+  'patisserie',
+  'charcuterie',
   'koffiehuis',
   'lunchroom',
   'foodtruck',
@@ -49,9 +58,23 @@ export const PROTECTED_SEARCH_VOCABULARY = new Set([
   'brugge',
 ])
 
+const SEARCH_TOKEN_ALIASES: Record<string, string> = {
+  frites: 'frituur',
+  frite: 'frituur',
+  bakker: 'bakkerij',
+  bakkers: 'bakkerij',
+  bakkerszaak: 'bakkerij',
+  slager: 'slagerij',
+  slagers: 'slagerij',
+  beenhouwer: 'slagerij',
+  beenhouwen: 'slagerij',
+  beenhouwerij: 'slagerij',
+  beenhouwers: 'slagerij',
+  vleeswinkel: 'slagerij',
+}
+
 /** STT/typo → canonieke zoekterm (type zaak). */
 export function canonicalizeSearchToken(token: string): string {
   const t = token.toLowerCase()
-  if (t === 'frites' || t === 'frite') return 'frituur'
-  return token
+  return SEARCH_TOKEN_ALIASES[t] ?? token
 }

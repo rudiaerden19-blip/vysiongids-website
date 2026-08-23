@@ -64,7 +64,11 @@ export function planHorecaSearchDbQuery(
     .split(/\s+/)
     .map((t) => t.trim())
     .filter((t) => t.length >= 2)
-  const textToken = tokens.length === 1 ? tokens[0] : undefined
+  let textToken = tokens.length === 1 ? tokens[0] : undefined
+  // Type-zoekterm (b.v. «bakker») niet als naamfilter — anders mist «KADETJE» met type bakkerij.
+  if (textToken && parsed.typeIds.length > 0) {
+    textToken = undefined
+  }
 
   const needsMemoryFilter =
     parsed.amenityIds.length > 0 ||
