@@ -322,6 +322,10 @@
   },
   "beheer": {
     "pageTitle": "Manage business",
+    "premiumTopBanner": {
+      "headline": "Did you know paying members stand out 20× more in our guide?",
+      "cta": "Premium member — €{price} per year"
+    },
     "loggedInAs": "Logged in as {name}",
     "viewPublicPage": "View public page →",
     "viewDienstenProfile": "View services profile →",

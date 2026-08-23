@@ -322,6 +322,10 @@
   },
   "beheer": {
     "pageTitle": "Gérer l’établissement",
+    "premiumTopBanner": {
+      "headline": "Saviez-vous qu’en tant que membre payant vous ressortez 20× plus dans notre guide ?",
+      "cta": "Membre premium — {price} € par an"
+    },
     "loggedInAs": "Connecté en tant que {name}",
     "viewPublicPage": "Voir la page publique →",
     "viewDienstenProfile": "Voir le profil services →",

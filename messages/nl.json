@@ -322,6 +322,10 @@
   },
   "beheer": {
     "pageTitle": "Zaak beheren",
+    "premiumTopBanner": {
+      "headline": "Wist je dat je als betalend lid 20× meer opvalt in onze gids?",
+      "cta": "Premium lid — €{price} per jaar"
+    },
     "loggedInAs": "Ingelogd als {name}",
     "viewPublicPage": "Publieke pagina bekijken →",
     "viewDienstenProfile": "Dienstenprofiel bekijken →",

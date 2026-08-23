@@ -7,6 +7,7 @@ import { BeheerAuthFallback } from '@/components/BeheerClientExtras'
 import { BeheerLoggedInHeader } from '@/components/BeheerPageIntroServer'
 import { BeheerViewsStatsServer } from '@/components/BeheerViewsStatsServer'
 import BeheerChatUnderViews from '@/components/BeheerChatUnderViews'
+import BeheerPremiumTopBanner from '@/components/BeheerPremiumTopBanner'
 import { tServer } from '@/i18n/server-translate'
 import { loadBeheerPageShell } from '@/lib/gids-beheer-server'
 
@@ -24,7 +25,14 @@ export default async function BeheerPage() {
     <>
       <SiteHeader />
       <main className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-        <h1 className="text-2xl font-bold text-gray-900">{pageTitle}</h1>
+        {shell.authenticated && shell.slug && shell.name && shell.listingId ? (
+          <BeheerPremiumTopBanner
+            premiumMember={shell.premiumMember}
+            listingName={shell.name}
+            listingSegment={shell.listingSegment}
+          />
+        ) : null}
+        <h1 className="text-2xl font-bold text-gray-900 mt-6">{pageTitle}</h1>
         <div className="mt-6 space-y-8">
           {!shell.authenticated || !shell.slug || !shell.name || !shell.listingId ? (
             <BeheerAuthFallback />
