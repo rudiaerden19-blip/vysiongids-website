@@ -119,12 +119,8 @@ export type Listing = {
   premiumMember?: boolean
   /** Laatste wijziging zaak (fallback vacature-datum) */
   updatedAt?: string
-  /** Gezet na goedgekeurde claim; NULL = claim-knop mogelijk (zie showClaimButton). */
+  /** Gezet na claim; NULL = «Claim je zaak» zichtbaar. */
   claimedAt?: string
-  /** Server: claim-formulier mag open (geen claimed_at, geen eigenaar-PIN). */
-  showClaimButton?: boolean
-  /** Server: zaak heeft PIN via zaak toevoegen — toon beheer-inlog i.p.v. claim. */
-  hasOwnerPin?: boolean
 }
 
 export type ListingSearchParams = {

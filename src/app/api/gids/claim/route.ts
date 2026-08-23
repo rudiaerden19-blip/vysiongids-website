@@ -94,13 +94,10 @@ export async function POST(req: Request) {
 
   const row = listing as ListingRow
 
-  if (!listingAcceptsPublicClaim({ claimed_at: row.claimed_at, pin_hash: row.pin_hash })) {
-    const hasPin = Boolean(String(row.pin_hash ?? '').trim())
+  if (!listingAcceptsPublicClaim({ claimed_at: row.claimed_at })) {
     return NextResponse.json(
       {
-        error: hasPin
-          ? 'Deze zaak heeft al een eigenaar. Log in met je zaaknaam en PIN, of neem contact op met Vysiongids.'
-          : 'Deze zaak is al geclaimd. Log in met je zaaknaam en PIN, of neem contact op met Vysiongids.',
+        error: 'Deze zaak is al geclaimd. Log in met je zaaknaam en PIN, of neem contact op met Vysiongids.',
       },
       { status: 409 },
     )

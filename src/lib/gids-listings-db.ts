@@ -5,7 +5,6 @@ import { resolveListingPremiumActive } from '@/lib/gids-premium'
 import { resolveDienstenListingActive } from '@/lib/gids-diensten-membership'
 import { LISTING_SEGMENT_HORECA } from '@/lib/listing-segment'
 import { horecaTypesFromDbRow } from '@/lib/listing-horeca-types'
-import { listingShowsClaimUi } from '@/lib/listing-claimable'
 import { createGidsSupabaseAdmin, createGidsSupabasePublic, isGidsSupabaseConfigured } from '@/lib/supabase-gids'
 
 type PhotoRow = { sort_order: number; public_url: string }
@@ -168,13 +167,9 @@ export const LISTING_BROWSE_SELECT = `
 
 /** Service role: anon heeft kolom-grants (017) — horeca_types alleen via admin of extra GRANT. */
 const LISTING_BROWSE_HORECA_TYPES_SUFFIX = ', horeca_types'
-/** Alleen service role: pin_hash nooit naar client, wel voor showClaimButton. */
-const LISTING_BROWSE_PIN_HASH_SUFFIX = ', pin_hash'
 
-export function listingBrowseSelect(includeHorecaTypes: boolean, includePinHash = false): string {
-  let base = includeHorecaTypes ? `${LISTING_BROWSE_SELECT}${LISTING_BROWSE_HORECA_TYPES_SUFFIX}` : LISTING_BROWSE_SELECT
-  if (includePinHash) base += LISTING_BROWSE_PIN_HASH_SUFFIX
-  return base
+export function listingBrowseSelect(includeHorecaTypes: boolean): string {
+  return includeHorecaTypes ? `${LISTING_BROWSE_SELECT}${LISTING_BROWSE_HORECA_TYPES_SUFFIX}` : LISTING_BROWSE_SELECT
 }
 
 /** Server-side listing reads: admin (incl. horeca_types) → anders anon zonder horeca_types. */
@@ -185,7 +180,7 @@ export function gidsListingBrowseReader(): {
   if (!isGidsSupabaseConfigured()) return null
   const admin = createGidsSupabaseAdmin()
   if (admin) {
-    return { client: admin, select: listingBrowseSelect(true, true) }
+    return { client: admin, select: listingBrowseSelect(true) }
   }
   const pub = createGidsSupabasePublic()
   if (!pub) return null
@@ -359,8 +354,6 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
     lng: row.lng ?? undefined,
     updatedAt: row.updated_at ?? undefined,
     claimedAt: row.claimed_at ?? undefined,
-    showClaimButton: listingShowsClaimUi(row.claimed_at),
-    hasOwnerPin: Boolean(String(row.pin_hash ?? '').trim()),
   }
 }
 

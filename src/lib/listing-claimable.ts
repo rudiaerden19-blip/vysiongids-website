@@ -1,22 +1,13 @@
-/** Zaak in gids zonder goedgekeurde claim én zonder eigenaar-PIN (zaak toevoegen). */
-export function listingAcceptsPublicClaim(row: {
-  claimed_at?: string | null
-  pin_hash?: string | null
-}): boolean {
-  if (row.claimed_at) return false
-  return !Boolean(String(row.pin_hash ?? '').trim())
-}
-
-/** @deprecated Gebruik listingAcceptsPublicClaim; fallback als pin_hash niet geladen is. */
+/** Claim-knop + claim-formulier: alleen zolang claimed_at leeg is. Geen PIN-checks. */
 export function listingShowsClaimUi(claimedAt: string | null | undefined): boolean {
   return !claimedAt
 }
 
-/** Staff / intern: eigenaar actief (PIN of goedgekeurde claim). */
-export function listingHasRegisteredOwner(row: {
-  claimed_at?: string | null
-  pin_hash?: string | null
-}): boolean {
-  if (row.claimed_at) return true
-  return Boolean(String(row.pin_hash ?? '').trim())
+export function listingAcceptsPublicClaim(row: { claimed_at?: string | null }): boolean {
+  return listingShowsClaimUi(row.claimed_at)
+}
+
+/** Staff: groene rij na claim (claimed_at gezet). */
+export function staffListingIsClaimedByClaim(claimedAt: string | null | undefined): boolean {
+  return Boolean(claimedAt)
 }

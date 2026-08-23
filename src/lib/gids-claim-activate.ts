@@ -25,7 +25,7 @@ export async function activateGidsListingFromClaim(
 
   const { data: row, error: readErr } = await admin
     .from('gids_listings')
-    .select('id, claimed_at, pin_hash')
+    .select('id, claimed_at')
     .eq('id', input.listingId)
     .maybeSingle()
 
@@ -33,7 +33,7 @@ export async function activateGidsListingFromClaim(
     return { ok: false, reason: 'db_error', message: readErr?.message }
   }
 
-  if (!listingAcceptsPublicClaim({ claimed_at: row.claimed_at, pin_hash: row.pin_hash })) {
+  if (!listingAcceptsPublicClaim({ claimed_at: row.claimed_at })) {
     return { ok: false, reason: 'already_owned' }
   }
 
