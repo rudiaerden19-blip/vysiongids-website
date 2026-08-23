@@ -1,16 +1,15 @@
 import type { GidsListingRow } from '@/lib/gids-listings-db'
 import { resolveDienstenListingActive } from '@/lib/gids-diensten-membership'
-import { GIDS_HORECA_YEARLY_EUR } from '@/lib/gids-premium'
 import { GIDS_DIENSTEN_YEARLY_EUR } from '@/lib/gids-diensten-pricing'
 import { isDienstenListing } from '@/lib/listing-segment'
 import type { Listing } from '@/lib/listing-types'
-import { resolveListingPremiumActive } from '@/lib/gids-premium'
 
+/** Horeca: chat gratis voor elke zaakkaart in de gids. Diensten: actief €99-profiel om te chatten. */
 export function listingCanUseGidsChat(
-  listing: Pick<Listing, 'listingSegment' | 'premiumMember' | 'dienstenActive'>,
+  listing: Pick<Listing, 'listingSegment' | 'dienstenActive'>,
 ): boolean {
   if (isDienstenListing(listing)) return listing.dienstenActive === true
-  return listing.premiumMember === true
+  return true
 }
 
 export function listingCanUseGidsChatFromRow(
@@ -31,20 +30,14 @@ export function listingCanUseGidsChatFromRow(
       status: row.status ?? 'published',
     })
   }
-  return resolveListingPremiumActive({
-    premium_member: row.premium_member,
-    premium_paused: row.premium_paused,
-    premium_expires_at: row.premium_expires_at,
-  })
+  return (row.status ?? 'published') !== 'hidden'
 }
 
-export function gidsChatMembershipDeniedMessage(
-  segment: 'horeca' | 'diensten' | undefined,
-): string {
+export function gidsChatMembershipDeniedMessage(segment: 'horeca' | 'diensten' | undefined): string {
   if (segment === 'diensten') {
     return `Chat vereist een actief leveranciersprofiel (€${GIDS_DIENSTEN_YEARLY_EUR}/jaar). Log in via beheer.`
   }
-  return `Chat vereist actief Vysiongids-lidmaatschap (€${GIDS_HORECA_YEARLY_EUR}/jaar). Log in via beheer.`
+  return 'Chat is niet beschikbaar voor dit profiel.'
 }
 
 export function normalizeGidsChatBody(raw: string): string | null {

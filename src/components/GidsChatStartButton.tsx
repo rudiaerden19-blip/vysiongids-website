@@ -93,10 +93,7 @@ export default function GidsChatStartButton({
       if (!r.ok) {
         setOpen(false)
         if (data.code === 'membership') {
-          const go = window.confirm(
-            `${data.error ?? 'Lidmaatschap vereist.'}\n\nNaar beheer gaan om in te loggen of premium te nemen?`,
-          )
-          if (go) window.location.href = '/beheer'
+          alert(data.error ?? 'Chat is voor dit profiel niet beschikbaar.')
           return
         }
         if (r.status === 400 && data.error?.includes('jezelf')) {

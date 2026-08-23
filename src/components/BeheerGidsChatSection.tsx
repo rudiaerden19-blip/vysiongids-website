@@ -141,7 +141,7 @@ export default function BeheerGidsChatSection({ initialThreadId }: Props) {
         </p>
       ) : null}
       <p className={`text-sm text-gray-600${badgeCount > 0 ? ' mt-2' : ' mt-1'}`}>
-        Chat met andere leden over zoekertjes of leveranciersprofielen (premium vereist).
+        Chat met andere leden over zoekertjes of leveranciersprofielen — gratis voor je zaakkaart in de gids.
       </p>
       {loadError ? <p className="mt-3 text-sm text-amber-800">{loadError}</p> : null}
       <ul className="vysiongids-gids-chat-inbox mt-4">
