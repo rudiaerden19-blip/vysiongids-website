@@ -710,6 +710,12 @@ body {
   color: #374151;
 }
 
+.vysiongids-platform-promo-modal-text--highlight {
+  margin-top: -0.35rem;
+  font-weight: 600;
+  color: #111827;
+}
+
 .vysiongids-platform-promo-modal-cta {
   display: block;
   width: 100%;

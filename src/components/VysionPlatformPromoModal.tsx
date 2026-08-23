@@ -59,6 +59,11 @@ export default function VysionPlatformPromoModal({ kind, open, onClose }: Props)
           {t(titleKey)}
         </h2>
         <p className="vysiongids-platform-promo-modal-text">{t(bodyKey)}</p>
+        {kind === 'order' ? (
+          <p className="vysiongids-platform-promo-modal-text vysiongids-platform-promo-modal-text--highlight">
+            {t('modals.platformPromo.orderBodyHighlight')}
+          </p>
+        ) : null}
         <a
           href={href}
           target="_blank"
