@@ -43,25 +43,29 @@ export default function ListingPromotionModal({ listing, open, onClose }: Props)
         <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label="Sluiten">
           ×
         </button>
-        <p className="vysiongids-job-modal-kicker">Promotie</p>
-        <h2 id={titleId} className="vysiongids-job-modal-title">
-          {listing.name}
-        </h2>
-        {promotion.imageUrl ? (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={promotion.imageUrl} alt="" className="vysiongids-promotion-modal-img" />
-        ) : null}
-        {promotion.text ? <p className="vysiongids-promotion-modal-text">{promotion.text}</p> : null}
+        <div className="vysiongids-promotion-modal-scroll">
+          <p className="vysiongids-job-modal-kicker">Promotie</p>
+          <h2 id={titleId} className="vysiongids-job-modal-title">
+            {listing.name}
+          </h2>
+          {promotion.imageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={promotion.imageUrl} alt="" className="vysiongids-promotion-modal-img" />
+          ) : null}
+          {promotion.text ? <p className="vysiongids-promotion-modal-text">{promotion.text}</p> : null}
+        </div>
         {listing.orderUrl?.trim() ? (
-          <div className="vysiongids-job-card-actions vysiongids-job-modal-actions">
-            <a
-              href={listing.orderUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="vysiongids-job-card-btn vysiongids-job-card-btn--email"
-            >
-              Bestel
-            </a>
+          <div className="vysiongids-promotion-modal-footer">
+            <div className="vysiongids-job-card-actions vysiongids-job-modal-actions">
+              <a
+                href={listing.orderUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="vysiongids-job-card-btn vysiongids-job-card-btn--email"
+              >
+                Bestel
+              </a>
+            </div>
           </div>
         ) : null}
       </div>

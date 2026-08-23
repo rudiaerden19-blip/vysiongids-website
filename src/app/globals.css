@@ -2942,17 +2942,47 @@ body {
 }
 
 .vysiongids-promotion-modal-panel {
-  max-width: 26rem;
+  width: min(100%, 30rem);
+  max-width: min(100%, 30rem);
+  max-height: min(92vh, 44rem);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 1rem;
+}
+
+.vysiongids-promotion-modal-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 0.15rem;
+}
+
+.vysiongids-promotion-modal-footer {
+  flex: 0 0 auto;
+  margin-top: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  background: #fff;
+}
+
+.vysiongids-promotion-modal-panel .vysiongids-job-modal-actions {
+  margin-top: 0;
+  padding-bottom: 0.15rem;
 }
 
 .vysiongids-promotion-modal-img {
   display: block;
   width: 100%;
+  max-height: min(42vh, 16rem);
   height: auto;
   margin-top: 1rem;
   border-radius: 0.75rem;
   border: 1px solid #e5e7eb;
-  object-fit: cover;
+  object-fit: contain;
+  background: #f9fafb;
 }
 
 .vysiongids-promotion-modal-text {
