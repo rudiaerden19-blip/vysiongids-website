@@ -142,6 +142,7 @@ export default function ListingClaimModal({ listing, open, onClose }: Props) {
               </h2>
               <p className="vysiongids-job-modal-text">{t('claim.lead', { listingName: listing.name })}</p>
               <p className="vysiongids-claim-modal-free-note">{t('claim.freeNote')}</p>
+              <p className="vysiongids-job-modal-text">{t('claim.subscriptionNote')}</p>
 
               <form id="vysiongids-claim-form" onSubmit={onSubmit} className="vysiongids-claim-form">
                 <div className="vysiongids-claim-form-fields space-y-3">
