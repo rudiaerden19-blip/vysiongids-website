@@ -966,11 +966,12 @@ body {
 }
 
 .vysiongids-home-stats {
+  --vysiongids-home-stats-inner-shift: clamp(0.625rem, 1.75vw, 1.125rem);
   background: #ececec;
   border-top: none;
   border-bottom: 1px solid #e0e0e0;
   padding: calc(var(--vysiongids-home-section-y) - 1cm) var(--vysiongids-home-section-x)
-    var(--vysiongids-home-section-y);
+    calc(var(--vysiongids-home-section-y) - var(--vysiongids-home-stats-inner-shift));
 }
 
 .vysiongids-home-stats-title {
@@ -1012,7 +1013,7 @@ body {
 .vysiongids-home-stats-inner {
   width: 100%;
   max-width: var(--vysiongids-content-max);
-  margin: 0 auto;
+  margin: var(--vysiongids-home-stats-inner-shift, 0) auto 0;
   display: grid;
   grid-template-columns: 1fr;
   gap: 2rem 2.5rem;
