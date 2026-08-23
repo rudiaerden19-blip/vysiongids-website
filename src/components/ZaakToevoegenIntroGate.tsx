@@ -108,8 +108,10 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
               Jouw zaak wordt meteen gekoppeld aan je online bestelplatform, reserveringssoftware, website, Facebook, enz.
               Heb je nog geen software? Dan kan je die via Vysiongids bekomen. Zoek je een nieuwe toonbank, friteuse, kassa,
               tafels en stoelen, enz.? Onder <strong>Diensten</strong> staan alle verkopers in één gids: contact opnemen of
-              een vraag stellen via de chat. Het lidmaatschap is <strong>gratis</strong> en heeft zijn doel al
-              ruimschoots bewezen.
+              een vraag stellen via de chat. Wil je zoekertjes plaatsen of jobadvertenties plaatsen? Dan betaal je{' '}
+              <strong>€49 per jaar</strong> en geniet je van onze uitgebreide functies, zodat duizenden horeca-ondernemers
+              en consumenten onmiddellijk jouw zoekertjes in de gids zien. Ben je een verkoper van diensten? Maak je dan
+              lid voor <strong>€99 per jaar</strong> — jouw zaak wordt dan gezien door duizenden potentiële klanten.
             </p>
           </div>
           <div className="vysiongids-zaak-intro-promo">
