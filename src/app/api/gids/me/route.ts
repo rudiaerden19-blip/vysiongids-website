@@ -33,7 +33,7 @@ import {
   uploadGidsListingMenuPdf,
 } from '@/lib/gids-listing-menu-server'
 import { geocodeListingAddress } from '@/lib/gids-listing-geocode'
-import { resolveListingPremiumActive } from '@/lib/gids-premium'
+import { resolveListingPremiumActive, GIDS_HORECA_YEARLY_EUR } from '@/lib/gids-premium'
 import { deleteGidsListingByIdAdmin } from '@/lib/gids-listing-delete-admin'
 import { applyGidsOwnerListingPhotoPatch } from '@/lib/gids-me-owner-photo-patch'
 import { patchOwnerDienstenListing } from '@/lib/gids-me-diensten-patch'
@@ -137,7 +137,7 @@ export async function PATCH(req: Request) {
     return NextResponse.json(
       {
         error:
-          'Vacatures plaatsen is enkel voor betalende Vysiongids-leden (€50/jaar). Vraag premium aan via de knop in beheer.',
+          `Vacatures plaatsen is enkel voor premium horeca-leden (€${GIDS_HORECA_YEARLY_EUR}/jaar). Neem premium via de knop in beheer.`,
       },
       { status: 403 },
     )

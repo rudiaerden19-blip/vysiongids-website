@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 import GidsPremiumPaywallModal from '@/components/GidsPremiumPaywallModal'
-import { listingHasGidsPremium } from '@/lib/gids-premium'
+import { GIDS_HORECA_YEARLY_EUR, listingHasGidsPremium } from '@/lib/gids-premium'
 
 type Props = {
   premiumMember?: boolean
@@ -64,7 +64,7 @@ export default function BeheerPremiumQuickNav({
             className="vysiongids-beheer-quick-nav-btn vysiongids-beheer-quick-nav-btn--claim"
             onClick={openPremiumPaywall}
           >
-            Claim uw zaak hier 1 jaar
+            Premium — €{GIDS_HORECA_YEARLY_EUR}/jaar (zoekertjes &amp; vacatures)
           </button>
         ) : null}
       </div>

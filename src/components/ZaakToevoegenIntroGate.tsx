@@ -3,6 +3,8 @@
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import VysionPlatformPromoModal, { type VysionPlatformPromoKind } from '@/components/VysionPlatformPromoModal'
+import { GIDS_HORECA_YEARLY_EUR } from '@/lib/gids-premium'
+import { GIDS_DIENSTEN_YEARLY_EUR } from '@/lib/gids-diensten-pricing'
 
 type Props = {
   children: React.ReactNode
@@ -65,9 +67,10 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
         <div className="vysiongids-zaak-intro-body">
           <p className="vysiongids-zaak-intro-promo">
             Wil je lid worden van Vysiongids? Druk dan bovenaan op de knop <strong>Zaak toevoegen</strong> en volg alle
-            stappen. Het lidmaatschap is <strong>gratis</strong>. Hiervoor ontvang je alle premiumfuncties
-            zonder limieten. Je zaak wordt dan direct zichtbaar voor duizenden klanten in de buurt, maar ook in heel
-            België.
+            stappen. Je <strong>zaakkaart</strong> staat <strong>gratis</strong> in de gids — klanten kunnen je zoeken,
+            info bekijken en rechtstreeks bestellen. Zoekertjes en jobadvertenties zijn premium (
+            <strong>€{GIDS_HORECA_YEARLY_EUR} per jaar</strong>). Je zaak wordt direct zichtbaar voor duizenden klanten
+            in de buurt, maar ook in heel België.
           </p>
           <p className="vysiongids-zaak-intro-promo">
             Heb je geen reserveringssoftware of online bestelplatform? Indien je lid bent van Vysiongids, kan je je via
@@ -98,20 +101,19 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
           <div className="vysiongids-zaak-intro-promo">
             <h3 className="vysiongids-zaak-intro-promo-title">Wat is de Vysiongids</h3>
             <p className="vysiongids-zaak-intro-promo-text">
-              Als je lid bent van Vysiongids, kan je vanaf dan je eigen kaart met je gegevens, foto&apos;s, QR-code en
-              meer aanmaken. Duizenden klanten kunnen je dan in onze gids zoeken. Je kan advertenties plaatsen als ook een
-              zoekertje plaatsen als je iets te koop aan wil bieden. Je zoekertje is dan meteen zichtbaar voor alle ondernemers in de
-              Vysiongids. Bij interesse kan
-              je chatten met de koper.
+              Als je lid bent van Vysiongids, kan je je gratis zaakkaart met gegevens, foto&apos;s, QR-code en meer
+              beheren. Duizenden klanten kunnen je in onze gids zoeken. Met premium (
+              <strong>€{GIDS_HORECA_YEARLY_EUR}/jaar</strong>) plaats je ook zoekertjes en jobadvertenties — meteen zichtbaar
+              voor ondernemers en consumenten. Bij interesse kan je chatten met de koper.
             </p>
             <p className="vysiongids-zaak-intro-promo-text">
               Jouw zaak wordt meteen gekoppeld aan je online bestelplatform, reserveringssoftware, website, Facebook, enz.
               Heb je nog geen software? Dan kan je die via Vysiongids bekomen. Zoek je een nieuwe toonbank, friteuse, kassa,
               tafels en stoelen, enz.? Onder <strong>Diensten</strong> staan alle verkopers in één gids: contact opnemen of
-              een vraag stellen via de chat. Wil je zoekertjes plaatsen of jobadvertenties plaatsen? Dan betaal je{' '}
-              <strong>€49 per jaar</strong> en geniet je van onze uitgebreide functies, zodat duizenden horeca-ondernemers
-              en consumenten onmiddellijk jouw zoekertjes in de gids zien. Ben je een verkoper van diensten? Maak je dan
-              lid voor <strong>€99 per jaar</strong> — jouw zaak wordt dan gezien door duizenden potentiële klanten.
+              een vraag stellen via de chat. Wil je zoekertjes of jobadvertenties plaatsen? Dan betaal je{' '}
+              <strong>€{GIDS_HORECA_YEARLY_EUR} per jaar</strong> (premium horeca). Ben je verkoper onder{' '}
+              <strong>Diensten</strong>? Registreer je profiel voor <strong>€{GIDS_DIENSTEN_YEARLY_EUR} per jaar</strong>{' '}
+              — zichtbaar voor duizenden potentiële klanten.
             </p>
           </div>
           <div className="vysiongids-zaak-intro-promo">

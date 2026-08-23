@@ -136,9 +136,8 @@ export default function GidsPremiumPaywallModal({ open, onClose, listingName }: 
             Vysiongids-lidmaatschap
           </h2>
           <p className="vysiongids-premium-modal-text">
-            U kunt alleen <strong>vacatures</strong> en <strong>zoekertjes</strong> plaatsen als u betalend lid bent van
-            de Vysiongids. Dit kost <strong>€{GIDS_PREMIUM_YEARLY_EUR} per jaar</strong> — dan geniet u van alle
-            premiumvoordelen van de gids.
+            Je <strong>zaakkaart</strong> staat gratis in de gids. Alleen <strong>vacatures</strong> en{' '}
+            <strong>zoekertjes</strong> vereisen premium: <strong>€{GIDS_PREMIUM_YEARLY_EUR} per jaar</strong> (Stripe).
           </p>
 
           {needsLogin ? (

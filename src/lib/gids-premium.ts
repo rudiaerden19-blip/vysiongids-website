@@ -1,7 +1,7 @@
-/** Vysiongids premium — vacatures & zoekertjes (en andere voordelen). */
+/** Vysiongids premium — vacatures & zoekertjes (horeca). */
 export const GIDS_HORECA_YEARLY_EUR = 49
-/** Stripe/default bedrag (centen) — kan via env afwijken. */
-export const GIDS_PREMIUM_YEARLY_EUR = 50
+/** Stripe/UI — zelfde bedrag als {@link GIDS_HORECA_YEARLY_EUR}. */
+export const GIDS_PREMIUM_YEARLY_EUR = GIDS_HORECA_YEARLY_EUR
 export const GIDS_PREMIUM_TERM_DAYS = 365
 
 export const GIDS_PREMIUM_CONTACT_EMAIL = 'contact@webvysion.tech'
@@ -38,11 +38,11 @@ export function addPremiumTermDays(from: Date, days = GIDS_PREMIUM_TERM_DAYS): D
 }
 
 export function gidsPremiumSubscribeMailtoHref(listingName?: string): string {
-  const subject = encodeURIComponent('Vysiongids Premium lidmaatschap (€50/jaar)')
+  const subject = encodeURIComponent(`Vysiongids Premium lidmaatschap (€${GIDS_PREMIUM_YEARLY_EUR}/jaar)`)
   const body = encodeURIComponent(
     listingName
-      ? `Ik wil betalend lid worden van Vysiongids voor ${listingName}.\n\nGraag info over betaling en activatie.`
-      : 'Ik wil betalend lid worden van Vysiongids (€50/jaar).\n\nGraag info over betaling en activatie.',
+      ? `Ik wil premium worden voor zoekertjes/vacatures (${listingName}, €${GIDS_PREMIUM_YEARLY_EUR}/jaar).\n\nGraag info over betaling en activatie.`
+      : `Ik wil premium worden voor zoekertjes/vacatures (€${GIDS_PREMIUM_YEARLY_EUR}/jaar).\n\nGraag info over betaling en activatie.`,
   )
   return `mailto:${GIDS_PREMIUM_CONTACT_EMAIL}?subject=${subject}&body=${body}`
 }

@@ -15,6 +15,7 @@ import { GIDS_ZOEKERTJES_SETUP_SQL_HINT } from '@/lib/gids-zoekertjes-db-errors'
 import { fetchGidsZoekertjeDetailClient } from '@/lib/fetch-gids-zoekertje-detail-client'
 import type { GidsZoekertje } from '@/lib/gids-zoekertjes-types'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
+import { GIDS_HORECA_YEARLY_EUR } from '@/lib/gids-premium'
 
 const ALL_PROVINCES = 'all'
 
@@ -99,9 +100,9 @@ export default function ZoekertjesPageClient({
         <h1 className="vysiongids-jobs-page-title">Zoekertjes</h1>
 
         <p className="vysiongids-zoekertjes-intro-lead">
-          Welkom op het zoekertjesplatform van Vysiongids. Wil je iets verkopen, ruilen, huren of dergelijke? Maak dan
-          een zoekertje aan in je eigen dashboard. Let op: om een jobadvertentie of een zoekertje te plaatsen moet je lid
-          zijn van Vysiongids.
+          Welkom op het zoekertjesplatform van Vysiongids. Zoekertjes komen van horeca-leden met premium (
+          <strong>€{GIDS_HORECA_YEARLY_EUR}/jaar</strong>). Plaats je eigen zoekertje via je dashboard na registratie
+          en premium in beheer.
         </p>
 
         <div className="vysiongids-zoekertje-beheer-warn vysiongids-zoekertjes-intro-warn" role="note">

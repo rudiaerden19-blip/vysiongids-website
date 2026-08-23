@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { revalidatePath, revalidateTag } from 'next/cache'
 import { getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
 import { fetchListingRowByIdAdmin } from '@/lib/gids-listings-db'
+import { GIDS_HORECA_YEARLY_EUR } from '@/lib/gids-premium'
 import { listingCanManageZoekertjesFromRow } from '@/lib/gids-zoekertjes-eligibility'
 import {
   createGidsZoekertjeAdmin,
@@ -57,7 +58,7 @@ async function requirePremiumListing() {
       error: NextResponse.json(
         {
           error:
-            'Zoekertjes plaatsen is enkel voor premium horeca-leden (€50/jaar), niet voor leveranciersprofielen.',
+            `Zoekertjes plaatsen is enkel voor premium horeca-leden (€${GIDS_HORECA_YEARLY_EUR}/jaar), niet voor leveranciersprofielen.`,
         },
         { status: 403 },
       ),
