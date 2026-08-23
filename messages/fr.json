@@ -656,7 +656,7 @@
     "successTitle": "Demande reçue",
     "successTitleDuplicate": "Demande déjà en cours",
     "successBody": "Merci ! Vous recevrez un e-mail de confirmation à l'adresse indiquée. Vysiongids vous contactera ensuite pour activer votre login (PIN), en général sous quelques jours ouvrables.",
-    "successBodyDuplicate": "Votre demande est déjà enregistrée. Vous recevrez à nouveau un court e-mail de confirmation ; nous vous contactons toujours pour votre PIN.",
+    "successBodyDuplicate": "Votre demande est déjà enregistrée. Vous recevrez à nouveau un court e-mail de confirmation ; nous vous contactons toujours pour votre PIN."
   },
   "reviews": {
     "pageTitle": "Avis — {name}",
