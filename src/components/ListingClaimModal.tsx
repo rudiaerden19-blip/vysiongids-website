@@ -24,6 +24,7 @@ export default function ListingClaimModal({ listing, open, onClose }: Props) {
   const [loading, setLoading] = useState(false)
   const [done, setDone] = useState(false)
   const [duplicate, setDuplicate] = useState(false)
+  const [confirmationSent, setConfirmationSent] = useState(false)
 
   useEffect(() => {
     if (!open) return
@@ -45,6 +46,7 @@ export default function ListingClaimModal({ listing, open, onClose }: Props) {
       setLoading(false)
       setDone(false)
       setDuplicate(false)
+      setConfirmationSent(false)
       setAuthorized(false)
     }
   }, [open])
@@ -69,12 +71,18 @@ export default function ListingClaimModal({ listing, open, onClose }: Props) {
           authorized,
         }),
       })
-      const data = (await res.json()) as { error?: string; ok?: boolean; duplicate?: boolean }
+      const data = (await res.json()) as {
+        error?: string
+        ok?: boolean
+        duplicate?: boolean
+        confirmationSent?: boolean
+      }
       if (!res.ok) {
         setError(data.error ?? t('claim.submitFailed'))
         return
       }
       setDuplicate(Boolean(data.duplicate))
+      setConfirmationSent(Boolean(data.confirmationSent))
       setDone(true)
     } catch {
       setError(t('errors.networkRetry'))
@@ -113,7 +121,13 @@ export default function ListingClaimModal({ listing, open, onClose }: Props) {
               {duplicate ? t('claim.successTitleDuplicate') : t('claim.successTitle')}
             </h2>
             <p className="vysiongids-job-modal-text">
-              {duplicate ? t('claim.successBodyDuplicate') : t('claim.successBody')}
+              {duplicate
+                ? confirmationSent
+                  ? t('claim.successBodyDuplicate')
+                  : t('claim.successBodyDuplicateNoMail')
+                : confirmationSent
+                  ? t('claim.successBody')
+                  : t('claim.successBodyNoMail')}
             </p>
             <button type="button" className="vysiongids-platform-promo-modal-cta mt-4" onClick={onClose}>
               {t('common.close')}

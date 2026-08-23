@@ -160,13 +160,24 @@ export async function sendListingClaimApplicantConfirmationEmail(
   })
 }
 
-export async function sendListingClaimEmails(payload: ListingClaimMailPayload): Promise<void> {
-  await sendListingClaimNotificationEmail(payload)
+export async function sendListingClaimEmails(
+  payload: ListingClaimMailPayload,
+): Promise<{ staffOk: boolean; applicantOk: boolean }> {
+  let applicantOk = false
+  let staffOk = false
   try {
     await sendListingClaimApplicantConfirmationEmail(payload)
+    applicantOk = true
   } catch (err) {
     console.error('[gids claim mail applicant]', err)
   }
+  try {
+    await sendListingClaimNotificationEmail(payload)
+    staffOk = true
+  } catch (err) {
+    console.error('[gids claim mail staff]', err)
+  }
+  return { staffOk, applicantOk }
 }
 
 function escapeHtml(raw: string): string {

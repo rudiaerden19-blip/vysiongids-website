@@ -93,25 +93,25 @@ export async function POST(req: Request) {
     .eq('status', 'pending')
     .maybeSingle()
 
+  const mailPayload = {
+    listingName: listing.name,
+    listingSlug: listing.slug,
+    listingCity: listing.city ?? '',
+    contactName,
+    contactEmail,
+    contactPhone,
+    btwNumber,
+    message,
+  }
+
   if (pendingDup) {
-    if (isGidsMailConfigured()) {
-      try {
-        await sendListingClaimEmails({
-          listingName: listing.name,
-          listingSlug: listing.slug,
-          listingCity: listing.city ?? '',
-          contactName,
-          contactEmail,
-          contactPhone,
-          btwNumber,
-          message,
-          resubmit: true,
-        })
-      } catch (mailErr) {
-        console.error('[gids claim mail duplicate]', mailErr)
-      }
+    const mailConfigured = isGidsMailConfigured()
+    let confirmationSent = false
+    if (mailConfigured) {
+      const sent = await sendListingClaimEmails({ ...mailPayload, resubmit: true })
+      confirmationSent = sent.applicantOk
     }
-    return NextResponse.json({ ok: true, duplicate: true })
+    return NextResponse.json({ ok: true, duplicate: true, mailConfigured, confirmationSent })
   }
 
   const { data: insertedRow, error: insertErr } = await admin
@@ -138,27 +138,24 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Aanvraag kon niet worden opgeslagen. Probeer later opnieuw.' }, { status: 500 })
   }
 
-  if (isGidsMailConfigured()) {
-    try {
-      await sendListingClaimEmails({
-        listingName: listing.name,
-        listingSlug: listing.slug,
-        listingCity: listing.city ?? '',
-        contactName,
-        contactEmail,
-        contactPhone,
-        btwNumber,
-        message,
-      })
-    } catch (mailErr) {
-      console.error('[gids claim mail]', mailErr)
+  const mailConfigured = isGidsMailConfigured()
+  let confirmationSent = false
+
+  if (mailConfigured) {
+    const sent = await sendListingClaimEmails(mailPayload)
+    confirmationSent = sent.applicantOk
+    if (!sent.staffOk && !sent.applicantOk) {
       await admin.from('gids_listing_claim_requests').delete().eq('id', insertedRow.id)
       return NextResponse.json(
         {
-          error: 'Verzenden mislukt. Probeer later opnieuw of mail rechtstreeks naar info@vysionhoreca.com.',
+          error:
+            'E-mail kon niet verstuurd worden (controleer Zoho op Vercel). Mail info@vysionhoreca.com met je gegevens.',
         },
         { status: 503 },
       )
+    }
+    if (!sent.staffOk) {
+      console.warn('[gids claim] staff notification failed; applicant mail ok=', sent.applicantOk)
     }
   } else {
     console.warn(
@@ -166,5 +163,10 @@ export async function POST(req: Request) {
     )
   }
 
-  return NextResponse.json({ ok: true, listingName: listing.name })
+  return NextResponse.json({
+    ok: true,
+    listingName: listing.name,
+    mailConfigured,
+    confirmationSent,
+  })
 }

@@ -656,7 +656,9 @@
     "successTitle": "Demande reçue",
     "successTitleDuplicate": "Demande déjà en cours",
     "successBody": "Merci ! Vous recevrez un e-mail de confirmation à l'adresse indiquée. Vysiongids vous contactera ensuite pour activer votre login (PIN), en général sous quelques jours ouvrables.",
-    "successBodyDuplicate": "Votre demande est déjà enregistrée. Vous recevrez à nouveau un court e-mail de confirmation ; nous vous contactons toujours pour votre PIN."
+    "successBodyNoMail": "Merci ! Votre demande est enregistrée. Envoi d'e-mail impossible — contactez info@vysionhoreca.com avec le nom de votre établissement.",
+    "successBodyDuplicate": "Votre demande est déjà en cours. Vous recevrez à nouveau un court e-mail de confirmation à l'adresse indiquée.",
+    "successBodyDuplicateNoMail": "Votre demande est déjà en cours. Impossible d'envoyer l'e-mail (SMTP). Écrivez à info@vysionhoreca.com — nous avons déjà vos coordonnées."
   },
   "reviews": {
     "pageTitle": "Avis — {name}",

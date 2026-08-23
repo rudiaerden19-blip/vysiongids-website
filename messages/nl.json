@@ -614,7 +614,9 @@
     "successTitle": "Aanvraag ontvangen",
     "successTitleDuplicate": "Aanvraag staat al open",
     "successBody": "Bedankt! Je krijgt een bevestigingsmail op het adres dat je invulde. Vysiongids neemt daarna contact op om je login (PIN) te activeren — meestal binnen enkele werkdagen.",
-    "successBodyDuplicate": "Je aanvraag staat al in ons systeem. Je krijgt opnieuw een korte bevestigingsmail; we nemen nog steeds contact op voor je PIN."
+    "successBodyNoMail": "Bedankt! Je aanvraag staat in ons systeem. We konden geen automatische mail sturen — mail of bel info@vysionhoreca.com (0492/129383) met je zaaknaam en telefoonnummer.",
+    "successBodyDuplicate": "Je aanvraag staat al open. Je krijgt opnieuw een korte bevestigingsmail op het ingevulde adres.",
+    "successBodyDuplicateNoMail": "Je aanvraag staat al open. Er kon geen bevestigingsmail verstuurd worden (Zoho/SMTP). Mail info@vysionhoreca.com met je zaaknaam — we hebben je gegevens al in het systeem."
   },
   "reviews": {
     "pageTitle": "Reviews — {name}",

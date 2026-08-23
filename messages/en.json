@@ -614,7 +614,9 @@
     "successTitle": "Request received",
     "successTitleDuplicate": "Request already pending",
     "successBody": "Thank you! You will receive a confirmation email at the address you entered. Vysiongids will then contact you to activate your login (PIN), usually within a few business days.",
-    "successBodyDuplicate": "Your request is already in our system. You will receive another short confirmation email; we will still contact you about your PIN."
+    "successBodyNoMail": "Thank you! Your request is saved. We could not send email automatically — please email or call info@vysionhoreca.com with your business name and phone number.",
+    "successBodyDuplicate": "Your request is already open. You will receive another short confirmation email at the address you entered.",
+    "successBodyDuplicateNoMail": "Your request is already open. We could not send a confirmation email (SMTP). Email info@vysionhoreca.com with your business name — we already have your details."
   },
   "reviews": {
     "pageTitle": "Reviews — {name}",
