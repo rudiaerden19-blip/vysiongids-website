@@ -31,7 +31,7 @@ export default function HomeStatsBar({ zoekactiesPerDag }: HomeStatsBarProps) {
 
   return (
     <section className="vysiongids-home-stats" aria-label="Platformcijfers">
-      <h2 className="vysiongids-home-stats-title">1300+ klanten gebruiken dagelijks vysiongids</h2>
+      <h2 className="vysiongids-home-stats-title">13000+ klanten gebruiken dagelijks vysiongids</h2>
       <div className="vysiongids-home-stats-inner">
         <Stat display={formatStatNumber(bezoekers)} label="Bezoekers vandaag" />
         <Stat display="0%" label="0% commissie" />
