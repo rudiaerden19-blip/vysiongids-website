@@ -350,21 +350,6 @@ export default function BeheerDienstenEditForm({ listing, onSaved }: Props) {
         </div>
 
         <div>
-          <label className="vysiongids-form-label" htmlFor="bd-pin">
-            Nieuwe PIN (optioneel, 6 cijfers)
-          </label>
-          <input
-            id="bd-pin"
-            name="pin"
-            inputMode="numeric"
-            pattern="[0-9]{6}"
-            maxLength={6}
-            disabled={busy}
-            className="vysiongids-form-input mt-1 tracking-widest"
-          />
-        </div>
-
-        <div>
           <p className="vysiongids-form-label">Foto&apos;s (minstens 1)</p>
           <p className="mt-0.5 text-xs text-gray-500">Tot {GIDS_DIENSTEN_MAX_PHOTOS} reclamefoto&apos;s.</p>
           <div className="mt-2 flex flex-wrap gap-3">
