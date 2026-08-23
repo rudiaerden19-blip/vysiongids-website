@@ -5,7 +5,7 @@ import { activateGidsDienstenMembershipByIdAdmin } from '@/lib/gids-diensten-db'
 import { resolveDienstenListingActive } from '@/lib/gids-diensten-membership'
 import { LISTING_SEGMENT_DIENSTEN } from '@/lib/listing-segment'
 import type { ListingSegment } from '@/lib/listing-segment'
-import { fetchLatestClaimEmailByListingIds } from '@/lib/gids-staff-claim-email'
+import { fetchLatestClaimEmailByListingIds, fetchApprovedClaimListingIds } from '@/lib/gids-staff-claim-email'
 import { staffListingIsClaimedByClaim } from '@/lib/listing-claimable'
 
 export type GidsStaffListingRow = {
@@ -28,6 +28,8 @@ export type GidsStaffListingRow = {
   dienstenActive: boolean
   created_at: string
   claimed_at: string | null
+  /** Goedgekeurde claim in DB (ook als claimed_at per ongeluk leeg is). */
+  claim_approved?: boolean
   /** Nieuwste e-mail uit claim-aanvraag (fallback voor staff-lijst). */
   claim_contact_email?: string | null
 }
@@ -76,7 +78,8 @@ function mapStaffListingRow(row: Record<string, unknown>): GidsStaffListingRow {
 }
 
 export function staffListingIsClaimed(row: GidsStaffListingRow): boolean {
-  return staffListingIsClaimedByClaim(row.claimed_at)
+  if (staffListingIsClaimedByClaim(row.claimed_at)) return true
+  return row.claim_approved === true
 }
 
 export function staffListingIsDiensten(row: GidsStaffListingRow): boolean {
@@ -160,16 +163,20 @@ export async function fetchGidsListingsForStaffAdminPaginated(opts: {
   }
 
   const rawRows = (data ?? []) as Record<string, unknown>[]
-  const claimEmails = await fetchLatestClaimEmailByListingIds(
-    admin,
-    rawRows.map((r) => r.id as string),
-  )
+  const ids = rawRows.map((r) => r.id as string)
+  const [claimEmails, approvedClaimIds] = await Promise.all([
+    fetchLatestClaimEmailByListingIds(admin, ids),
+    fetchApprovedClaimListingIds(admin, ids),
+  ])
 
   return {
     rows: rawRows.map((row) => {
       const mapped = mapStaffListingRow(row)
       const claimEmail = claimEmails.get(mapped.id)
-      return claimEmail ? { ...mapped, claim_contact_email: claimEmail } : mapped
+      const withEmail = claimEmail ? { ...mapped, claim_contact_email: claimEmail } : mapped
+      return approvedClaimIds.has(mapped.id)
+        ? { ...withEmail, claim_approved: true }
+        : withEmail
     }),
     total: count ?? 0,
   }

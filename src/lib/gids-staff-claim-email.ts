@@ -41,3 +41,33 @@ export function staffListingDisplayEmail(row: {
   const fromClaim = row.claim_contact_email?.trim()
   return fromClaim || null
 }
+
+/** Listing_ids met minstens één goedgekeurde claim (staff groene rij). */
+export async function fetchApprovedClaimListingIds(
+  admin: SupabaseClient,
+  listingIds: string[],
+): Promise<Set<string>> {
+  const out = new Set<string>()
+  const unique = [...new Set(listingIds.filter(Boolean))]
+  if (unique.length === 0) return out
+
+  const chunkSize = 100
+  for (let i = 0; i < unique.length; i += chunkSize) {
+    const chunk = unique.slice(i, i + chunkSize)
+    const { data, error } = await admin
+      .from('gids_listing_claim_requests')
+      .select('listing_id')
+      .in('listing_id', chunk)
+      .eq('status', 'approved')
+
+    if (error) {
+      console.error('[gids-staff] approved claims:', error.message)
+      continue
+    }
+    for (const row of data ?? []) {
+      const lid = row.listing_id as string
+      if (lid) out.add(lid)
+    }
+  }
+  return out
+}

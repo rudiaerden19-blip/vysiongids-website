@@ -1,5 +1,5 @@
--- Alles wat ten onrechte claimed_at had (oude zaak-toevoegen bug): terug naar NULL.
--- Claim-knop terug; staff-lijst wit tot klant claimt (claimed_at + groene rij).
+-- ⚠️ Alleen gebruiken om foutieve claimed_at van oude zaak-toevoegen-bug te wissen.
+-- Gebruik daarna RESTORE_CLAIMED_AT_ACTIVATED.sql voor zaken die wél geclaimd zijn (Nolim, …).
 
 update public.gids_listings
 set claimed_at = null
