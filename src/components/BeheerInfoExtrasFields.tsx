@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useEffect, useRef, useState, type SyntheticEvent } from 'react'
 import type { Listing } from '@/lib/listing-types'
 import { HIRING_JOB_TYPES } from '@/lib/listing-hiring'
@@ -119,6 +120,7 @@ type Props = {
 }
 
 export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
+  const { t } = useLanguage()
   const extras = listing?.infoExtras
   const specialties = extras?.specialties ?? []
   const [removeSpecialty, setRemoveSpecialty] = useState<[boolean, boolean, boolean]>([false, false, false])
@@ -134,14 +136,14 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
 
   return (
     <fieldset className="vysiongids-owner-options mt-8 border-t border-gray-200 pt-8">
-      <legend className="vysiongids-form-label text-lg font-bold text-gray-900">Extra INFO op je zaakpagina</legend>
+      <legend className="vysiongids-form-label text-lg font-bold text-gray-900">{t('beheer.infoExtras.legend')}</legend>
       <p className="mt-1 text-sm text-gray-500">
-        Klanten zien dit als ze op <strong>Info</strong> tikken (ook op de zoekkaart). Alles optioneel.
+        Klanten zien dit als ze op <strong>{t('common.info')}</strong> tikken (ook op de zoekkaart). Alles optioneel.
       </p>
 
       <div className="mt-6">
-        <h3 className="text-base font-semibold text-gray-900">Onze specialiteiten</h3>
-        <p className="text-xs text-gray-500">Max. 3 gerechten met foto en korte tekst.</p>
+        <h3 className="text-base font-semibold text-gray-900">{t('beheer.infoExtras.specialtiesTitle')}</h3>
+        <p className="text-xs text-gray-500">{t('beheer.infoExtras.specialtiesHint')}</p>
         <div className="mt-3 grid gap-4 sm:grid-cols-3">
           {[0, 1, 2].map((i) => (
             <div key={i} className="vysiongids-surface-card rounded-xl p-3">
@@ -155,7 +157,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
                 defaultValue={specialties[i]?.caption ?? ''}
                 disabled={disabled}
                 className="vysiongids-form-input mt-1 text-sm"
-                placeholder="Bv. Onze heerlijke friet kebab"
+                placeholder={t('beheer.infoExtras.specialtyCaptionPlaceholder')}
               />
               <SpecialtyPhotoField
                 index={i}
@@ -180,14 +182,14 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
         id="vacature-beheer"
         onClickCapture={hiringLocked ? guardPremium : undefined}
       >
-        <h3 className="text-base font-semibold text-gray-900">Wij zoeken personeel</h3>
+        <h3 className="text-base font-semibold text-gray-900">{t('beheer.infoExtras.hiringTitle')}</h3>
         <p className="text-xs text-gray-500">
           De blauwe balk onderaan elke zoekkaart is altijd zichtbaar. Vul hier je vacature in om «Soliciteren» te tonen.
         </p>
         {hiringLocked ? (
           <p className="mt-2 rounded-lg border border-sky-200 bg-sky-50 px-3 py-2 text-sm text-gray-800">
             Vacatures zijn enkel voor betalende Vysiongids-leden. Gebruik bovenaan{' '}
-            <strong>Vacature plaatsen</strong> om premium aan te vragen.
+            <strong>{t('beheer.quickNav.postVacancy')}</strong> om premium aan te vragen.
           </p>
         ) : null}
         <label className="mt-2 flex items-center gap-2 text-sm">
@@ -199,7 +201,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
           />
           Vacature actief (zoekkaart + INFO)
         </label>
-        <p className="mt-3 text-sm font-medium text-gray-800">Type contract / functie</p>
+        <p className="mt-3 text-sm font-medium text-gray-800">{t('beheer.infoExtras.hiringTypeLabel')}</p>
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2">
           {HIRING_JOB_TYPES.map((type) => (
             <label key={type.id} className="flex items-center gap-2 text-sm">
@@ -223,7 +225,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
           defaultValue={extras?.hiring?.title ?? ''}
           disabled={disabled || hiringLocked}
           className="vysiongids-form-input mt-1 w-full max-w-md text-sm"
-          placeholder="Bv. Kok gevraagd"
+          placeholder={t('beheer.infoExtras.hiringTitlePlaceholder')}
         />
         <label className="vysiongids-form-label mt-3 text-sm" htmlFor="infoHiringText">
           Omschrijving
@@ -235,7 +237,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
           defaultValue={extras?.hiring?.text ?? ''}
           disabled={disabled || hiringLocked}
           className="vysiongids-form-input mt-1 w-full text-sm"
-          placeholder="Bv. Wij zoeken dringend een keukenhulp voor doordeweeks en weekend."
+          placeholder={t('beheer.infoExtras.hiringTextPlaceholder')}
         />
         <label className="vysiongids-form-label mt-3 text-sm" htmlFor="infoHiringHours">
           Uren
@@ -247,7 +249,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
           defaultValue={extras?.hiring?.hours ?? ''}
           disabled={disabled || hiringLocked}
           className="vysiongids-form-input mt-1 w-full max-w-xl text-sm"
-          placeholder="Bv. Ma–vr 17u–22u, za–zo 11u–23u"
+          placeholder={t('beheer.infoExtras.hiringHoursPlaceholder')}
         />
         <div className="mt-3 grid gap-3 sm:grid-cols-2 sm:max-w-2xl">
           <div>
@@ -261,7 +263,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
               defaultValue={extras?.hiring?.email ?? ''}
               disabled={disabled || hiringLocked}
               className="vysiongids-form-input mt-1 w-full text-sm"
-              placeholder="jobs@jouwzaak.be"
+              placeholder={t('beheer.infoExtras.hiringEmailPlaceholder')}
             />
           </div>
           <div>
@@ -275,14 +277,14 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
               defaultValue={extras?.hiring?.phone ?? ''}
               disabled={disabled || hiringLocked}
               className="vysiongids-form-input mt-1 w-full text-sm"
-              placeholder="0492 12 34 56"
+              placeholder={t('beheer.infoExtras.hiringPhonePlaceholder')}
             />
           </div>
         </div>
       </div>
 
       <div className="mt-8">
-        <h3 className="text-base font-semibold text-gray-900">Cadeaubon</h3>
+        <h3 className="text-base font-semibold text-gray-900">{t('beheer.infoExtras.giftTitle')}</h3>
         <label className="mt-2 flex items-center gap-2 text-sm">
           <input type="checkbox" name="infoGiftEnabled" defaultChecked={extras?.giftCard?.enabled} disabled={disabled} />
           Cadeaubon-sectie tonen
@@ -293,7 +295,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
           defaultValue={extras?.giftCard?.intro ?? ''}
           disabled={disabled}
           className="vysiongids-form-input mt-2 w-full text-sm"
-          placeholder="Bestel een cadeaubon en verras iemand met een heerlijke maaltijd."
+          placeholder={t('beheer.infoExtras.giftIntroPlaceholder')}
         />
         <div className="mt-2 grid gap-3 sm:grid-cols-2">
           <div>
@@ -307,7 +309,7 @@ export default function BeheerInfoExtrasFields({ listing, disabled }: Props) {
               defaultValue={extras?.giftCard?.orderUrl ?? ''}
               disabled={disabled}
               className="vysiongids-form-input mt-1 text-sm"
-              placeholder="https://…"
+              placeholder={t('beheer.infoExtras.giftUrlPlaceholder')}
             />
           </div>
           <div>

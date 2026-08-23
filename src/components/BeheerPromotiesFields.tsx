@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useEffect, useRef, useState } from 'react'
 import type { Listing } from '@/lib/listing-types'
 import SentenceCaseTextarea from '@/components/SentenceCaseTextarea'
@@ -114,12 +115,13 @@ type Props = {
 }
 
 export default function BeheerPromotiesFields({ listing, disabled }: Props) {
+  const { t } = useLanguage()
   const promo = listing?.infoExtras?.promotion
   const [removePhoto, setRemovePhoto] = useState(false)
 
   return (
     <section className="vysiongids-beheer-promo-card vysiongids-surface-card mt-8 rounded-xl bg-sky-50/80 p-5">
-      <h3 className="text-lg font-bold text-gray-900">Promoties</h3>
+      <h3 className="text-lg font-bold text-gray-900">{t('beheer.promoties.title')}</h3>
       <p className="mt-2 text-sm leading-relaxed text-gray-600">
         Zet een actie op je zaakpagina (INFO): bv. «1 menu kopen, 1 cola gratis». Voeg een korte tekst en optioneel een
         foto toe.
@@ -139,11 +141,11 @@ export default function BeheerPromotiesFields({ listing, disabled }: Props) {
         defaultValue={promo?.text ?? ''}
         disabled={disabled}
         className="vysiongids-form-input mt-1 w-full max-w-2xl text-sm"
-        placeholder="Bv. 1 menu kopen, 1 cola gratis — geldig t.e.m. einde maand."
+        placeholder={t('beheer.promoties.textPlaceholder')}
       />
       <div className="mt-5">
-        <p className="vysiongids-form-label text-sm">Promotieprijzen (optioneel, max. 3)</p>
-        <p className="mt-0.5 text-xs text-gray-500">Bv. productnaam en actieprijs — zichtbaar in de promotie-popup en op INFO.</p>
+        <p className="vysiongids-form-label text-sm">{t('beheer.promoties.offersTitle')}</p>
+        <p className="mt-0.5 text-xs text-gray-500">{t('beheer.promoties.offersHint')}</p>
         <ul className="vysiongids-beheer-promo-offers mt-3 space-y-3">
           {Array.from({ length: MAX_PROMOTION_OFFER_ROWS }, (_, i) => {
             const row = promo?.offers?.[i]
@@ -164,7 +166,7 @@ export default function BeheerPromotiesFields({ listing, disabled }: Props) {
                     defaultValue={row?.label ?? ''}
                     disabled={disabled}
                     className="vysiongids-form-input mt-1 w-full text-sm"
-                    placeholder="Bv. Sito"
+                    placeholder={t('beheer.promoties.offerNamePlaceholder')}
                   />
                 </div>
                 <div className="vysiongids-beheer-promo-offer-field vysiongids-beheer-promo-offer-field--price">
