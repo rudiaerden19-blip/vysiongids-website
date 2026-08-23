@@ -509,7 +509,18 @@
     "infoOpeningHours": "OPENING HOURS",
     "infoSection": "INFO",
     "closedForHoliday": "Closed for holiday:",
+    "annualLeaveRange": "{from} to {to}",
     "contactComingSoon": "Contact details coming soon.",
+    "navGoogleMaps": "Google Maps",
+    "navWazeDrive": "Drive with Waze",
+    "mapAddressHeading": "Address",
+    "mapSectionAria": "Location on map",
+    "mapSatelliteTitle": "Satellite map: {street}, {cityLine}",
+    "qrAria": "QR code to {name} on Vysiongids",
+    "info": {
+      "openNowLive": "open now",
+      "closedNowLive": "closed now"
+    },
     "infoExtras": {
       "kitchenKicker": "OUR KITCHEN",
       "specialtiesTitle": "Our specialties",
@@ -526,7 +537,9 @@
       "giftValueLabel": "Value",
       "promoKicker": "PROMO",
       "promoTitle": "Our promotion",
-      "promoModalKicker": "Promotions"
+      "promoModalKicker": "Promotions",
+      "giftOrderButton": "Order gift voucher",
+      "applicationSubject": "Job application — {name}"
     },
     "panel": {
       "openNow": "Open now",
@@ -593,7 +606,10 @@
     "bodyLabel": "Your experience",
     "bodyPlaceholder": "Briefly say what you liked or not…",
     "submit": "Post review",
-    "success": "Thank you! Your review for {listingName} is live."
+    "success": "Thank you! Your review for {listingName} is live.",
+    "emptyBeFirst": "No reviews yet. Be the first!",
+    "guestName": "Guest",
+    "starsAria": "{rating} out of 5 stars"
   },
   "modals": {
     "about": {

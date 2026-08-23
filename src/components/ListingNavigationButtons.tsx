@@ -1,3 +1,6 @@
+'use client'
+
+import { useLanguage } from '@/i18n/LanguageProvider'
 import type { Listing } from '@/lib/listing-types'
 import { listingGoogleMapsUrl, listingWazeUrl } from '@/lib/gids-listing-navigation'
 
@@ -10,6 +13,7 @@ type NavProps = {
 }
 
 export default function ListingNavigationButtons({ listing, compact, mapPin }: NavProps) {
+  const { t } = useLanguage()
   const google = listingGoogleMapsUrl(listing)
   const waze = listingWazeUrl(listing, mapPin)
   const stack = compact ? 'flex flex-col gap-2' : 'flex flex-col gap-2 sm:flex-row sm:flex-wrap'
@@ -19,7 +23,7 @@ export default function ListingNavigationButtons({ listing, compact, mapPin }: N
   return (
     <div className={stack}>
       <a href={google} target="_blank" rel="noopener noreferrer" className={btn}>
-        Google Maps
+        {t('listing.navGoogleMaps')}
       </a>
       <a
         href={waze}
@@ -27,7 +31,7 @@ export default function ListingNavigationButtons({ listing, compact, mapPin }: N
         rel="noopener noreferrer"
         className="inline-flex items-center justify-center rounded-lg bg-[#33ccff] px-4 py-2.5 text-sm font-bold text-[#0d1621] transition hover:brightness-95"
       >
-        Rij met Waze
+        {t('listing.navWazeDrive')}
       </a>
     </div>
   )

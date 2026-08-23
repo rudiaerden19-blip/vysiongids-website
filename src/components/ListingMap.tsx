@@ -1,3 +1,6 @@
+'use client'
+
+import { useLanguage } from '@/i18n/LanguageProvider'
 import type { Listing } from '@/lib/listing-types'
 import { formatListingAddressLines } from '@/lib/listing-display'
 import { listingGoogleSatelliteEmbedUrl } from '@/lib/gids-listing-navigation'
@@ -10,26 +13,26 @@ export type ListingMapProps = {
 }
 
 export default function ListingMap({ listing, mapPin }: ListingMapProps) {
+  const { t } = useLanguage()
   const { street, cityLine } = formatListingAddressLines(listing)
   const embedSrc = listingGoogleSatelliteEmbedUrl(listing)
 
   return (
-    <section className="vysiongids-zaak-map-panel vysiongids-zaak-panel mt-8 bg-white p-4 sm:p-5" aria-label="Locatie op de kaart">
-      <h2 className="text-lg font-bold text-gray-900">Adres</h2>
+    <section
+      className="vysiongids-zaak-map-panel vysiongids-zaak-panel mt-8 bg-white p-4 sm:p-5"
+      aria-label={t('listing.mapSectionAria')}
+    >
+      <h2 className="text-lg font-bold text-gray-900">{t('listing.mapAddressHeading')}</h2>
       <div className="vysiongids-listing-map relative mt-3 overflow-hidden rounded-xl border border-gray-200 shadow-sm">
         <iframe
-          title={`Satellietkaart: ${street}, ${cityLine}`}
+          title={t('listing.mapSatelliteTitle', { street, cityLine })}
           src={embedSrc}
           className="vysiongids-listing-map-iframe block h-[min(420px,55vh)] w-full border-0"
           loading="lazy"
           referrerPolicy="no-referrer-when-downgrade"
           tabIndex={-1}
         />
-        <div
-          className="vysiongids-listing-map-shield"
-          aria-hidden
-          title=""
-        />
+        <div className="vysiongids-listing-map-shield" aria-hidden title="" />
       </div>
       <p className="mt-2 text-sm text-gray-600">
         {street}, {cityLine}

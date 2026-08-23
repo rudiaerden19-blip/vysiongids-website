@@ -67,7 +67,7 @@ export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: 
   if (done) {
     return (
       <p className="rounded-lg border border-green-200 bg-green-50 px-4 py-3 text-sm text-green-900" role="status">
-        Bedankt! Je review voor {listingName} staat online.
+        {t('reviews.success', { listingName })}
       </p>
     )
   }
@@ -76,7 +76,7 @@ export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: 
     <form id="schrijven" onSubmit={onSubmit} className="vysiongids-review-form space-y-4">
       <fieldset>
         <legend className="vysiongids-form-label">
-          Jouw score
+          {t('reviews.formLegend')}
           <span className="vysiongids-form-required" aria-hidden>
             *
           </span>
@@ -88,7 +88,7 @@ export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: 
               key={n}
               type="button"
               className={`vysiongids-review-star-btn ${rating != null && rating >= n ? 'is-active' : ''}`}
-              aria-label={`${n} sterren`}
+              aria-label={t('reviews.starAria', { n })}
               aria-pressed={rating != null && rating >= n}
               onClick={() => setRating(n)}
             >
@@ -105,7 +105,7 @@ export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: 
 
       <div>
         <label className="vysiongids-form-label" htmlFor="reviewerName">
-          Naam (optioneel)
+          {t('reviews.nameLabel')}
         </label>
         <TitleCaseTextInput
           id="reviewerName"
@@ -118,7 +118,7 @@ export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: 
 
       <div>
         <label className="vysiongids-form-label" htmlFor="reviewBody">
-          Jouw ervaring
+          {t('reviews.bodyLabel')}
           <span className="vysiongids-form-required" aria-hidden>
             *
           </span>

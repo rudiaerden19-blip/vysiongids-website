@@ -551,7 +551,18 @@
     "infoOpeningHours": "HORAIRES",
     "infoSection": "INFO",
     "closedForHoliday": "Fermé pour congé :",
+    "annualLeaveRange": "{from} au {to}",
     "contactComingSoon": "Les coordonnées suivront bientôt.",
+    "navGoogleMaps": "Google Maps",
+    "navWazeDrive": "Itinéraire Waze",
+    "mapAddressHeading": "Adresse",
+    "mapSectionAria": "Emplacement sur la carte",
+    "mapSatelliteTitle": "Vue satellite : {street}, {cityLine}",
+    "qrAria": "Code QR vers {name} sur Vysiongids",
+    "info": {
+      "openNowLive": "ouvert en ce moment",
+      "closedNowLive": "fermé en ce moment"
+    },
     "infoExtras": {
       "kitchenKicker": "NOTRE CUISINE",
       "specialtiesTitle": "Nos spécialités",
@@ -568,7 +579,9 @@
       "giftValueLabel": "Valeur",
       "promoKicker": "PROMO",
       "promoTitle": "Notre promotion",
-      "promoModalKicker": "Promotions"
+      "promoModalKicker": "Promotions",
+      "giftOrderButton": "Commander un chèque-cadeau",
+      "applicationSubject": "Candidature — {name}"
     },
     "panel": {
       "openNow": "Ouvert maintenant",
@@ -635,7 +648,10 @@
     "bodyLabel": "Votre expérience",
     "bodyPlaceholder": "Dites brièvement ce que vous avez aimé ou moins…",
     "submit": "Publier un avis",
-    "success": "Merci ! Votre avis pour {listingName} est en ligne."
+    "success": "Merci ! Votre avis pour {listingName} est en ligne.",
+    "emptyBeFirst": "Pas encore d'avis. Soyez le premier !",
+    "guestName": "Invité",
+    "starsAria": "{rating} sur 5 étoiles"
   },
   "modals": {
     "about": {

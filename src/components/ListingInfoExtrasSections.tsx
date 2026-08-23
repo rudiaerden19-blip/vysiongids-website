@@ -1,15 +1,19 @@
-import type { Listing } from '@/lib/listing-types'
+'use client'
+
+import { useLanguage } from '@/i18n/LanguageProvider'
+import ListingPromotionOffersList from '@/components/ListingPromotionOffersList'
 import { belgiumPhoneTelHref } from '@/lib/belgium-phone'
 import { listingHasInfoExtras } from '@/lib/listing-info-extras'
 import { listingPanelPromotionActive } from '@/lib/listing-panel-promotion'
-import ListingPromotionOffersList from '@/components/ListingPromotionOffersList'
 import { hiringJobTypeLabels } from '@/lib/listing-hiring'
+import type { Listing } from '@/lib/listing-types'
 
 type Props = {
   listing: Listing
 }
 
 export default function ListingInfoExtrasSections({ listing }: Props) {
+  const { t } = useLanguage()
   const extras = listing.infoExtras
   if (!listingHasInfoExtras(extras)) return null
 
@@ -23,12 +27,18 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
       ? `€${gift.valueEur.toFixed(0)}`
       : null
 
+  const hiringTitle =
+    hiring?.title?.trim() ||
+    (hiringTypeLabels.length
+      ? `${hiringTypeLabels.join(' · ')}${t('listing.infoExtras.hiringSoughtSuffix')}`
+      : t('listing.infoExtras.hiringDefaultTitle'))
+
   return (
     <div className="vysiongids-zaak-info-extras">
       {specialties.length > 0 ? (
         <section className="vysiongids-info-block vysiongids-info-block--specialties">
-          <p className="vysiongids-info-kicker">ONZE KEUKEN</p>
-          <h2 className="vysiongids-info-title">Onze specialiteiten</h2>
+          <p className="vysiongids-info-kicker">{t('listing.infoExtras.kitchenKicker')}</p>
+          <h2 className="vysiongids-info-title">{t('listing.infoExtras.specialtiesTitle')}</h2>
           <ul className="vysiongids-specialties-grid">
             {specialties.map((item, i) => (
               <li key={i} className="vysiongids-specialty-card">
@@ -49,32 +59,30 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
 
       {hiring ? (
         <section id="vacature" className="vysiongids-info-block vysiongids-info-block--hiring">
-          <p className="vysiongids-info-kicker">KOM BIJ ONS TEAM</p>
-          <h2 className="vysiongids-info-title">Wij zoeken personeel</h2>
+          <p className="vysiongids-info-kicker">{t('listing.infoExtras.hiringKicker')}</p>
+          <h2 className="vysiongids-info-title">{t('listing.infoExtras.hiringTitle')}</h2>
           <div className="vysiongids-hiring-card">
-            <h3 className="vysiongids-hiring-card-title">
-              {hiring.title?.trim() || (hiringTypeLabels.length ? `${hiringTypeLabels.join(' · ')} gezocht` : 'Vacature')}
-            </h3>
+            <h3 className="vysiongids-hiring-card-title">{hiringTitle}</h3>
             {hiringTypeLabels.length && hiring.title?.trim() ? (
               <p className="vysiongids-hiring-types">{hiringTypeLabels.join(' · ')}</p>
             ) : null}
             {hiring.text ? <p className="vysiongids-hiring-text">{hiring.text}</p> : null}
             {hiring.hours?.trim() ? (
               <p className="vysiongids-hiring-hours">
-                <strong>Uren: </strong>
+                <strong>{t('listing.infoExtras.hoursPrefix')} </strong>
                 {hiring.hours.trim()}
               </p>
             ) : null}
             {hiring.email || hiring.phone || listing.email || listing.phone ? (
               <div className="vysiongids-hiring-contact">
-                <span>Interesse? Neem contact op:</span>
+                <span>{t('listing.infoExtras.contactPrompt')}</span>
                 <div className="vysiongids-hiring-contact-btns">
                   {(hiring.email?.trim() || listing.email?.trim()) ? (
                     <a
-                      href={`mailto:${encodeURIComponent((hiring.email?.trim() || listing.email) ?? '')}?subject=${encodeURIComponent(`Sollicitatie — ${listing.name}`)}`}
+                      href={`mailto:${encodeURIComponent((hiring.email?.trim() || listing.email) ?? '')}?subject=${encodeURIComponent(t('listing.infoExtras.applicationSubject', { name: listing.name }))}`}
                       className="vysiongids-hiring-email"
                     >
-                      E-mail
+                      {t('listing.infoExtras.emailButton')}
                     </a>
                   ) : null}
                   {(hiring.phone?.trim() || listing.phone?.trim()) ? (
@@ -85,7 +93,7 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
                       }
                       className="vysiongids-hiring-phone"
                     >
-                      Telefoon
+                      {t('common.phone')}
                     </a>
                   ) : null}
                 </div>
@@ -97,20 +105,20 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
 
       {gift ? (
         <section className="vysiongids-info-block vysiongids-info-block--gift">
-          <p className="vysiongids-info-kicker">HET PERFECTE CADEAU</p>
-          <h2 className="vysiongids-info-title">Geef iemand een verrassing</h2>
+          <p className="vysiongids-info-kicker">{t('listing.infoExtras.giftKicker')}</p>
+          <h2 className="vysiongids-info-title">{t('listing.infoExtras.giftTitle')}</h2>
           {gift.intro ? <p className="vysiongids-gift-intro">{gift.intro}</p> : null}
           {gift.orderUrl ? (
             <a href={gift.orderUrl} target="_blank" rel="noopener noreferrer" className="vysiongids-gift-order-btn">
-              Cadeaubon bestellen
+              {t('listing.infoExtras.giftOrderButton')}
             </a>
           ) : null}
           <div className="vysiongids-gift-card-preview" aria-hidden>
-            <span className="vysiongids-gift-card-label">Cadeaubon</span>
+            <span className="vysiongids-gift-card-label">{t('listing.infoExtras.giftCardLabel')}</span>
             <span className="vysiongids-gift-card-name">{listing.name}</span>
             {giftValue ? (
               <div className="vysiongids-gift-card-value-wrap">
-                <span className="vysiongids-gift-card-value-label">Waarde</span>
+                <span className="vysiongids-gift-card-value-label">{t('listing.infoExtras.giftValueLabel')}</span>
                 <span className="vysiongids-gift-card-value">{giftValue}</span>
               </div>
             ) : null}
@@ -120,8 +128,8 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
 
       {promotion ? (
         <section className="vysiongids-info-block vysiongids-info-block--promotion">
-          <p className="vysiongids-info-kicker">ACTIE</p>
-          <h2 className="vysiongids-info-title">Onze promotie</h2>
+          <p className="vysiongids-info-kicker">{t('listing.infoExtras.promoKicker')}</p>
+          <h2 className="vysiongids-info-title">{t('listing.infoExtras.promoTitle')}</h2>
           <div className="vysiongids-promotion-card">
             {promotion.imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
@@ -129,7 +137,10 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
             ) : null}
             {promotion.text ? <p className="vysiongids-promotion-card-text">{promotion.text}</p> : null}
             {promotion.offers?.length ? (
-              <ListingPromotionOffersList offers={promotion.offers} className="vysiongids-promotion-offers-list vysiongids-promotion-offers-list--card" />
+              <ListingPromotionOffersList
+                offers={promotion.offers}
+                className="vysiongids-promotion-offers-list vysiongids-promotion-offers-list--card"
+              />
             ) : null}
           </div>
         </section>

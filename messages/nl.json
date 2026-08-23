@@ -509,7 +509,18 @@
     "infoOpeningHours": "OPENINGSUREN",
     "infoSection": "INFO",
     "closedForHoliday": "Gesloten wegens verlof:",
+    "annualLeaveRange": "{from} t/m {to}",
     "contactComingSoon": "Contactgegevens volgen binnenkort.",
+    "navGoogleMaps": "Google Maps",
+    "navWazeDrive": "Rij met Waze",
+    "mapAddressHeading": "Adres",
+    "mapSectionAria": "Locatie op de kaart",
+    "mapSatelliteTitle": "Satellietkaart: {street}, {cityLine}",
+    "qrAria": "QR-code naar {name} op Vysiongids",
+    "info": {
+      "openNowLive": "momenteel geopend",
+      "closedNowLive": "momenteel gesloten"
+    },
     "infoExtras": {
       "kitchenKicker": "ONZE KEUKEN",
       "specialtiesTitle": "Onze specialiteiten",
@@ -526,7 +537,9 @@
       "giftValueLabel": "Waarde",
       "promoKicker": "ACTIE",
       "promoTitle": "Onze promotie",
-      "promoModalKicker": "Promoties"
+      "promoModalKicker": "Promoties",
+      "giftOrderButton": "Cadeaubon bestellen",
+      "applicationSubject": "Sollicitatie — {name}"
     },
     "panel": {
       "openNow": "Nu open",
@@ -593,7 +606,10 @@
     "bodyLabel": "Jouw ervaring",
     "bodyPlaceholder": "Vertel kort wat je goed of minder vond…",
     "submit": "Review plaatsen",
-    "success": "Bedankt! Je review voor {listingName} staat online."
+    "success": "Bedankt! Je review voor {listingName} staat online.",
+    "emptyBeFirst": "Nog geen reviews. Wees de eerste!",
+    "guestName": "Gast",
+    "starsAria": "{rating} van 5 sterren"
   },
   "modals": {
     "about": {

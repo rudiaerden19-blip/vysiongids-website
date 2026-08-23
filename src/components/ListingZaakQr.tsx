@@ -2,6 +2,7 @@
 
 import QRCode from 'qrcode'
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { gidsListingPublicUrl } from '@/lib/gids-public-site-url'
 
 type Props = {
@@ -13,6 +14,7 @@ type Props = {
 
 /** Compacte zaak-QR op de zondag-regel tussen dag en uren. */
 export default function ListingZaakQr({ slug, listingName, size = 140 }: Props) {
+  const { t } = useLanguage()
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const [error, setError] = useState(false)
   const publicUrl = useMemo(() => gidsListingPublicUrl(slug), [slug])
@@ -34,7 +36,7 @@ export default function ListingZaakQr({ slug, listingName, size = 140 }: Props) 
   return (
     <div className="vysiongids-zaak-info-qr" aria-hidden={error}>
       {!error ? (
-        <canvas ref={canvasRef} role="img" aria-label={`QR-code naar ${listingName} op Vysiongids`} />
+        <canvas ref={canvasRef} role="img" aria-label={t('listing.qrAria', { name: listingName })} />
       ) : null}
     </div>
   )

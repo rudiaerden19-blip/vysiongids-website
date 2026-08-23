@@ -7,11 +7,15 @@ import ListingZaakQr from '@/components/ListingZaakQr'
 import { belgiumPhoneTelHref, formatBelgiumPhoneDisplay } from '@/lib/belgium-phone'
 import { resolveListingAmenityList } from '@/lib/listing-amenity-list'
 import {
-  AMENITY_LABELS,
   isListingOpenNow,
   listingWebsiteDisplay,
   resolveHoursByDay,
 } from '@/lib/listing-info'
+import {
+  localizedListingAmenityLabel,
+  localizedListingHoursTime,
+  localizedListingWeekday,
+} from '@/lib/listing-i18n'
 import { useEffect, useState } from 'react'
 import type { Listing } from '@/lib/listing-types'
 
@@ -44,6 +48,7 @@ function ContactIcon({ kind }: { kind: 'web' | 'phone' | 'email' }) {
 }
 
 function OpenStatus({ listing }: { listing: Listing }) {
+  const { t } = useLanguage()
   const [open, setOpen] = useState<boolean | null>(null)
 
   useEffect(() => {
@@ -59,7 +64,7 @@ function OpenStatus({ listing }: { listing: Listing }) {
       className="vysiongids-zaak-open-status"
       style={{ color: open ? '#15803d' : '#b45309', fontWeight: 600, fontSize: '0.9375rem', margin: '0 0 0.75rem' }}
     >
-      {open ? 'momenteel geopend' : 'momenteel gesloten'}
+      {open ? t('listing.info.openNowLive') : t('listing.info.closedNowLive')}
     </p>
   )
 }
@@ -84,8 +89,8 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
             <div className="vysiongids-zaak-hours-list">
               {hoursRows.map((row) => (
                 <div key={row.day} className="vysiongids-zaak-hours-line">
-                  <span className="vysiongids-zaak-hours-day">{row.day}</span>
-                  <span className="vysiongids-zaak-hours-value">{row.hours}</span>
+                  <span className="vysiongids-zaak-hours-day">{localizedListingWeekday(t, row.day)}</span>
+                  <span className="vysiongids-zaak-hours-value">{localizedListingHoursTime(t, row.hours)}</span>
                 </div>
               ))}
             </div>
@@ -95,8 +100,8 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
           </div>
           {schedule?.annualLeave?.length ? (
             <p className="mt-3 text-sm text-gray-600">
-              <span className="font-semibold text-gray-800">Gesloten wegens verlof: </span>
-              {schedule.annualLeave.map((r) => `${r.from} t/m ${r.to}`).join(' · ')}
+              <span className="font-semibold text-gray-800">{t('listing.closedForHoliday')} </span>
+              {schedule.annualLeave.map((r) => t('listing.annualLeaveRange', { from: r.from, to: r.to })).join(' · ')}
             </p>
           ) : null}
         </div>
@@ -135,7 +140,7 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
                 <span className="vysiongids-zaak-info-icon vysiongids-zaak-info-icon--blue">
                   <ListingAmenityIcon id={id} />
                 </span>
-                <span className="vysiongids-zaak-info-amenity-label">{AMENITY_LABELS[id]}</span>
+                <span className="vysiongids-zaak-info-amenity-label">{localizedListingAmenityLabel(t, id)}</span>
               </li>
             ))}
             {!website && !phoneDisplay && !email && amenityList.length === 0 ? (
