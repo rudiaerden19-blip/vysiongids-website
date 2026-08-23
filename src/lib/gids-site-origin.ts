@@ -1,5 +1,10 @@
 const DEFAULT_SITE = 'https://www.vysiongids.be'
 
+/** Canonieke origin voor sitemap, OG en JSON-LD (productie-URL). */
+export function gidsCanonicalSiteOrigin(): string {
+  return process.env.NEXT_PUBLIC_VYSIONGIDS_SITE_URL?.replace(/\/$/, '') ?? DEFAULT_SITE
+}
+
 function allowedHosts(): Set<string> {
   const raw =
     process.env.VYSIONGIDS_ALLOWED_HOSTS?.trim() ||

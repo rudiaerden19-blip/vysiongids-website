@@ -5,6 +5,7 @@ import ScrollToTopOnNavigation from '@/components/ScrollToTopOnNavigation'
 import { GlobalAutoCapitalize } from '@/components/GlobalAutoCapitalize'
 import { LanguageProvider } from '@/i18n/LanguageProvider'
 import DocumentLangSync from '@/i18n/DocumentLangSync'
+import { gidsCanonicalSiteOrigin } from '@/lib/gids-site-origin'
 import './globals.css'
 
 const inter = Inter({
@@ -19,13 +20,28 @@ export const viewport: Viewport = {
 }
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://www.vysiongids.be'),
+  metadataBase: new URL(gidsCanonicalSiteOrigin()),
   title: {
     default: 'Vysiongids | Bestel rechtstreeks bij de zaak',
     template: '%s | Vysiongids',
   },
   description:
     'Gids voor restaurants, pizzeria, frituren, kebab en horeca in België. Foto, info en link naar het bestelplatform van de zaak.',
+  robots: { index: true, follow: true },
+  openGraph: {
+    type: 'website',
+    locale: 'nl_BE',
+    siteName: 'Vysiongids',
+    title: 'Vysiongids | Bestel rechtstreeks bij de zaak',
+    description:
+      'Gids voor restaurants, pizzeria, frituren, kebab en horeca in België. Foto, info en link naar het bestelplatform van de zaak.',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Vysiongids',
+    description:
+      'Gids voor restaurants, pizzeria, frituren, kebab en horeca in België. Foto, info en link naar het bestelplatform van de zaak.',
+  },
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

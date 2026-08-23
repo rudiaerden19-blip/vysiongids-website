@@ -5,7 +5,10 @@ import GidsLoginFormFallback from '@/components/GidsLoginFormFallback'
 import { tServer } from '@/i18n/server-translate'
 
 export async function generateMetadata() {
-  return { title: await tServer('meta.pages.login') }
+  return {
+    title: await tServer('meta.pages.login'),
+    robots: { index: false, follow: false },
+  }
 }
 
 export default async function LoginPage() {

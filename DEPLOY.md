@@ -90,3 +90,15 @@ npm run dev
 - [ ] Geen Order/kassa env vars in Vercel gids-project
 - [ ] `main` → Production deployment groen
 - [ ] `https://www.vysiongids.be` werkt
+
+## Google (Search Console)
+
+Na deploy op productie:
+
+1. Ga naar [Google Search Console](https://search.google.com/search-console) → property **`https://www.vysiongids.be`** (of domein-property `vysiongids.be`).
+2. Verifieer via **DNS TXT** (aanbevolen) of HTML-tag in Vercel indien nodig.
+3. Dien de sitemap in: **`https://www.vysiongids.be/sitemap.xml`**
+4. Controleer **`https://www.vysiongids.be/robots.txt`** (verwijst naar de sitemap; `/beheer`, `/login`, `/api/` niet indexeren).
+5. Indexering duurt **dagen tot weken**; nieuwe zaken komen automatisch in de sitemap (max. ~1 uur cache).
+
+Optioneel: in Vercel **www** als primary domein; redirect `vysiongids.be` → `www` (één canonieke host).

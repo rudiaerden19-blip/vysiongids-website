@@ -21,6 +21,10 @@ import {
 import { getCachedListingIdBySlug, getCachedReviewsByListingSlug } from '@/lib/gids-reviews-cache'
 import { resolveListingMapPin } from '@/lib/gids-listing-geocode'
 import { isDienstenListing } from '@/lib/listing-segment'
+import JsonLd from '@/components/JsonLd'
+import { buildZaakListingJsonLd } from '@/lib/gids-listing-json-ld'
+import { gidsCanonicalSiteOrigin } from '@/lib/gids-site-origin'
+import { gidsSitemapAbsoluteUrl } from '@/lib/gids-sitemap-paths'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -36,13 +40,18 @@ export async function generateMetadata({ params }: Props) {
   if (!listing) {
     return { title: await tServer('meta.pages.listingNotFound') }
   }
+  const title = await tServer('meta.pages.listingTitle', { name: listing.name, city: listing.city })
+  const description = await tServer('meta.pages.listingDescription', {
+    name: listing.name,
+    city: listing.city,
+    typeLabel: getListingTypeLabel(listing.type),
+  })
+  const canonical = gidsSitemapAbsoluteUrl(`/zaak/${slug}`)
   return {
-    title: await tServer('meta.pages.listingTitle', { name: listing.name, city: listing.city }),
-    description: await tServer('meta.pages.listingDescription', {
-      name: listing.name,
-      city: listing.city,
-      typeLabel: getListingTypeLabel(listing.type),
-    }),
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical, type: 'website' },
   }
 }
 
@@ -64,6 +73,7 @@ export default async function ZaakPage({ params }: Props) {
 
   return (
     <>
+      <JsonLd data={buildZaakListingJsonLd(listing, gidsCanonicalSiteOrigin())} />
       <SiteHeader />
       <main className="vysiongids-page-wrap vysiongids-zaak-page">
         <ZaakPageBreadcrumb city={listing.city} />

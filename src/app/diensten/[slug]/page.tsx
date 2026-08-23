@@ -11,6 +11,10 @@ import { tServer } from '@/i18n/server-translate'
 import { localizedProvinceLabelForLocale } from '@/lib/geo-i18n'
 import { belgiumPhoneTelHref, formatBelgiumPhoneDisplay } from '@/lib/belgium-phone'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
+import JsonLd from '@/components/JsonLd'
+import { buildDienstenListingJsonLd } from '@/lib/gids-listing-json-ld'
+import { gidsCanonicalSiteOrigin } from '@/lib/gids-site-origin'
+import { gidsSitemapAbsoluteUrl } from '@/lib/gids-sitemap-paths'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -18,7 +22,17 @@ export async function generateMetadata({ params }: Props) {
   const { slug } = await params
   const listing = await getDienstenListingBySlug(slug)
   if (!listing) return { title: 'Leverancier' }
-  return { title: `${listing.name} — diensten` }
+  const title = `${listing.name} — diensten`
+  const description =
+    listing.serviceDescription?.slice(0, 160) ||
+    `${listing.name} — leverancier en diensten in ${listing.city}, België.`
+  const canonical = gidsSitemapAbsoluteUrl(`/diensten/${slug}`)
+  return {
+    title,
+    description,
+    alternates: { canonical },
+    openGraph: { title, description, url: canonical, type: 'website' },
+  }
 }
 
 export default async function DienstenProfielPage({ params }: Props) {
@@ -40,6 +54,7 @@ export default async function DienstenProfielPage({ params }: Props) {
 
   return (
     <>
+      <JsonLd data={buildDienstenListingJsonLd(listing, gidsCanonicalSiteOrigin())} />
       <SiteHeader />
       <main className="vysiongids-page-wrap mx-auto max-w-4xl">
         <p className="mb-4 text-sm">

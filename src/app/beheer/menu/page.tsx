@@ -2,7 +2,10 @@ import Link from 'next/link'
 import SiteHeader from '@/components/SiteHeader'
 import GidsMenuEditor from '@/components/GidsMenuEditor'
 
-export const metadata = { title: 'Menu beheren' }
+export const metadata = {
+  title: 'Menu beheren',
+  robots: { index: false, follow: false },
+}
 
 export default function BeheerMenuPage() {
   return (

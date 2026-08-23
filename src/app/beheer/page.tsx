@@ -12,7 +12,10 @@ import { tServer } from '@/i18n/server-translate'
 import { loadBeheerPageShell } from '@/lib/gids-beheer-server'
 
 export async function generateMetadata() {
-  return { title: await tServer('meta.pages.beheer') }
+  return {
+    title: await tServer('meta.pages.beheer'),
+    robots: { index: false, follow: false },
+  }
 }
 
 export const dynamic = 'force-dynamic'

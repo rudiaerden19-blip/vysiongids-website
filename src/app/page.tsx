@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Image from 'next/image'
 import { Suspense } from 'react'
 import SearchForm from '@/components/SearchForm'
@@ -6,15 +7,38 @@ import HomeFeaturedListingsSection from '@/components/HomeFeaturedListingsSectio
 import HomeHeroHeadlines from '@/components/HomeHeroHeadlines'
 import HomeRegionsSection from '@/components/HomeRegionsSection'
 import SiteHeader from '@/components/SiteHeader'
+import JsonLd from '@/components/JsonLd'
 import { getHomePublicStats } from '@/lib/gids-home-stats'
+import { gidsCanonicalSiteOrigin } from '@/lib/gids-site-origin'
 
 export const revalidate = 60
+
+export const metadata: Metadata = {
+  alternates: { canonical: '/' },
+}
+
+function buildWebSiteJsonLd(origin: string): Record<string, unknown> {
+  const base = origin.replace(/\/$/, '')
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Vysiongids',
+    url: base,
+    inLanguage: 'nl-BE',
+    potentialAction: {
+      '@type': 'SearchAction',
+      target: `${base}/zoeken?q={search_term_string}`,
+      'query-input': 'required name=search_term_string',
+    },
+  }
+}
 
 export default async function HomePage() {
   const stats = await getHomePublicStats()
 
   return (
     <>
+      <JsonLd data={buildWebSiteJsonLd(gidsCanonicalSiteOrigin())} />
       <SiteHeader />
       <div
         className="vysiongids-hero-root"
