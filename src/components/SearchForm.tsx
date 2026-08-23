@@ -12,6 +12,9 @@ import type { VoiceNameHint } from '@/lib/voice-search-transcript-fix'
 import { fixVoiceSearchTranscript } from '@/lib/voice-search-transcript-fix'
 import { getBrowserGeolocation } from '@/lib/browser-geolocation'
 import { appendGidsSearchParams, buildGidsSearchPath, searchQueryWantsGeolocation } from '@/lib/gids-search-url'
+import { formatGidsTitleCase } from '@/lib/gids-text'
+import { setNativeInputValue } from '@/lib/dom-input-value'
+import TitleCaseTextInput, { applyTitleCaseFormFields } from '@/components/TitleCaseTextInput'
 import {
   fetchListingActionIntent,
   listingActionSpeechMessage,
@@ -167,20 +170,21 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
       const hints = voiceNameHintsRef.current
       const trimmed = fixVoiceSearchTranscript(normalizeVoiceActionQuery(spoken.trim()), hints)
       if (!trimmed) return
+      const formattedQ = formatGidsTitleCase(trimmed)
       const form = formRef.current
       const type = form ? String(new FormData(form).get('type') ?? 'all') : 'all'
-      if (qInputRef.current) qInputRef.current.value = trimmed
+      if (qInputRef.current) setNativeInputValue(qInputRef.current, formattedQ)
 
-      const near = await nearPointForQuery(trimmed)
+      const near = await nearPointForQuery(formattedQ)
 
-      const intent = await fetchListingActionIntent(trimmed, near)
+      const intent = await fetchListingActionIntent(formattedQ, near)
       if (intent.kind !== 'search') {
         const message = listingActionSpeechMessage(intent)
         if (message) {
           stashVoiceSearchAnnouncement(message)
           await speakDutchAsync(message)
         }
-        await tryNavigateListingActionIntent(router, trimmed, intent, near)
+        await tryNavigateListingActionIntent(router, formattedQ, intent, near)
         return
       }
       if (intent.failedAction) {
@@ -196,19 +200,19 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
       let count = 0
       let top: { slug: string; name: string } | null = null
       try {
-        const summary = await fetchSearchSummary(trimmed, type, prov, near)
+        const summary = await fetchSearchSummary(formattedQ, type, prov, near)
         count = summary.count
         top = summary.top
       } catch {
         count = 0
       }
 
-      if (top) saveGidsNavTarget(top, trimmed)
+      if (top) saveGidsNavTarget(top, formattedQ)
 
       const message = buildSearchResultsSpeechMessage({ count, topName: top?.name })
       stashVoiceSearchAnnouncement(message)
       await speakDutchAsync(message)
-      router.push(buildSearchPath(trimmed, type, prov, near))
+      router.push(buildSearchPath(formattedQ, type, prov, near))
     },
     [formRef, loadVoiceNameHints, prov, qInputRef, router],
   )
@@ -254,6 +258,7 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
     async (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault()
       const fd = new FormData(e.currentTarget)
+      applyTitleCaseFormFields(fd, ['q'])
       const nextQ = String(fd.get('q') ?? '').trim()
       const nextType = String(fd.get('type') ?? 'all')
       const queryForIntent = normalizeVoiceActionQuery(nextQ)
@@ -277,7 +282,8 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
           <label htmlFor="search-q" style={heroFieldLabel}>
             {t('search.queryLabel')}
           </label>
-          <input
+          <TitleCaseTextInput
+            key={`search-q-${q}`}
             ref={qInputRef}
             id="search-q"
             name="q"
@@ -322,7 +328,8 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
         <label htmlFor="search-q-compact" style={fieldLabel}>
           {t('search.queryLabel')}
         </label>
-        <input
+        <TitleCaseTextInput
+          key={`search-q-compact-${q}`}
           ref={qInputRef}
           id="search-q-compact"
           name="q"

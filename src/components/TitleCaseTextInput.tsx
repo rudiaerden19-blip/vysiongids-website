@@ -1,20 +1,23 @@
 'use client'
 
 import { formatGidsTitleCase } from '@/lib/gids-text'
-import { useCallback, useState, type InputHTMLAttributes, type KeyboardEvent } from 'react'
+import {
+  forwardRef,
+  useCallback,
+  useState,
+  type InputHTMLAttributes,
+  type KeyboardEvent,
+} from 'react'
 
 type Props = Omit<InputHTMLAttributes<HTMLInputElement>, 'value' | 'defaultValue'> & {
   defaultValue?: string
 }
 
 /** Tekstveld: hoofdletters per woord (spatie/enter, blur, en bij opslaan). */
-export default function TitleCaseTextInput({
-  defaultValue,
-  onBlur,
-  onChange,
-  onKeyUp,
-  ...props
-}: Props) {
+const TitleCaseTextInput = forwardRef<HTMLInputElement, Props>(function TitleCaseTextInput(
+  { defaultValue, onBlur, onChange, onKeyUp, ...props },
+  ref,
+) {
   const [value, setValue] = useState(() => String(defaultValue ?? ''))
 
   const applyFormat = useCallback((raw: string) => {
@@ -26,6 +29,7 @@ export default function TitleCaseTextInput({
   return (
     <input
       {...props}
+      ref={ref}
       value={value}
       autoCapitalize="words"
       autoCorrect="off"
@@ -39,14 +43,16 @@ export default function TitleCaseTextInput({
         onBlur?.(e)
       }}
       onKeyUp={(e: KeyboardEvent<HTMLInputElement>) => {
-        if (e.key === ' ' || e.key === 'Enter') {
+        if (e.key === ' ' || e.key === 'Enter' || e.key === '-') {
           applyFormat(e.currentTarget.value)
         }
         onKeyUp?.(e)
       }}
     />
   )
-}
+})
+
+export default TitleCaseTextInput
 
 export function applyTitleCaseFormFields(form: FormData, keys: string[]): void {
   for (const key of keys) {

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { enforceRateLimit } from '@/lib/gids-rate-limit'
-import { isGidsMailConfigured, sendListingClaimNotificationEmail } from '@/lib/gids-mail'
+import { isGidsMailConfigured, sendListingClaimEmails } from '@/lib/gids-mail'
 
 const WINDOW_MS = 60 * 60 * 1000
 const MAX_PER_IP = 8
@@ -42,7 +42,7 @@ export async function POST(req: Request) {
   const contactName = String(body.contactName ?? '').trim()
   const contactEmail = String(body.contactEmail ?? '').trim().toLowerCase()
   const contactPhone = String(body.contactPhone ?? '').trim()
-  const btwNumber = trimOptional(body.btwNumber, 32)
+  const btwNumber = String(body.btwNumber ?? '').trim().slice(0, 32)
   const message = trimOptional(body.message, 2000)
   const authorized = body.authorized === true
 
@@ -57,6 +57,9 @@ export async function POST(req: Request) {
   }
   if (contactPhone.length < 6) {
     return NextResponse.json({ error: 'Vul een geldig telefoonnummer in.' }, { status: 400 })
+  }
+  if (btwNumber.length < 8) {
+    return NextResponse.json({ error: 'Vul een geldig BTW-nummer in.' }, { status: 400 })
   }
   if (!authorized) {
     return NextResponse.json({ error: 'Bevestig dat je bevoegd bent om deze zaak te beheren.' }, { status: 400 })
@@ -91,6 +94,23 @@ export async function POST(req: Request) {
     .maybeSingle()
 
   if (pendingDup) {
+    if (isGidsMailConfigured()) {
+      try {
+        await sendListingClaimEmails({
+          listingName: listing.name,
+          listingSlug: listing.slug,
+          listingCity: listing.city ?? '',
+          contactName,
+          contactEmail,
+          contactPhone,
+          btwNumber,
+          message,
+          resubmit: true,
+        })
+      } catch (mailErr) {
+        console.error('[gids claim mail duplicate]', mailErr)
+      }
+    }
     return NextResponse.json({ ok: true, duplicate: true })
   }
 
@@ -118,36 +138,31 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Aanvraag kon niet worden opgeslagen. Probeer later opnieuw.' }, { status: 500 })
   }
 
-  if (!isGidsMailConfigured()) {
-    console.error('[gids claim] mail skipped: ZOHO_EMAIL / ZOHO_PASSWORD missing on server')
-    return NextResponse.json(
-      {
-        error:
-          'Claim is tijdelijk niet beschikbaar (e-mail niet geconfigureerd). Mail info@vysionhoreca.com met je gegevens.',
-      },
-      { status: 503 },
-    )
-  }
-
-  try {
-    await sendListingClaimNotificationEmail({
-      listingName: listing.name,
-      listingSlug: listing.slug,
-      listingCity: listing.city ?? '',
-      contactName,
-      contactEmail,
-      contactPhone,
-      btwNumber,
-      message,
-    })
-  } catch (mailErr) {
-    console.error('[gids claim mail]', mailErr)
-    await admin.from('gids_listing_claim_requests').delete().eq('id', insertedRow.id)
-    return NextResponse.json(
-      {
-        error: 'Verzenden mislukt. Probeer later opnieuw of mail rechtstreeks naar info@vysionhoreca.com.',
-      },
-      { status: 503 },
+  if (isGidsMailConfigured()) {
+    try {
+      await sendListingClaimEmails({
+        listingName: listing.name,
+        listingSlug: listing.slug,
+        listingCity: listing.city ?? '',
+        contactName,
+        contactEmail,
+        contactPhone,
+        btwNumber,
+        message,
+      })
+    } catch (mailErr) {
+      console.error('[gids claim mail]', mailErr)
+      await admin.from('gids_listing_claim_requests').delete().eq('id', insertedRow.id)
+      return NextResponse.json(
+        {
+          error: 'Verzenden mislukt. Probeer later opnieuw of mail rechtstreeks naar info@vysionhoreca.com.',
+        },
+        { status: 503 },
+      )
+    }
+  } else {
+    console.warn(
+      '[gids claim] ZOHO_EMAIL / ZOHO_PASSWORD missing — aanvraag opgeslagen zonder e-mailnotificatie',
     )
   }
 

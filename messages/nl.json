@@ -598,13 +598,13 @@
     "kicker": "Gratis",
     "title": "Claim je zaak",
     "lead": "Is {listingName} van jou? Vul je gegevens in — wij activeren je beheer en sturen je een PIN om in te loggen.",
-    "freeNote": "Claimen is gratis. BTW-nummer is optioneel.",
+    "freeNote": "Claimen is gratis. BTW-nummer is verplicht.",
     "sidebarTeaser": "Beheer je foto's, uren en bestellink in Vysiongids.",
     "openButton": "Claim je zaak",
     "contactNameLabel": "Naam contactpersoon",
     "contactEmailLabel": "E-mailadres",
     "contactPhoneLabel": "Telefoonnummer",
-    "btwLabel": "BTW-nummer (optioneel)",
+    "btwLabel": "BTW-nummer",
     "btwPlaceholder": "Bijv. BE0123.456.789",
     "messageLabel": "Extra info (optioneel)",
     "messagePlaceholder": "Functie, beste moment om te bellen, …",
@@ -613,7 +613,8 @@
     "submitFailed": "Aanvraag mislukt. Probeer later opnieuw.",
     "successTitle": "Aanvraag ontvangen",
     "successTitleDuplicate": "Aanvraag staat al open",
-    "successBody": "Bedankt! We nemen contact op via e-mail of telefoon om je login (PIN) te activeren. Meestal binnen enkele werkdagen."
+    "successBody": "Bedankt! Je krijgt een bevestigingsmail op het adres dat je invulde. Vysiongids neemt daarna contact op om je login (PIN) te activeren — meestal binnen enkele werkdagen.",
+    "successBodyDuplicate": "Je aanvraag staat al in ons systeem. Je krijgt opnieuw een korte bevestigingsmail; we nemen nog steeds contact op voor je PIN."
   },
   "reviews": {
     "pageTitle": "Reviews — {name}",

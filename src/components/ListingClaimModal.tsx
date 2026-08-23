@@ -64,7 +64,7 @@ export default function ListingClaimModal({ listing, open, onClose }: Props) {
           contactName,
           contactEmail,
           contactPhone,
-          btwNumber: btwNumber.trim() || undefined,
+          btwNumber: btwNumber.trim(),
           message: message.trim() || undefined,
           authorized,
         }),
@@ -112,7 +112,9 @@ export default function ListingClaimModal({ listing, open, onClose }: Props) {
             <h2 id={titleId} className="vysiongids-job-modal-title">
               {duplicate ? t('claim.successTitleDuplicate') : t('claim.successTitle')}
             </h2>
-            <p className="vysiongids-job-modal-text">{t('claim.successBody')}</p>
+            <p className="vysiongids-job-modal-text">
+              {duplicate ? t('claim.successBodyDuplicate') : t('claim.successBody')}
+            </p>
             <button type="button" className="vysiongids-platform-promo-modal-cta mt-4" onClick={onClose}>
               {t('common.close')}
             </button>
@@ -188,10 +190,15 @@ export default function ListingClaimModal({ listing, open, onClose }: Props) {
               <div>
                 <label className="vysiongids-form-label" htmlFor="claim-btw">
                   {t('claim.btwLabel')}
+                  <span className="vysiongids-form-required" aria-hidden>
+                    *
+                  </span>
                 </label>
                 <input
                   id="claim-btw"
                   name="btwNumber"
+                  required
+                  minLength={8}
                   maxLength={32}
                   className="vysiongids-form-input mt-1 w-full"
                   value={btwNumber}

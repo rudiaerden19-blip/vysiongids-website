@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import SiteFooter from '@/components/SiteFooter'
 import ScrollToTopOnNavigation from '@/components/ScrollToTopOnNavigation'
+import { GlobalAutoCapitalize } from '@/components/GlobalAutoCapitalize'
 import { LanguageProvider } from '@/i18n/LanguageProvider'
 import DocumentLangSync from '@/i18n/DocumentLangSync'
 import './globals.css'
@@ -36,6 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         suppressHydrationWarning
       >
         <ScrollToTopOnNavigation />
+        <GlobalAutoCapitalize />
         <LanguageProvider>
           <DocumentLangSync />
           {children}
