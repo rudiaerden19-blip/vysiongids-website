@@ -21,23 +21,9 @@ function ZoekertjesSectionLoading() {
   )
 }
 
-function ChatSectionLoading() {
-  const { t } = useLanguage()
-  return (
-    <section className="vysiongids-surface-card rounded-xl bg-white p-5">
-      <p className="text-sm text-gray-500">{t('beheer.chatLoading')}</p>
-    </section>
-  )
-}
-
 const BeheerZoekertjesSection = dynamic(() => import('@/components/BeheerZoekertjesSection'), {
   ssr: false,
   loading: () => <ZoekertjesSectionLoading />,
-})
-
-const BeheerGidsChatSection = dynamic(() => import('@/components/BeheerGidsChatSection'), {
-  ssr: false,
-  loading: () => <ChatSectionLoading />,
 })
 
 type Props = {
@@ -49,7 +35,6 @@ export default function BeheerClientExtras({ listing }: Props) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const premiumFlash = searchParams.get('premium')
-  const chatThreadId = searchParams.get('chat')
   const [zoekertjeModalOpen, setZoekertjeModalOpen] = useState(false)
   const [zoekertjePlaceRequest, setZoekertjePlaceRequest] = useState(0)
   const [publicSlug, setPublicSlug] = useState(listing.slug)
@@ -130,8 +115,6 @@ export default function BeheerClientExtras({ listing }: Props) {
           />
         </>
       ) : null}
-
-      <BeheerGidsChatSection initialThreadId={chatThreadId} />
 
       {listing && dienstenAccount && slug ? <BeheerDienstenPanel listing={listing} slug={slug} /> : null}
 

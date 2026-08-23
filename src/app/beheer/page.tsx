@@ -6,6 +6,7 @@ import { BeheerListingAndExtras } from '@/components/BeheerListingAndExtras'
 import { BeheerAuthFallback } from '@/components/BeheerClientExtras'
 import { BeheerLoggedInHeader } from '@/components/BeheerPageIntroServer'
 import { BeheerViewsStatsServer } from '@/components/BeheerViewsStatsServer'
+import BeheerChatUnderViews from '@/components/BeheerChatUnderViews'
 import { tServer } from '@/i18n/server-translate'
 import { loadBeheerPageShell } from '@/lib/gids-beheer-server'
 
@@ -39,6 +40,9 @@ export default async function BeheerPage() {
                 variant={shell.pinMustChange ? 'firstLogin' : 'beheer'}
               />
               <BeheerViewsStatsServer slug={shell.slug} />
+              <Suspense fallback={null}>
+                <BeheerChatUnderViews />
+              </Suspense>
               {!shell.pinMustChange ? (
                 <Suspense fallback={<BeheerFormSkeleton />}>
                   <BeheerListingAndExtras listingId={shell.listingId} />
