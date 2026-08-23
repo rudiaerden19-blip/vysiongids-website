@@ -66,6 +66,7 @@ function StaffListingsTable({
             <tr>
               <th>{segment === 'diensten' ? 'Bedrijf' : 'Zaak'}</th>
               <th>Adres</th>
+              {segment === 'diensten' ? <th>E-mail</th> : null}
               <th>Betaald</th>
               <th>Betaling</th>
               <th>Volgende betaling</th>
@@ -99,6 +100,17 @@ function StaffListingsTable({
                     <br />
                     {row.postcode} {row.city}
                   </td>
+                  {segment === 'diensten' ? (
+                    <td className="text-sm text-gray-700">
+                      {row.email ? (
+                        <a href={`mailto:${row.email}`} className="break-all text-accent hover:underline">
+                          {row.email}
+                        </a>
+                      ) : (
+                        <span className="text-gray-400">—</span>
+                      )}
+                    </td>
+                  ) : null}
                   <td>{paidLabel}</td>
                   <td>{formatGidsPremiumDate(staffListingPaidAt(row))}</td>
                   <td>{formatGidsPremiumDate(staffListingExpiresAt(row))}</td>

@@ -14,6 +14,7 @@ export type GidsStaffListingRow = {
   city: string
   postcode: string
   status: string
+  email: string | null
   listing_segment: ListingSegment
   premium_member: boolean
   premium_paid_at: string | null
@@ -28,7 +29,7 @@ export type GidsStaffListingRow = {
 }
 
 const STAFF_LISTING_SELECT =
-  'id, slug, name, address, city, postcode, status, listing_segment, premium_member, premium_paid_at, premium_expires_at, premium_paused, diensten_paid_at, diensten_expires_at, created_at, claimed_at'
+  'id, slug, name, address, city, postcode, status, email, listing_segment, premium_member, premium_paid_at, premium_expires_at, premium_paused, diensten_paid_at, diensten_expires_at, created_at, claimed_at'
 
 function mapStaffListingRow(row: Record<string, unknown>): GidsStaffListingRow {
   const premium_member = row.premium_member === true
@@ -47,6 +48,7 @@ function mapStaffListingRow(row: Record<string, unknown>): GidsStaffListingRow {
     city: row.city as string,
     postcode: row.postcode as string,
     status: (row.status as string) ?? 'published',
+    email: (row.email as string | null)?.trim() || null,
     listing_segment,
     premium_member,
     premium_paid_at,
