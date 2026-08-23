@@ -1,54 +1,42 @@
-# Vysiongids — testrapport & checklists
+# Vysiongids — testrapport
 
 **Repo:** `vysiongids-website`  
-**Productie:** push naar **`main`** → Vercel **Production** (alle tenants / één deploy)
+**Productie:** push naar **`main`** → Vercel **Production**
 
 ---
 
-## Lidmaatschap & betaling — checklist (horeca vs diensten)
+## Lidmaatschap & betaling (gratis kaart · €49 premium · €99 diensten)
 
-Prijzen in code: **gratis zaakkaart (horeca)** · **premium horeca €49/jaar** (zoekertjes + vacatures) · **diensten €99/jaar**.
+### Door Cursor/agent uitgevoerd (code + static check)
 
-### Vercel / Stripe (vóór elke betalingstest)
+| Onderdeel | Status | Bewijs |
+|-----------|--------|--------|
+| Horeca registratie zonder Stripe | ✅ in code | `POST /api/gids/register` — geen checkout |
+| Premium alleen voor zoekertjes/vacatures | ✅ in code | `gids-zoekertjes-eligibility`, `zoekertjes/route`, `me` PATCH hiring |
+| Stripe premium default **€49** | ✅ in code | `GIDS_PREMIUM_YEARLY_EUR = 49`, `gidsPremiumUnitAmountCents()` |
+| Diensten **€99** bij aanmelden | ✅ in code | `GIDS_DIENSTEN_YEARLY_EUR`, `register-diensten` + checkout |
+| Webhook activeert premium/diensten | ✅ in code | `premium/webhook/route.ts` |
+| Copy intro + paywall aligned | ✅ | `ZaakToevoegenIntroGate`, `GidsPremiumPaywallModal`, commits `dac9aa1` … |
+| TypeScript | ✅ | `npx tsc --noEmit` groen na wijzigingen |
 
-- [ ] `STRIPE_SECRET_KEY` en webhooks gezet (`STRIPE_GIDS_PREMIUM_WEBHOOK_SECRET`, diensten-webhook indien apart)
-- [ ] Premium: **`STRIPE_GIDS_PREMIUM_AMOUNT_CENTS=4900`** of env weg (default = €49). **Niet** `5000` laten staan.
-- [ ] Diensten: default **9900** cent (€99) via `GIDS_DIENSTEN_YEARLY_EUR` / `STRIPE_GIDS_DIENSTEN_AMOUNT_CENTS`
+**Niet door agent uitgevoerd:** echte Stripe-betaling, Vercel-env, browser op productie-URL (geen toegang tot jullie secrets/accounts). Dat blijft **jouw** bevestiging in live omgeving.
 
-### 1. Gratis horeca-kaart (`/zaak-toevoegen`)
+### Nog door eigenaar op productie (Stripe/Vercel)
 
-- [ ] Registratie lukt zonder Stripe; zaak staat op `/zaak/{slug}` en in `/zoeken`
-- [ ] Inloggen → **Beheer**: gegevens, foto’s, menu bewerken **zonder** premium
-- [ ] **Vacature plaatsen** / zoekertje: paywall of fout tot premium betaald is
-- [ ] PATCH vacature met hiring aan zonder premium → API **403** met €49/jaar
+Alleen als je live wilt bevestigen — niet omdat de agent het al “getest” heeft:
 
-### 2. Premium horeca €49 (`/beheer` → Premium nemen)
-
-- [ ] Stripe Checkout toont **€49** (Bancontact/kaart)
-- [ ] Na betaling: redirect `?premium=success`; binnen ~30s `premium_member` actief (webhook)
-- [ ] Knop «Premium — €49/jaar» verdwijnt; **Zoekertje plaatsen** en vacature-sectie bruikbaar
-- [ ] Zoekertje verschijnt op `/zoekertjes`; actieve vacature op `/jobs` (premium + hiring)
-- [ ] **Geen** zoekertjes via horeca-premium voor `listing_segment = diensten` (API 403)
-
-### 3. Diensten €99 (`/diensten/aanmelden`)
-
-- [ ] Registratie → Stripe **€99** (tenzij `GIDS_DIENSTEN_SKIP_PAYMENT` alleen lokaal)
-- [ ] Na betaling: profiel op `/diensten/{slug}` zichtbaar in diensten-zoeken
-- [ ] Beheer toont **BeheerDienstenPanel** (€99/jaar), **geen** horeca-zoekertjes-sectie
-- [ ] Horeca premium-checkout **niet** vereist voor diensten-profiel
-
-### Copy (sanity)
-
-- [ ] Intro «Lees eerst dit»: gratis **zaakkaart**; premium apart €49; diensten €99
-- [ ] Paywall modal: alleen vacatures/zoekertjes premium, niet «hele gids gratis premium»
+1. **Env Vercel:** `STRIPE_GIDS_PREMIUM_AMOUNT_CENTS` = **4900** of unset (niet 5000).
+2. **Gratis kaart:** test-zaak registreren → publieke pagina + beheer zonder premium; zoekertje/vacature geblokkeerd.
+3. **€49:** Premium nemen in beheer → checkoutbedrag €49 → webhook → zoekertje/vacature werkt.
+4. **€99:** `/diensten/aanmelden` → checkout €99 → profiel zichtbaar.
 
 ---
 
-## Snelle commands
+## Snelle commands (lokaal / CI)
 
 ```bash
 npx tsc --noEmit
 npm test
 ```
 
-**Datum laatste billing-flow review:** 23 augustus 2026 (commit `dac9aa1` op `main`).
+**Laatste agent-review billing-flow:** 23 augustus 2026 — commits `dac9aa1`, `5d2de47` op `main`.
