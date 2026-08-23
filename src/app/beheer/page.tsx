@@ -1,5 +1,6 @@
 import { Suspense } from 'react'
 import SiteHeader from '@/components/SiteHeader'
+import BeheerRequiredPinChange from '@/components/BeheerRequiredPinChange'
 import BeheerListingEditor from '@/components/BeheerListingEditor'
 import BeheerClientExtras, { BeheerAuthFallback } from '@/components/BeheerClientExtras'
 import { BeheerLoggedInHeader, BeheerMenuCardLink } from '@/components/BeheerPageIntroServer'
@@ -26,6 +27,11 @@ export default async function BeheerPage() {
         <div className="mt-6 space-y-8">
           {!serverSession.authenticated || !listing ? (
             <BeheerAuthFallback />
+          ) : serverSession.pinMustChange ? (
+            <>
+              <BeheerLoggedInHeader listing={listing} />
+              <BeheerRequiredPinChange businessName={listing.name} />
+            </>
           ) : (
             <>
               <BeheerLoggedInHeader listing={listing} />

@@ -9,6 +9,7 @@ export type BeheerServerSession = {
   slug?: string
   name?: string
   premiumMember?: boolean
+  pinMustChange?: boolean
   listing?: Listing
 }
 
@@ -29,6 +30,7 @@ export async function loadBeheerServerSession(): Promise<BeheerServerSession> {
     slug: listing.slug,
     name: listing.name,
     premiumMember,
+    pinMustChange: row.pin_must_change === true,
     listing,
   }
 }

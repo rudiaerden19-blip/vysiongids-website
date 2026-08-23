@@ -303,6 +303,15 @@
     "addBusinessLoading": "Registratie openen…",
     "claimHint": "Staat je zaak al in de gids? Zoek je zaak op en klik op «Claim je zaak» op je pagina — gratis."
   },
+  "pinChange": {
+    "title": "Verander je PIN-code",
+    "lead": "Je logt voor het eerst in als {name}. Kies een eigen PIN van 6 cijfers (niet 123456). Daarna kun je je zaak beheren.",
+    "newPinLabel": "Nieuwe PIN (6 cijfers)",
+    "confirmPinLabel": "Bevestig PIN",
+    "submit": "OK",
+    "submitBusy": "Opslaan…",
+    "submitFailed": "PIN opslaan mislukt."
+  },
   "beheer": {
     "pageTitle": "Zaak beheren",
     "loggedInAs": "Ingelogd als {name}",

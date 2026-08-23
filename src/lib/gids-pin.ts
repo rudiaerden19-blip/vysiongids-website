@@ -6,6 +6,13 @@ export function isValidGidsPin(pin: string): boolean {
   return /^\d{6}$/.test(pin)
 }
 
+/** Standaard-PIN na handmatige claim-activatie (e-mail naar ondernemer). */
+export const GIDS_DEFAULT_STARTER_PIN = '123456'
+
+export function isGidsDefaultStarterPin(pin: string): boolean {
+  return pin === GIDS_DEFAULT_STARTER_PIN
+}
+
 export function hashGidsPin(pin: string): string {
   const salt = randomBytes(16).toString('hex')
   const hash = scryptSync(pin, salt, KEY_LEN).toString('hex')

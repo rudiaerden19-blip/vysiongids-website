@@ -117,6 +117,13 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: 'Zaak niet gevonden.' }, { status: 404 })
   }
 
+  if (row.pin_must_change === true) {
+    return NextResponse.json(
+      { error: 'Stel eerst je nieuwe PIN in via het scherm «Verander je PIN-code».' },
+      { status: 403 },
+    )
+  }
+
   let form: FormData
   try {
     form = await req.formData()

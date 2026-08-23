@@ -303,6 +303,15 @@
     "addBusinessLoading": "Ouverture de l’inscription…",
     "claimHint": "Votre établissement est déjà dans le guide ? Recherchez-le et cliquez sur « Revendiquer » sur sa page — gratuit."
   },
+  "pinChange": {
+    "title": "Changez votre code PIN",
+    "lead": "Première connexion pour {name}. Choisissez un PIN à 6 chiffres (pas 123456). Ensuite vous pourrez gérer votre fiche.",
+    "newPinLabel": "Nouveau PIN (6 chiffres)",
+    "confirmPinLabel": "Confirmez le PIN",
+    "submit": "OK",
+    "submitBusy": "Enregistrement…",
+    "submitFailed": "Impossible d'enregistrer le PIN."
+  },
   "beheer": {
     "pageTitle": "Gérer l’établissement",
     "loggedInAs": "Connecté en tant que {name}",

@@ -61,6 +61,7 @@ export type GidsListingRow = {
   created_at?: string
   updated_at?: string
   claimed_at?: string | null
+  pin_must_change?: boolean | null
   gids_listing_photos?: PhotoRow[] | null
 }
 
@@ -669,21 +670,24 @@ export async function fetchListingByNormalizedNameAdmin(nameNormalized: string):
   if (!supabase) return null
   const { data, error } = await supabase
     .from('gids_listings')
-    .select('id, name, name_normalized, pin_hash, slug')
+    .select('id, name, name_normalized, pin_hash, slug, pin_must_change')
     .eq('name_normalized', nameNormalized)
     .maybeSingle()
   if (error || !data) return null
   return data as GidsListingRow
 }
 
-type GidsLoginLookupRow = Pick<GidsListingRow, 'id' | 'name' | 'name_normalized' | 'pin_hash' | 'slug'>
+type GidsLoginLookupRow = Pick<
+  GidsListingRow,
+  'id' | 'name' | 'name_normalized' | 'pin_hash' | 'slug' | 'pin_must_change'
+>
 
 async function fetchListingsByNormalizedNamesAdmin(keys: string[]): Promise<GidsLoginLookupRow[]> {
   const supabase = createGidsSupabaseAdmin()
   if (!supabase || keys.length === 0) return []
   const { data, error } = await supabase
     .from('gids_listings')
-    .select('id, name, name_normalized, pin_hash, slug')
+    .select('id, name, name_normalized, pin_hash, slug, pin_must_change')
     .in('name_normalized', keys)
   if (error || !data?.length) return []
   return data as GidsLoginLookupRow[]
@@ -696,7 +700,7 @@ export async function fetchListingBySlugAdmin(slug: string): Promise<GidsListing
   if (!key) return null
   const { data, error } = await supabase
     .from('gids_listings')
-    .select('id, name, name_normalized, pin_hash, slug')
+    .select('id, name, name_normalized, pin_hash, slug, pin_must_change')
     .eq('slug', key)
     .maybeSingle()
   if (error || !data) return null

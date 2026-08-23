@@ -45,7 +45,12 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Inloggen tijdelijk niet beschikbaar. Probeer later opnieuw.' }, { status: 503 })
   }
 
-  const res = NextResponse.json({ ok: true, slug: row.slug, name: row.name })
+  const res = NextResponse.json({
+    ok: true,
+    slug: row.slug,
+    name: row.name,
+    mustChangePin: row.pin_must_change === true,
+  })
   res.cookies.set(GIDS_SESSION_COOKIE, token, gidsSessionCookieOptions())
   return res
 }

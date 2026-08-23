@@ -303,6 +303,15 @@
     "addBusinessLoading": "Opening registration…",
     "claimHint": "Already listed? Find your page and click «Claim your business» — it's free."
   },
+  "pinChange": {
+    "title": "Change your PIN",
+    "lead": "First login as {name}. Choose your own 6-digit PIN (not 123456). Then you can manage your listing.",
+    "newPinLabel": "New PIN (6 digits)",
+    "confirmPinLabel": "Confirm PIN",
+    "submit": "OK",
+    "submitBusy": "Saving…",
+    "submitFailed": "Could not save PIN."
+  },
   "beheer": {
     "pageTitle": "Manage business",
     "loggedInAs": "Logged in as {name}",
