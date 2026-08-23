@@ -967,15 +967,17 @@ body {
 
 .vysiongids-home-stats {
   --vysiongids-home-stats-inner-shift: clamp(0.625rem, 1.75vw, 1.125rem);
+  --vysiongids-home-stats-title-lift: clamp(0.5rem, 1.5vw, 0.875rem);
   background: #ececec;
   border-top: none;
   border-bottom: 1px solid #e0e0e0;
-  padding: calc(var(--vysiongids-home-section-y) - 1cm) var(--vysiongids-home-section-x)
+  padding: calc(var(--vysiongids-home-section-y) - 1cm - var(--vysiongids-home-stats-title-lift))
+    var(--vysiongids-home-section-x)
     calc(var(--vysiongids-home-section-y) - var(--vysiongids-home-stats-inner-shift));
 }
 
 .vysiongids-home-stats-title {
-  margin: 0 auto clamp(1.25rem, 3vw, 2rem);
+  margin: 0 auto calc(clamp(1.25rem, 3vw, 2rem) + var(--vysiongids-home-stats-title-lift, 0));
   max-width: min(52rem, 100%);
   padding: 0 0.5rem;
   text-align: center;
