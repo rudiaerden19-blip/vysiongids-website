@@ -5,7 +5,7 @@ const cachedHomeStats = unstable_cache(
   async () => ({
     zoekactiesPerDag: zoekactiesPerDagDisplay(),
   }),
-  ['gids-home-public-stats-v5-bezoekers-only'],
+  ['gids-home-public-stats-v6-13k-at-20h'],
   { revalidate: 60 },
 )
 

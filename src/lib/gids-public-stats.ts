@@ -86,14 +86,14 @@ function brusselsHourAndMinute(now: Date): { hour: number; minute: number } {
 }
 
 /**
- * Bezoekers vandaag: 9:00 (Brussel) = 180, lineair oplopend tot 21:00 = 9800; daarvoor/daarna vast.
+ * Bezoekers vandaag: 9:00 (Brussel) = 180, lineair oplopend tot 20:00 ≈ 13.000; daarvoor/daarna vast.
  */
 export function zoekactiesPerDagDisplay(now = new Date()): number {
   const { hour, minute } = brusselsHourAndMinute(now)
   const startHour = 9
-  const endHour = 21
+  const endHour = 20
   const baseAtNine = 180
-  const endTotal = 9800
+  const endTotal = 13_000
   const windowHours = endHour - startHour
 
   if (hour < startHour) return baseAtNine
