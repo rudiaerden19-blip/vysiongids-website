@@ -47,6 +47,12 @@ function setRegionCookie(slug: ProvinceSlug) {
   document.cookie = `${REGION_COOKIE}=${slug};path=/;max-age=${60 * 60 * 24 * 365};SameSite=Lax`
 }
 
+function provinceSlugFromParam(raw: string | null | undefined): ProvinceSlug | null {
+  const prov = raw?.trim()
+  if (!prov) return null
+  return BELGIUM_PROVINCES.some((p) => p.slug === prov) ? (prov as ProvinceSlug) : null
+}
+
 function HeaderNavNewBadge({ variant = 'stacked' }: { variant?: 'stacked' | 'inline' }) {
   const { t } = useLanguage()
   return (
@@ -232,14 +238,14 @@ function SiteHeaderBar() {
   useEffect(() => setMounted(true), [])
 
   useEffect(() => {
-    setRegion(readRegionCookie())
-    const prov = searchParams.get('prov')
-    if (prov && BELGIUM_PROVINCES.some((p) => p.slug === prov)) {
-      const slug = prov as ProvinceSlug
-      setRegion(slug)
-      setRegionCookie(slug)
+    const fromUrl = provinceSlugFromParam(searchParams.get('prov'))
+    if (fromUrl) {
+      setRegion(fromUrl)
+      setRegionCookie(fromUrl)
+      return
     }
-  }, [searchParams])
+    setRegion(readRegionCookie())
+  }, [searchParams, pathname])
 
   useEffect(() => {
     if (!mobileMenuOpen) return
@@ -324,13 +330,19 @@ function SiteHeaderBar() {
       setRegion(slug)
       setRegionCookie(slug)
       setOpen(false)
-      router.push(`/zoeken?prov=${slug}`)
+      const href = `/zoeken?prov=${encodeURIComponent(slug)}`
+      if (pathname === '/zoeken') {
+        router.replace(href, { scroll: false })
+      } else {
+        router.push(href)
+      }
     },
-    [router],
+    [router, pathname],
   )
 
+  const provFromUrl = provinceSlugFromParam(searchParams.get('prov'))
   const regionLabel = localizedProvinceLabel(region, t)
-  const onZoekenWithRegion = pathname === '/zoeken' && searchParams.get('prov') === region
+  const onZoekenWithRegion = pathname === '/zoeken' && provFromUrl !== null
   const labelClass =
     'vysiongids-site-header-region-label text-accent text-base font-bold tracking-tight hover:text-accent/85 sm:text-lg'
 
@@ -380,7 +392,7 @@ function SiteHeaderBar() {
                         <>
                           {' · '}
                           <Link
-                            href={`/zoeken?prov=${region}`}
+                            href={`/zoeken?prov=${encodeURIComponent(region)}`}
                             className="font-semibold text-accent underline hover:no-underline"
                             onClick={close}
                           >
@@ -448,7 +460,7 @@ function SiteHeaderBar() {
               {t('common.breadcrumbSeparator')}
             </span>
             <div ref={triggerRef} className="vysiongids-site-header-region">
-              <Link href={`/zoeken?prov=${region}`} className={labelClass}>
+              <Link href={`/zoeken?prov=${encodeURIComponent(region)}`} className={labelClass}>
                 {regionLabel}
               </Link>
               <button
