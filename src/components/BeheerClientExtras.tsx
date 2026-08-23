@@ -12,11 +12,6 @@ import type { Listing } from '@/lib/listing-types'
 import { isDienstenListing } from '@/lib/listing-segment'
 import BeheerDienstenPanel from '@/components/BeheerDienstenPanel'
 
-const ListingOwnerDailyViews = dynamic(() => import('@/components/ListingOwnerDailyViews'), {
-  ssr: false,
-  loading: () => null,
-})
-
 function ZoekertjesSectionLoading() {
   const { t } = useLanguage()
   return (
@@ -136,7 +131,6 @@ export default function BeheerClientExtras({ listing }: Props) {
         </>
       ) : null}
 
-      {slug ? <ListingOwnerDailyViews slug={slug} variant="beheer" /> : null}
       <BeheerGidsChatSection initialThreadId={chatThreadId} />
 
       {listing && dienstenAccount && slug ? <BeheerDienstenPanel listing={listing} slug={slug} /> : null}
