@@ -1108,7 +1108,7 @@ body {
   }
 }
 
-@media (max-width: 639px) {
+@media (max-width: 1023px) {
   .vysiongids-listing-panel--compact .vysiongids-listing-panel-photo {
     aspect-ratio: 4 / 3;
     max-height: none;
@@ -1119,12 +1119,12 @@ body {
   }
 }
 
-@media (min-width: 640px) {
+@media (min-width: 1024px) {
   .vysiongids-listing-panel--compact .vysiongids-listing-panel-photo {
     width: 100%;
     max-width: none;
     aspect-ratio: auto;
-    min-height: 100%;
+    min-height: 0;
     align-self: stretch;
   }
 
@@ -1172,7 +1172,8 @@ body {
 }
 
 .vysiongids-home-featured-viewport {
-  overflow: hidden;
+  overflow-x: hidden;
+  overflow-y: visible;
   width: 100%;
   border-radius: 0.75rem;
   box-shadow: 0 10px 32px rgb(15 23 42 / 0.08);
@@ -1838,11 +1839,16 @@ body {
 }
 
 .vysiongids-listing-panel {
-  overflow: hidden;
+  overflow: visible;
   border-radius: 0.75rem;
   border: var(--vysiongids-card-border);
   background: #fff;
   box-shadow: var(--vysiongids-card-shadow);
+}
+
+.vysiongids-listing-panel-row {
+  overflow: hidden;
+  border-radius: 0.75rem 0.75rem 0 0;
 }
 
 .vysiongids-listing-panel:hover {
@@ -1857,6 +1863,7 @@ body {
   font-weight: 600;
   line-height: 1.35;
   color: #fff;
+  border-radius: 0 0 0.75rem 0.75rem;
 }
 
 .vysiongids-listing-panel-hiring-inner {
@@ -2893,6 +2900,14 @@ body {
   flex: 0 0 auto;
 }
 
+.vysiongids-listing-panel-cta-stack .vysiongids-listing-action-btn,
+.vysiongids-listing-panel-cta-stack button.vysiongids-listing-action-btn {
+  width: 100%;
+  max-width: 100%;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
 .vysiongids-listing-action-btn {
   display: inline-flex;
   align-items: center;
@@ -3739,14 +3754,34 @@ body {
   filter: brightness(1.05);
 }
 
-@media (max-width: 639px) {
+@media (max-width: 1023px) {
   .vysiongids-listing-panel-body {
     padding: 1rem 1.1rem;
+  }
+
+  .vysiongids-listing-panel-row {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .vysiongids-listing-panel-photo {
+    width: 100%;
+    max-width: none;
+    aspect-ratio: 4 / 3;
+    height: auto;
+    min-height: 0;
+    border-radius: 0;
+  }
+
+  .vysiongids-listing-panel-body {
+    min-height: 0;
+    overflow: visible;
   }
 
   .vysiongids-listing-panel-actions {
     flex-direction: column;
     align-items: stretch;
+    overflow: visible;
   }
 
   .vysiongids-listing-panel-amenities--inline {
@@ -3758,17 +3793,19 @@ body {
     min-width: 0;
   }
 
-  .vysiongids-listing-action-btn {
+  .vysiongids-listing-action-btn,
+  button.vysiongids-listing-action-btn {
     width: 100%;
   }
 }
 
-@media (min-width: 640px) {
+@media (min-width: 1024px) {
   .vysiongids-listing-panel-row {
     display: grid;
     grid-template-columns: min(48%, 30rem) minmax(0, 1fr);
-    align-items: stretch;
+    align-items: start;
     column-gap: 0;
+    border-radius: 0.75rem 0 0 0;
   }
 
   .vysiongids-listing-panel-photo {
@@ -3778,9 +3815,10 @@ body {
     min-width: 0;
     max-width: none;
     aspect-ratio: auto;
-    height: 100%;
-    min-height: 100%;
+    height: auto;
+    min-height: 0;
     align-self: stretch;
+    border-radius: 0.75rem 0 0 0.75rem;
   }
 
   .vysiongids-listing-panel-body {
@@ -3788,6 +3826,7 @@ body {
     grid-row: 1;
     min-height: 0;
     padding: 1.35rem 1.75rem;
+    overflow: visible;
   }
 
   .vysiongids-listing-panel--compact .vysiongids-listing-panel-row {

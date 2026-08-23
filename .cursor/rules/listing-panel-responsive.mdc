@@ -1,0 +1,13 @@
+---
+description: Zoekkaart ListingPanel — altijd telefoon + landscape testen
+alwaysApply: true
+---
+
+# ListingPanel — responsive (alle schermen)
+
+Bij wijzigingen aan **zoekkaart-knoppen** (`ListingPanel`, `ListingPromotionButton`, CTA-stack, hiring-balk):
+
+1. **Breakpoint zoekkaart:** mobiele layout tot **1023px** (niet alleen 639px) — telefoon in **landscape** is vaak >640px.
+2. **Promoties** staat onder Menu in `.vysiongids-listing-panel-cta-stack`; knop is `<button>`, zelfde breedte als andere CTA’s (`width: 100%` op smalle schermen).
+3. **Geen afsnijden:** `.vysiongids-listing-panel` geen `overflow: hidden` op de hele kaart; inhoud mag groeien (5 knoppen + amenities).
+4. Test visueel: ~390px portrait, ~844px landscape, 1024px+ desktop.
