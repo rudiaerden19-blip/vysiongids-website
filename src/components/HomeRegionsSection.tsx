@@ -6,7 +6,18 @@ import { provinceImageUrl } from '@/lib/province-images'
 /** Geen kaart op homepage (wel nog in zoeken/registratie). */
 const HOME_PROVINCE_SLUGS_HIDDEN = new Set(['henegouwen', 'luik', 'luxemburg', 'namen'])
 
+/** Homepage-grid: Brussel als laatste kaart. */
+const HOME_PROVINCE_SLUG_LAST = 'brussel'
+
+function homeProvincesForGrid() {
+  const visible = BELGIUM_PROVINCES.filter((prov) => !HOME_PROVINCE_SLUGS_HIDDEN.has(prov.slug))
+  const rest = visible.filter((p) => p.slug !== HOME_PROVINCE_SLUG_LAST)
+  const last = visible.find((p) => p.slug === HOME_PROVINCE_SLUG_LAST)
+  return last ? [...rest, last] : rest
+}
+
 export default function HomeRegionsSection() {
+  const homeProvinces = homeProvincesForGrid()
   return (
     <section className="vysiongids-home-regions" aria-labelledby="home-regions-title">
       <div className="vysiongids-home-regions-inner">
@@ -20,7 +31,7 @@ export default function HomeRegionsSection() {
         </header>
 
         <ul className="vysiongids-home-regions-grid">
-          {BELGIUM_PROVINCES.filter((prov) => !HOME_PROVINCE_SLUGS_HIDDEN.has(prov.slug)).map((prov) => {
+          {homeProvinces.map((prov) => {
             const img = provinceImageUrl(prov.slug)
             return (
               <li key={prov.slug}>
