@@ -1,0 +1,19 @@
+---
+description: Vysiongids — nooit de Vysion Horeca-repo aanraken
+alwaysApply: true
+---
+
+# Vysiongids — apart van Vysion Horeca
+
+**Vysiongids** = deze repo (`vysiongids-website`). **Vysion Horeca** = sibling `vysionhoreca-website` (kassa, tenants, Vercel Horeca).
+
+## Verboden
+
+- **Geen** lezen/wijzigen/commit/push in `../vysionhoreca-website` of paden onder `vysionhoreca-website`, tenzij de gebruiker in **dezelfde opdracht** expliciet Horeca/kassa vraagt.
+- **Nooit** aan het einde van een Vysiongids-taak voorstellen om «ook Horeca te committen» of lokale Horeca-wijzigingen mee te nemen.
+- **Geen** `git` in de Horeca-map voor Vysiongids-werk.
+
+## Wel
+
+- Commit + push **alleen** deze repo (`vysiongids-website`) → `main` → Vercel **Vysiongids**.
+- Zoho/env: alleen het **Vysiongids**-Vercel-project, niet Horeca tenzij expliciet gevraagd.
