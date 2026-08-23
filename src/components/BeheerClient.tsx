@@ -60,20 +60,15 @@ export default function BeheerClient({ serverSession }: Props) {
           name: serverSession.name,
           slug: serverSession.slug,
           premiumMember: serverSession.premiumMember,
-          listing: serverSession.listing,
         }
       : loginHint
         ? { authenticated: true, name: loginHint.name, slug: loginHint.slug }
         : { authenticated: false },
   )
-  const [listing, setListing] = useState<Listing | null>(serverSession.listing ?? null)
-  const [sessionReady, setSessionReady] = useState(() => {
-    if (serverSession.authenticated && serverSession.listing) return true
-    if (!serverSession.authenticated && !loginHint) return true
-    return false
-  })
+  const [listing, setListing] = useState<Listing | null>(null)
+  const [sessionReady, setSessionReady] = useState(() => serverSession.authenticated || !loginHint)
   const [listingLoading, setListingLoading] = useState(
-    serverSession.authenticated ? !serverSession.listing : false,
+    () => serverSession.authenticated || Boolean(loginHint),
   )
   const [publicSlug, setPublicSlug] = useState<string | undefined>(
     serverSession.slug ?? loginHint?.slug,
@@ -85,8 +80,7 @@ export default function BeheerClient({ serverSession }: Props) {
   const dienstenAccount = listing ? isDienstenListing(listing) : false
 
   useEffect(() => {
-    if (serverSession.authenticated && serverSession.listing) {
-      if (serverSession.authenticated) clearGidsBeheerLoginHint()
+    if (!serverSession.authenticated && !loginHint) {
       setSessionReady(true)
       setListingLoading(false)
       return
@@ -97,36 +91,27 @@ export default function BeheerClient({ serverSession }: Props) {
 
     void (async () => {
       try {
-        const briefRes = await fetch('/api/gids/me?brief=1', { signal, credentials: 'same-origin' })
-        const brief = (await briefRes.json()) as MeResponse
-        setMe((prev) => ({ ...prev, ...brief }))
-        if (brief.slug) setPublicSlug(brief.slug)
-        if (brief.authenticated) clearGidsBeheerLoginHint()
-        setSessionReady(true)
-
-        if (!brief.authenticated) {
-          setListingLoading(false)
-          return
-        }
-
         const fullRes = await fetch('/api/gids/me', { signal, credentials: 'same-origin' })
         const full = (await fullRes.json()) as MeResponse
-        if (full.authenticated && full.listing) {
-          setListing(full.listing)
+        if (full.authenticated) {
           setMe(full)
           if (full.slug) setPublicSlug(full.slug)
+          if (full.listing) setListing(full.listing)
+          clearGidsBeheerLoginHint()
+        } else if (!serverSession.authenticated) {
+          setMe({ authenticated: false })
         }
       } catch (err: unknown) {
         if (err instanceof DOMException && err.name === 'AbortError') return
-        setMe({ authenticated: false })
-        setSessionReady(true)
+        if (!serverSession.authenticated) setMe({ authenticated: false })
       } finally {
+        setSessionReady(true)
         setListingLoading(false)
       }
     })()
 
     return () => controller.abort()
-  }, [serverSession.authenticated, serverSession.listing])
+  }, [serverSession.authenticated, loginHint])
 
   /** Na Stripe: premium via webhook — knop «Claim» verdwijnt zodra DB actief is (geen auto-verleng-UI). */
   useEffect(() => {

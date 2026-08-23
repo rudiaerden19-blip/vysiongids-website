@@ -1,5 +1,6 @@
 import type { Listing } from '@/lib/listing-types'
-import { fetchListingRowByIdAdmin, mapGidsRowToListing } from '@/lib/gids-listings-db'
+import { fetchListingSessionByIdAdmin } from '@/lib/gids-listings-db'
+import { resolveListingPremiumActive } from '@/lib/gids-premium'
 import { getGidsOwnerListingIdFromCookies } from '@/lib/gids-session'
 
 export type BeheerServerSession = {
@@ -8,26 +9,29 @@ export type BeheerServerSession = {
   slug?: string
   name?: string
   premiumMember?: boolean
+  /** Volledige listing alleen via client `/api/gids/me` — snellere beheer-pagina na login. */
   listing?: Listing
 }
 
-/** Eén server-roundtrip i.p.v. client → API → Supabase (beheer). Zoekertjes/chat lazy via client-API. */
+/** Snelle cookie-check + minimale listing-kolom — geen foto-join (beheer-formulier laadt via API). */
 export async function loadBeheerServerSession(): Promise<BeheerServerSession> {
   const listingId = await getGidsOwnerListingIdFromCookies()
   if (!listingId) return { authenticated: false }
 
-  const row = await fetchListingRowByIdAdmin(listingId)
+  const row = await fetchListingSessionByIdAdmin(listingId)
   if (!row) return { authenticated: false }
 
-  const listing = mapGidsRowToListing(row)
-  const premiumMember = listing.premiumMember === true
+  const premiumMember = resolveListingPremiumActive({
+    premium_member: row.premium_member,
+    premium_paused: row.premium_paused,
+    premium_expires_at: row.premium_expires_at,
+  })
 
   return {
     authenticated: true,
     listingId: row.id,
-    slug: listing.slug,
-    name: listing.name,
+    slug: row.slug,
+    name: row.name,
     premiumMember,
-    listing,
   }
 }

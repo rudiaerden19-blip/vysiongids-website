@@ -1,6 +1,6 @@
 'use client'
 
-import { useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
 import { GidsButtonLoadingContent } from '@/components/GidsLoadingSpinner'
 import GidsInternalNavLink from '@/components/GidsInternalNavLink'
@@ -10,7 +10,6 @@ import { useGidsBusyUntilNav } from '@/hooks/use-gids-busy-until-nav'
 import { storeGidsBeheerLoginHint } from '@/lib/gids-beheer-login-hint'
 
 export default function GidsLoginForm() {
-  const router = useRouter()
   const searchParams = useSearchParams()
   const returnTo = searchParams.get('returnTo')?.trim()
   const [error, setError] = useState<string | null>(null)
@@ -39,10 +38,10 @@ export default function GidsLoginForm() {
       if (data.slug && data.name) {
         storeGidsBeheerLoginHint(data.slug, data.name)
       }
-      router.prefetch('/beheer')
       const dest =
         returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/beheer'
-      router.push(dest)
+      stopBusy()
+      window.location.assign(dest)
     } catch {
       setError('Netwerkfout.')
       stopBusy()

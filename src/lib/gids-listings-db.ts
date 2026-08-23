@@ -672,6 +672,19 @@ export async function fetchListingByNormalizedNameAdmin(nameNormalized: string):
   return data as GidsListingRow
 }
 
+type GidsLoginLookupRow = Pick<GidsListingRow, 'id' | 'name' | 'name_normalized' | 'pin_hash' | 'slug'>
+
+async function fetchListingsByNormalizedNamesAdmin(keys: string[]): Promise<GidsLoginLookupRow[]> {
+  const supabase = createGidsSupabaseAdmin()
+  if (!supabase || keys.length === 0) return []
+  const { data, error } = await supabase
+    .from('gids_listings')
+    .select('id, name, name_normalized, pin_hash, slug')
+    .in('name_normalized', keys)
+  if (error || !data?.length) return []
+  return data as GidsLoginLookupRow[]
+}
+
 export async function fetchListingBySlugAdmin(slug: string): Promise<GidsListingRow | null> {
   const supabase = createGidsSupabaseAdmin()
   if (!supabase) return null
@@ -688,9 +701,15 @@ export async function fetchListingBySlugAdmin(slug: string): Promise<GidsListing
 
 export async function fetchListingByLoginNameAdmin(rawName: string): Promise<GidsListingRow | null> {
   const keys = gidsBusinessNameLookupKeys(rawName)
-  const normalizedHits = await Promise.all(keys.map((key) => fetchListingByNormalizedNameAdmin(key)))
-  for (const row of normalizedHits) {
-    if (row) return row
+  if (keys.length > 0) {
+    const hits = await fetchListingsByNormalizedNamesAdmin(keys)
+    if (hits.length > 0) {
+      for (const key of keys) {
+        const row = hits.find((h) => h.name_normalized === key)
+        if (row) return row as GidsListingRow
+      }
+      return hits[0] as GidsListingRow
+    }
   }
 
   const slugLike = rawName
