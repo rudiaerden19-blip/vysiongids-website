@@ -43,6 +43,10 @@ export type ListingClaimMailPayload = {
   resubmit?: boolean
 }
 
+export type ListingClaimActivatedMailPayload = ListingClaimMailPayload & {
+  pin: string
+}
+
 function siteOrigin(): string {
   const raw = process.env.NEXT_PUBLIC_VYSIONGIDS_SITE_URL?.trim() || 'https://www.vysiongids.be'
   return raw.replace(/\/$/, '')
@@ -87,12 +91,12 @@ export async function sendListingClaimNotificationEmail(payload: ListingClaimMai
     payload.btwNumber ? `BTW: ${payload.btwNumber}` : 'BTW: —',
     payload.message ? `Extra info: ${payload.message}` : 'Extra info: —',
     '',
-    'Actie: PIN hash zetten (scripts/hash-gids-pin.mjs), claimed_at + pin_must_change via supabase/APPROVE_CLAIM_ACTIVATE_OWNER.sql',
+    'Actie: geen — claim is automatisch geactiveerd; eigenaar ontving PIN per e-mail.',
   ]
 
   const html = `
     <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto; padding: 20px; color: #111;">
-      <h2 style="color: #0e5d82; margin: 0 0 16px;">Nieuwe claim-aanvraag</h2>
+      <h2 style="color: #0e5d82; margin: 0 0 16px;">${payload.resubmit ? 'Claim opnieuw — auto-geactiveerd' : 'Claim auto-geactiveerd'}</h2>
       <p style="margin: 0 0 12px;"><strong>Zaak:</strong> ${escapeHtml(payload.listingName)}</p>
       <p style="margin: 0 0 12px;"><strong>Stad:</strong> ${escapeHtml(payload.listingCity)}</p>
       <p style="margin: 0 0 16px;"><a href="${escapeHtml(zaakUrl)}">${escapeHtml(zaakUrl)}</a></p>
@@ -118,7 +122,82 @@ export async function sendListingClaimNotificationEmail(payload: ListingClaimMai
   })
 }
 
-/** Bevestiging naar de aanvrager zelf (niet alleen naar Vysion). */
+/** Na self-service claim: PIN + inloggen (direct actief). */
+export async function sendListingClaimActivatedOwnerEmail(
+  payload: ListingClaimActivatedMailPayload,
+): Promise<void> {
+  const user = resolveZohoEmail()
+  const pass = resolveZohoPassword()
+  if (!user || !pass) {
+    throw new Error('ZOHO_EMAIL / ZOHO_PASSWORD niet geconfigureerd')
+  }
+
+  const loginUrl = `${siteOrigin()}/login`
+  const beheerUrl = `${siteOrigin()}/beheer`
+  const zaakUrl = `${siteOrigin()}/zaak/${encodeURIComponent(payload.listingSlug)}`
+  const subject = `Vysiongids — je zaak ${payload.listingName} is geactiveerd`
+
+  const text = [
+    `Hallo ${payload.contactName},`,
+    '',
+    `Je claim voor ${payload.listingName} is goedgekeurd. Je kan meteen inloggen en je zaak beheren.`,
+    '',
+    `Zaaknaam (exact zo in de gids): ${payload.listingName}`,
+    `PIN (6 cijfers): ${payload.pin}`,
+    '',
+    `Inloggen: ${loginUrl}`,
+    `Beheer: ${beheerUrl}`,
+    `Je publieke pagina: ${zaakUrl}`,
+    '',
+    'Bij eerste login moet je een nieuwe PIN kiezen (veiligheid).',
+    '',
+    `Vragen? ${GIDS_CONTACT.email} · ${GIDS_CONTACT.phoneDisplay}`,
+  ].join('\n')
+
+  const html = `
+    <div style="font-family: Arial, sans-serif; max-width: 640px; margin: 0 auto; padding: 20px; color: #111;">
+      <h2 style="color: #0e5d82; margin: 0 0 16px;">Je zaak is geactiveerd</h2>
+      <p style="margin: 0 0 16px; line-height: 1.5;">Hallo ${escapeHtml(payload.contactName)}, je claim voor <strong>${escapeHtml(payload.listingName)}</strong> is goedgekeurd. Log in en beheer je zaak meteen.</p>
+      <p style="margin: 0 0 8px;"><strong>Zaaknaam:</strong> ${escapeHtml(payload.listingName)}</p>
+      <p style="margin: 0 0 16px; font-size: 18px;"><strong>PIN:</strong> <code style="background:#f3f4f6;padding:4px 8px;border-radius:4px;">${escapeHtml(payload.pin)}</code></p>
+      <p style="margin: 0 0 12px;"><a href="${escapeHtml(loginUrl)}">Inloggen</a> · <a href="${escapeHtml(beheerUrl)}">Beheer</a></p>
+      <p style="margin: 0 0 16px;"><a href="${escapeHtml(zaakUrl)}">${escapeHtml(zaakUrl)}</a></p>
+      <p style="margin: 0; color: #6b7280; font-size: 14px;">Bij eerste login kies je een nieuwe PIN.</p>
+    </div>
+  `
+
+  const transporter = createZohoTransporter()
+  await transporter.sendMail({
+    from: `"Vysiongids" <${user}>`,
+    to: payload.contactEmail,
+    replyTo: GIDS_CONTACT.email,
+    subject,
+    text,
+    html,
+  })
+}
+
+export async function sendListingClaimActivatedEmails(
+  payload: ListingClaimActivatedMailPayload,
+): Promise<{ staffOk: boolean; applicantOk: boolean }> {
+  let applicantOk = false
+  let staffOk = false
+  try {
+    await sendListingClaimActivatedOwnerEmail(payload)
+    applicantOk = true
+  } catch (err) {
+    console.error('[gids claim activated mail owner]', err)
+  }
+  try {
+    await sendListingClaimNotificationEmail({ ...payload, resubmit: payload.resubmit })
+    staffOk = true
+  } catch (err) {
+    console.error('[gids claim activated mail staff]', err)
+  }
+  return { staffOk, applicantOk }
+}
+
+/** @deprecated Alleen fallback; claim gebruikt sendListingClaimActivatedEmails. */
 export async function sendListingClaimApplicantConfirmationEmail(
   payload: ListingClaimMailPayload,
 ): Promise<void> {

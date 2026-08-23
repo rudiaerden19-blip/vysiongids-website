@@ -34,7 +34,7 @@ export async function POST(req: Request) {
     return NextResponse.json(
       {
         error:
-          'Zaaknaam of PIN is onjuist. Gebruik de exacte naam zoals in de gids en de 6 cijfers die je koos bij «Zaak toevoegen».',
+          'Zaaknaam of PIN is onjuist. Gebruik de exacte naam zoals in de gids. Na claim staat je PIN in de bevestigingsmail.',
       },
       { status: 401 },
     )
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     ok: true,
     slug: row.slug,
     name: row.name,
-    mustChangePin: false,
+    mustChangePin: row.pin_must_change === true,
   })
   res.cookies.set(GIDS_SESSION_COOKIE, token, gidsSessionCookieOptions())
   return res

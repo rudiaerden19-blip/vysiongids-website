@@ -1,4 +1,4 @@
-import { randomBytes, scryptSync, timingSafeEqual } from 'crypto'
+import { randomBytes, randomInt, scryptSync, timingSafeEqual } from 'crypto'
 
 const KEY_LEN = 32
 
@@ -11,6 +11,11 @@ export const GIDS_DEFAULT_STARTER_PIN = '123456'
 
 export function isGidsDefaultStarterPin(pin: string): boolean {
   return pin === GIDS_DEFAULT_STARTER_PIN
+}
+
+/** Eenmalige PIN voor self-service claim (6 cijfers, per zaak uniek). */
+export function generateGidsOwnerPin(): string {
+  return randomInt(0, 1_000_000).toString().padStart(6, '0')
 }
 
 export function hashGidsPin(pin: string): string {

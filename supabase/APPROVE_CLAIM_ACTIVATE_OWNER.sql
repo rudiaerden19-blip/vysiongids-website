@@ -1,4 +1,4 @@
--- Claim goedkeuren: standaard-PIN 123456 + verplicht wijzigen bij eerste login.
+-- NOOD-FALLBACK als e-mail/self-service claim faalde (normaal: klant claimt zelf via website).
 --
 -- 1) Hash genereren (in repo-root):
 --    node scripts/hash-gids-pin.mjs 123456

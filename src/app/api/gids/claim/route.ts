@@ -1,8 +1,10 @@
 import { NextResponse } from 'next/server'
+import { revalidatePath, revalidateTag } from 'next/cache'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { enforceRateLimit } from '@/lib/gids-rate-limit'
-import { isGidsMailConfigured, sendListingClaimEmails } from '@/lib/gids-mail'
+import { isGidsMailConfigured, sendListingClaimActivatedEmails } from '@/lib/gids-mail'
 import { listingAcceptsPublicClaim } from '@/lib/listing-claimable'
+import { activateGidsListingFromClaim, newClaimOwnerPin } from '@/lib/gids-claim-activate'
 
 const WINDOW_MS = 60 * 60 * 1000
 const MAX_PER_IP = 8
@@ -21,6 +23,16 @@ function trimOptional(s: unknown, maxLen: number): string | null {
   const t = String(s ?? '').trim()
   if (!t) return null
   return t.slice(0, maxLen)
+}
+
+type ListingRow = {
+  id: string
+  slug: string
+  name: string
+  city: string | null
+  claimed_at: string | null
+  pin_hash: string | null
+  status: string
 }
 
 export async function POST(req: Request) {
@@ -79,39 +91,25 @@ export async function POST(req: Request) {
   if (!listing || listing.status !== 'published') {
     return NextResponse.json({ error: 'Zaak niet gevonden.' }, { status: 404 })
   }
-  if (
-    !listingAcceptsPublicClaim({ claimed_at: listing.claimed_at, pin_hash: listing.pin_hash })
-  ) {
-    const hasPin = Boolean(String(listing.pin_hash ?? '').trim())
+
+  const row = listing as ListingRow
+
+  if (!listingAcceptsPublicClaim({ claimed_at: row.claimed_at, pin_hash: row.pin_hash })) {
+    const hasPin = Boolean(String(row.pin_hash ?? '').trim())
     return NextResponse.json(
       {
         error: hasPin
-          ? 'Deze zaak heeft al een eigenaar via zaak toevoegen. Log in met je zaaknaam en PIN, of neem contact op met Vysiongids.'
+          ? 'Deze zaak heeft al een eigenaar. Log in met je zaaknaam en PIN, of neem contact op met Vysiongids.'
           : 'Deze zaak is al geclaimd. Log in met je zaaknaam en PIN, of neem contact op met Vysiongids.',
       },
       { status: 409 },
     )
   }
 
-  async function syncListingContactFromClaim(supabase: NonNullable<typeof admin>, listingId: string) {
-    const patch: { email: string; phone?: string } = { email: contactEmail }
-    if (contactPhone.length >= 6) patch.phone = contactPhone
-    const { error: syncErr } = await supabase.from('gids_listings').update(patch).eq('id', listingId)
-    if (syncErr) console.warn('[gids claim] listing contact sync:', syncErr.message)
-  }
-
-  const { data: pendingDup } = await admin
-    .from('gids_listing_claim_requests')
-    .select('id')
-    .eq('listing_id', listing.id)
-    .eq('contact_email', contactEmail)
-    .eq('status', 'pending')
-    .maybeSingle()
-
-  const mailPayload = {
-    listingName: listing.name,
-    listingSlug: listing.slug,
-    listingCity: listing.city ?? '',
+  const mailPayloadBase = {
+    listingName: row.name,
+    listingSlug: row.slug,
+    listingCity: row.city ?? '',
     contactName,
     contactEmail,
     contactPhone,
@@ -119,72 +117,114 @@ export async function POST(req: Request) {
     message,
   }
 
-  if (pendingDup) {
-    await syncListingContactFromClaim(admin, listing.id)
-    const mailConfigured = isGidsMailConfigured()
-    let confirmationSent = false
-    if (mailConfigured) {
-      const sent = await sendListingClaimEmails({ ...mailPayload, resubmit: true })
-      confirmationSent = sent.applicantOk
-    }
-    return NextResponse.json({ ok: true, duplicate: true, mailConfigured, confirmationSent })
-  }
-
-  const { data: insertedRow, error: insertErr } = await admin
+  const { data: pendingDup } = await admin
     .from('gids_listing_claim_requests')
-    .insert({
-      listing_id: listing.id,
-      contact_name: contactName,
-      contact_email: contactEmail,
-      contact_phone: contactPhone,
-      btw_number: btwNumber,
-      message,
-    })
     .select('id')
-    .single()
+    .eq('listing_id', row.id)
+    .eq('contact_email', contactEmail)
+    .eq('status', 'pending')
+    .maybeSingle()
 
-  if (insertErr || !insertedRow) {
-    console.error('[gids claim insert]', insertErr.message, insertErr.code)
-    if (/gids_listing_claim_requests/i.test(insertErr.message)) {
-      return NextResponse.json(
-        { error: 'Claim-module nog niet actief in de database. Voer migratie 024 uit in Supabase.' },
-        { status: 503 },
-      )
+  let claimRequestId = pendingDup?.id as string | undefined
+  let duplicate = Boolean(pendingDup)
+
+  if (!claimRequestId) {
+    const { data: insertedRow, error: insertErr } = await admin
+      .from('gids_listing_claim_requests')
+      .insert({
+        listing_id: row.id,
+        contact_name: contactName,
+        contact_email: contactEmail,
+        contact_phone: contactPhone,
+        btw_number: btwNumber,
+        message,
+      })
+      .select('id')
+      .single()
+
+    if (insertErr || !insertedRow) {
+      console.error('[gids claim insert]', insertErr?.message, insertErr?.code)
+      if (/gids_listing_claim_requests/i.test(insertErr?.message ?? '')) {
+        return NextResponse.json(
+          { error: 'Claim-module nog niet actief in de database. Voer migratie 024 uit in Supabase.' },
+          { status: 503 },
+        )
+      }
+      return NextResponse.json({ error: 'Aanvraag kon niet worden opgeslagen. Probeer later opnieuw.' }, { status: 500 })
     }
-    return NextResponse.json({ error: 'Aanvraag kon niet worden opgeslagen. Probeer later opnieuw.' }, { status: 500 })
+    claimRequestId = insertedRow.id as string
+    duplicate = false
   }
 
-  await syncListingContactFromClaim(admin, listing.id)
-
+  const pin = newClaimOwnerPin()
   const mailConfigured = isGidsMailConfigured()
-  let confirmationSent = false
 
   if (mailConfigured) {
-    const sent = await sendListingClaimEmails(mailPayload)
-    confirmationSent = sent.applicantOk
-    if (!sent.staffOk && !sent.applicantOk) {
-      await admin.from('gids_listing_claim_requests').delete().eq('id', insertedRow.id)
+    const sent = await sendListingClaimActivatedEmails({
+      ...mailPayloadBase,
+      pin,
+      resubmit: duplicate,
+    })
+    if (!sent.applicantOk) {
+      if (!duplicate && claimRequestId) {
+        await admin.from('gids_listing_claim_requests').delete().eq('id', claimRequestId)
+      }
       return NextResponse.json(
         {
           error:
-            'E-mail kon niet verstuurd worden (controleer Zoho op Vercel). Mail info@vysionhoreca.com met je gegevens.',
+            'E-mail met je PIN kon niet verstuurd worden. Controleer je e-mailadres of mail info@vysionhoreca.com.',
         },
         { status: 503 },
       )
     }
     if (!sent.staffOk) {
-      console.warn('[gids claim] staff notification failed; applicant mail ok=', sent.applicantOk)
+      console.warn('[gids claim] staff notification failed after owner mail ok')
     }
   } else {
-    console.warn(
-      '[gids claim] ZOHO_EMAIL / ZOHO_PASSWORD missing — aanvraag opgeslagen zonder e-mailnotificatie',
+    console.warn('[gids claim] mail not configured — cannot auto-activate without PIN delivery')
+    if (!duplicate && claimRequestId) {
+      await admin.from('gids_listing_claim_requests').delete().eq('id', claimRequestId)
+    }
+    return NextResponse.json(
+      {
+        error:
+          'Claim is tijdelijk niet beschikbaar (e-mail niet geconfigureerd). Mail info@vysionhoreca.com met je zaaknaam en BTW-nummer.',
+      },
+      { status: 503 },
     )
+  }
+
+  const activated = await activateGidsListingFromClaim(admin, {
+    listingId: row.id,
+    contactEmail,
+    contactPhone,
+    pin,
+  })
+
+  if (!activated.ok) {
+    console.error('[gids claim activate]', activated.reason, activated.message)
+    return NextResponse.json(
+      { error: 'Activatie mislukt. Neem contact op met Vysiongids — vermeld je zaaknaam.' },
+      { status: 500 },
+    )
+  }
+
+  try {
+    revalidateTag('gids-listings', 'max')
+    revalidatePath('/')
+    revalidatePath('/zoeken')
+    revalidatePath(`/zaak/${row.slug}`)
+    revalidatePath('/intern/gids-beheer')
+  } catch (revalidateErr) {
+    console.error('[gids claim] revalidate', revalidateErr)
   }
 
   return NextResponse.json({
     ok: true,
-    listingName: listing.name,
-    mailConfigured,
-    confirmationSent,
+    activated: true,
+    duplicate,
+    listingName: row.name,
+    mailConfigured: true,
+    confirmationSent: true,
   })
 }

@@ -703,7 +703,7 @@ async function fetchListingsByNormalizedNamesAdmin(keys: string[]): Promise<Gids
   if (!supabase || keys.length === 0) return []
   const { data, error } = await supabase
     .from('gids_listings')
-    .select('id, name, name_normalized, pin_hash, slug')
+    .select('id, name, name_normalized, pin_hash, slug, pin_must_change')
     .in('name_normalized', keys)
   if (error || !data?.length) return []
   return data as GidsLoginLookupRow[]
