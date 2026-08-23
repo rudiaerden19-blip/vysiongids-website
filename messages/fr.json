@@ -312,6 +312,14 @@
     "submitBusy": "Enregistrement…",
     "submitFailed": "Impossible d'enregistrer le PIN."
   },
+  "pinChangePanel": {
+    "title": "Modifier le code PIN",
+    "lead": "Entrez votre PIN actuel, puis choisissez et confirmez un nouveau PIN à 6 chiffres.",
+    "currentPinLabel": "PIN actuel",
+    "newPinLabel": "Nouveau PIN",
+    "confirmPinLabel": "Confirmer le nouveau PIN",
+    "success": "Votre PIN a été modifié."
+  },
   "beheer": {
     "pageTitle": "Gérer l’établissement",
     "loggedInAs": "Connecté en tant que {name}",

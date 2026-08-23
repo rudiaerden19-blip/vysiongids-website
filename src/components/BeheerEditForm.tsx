@@ -285,22 +285,6 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
         </div>
 
         <div>
-          <label className="vysiongids-form-label" htmlFor="newPin">
-            Nieuwe PIN (optioneel)
-          </label>
-          <input
-            id="newPin"
-            name="newPin"
-            inputMode="numeric"
-            pattern="\d{6}"
-            maxLength={6}
-            autoComplete="off"
-            placeholder={t('beheer.editForm.newPinPlaceholder')}
-            className="vysiongids-form-input mt-1 max-w-xs tracking-widest"
-          />
-        </div>
-
-        <div>
           <p className="vysiongids-form-label">
             Type zaak (meerdere mogelijk)
             <span className="vysiongids-form-required" aria-hidden>

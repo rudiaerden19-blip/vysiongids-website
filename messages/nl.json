@@ -312,6 +312,14 @@
     "submitBusy": "Opslaan…",
     "submitFailed": "PIN opslaan mislukt."
   },
+  "pinChangePanel": {
+    "title": "PIN-code wijzigen",
+    "lead": "Vul eerst je huidige PIN in, kies daarna een nieuwe PIN van 6 cijfers en bevestig.",
+    "currentPinLabel": "Huidige PIN",
+    "newPinLabel": "Nieuwe PIN",
+    "confirmPinLabel": "Bevestig nieuwe PIN",
+    "success": "Je PIN is gewijzigd."
+  },
   "beheer": {
     "pageTitle": "Zaak beheren",
     "loggedInAs": "Ingelogd als {name}",

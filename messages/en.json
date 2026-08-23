@@ -312,6 +312,14 @@
     "submitBusy": "Saving…",
     "submitFailed": "Could not save PIN."
   },
+  "pinChangePanel": {
+    "title": "Change PIN",
+    "lead": "Enter your current PIN, then choose and confirm a new 6-digit PIN.",
+    "currentPinLabel": "Current PIN",
+    "newPinLabel": "New PIN",
+    "confirmPinLabel": "Confirm new PIN",
+    "success": "Your PIN has been changed."
+  },
   "beheer": {
     "pageTitle": "Manage business",
     "loggedInAs": "Logged in as {name}",

@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import SiteHeader from '@/components/SiteHeader'
-import BeheerRequiredPinChange from '@/components/BeheerRequiredPinChange'
+import BeheerChangePinPanel from '@/components/BeheerChangePinPanel'
 import BeheerListingEditor from '@/components/BeheerListingEditor'
 import BeheerClientExtras, { BeheerAuthFallback } from '@/components/BeheerClientExtras'
 import { BeheerLoggedInHeader, BeheerMenuCardLink } from '@/components/BeheerPageIntroServer'
@@ -30,11 +30,12 @@ export default async function BeheerPage() {
           ) : serverSession.pinMustChange ? (
             <>
               <BeheerLoggedInHeader listing={listing} />
-              <BeheerRequiredPinChange businessName={listing.name} />
+              <BeheerChangePinPanel businessName={listing.name} variant="firstLogin" />
             </>
           ) : (
             <>
               <BeheerLoggedInHeader listing={listing} />
+              <BeheerChangePinPanel />
               <BeheerListingEditor initialListing={listing} />
               {!isDienstenListing(listing) ? <BeheerMenuCardLink /> : null}
               <Suspense fallback={null}>
