@@ -28,6 +28,7 @@ import ListingMenuButton from '@/components/ListingMenuButton'
 import ListingPromotionButton from '@/components/ListingPromotionButton'
 import ZaakInfoTopLink from '@/components/ZaakInfoTopLink'
 import ListingPanelHiringBar from '@/components/ListingPanelHiringBar'
+import ZaakClaimBlock from '@/components/ZaakClaimBlock'
 
 export default function ListingPanel({
   listing,
@@ -82,6 +83,7 @@ export default function ListingPanel({
                   ) : null}
                 </h2>
               </Link>
+              <ZaakClaimBlock listing={listing} variant="panelTitle" />
             </div>
             <div
               className={`vysiongids-listing-panel-status-col${showTopZaakStamp ? ' vysiongids-listing-panel-status-col--topzaak' : ''}${travelLabel ? ' vysiongids-listing-panel-status-col--has-travel' : ''}`}

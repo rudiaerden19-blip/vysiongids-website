@@ -8,7 +8,7 @@ import type { Listing } from '@/lib/listing-types'
 
 type Props = {
   listing: Listing
-  variant?: 'sidebar' | 'banner'
+  variant?: 'sidebar' | 'banner' | 'panelTitle'
 }
 
 export default function ZaakClaimBlock({ listing, variant = 'sidebar' }: Props) {
@@ -18,6 +18,17 @@ export default function ZaakClaimBlock({ listing, variant = 'sidebar' }: Props) 
 
   if (listing.claimedAt) return null
   if (authChecked && ownerSlug === listing.slug) return null
+
+  if (variant === 'panelTitle') {
+    return (
+      <>
+        <button type="button" className="vysiongids-listing-panel-claim-btn" onClick={() => setOpen(true)}>
+          {t('claim.openButton')}
+        </button>
+        <ListingClaimModal listing={listing} open={open} onClose={() => setOpen(false)} />
+      </>
+    )
+  }
 
   const isBanner = variant === 'banner'
 

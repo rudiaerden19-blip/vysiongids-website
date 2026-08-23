@@ -160,7 +160,8 @@ export const LISTING_BROWSE_SELECT = `
   service_description,
   diensten_expires_at,
   created_at,
-  updated_at
+  updated_at,
+  claimed_at
 `.replace(/\s+/g, ' ')
 
 /** Service role: anon heeft kolom-grants (017) — horeca_types alleen via admin of extra GRANT. */
