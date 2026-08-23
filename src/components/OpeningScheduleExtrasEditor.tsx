@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useCallback, useMemo, useState } from 'react'
 import type { ListingScheduleExtras, ListingAnnualLeaveRange } from '@/lib/listing-schedule-extras'
 import { holidaysForOwnerForm } from '@/lib/listing-schedule-extras'
@@ -21,6 +22,7 @@ function emptyRange(): ListingAnnualLeaveRange {
 }
 
 export default function OpeningScheduleExtrasEditor({ initial }: Props) {
+  const { t } = useLanguage()
   const holidays = useMemo(() => holidaysForOwnerForm(), [])
   const [leaveRanges, setLeaveRanges] = useState<ListingAnnualLeaveRange[]>(() => {
     const rows = (initial?.annualLeave ?? []).filter(isCompleteLeaveRange)
@@ -149,7 +151,7 @@ export default function OpeningScheduleExtrasEditor({ initial }: Props) {
               >
                 <option value="">Normale uren</option>
                 <option value="open">Open</option>
-                <option value="closed">Gesloten</option>
+                <option value="closed">{t('common.closed')}</option>
               </select>
             </li>
           ))}

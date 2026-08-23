@@ -6,10 +6,12 @@ import { GidsButtonLoadingContent } from '@/components/GidsLoadingSpinner'
 import GidsInternalNavLink from '@/components/GidsInternalNavLink'
 import GidsPageLoadingOverlay from '@/components/GidsPageLoadingOverlay'
 import TitleCaseTextInput from '@/components/TitleCaseTextInput'
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useGidsBusyUntilNav } from '@/hooks/use-gids-busy-until-nav'
 import { storeGidsBeheerLoginHint } from '@/lib/gids-beheer-login-hint'
 
 export default function GidsLoginForm() {
+  const { t } = useLanguage()
   const router = useRouter()
   const searchParams = useSearchParams()
   const returnTo = searchParams.get('returnTo')?.trim()
@@ -36,7 +38,7 @@ export default function GidsLoginForm() {
       })
       const data = (await res.json()) as { error?: string; slug?: string; name?: string }
       if (!res.ok) {
-        setError(data.error ?? 'Inloggen mislukt.')
+        setError(data.error ?? t('errors.loginFailed'))
         stopBusy()
         return
       }
@@ -45,10 +47,9 @@ export default function GidsLoginForm() {
       }
       const dest =
         returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/beheer'
-      // Volledige navigatie: cookie + server-listing betrouwbaar; overlay blijft tot unload.
       window.location.assign(dest)
     } catch {
-      setError('Netwerkfout.')
+      setError(t('errors.network'))
       stopBusy()
     }
   }
@@ -61,7 +62,7 @@ export default function GidsLoginForm() {
         ) : null}
         <div>
           <label className="block text-sm font-semibold text-gray-700" htmlFor="name">
-            Zaaknaam (zoals bij registratie)
+            {t('login.formNameLabel')}
           </label>
           <TitleCaseTextInput
             id="name"
@@ -70,15 +71,13 @@ export default function GidsLoginForm() {
             autoComplete="organization"
             disabled={busy}
             className="mt-1 w-full rounded-lg border border-gray-300 px-3 py-2 disabled:opacity-60"
-            placeholder="Bv. naam zaak"
+            placeholder={t('login.formNamePlaceholder')}
           />
-          <p className="mt-1 text-xs text-gray-500">
-            Exact zoals in de gids (meervoud/enkelvoud maakt meestal niet uit). PIN = de 6 cijfers van bij registratie.
-          </p>
+          <p className="mt-1 text-xs text-gray-500">{t('login.formNameHint')}</p>
         </div>
         <div>
           <label className="block text-sm font-semibold text-gray-700" htmlFor="pin">
-            6-cijferige PIN
+            {t('login.formPinLabel')}
           </label>
           <input
             id="pin"
@@ -96,20 +95,20 @@ export default function GidsLoginForm() {
           disabled={busy}
           className="rounded-xl bg-accent px-8 py-3 font-bold text-white hover:bg-accent/90 disabled:opacity-60"
         >
-          {busy ? <GidsButtonLoadingContent label="Inloggen…" /> : 'Inloggen'}
+          {busy ? <GidsButtonLoadingContent label={t('login.formSubmitBusy')} /> : t('login.formSubmit')}
         </button>
         <p className="text-sm text-gray-600">
-          Nog geen zaak?{' '}
+          {t('login.noAccount')}{' '}
           <GidsInternalNavLink
             href="/zaak-toevoegen"
             className="font-semibold text-accent hover:underline disabled:opacity-60"
-            loadingMessage="Registratie openen…"
+            loadingMessage={t('login.addBusinessLoading')}
           >
-            Zaak toevoegen
+            {t('login.addBusinessLink')}
           </GidsInternalNavLink>
         </p>
       </form>
-      <GidsPageLoadingOverlay open={busy} message="Bezig met inloggen…" />
+      <GidsPageLoadingOverlay open={busy} message={t('login.overlayBusy')} />
     </>
   )
 }

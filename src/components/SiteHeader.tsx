@@ -6,6 +6,7 @@ import { Suspense, useCallback, useEffect, useLayoutEffect, useRef, useState, ty
 import { createPortal } from 'react-dom'
 import HeaderLanguagePicker from '@/components/HeaderLanguagePicker'
 import VysionPlatformPromoModal, { type VysionPlatformPromoKind } from '@/components/VysionPlatformPromoModal'
+import { useLanguage } from '@/i18n/LanguageProvider'
 import {
   BELGIUM_CITIES,
   BELGIUM_PROVINCES,
@@ -47,11 +48,12 @@ function setRegionCookie(slug: ProvinceSlug) {
 }
 
 function HeaderNavNewBadge({ variant = 'stacked' }: { variant?: 'stacked' | 'inline' }) {
+  const { t } = useLanguage()
   return (
     <span
       className={`vysiongids-header-nav-new-badge${variant === 'inline' ? ' vysiongids-header-nav-new-badge--inline' : ''}`}
     >
-      nieuw
+      {t('common.newBadge')}
     </span>
   )
 }
@@ -88,16 +90,17 @@ function HeaderNavLinks({
   className?: string
   onPlatformPromo: (kind: VysionPlatformPromoKind) => void
 }) {
+  const { t } = useLanguage()
   return (
-    <nav className={className ?? 'vysiongids-header-nav'} aria-label="Hoofdmenu">
+    <nav className={className ?? 'vysiongids-header-nav'} aria-label={t('header.mainNavAria')}>
       <Link href="/" onClick={onNavigate}>
-        Home
+        {t('header.navHome')}
       </Link>
       <HeaderNavLink href="/jobs" isNew onNavigate={onNavigate}>
-        Jobs
+        {t('header.navJobs')}
       </HeaderNavLink>
       <HeaderNavLink href="/zoekertjes" isNew onNavigate={onNavigate}>
-        Zoekertjes
+        {t('header.navZoekertjes')}
       </HeaderNavLink>
       <button
         type="button"
@@ -107,7 +110,7 @@ function HeaderNavLinks({
           onNavigate?.()
         }}
       >
-        Online platform
+        {t('header.navOnlinePlatform')}
       </button>
       <button
         type="button"
@@ -117,31 +120,23 @@ function HeaderNavLinks({
           onNavigate?.()
         }}
       >
-        Reserveringen
+        {t('header.navReservations')}
       </button>
       <HeaderNavLink href="/diensten" isNew onNavigate={onNavigate}>
-        Diensten
+        {t('header.navDiensten')}
       </HeaderNavLink>
       <Link href="/login" onClick={onNavigate}>
-        Login
+        {t('header.navLogin')}
       </Link>
       <span className="vysiongids-header-nav-lang">
         <HeaderLanguagePicker compact />
       </span>
       <Link href="/zaak-toevoegen" className="vysiongids-header-nav-cta" onClick={onNavigate}>
-        Jouw zaak toevoegen
+        {t('header.navAddBusiness')}
       </Link>
     </nav>
   )
 }
-
-const MOBILE_NAV_LINKS = [
-  { href: '/', label: 'Home' },
-  { href: '/jobs', label: 'Jobs', isNew: true },
-  { href: '/zoekertjes', label: 'Zoekertjes', isNew: true },
-  { href: '/diensten', label: 'Diensten', isNew: true },
-  { href: '/login', label: 'Login' },
-] as const
 
 function MobileNavSheet({
   open,
@@ -152,7 +147,16 @@ function MobileNavSheet({
   onClose: () => void
   onPlatformPromo: (kind: VysionPlatformPromoKind) => void
 }) {
+  const { t } = useLanguage()
   if (!open) return null
+
+  const mobileNavLinks = [
+    { href: '/', label: t('header.navHome') },
+    { href: '/jobs', label: t('header.navJobs'), isNew: true as const },
+    { href: '/zoekertjes', label: t('header.navZoekertjes'), isNew: true as const },
+    { href: '/diensten', label: t('header.navDiensten'), isNew: true as const },
+    { href: '/login', label: t('header.navLogin') },
+  ]
 
   const openPlatform = (kind: VysionPlatformPromoKind) => {
     onClose()
@@ -160,15 +164,15 @@ function MobileNavSheet({
   }
 
   return (
-    <nav className="vysiongids-mobile-nav-sheet" aria-label="Navigatie">
+    <nav className="vysiongids-mobile-nav-sheet" aria-label={t('header.mobileNavAria')}>
       <div className="vysiongids-mobile-nav-sheet-head">
-        <p className="vysiongids-mobile-nav-sheet-title">Menu</p>
-        <button type="button" className="vysiongids-mobile-nav-close" aria-label="Menu sluiten" onClick={onClose}>
+        <p className="vysiongids-mobile-nav-sheet-title">{t('header.mobileMenuTitle')}</p>
+        <button type="button" className="vysiongids-mobile-nav-close" aria-label={t('header.mobileMenuClose')} onClick={onClose}>
           <span aria-hidden>×</span>
         </button>
       </div>
       <ul className="vysiongids-mobile-nav-list">
-        {MOBILE_NAV_LINKS.slice(0, 3).map((item) => (
+        {mobileNavLinks.slice(0, 3).map((item) => (
           <li key={item.href}>
             <Link href={item.href} className="vysiongids-mobile-nav-link" onClick={onClose}>
               {item.label}
@@ -178,15 +182,15 @@ function MobileNavSheet({
         ))}
         <li>
           <button type="button" className="vysiongids-mobile-nav-platform" onClick={() => openPlatform('order')}>
-            Online platform
+            {t('header.navOnlinePlatform')}
           </button>
         </li>
         <li>
           <button type="button" className="vysiongids-mobile-nav-platform" onClick={() => openPlatform('reservations')}>
-            Reserveringen
+            {t('header.navReservations')}
           </button>
         </li>
-        {MOBILE_NAV_LINKS.slice(3).map((item) => (
+        {mobileNavLinks.slice(3).map((item) => (
           <li key={item.href}>
             <Link href={item.href} className="vysiongids-mobile-nav-link" onClick={onClose}>
               {item.label}
@@ -197,11 +201,11 @@ function MobileNavSheet({
       </ul>
       <div className="vysiongids-mobile-nav-sheet-foot">
         <div className="vysiongids-mobile-nav-lang-row">
-          <span className="vysiongids-mobile-nav-lang-label">Taal</span>
+          <span className="vysiongids-mobile-nav-lang-label">{t('common.language')}</span>
           <HeaderLanguagePicker compact />
         </div>
         <Link href="/zaak-toevoegen" className="vysiongids-mobile-nav-cta" onClick={onClose}>
-          Jouw zaak toevoegen
+          {t('header.navAddBusiness')}
         </Link>
       </div>
     </nav>
@@ -209,6 +213,7 @@ function MobileNavSheet({
 }
 
 function SiteHeaderBar() {
+  const { t } = useLanguage()
   const [open, setOpen] = useState(false)
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [platformPromo, setPlatformPromo] = useState<VysionPlatformPromoKind | null>(null)
@@ -342,7 +347,7 @@ function SiteHeaderBar() {
     open && mounted && panelTopPx > 0
       ? createPortal(
           <>
-            <button type="button" style={BACKDROP_STYLE} aria-label="Sluit menu" onClick={close} />
+            <button type="button" style={BACKDROP_STYLE} aria-label={t('header.closeMenu')} onClick={close} />
             <div style={panelStyle} ref={panelBoxRef}>
               <div className="relative pt-2">
                 <div
@@ -353,14 +358,12 @@ function SiteHeaderBar() {
                 <div
                   className="relative max-h-[min(70vh,28rem)] overflow-y-auto rounded-sm border border-gray-200 bg-white text-gray-800 shadow-xl"
                   role="dialog"
-                  aria-label="Kies stad of provincie"
+                  aria-label={t('header.regionDialogAria')}
                 >
                   <div className="p-4 sm:p-5">
-                    <p className="text-sm leading-snug text-gray-600">
-                      Alle zaken in België: foto, info, beoordelingen en bestellen bij de zaak zelf.
-                    </p>
+                    <p className="text-sm leading-snug text-gray-600">{t('header.regionIntro')}</p>
                     <p className="mt-3 text-sm text-gray-700">
-                      Uw homepagina: <span className="font-bold text-accent">{regionLabel}</span>
+                      {t('header.regionHomepageLabel')} <span className="font-bold text-accent">{regionLabel}</span>
                       {onZoekenWithRegion ? (
                         <>
                           {' · '}
@@ -369,7 +372,7 @@ function SiteHeaderBar() {
                             className="font-semibold text-accent underline hover:no-underline"
                             onClick={close}
                           >
-                            naar nationale homepagina
+                            {t('header.toNationalHome')}
                           </Link>
                         </>
                       ) : (
@@ -380,14 +383,14 @@ function SiteHeaderBar() {
                             className="font-semibold text-accent underline hover:no-underline"
                             onClick={close}
                           >
-                            zaken in {regionLabel}
+                            {t('header.businessesInRegion', { regionLabel })}
                           </Link>
                         </>
                       )}
                     </p>
                     <div className="mt-4 grid gap-6 border-t border-gray-100 pt-4 sm:grid-cols-2">
                       <div>
-                        <h3 className="text-sm font-bold uppercase tracking-wide text-gray-500">Steden</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-wide text-gray-500">{t('header.citiesHeading')}</h3>
                         <ul className="mt-2 columns-2 gap-x-4 text-sm">
                           {BELGIUM_CITIES.map((city) => (
                             <li key={city.q} className="mb-1.5 break-inside-avoid">
@@ -403,7 +406,7 @@ function SiteHeaderBar() {
                         </ul>
                       </div>
                       <div className="sm:border-l sm:border-gray-100 sm:pl-6">
-                        <h3 className="text-sm font-bold uppercase tracking-wide text-gray-500">Provincies</h3>
+                        <h3 className="text-sm font-bold uppercase tracking-wide text-gray-500">{t('header.provincesHeading')}</h3>
                         <ul className="mt-2 space-y-1 text-sm">
                           {BELGIUM_PROVINCES.map((prov) => (
                             <li key={prov.slug}>
@@ -438,10 +441,10 @@ function SiteHeaderBar() {
         <div className="vysiongids-site-header-inner">
           <div className="vysiongids-site-header-brand">
             <Link href="/" className="vysiongids-site-logo">
-              Vysiongids
+              {t('header.logo')}
             </Link>
             <span className="vysiongids-site-header-sep" aria-hidden>
-              |
+              {t('common.breadcrumbSeparator')}
             </span>
             <div ref={triggerRef} className="vysiongids-site-header-region">
               <Link href={`/zoeken?prov=${region}`} className={labelClass}>
@@ -452,7 +455,7 @@ function SiteHeaderBar() {
                 className="vysiongids-region-toggle"
                 aria-expanded={open}
                 aria-haspopup="dialog"
-                aria-label={`${regionLabel}: kies stad of provincie`}
+                aria-label={t('header.regionToggleAria', { regionLabel })}
                 onClick={() => (open ? close() : openMenu())}
               >
                 <span className={`vysiongids-region-caret ${open ? 'is-open' : ''}`} aria-hidden>
@@ -472,7 +475,7 @@ function SiteHeaderBar() {
             className={`vysiongids-mobile-menu-btn${mobileMenuOpen ? ' is-open' : ''}`}
             aria-expanded={mobileMenuOpen}
             aria-controls="vysiongids-mobile-nav"
-            aria-label={mobileMenuOpen ? 'Menu sluiten' : 'Menu openen'}
+            aria-label={mobileMenuOpen ? t('header.mobileMenuClose') : t('header.mobileMenuOpen')}
             onClick={() => {
               setMobileMenuOpen((v) => {
                 const next = !v
@@ -491,10 +494,10 @@ function SiteHeaderBar() {
               <button
                 type="button"
                 style={MOBILE_MENU_BACKDROP_STYLE}
-                aria-label="Sluit menu"
+                aria-label={t('header.closeMenu')}
                 onClick={closeMobile}
               />
-              <div id="vysiongids-mobile-nav" role="dialog" aria-modal="true" aria-label="Navigatie">
+              <div id="vysiongids-mobile-nav" role="dialog" aria-modal="true" aria-label={t('header.mobileNavAria')}>
                 <MobileNavSheet open={mobileMenuOpen} onClose={closeMobile} onPlatformPromo={openPlatformPromo} />
               </div>
             </>,
@@ -512,11 +515,12 @@ function SiteHeaderBar() {
 }
 
 function SiteHeaderFallback() {
+  const { t } = useLanguage()
   return (
     <header className="vysiongids-site-header relative shrink-0 border-b border-gray-200 bg-white">
       <div className="vysiongids-site-header-inner">
         <Link href="/" className="vysiongids-site-logo">
-          Vysiongids
+          {t('header.logo')}
         </Link>
       </div>
     </header>

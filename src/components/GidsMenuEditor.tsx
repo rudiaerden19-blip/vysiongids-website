@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { GidsMenuCatalog, GidsMenuCategory, GidsMenuProduct } from '@/lib/gids-menu-types'
 import { compressListingPhoto } from '@/lib/compress-listing-photo'
@@ -35,6 +36,7 @@ function emptyProduct(categoryId: string, sortOrder: number): GidsMenuProduct {
 }
 
 export default function GidsMenuEditor() {
+  const { t } = useLanguage()
   const [categories, setCategories] = useState<GidsMenuCategory[]>([])
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -48,7 +50,7 @@ export default function GidsMenuEditor() {
     fetch('/api/gids/me/menu')
       .then((r) => {
         if (r.status === 401) {
-          setError('Log in via /login om je menu te beheren.')
+          setError(t('beheer.menuEditorLoginRequired'))
           return null
         }
         return r.json()
@@ -61,7 +63,7 @@ export default function GidsMenuEditor() {
           setCategories([emptyCategory(0)])
         }
       })
-      .catch(() => setError('Menu laden mislukt.'))
+      .catch(() => setError(t('beheer.menuEditorLoadFailed')))
       .finally(() => setLoading(false))
   }, [])
 
@@ -143,8 +145,8 @@ export default function GidsMenuEditor() {
       }
 
       if (seq !== uploadSeqRef.current) return
-      if (!res.ok) throw new Error(data.error ?? 'Upload mislukt')
-      if (!data.publicUrl) throw new Error('Geen foto-URL terug van server')
+      if (!res.ok) throw new Error(data.error ?? t('beheer.menuEditorUploadFailed'))
+      if (!data.publicUrl) throw new Error(t('beheer.menuEditorNoPhotoUrl'))
 
       updateProduct(categoryId, productId, { imageUrl: data.publicUrl })
       setPhotoPreviewByProductId((prev) => {
@@ -156,10 +158,10 @@ export default function GidsMenuEditor() {
       if (seq !== uploadSeqRef.current) return
       const msg =
         e instanceof Error && e.name === 'AbortError'
-          ? 'Upload duurde te lang. Probeer opnieuw of een kleinere foto.'
+          ? t('beheer.menuEditorUploadTimeout')
           : e instanceof Error
             ? e.message
-            : 'Upload mislukt'
+            : t('beheer.menuEditorUploadFailed')
       setError(msg)
       setPhotoPreviewByProductId((prev) => {
         const next = { ...prev }
@@ -176,12 +178,12 @@ export default function GidsMenuEditor() {
 
   async function saveMenu() {
     if (uploadingProductId) {
-      setError('Wacht tot de foto klaar is met uploaden, daarna opnieuw opslaan.')
+      setError(t('beheer.menuEditorWaitForUpload'))
       return
     }
     const missingCat = categories.find((c) => !c.name.trim())
     if (missingCat) {
-      setError('Geef elke categorie een naam (bv. Friet, Burgers).')
+      setError(t('beheer.menuEditorCategoryNameRequired'))
       return
     }
     setSaving(true)
@@ -211,25 +213,22 @@ export default function GidsMenuEditor() {
         body: JSON.stringify(payload),
       })
       const data = (await res.json()) as { error?: string; ok?: boolean }
-      if (!res.ok) throw new Error(data.error ?? 'Opslaan mislukt')
-      setSuccess('Menu opgeslagen. Bezoekers zien het via de knop Menu op je profiel.')
+      if (!res.ok) throw new Error(data.error ?? t('errors.saveFailed'))
+      setSuccess(t('beheer.menuEditorSaveSuccess'))
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Opslaan mislukt')
+      setError(e instanceof Error ? e.message : t('errors.saveFailed'))
     } finally {
       setSaving(false)
     }
   }
 
-  if (loading) return <p className="text-gray-600">Menu laden…</p>
+  if (loading) return <p className="text-gray-600">{t('beheer.menuEditorLoading')}</p>
 
   return (
     <>
       <GidsOwnerSessionKeepAlive />
     <div className="vysiongids-menu-editor space-y-6">
-      <p className="text-sm text-gray-600">
-        Bouw je menu zoals in de kassa: categorieën, producten, foto&apos;s en prijzen. Na opslaan opent de knop{' '}
-        <strong>Menu</strong> dit overzicht voor klanten.
-      </p>
+      <p className="text-sm text-gray-600">{t('beheer.menuEditorIntro')}</p>
 
       {error ? <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-800">{error}</p> : null}
       {success ? <p className="rounded-lg bg-green-50 px-3 py-2 text-sm text-green-900">{success}</p> : null}
@@ -239,13 +238,13 @@ export default function GidsMenuEditor() {
           <div className="flex flex-wrap items-end gap-3">
             <div className="min-w-[12rem] flex-1">
               <label className="vysiongids-form-label" htmlFor={`cat-${cat.id}`}>
-                Categorie {catIndex + 1}
+                {t('beheer.menuEditorCategoryLabel', { index: catIndex + 1 })}
               </label>
               <input
                 id={`cat-${cat.id}`}
                 className="vysiongids-form-input mt-1"
                 value={cat.name}
-                placeholder="Bv. Friet, Burgers, Drank"
+                placeholder={t('beheer.menuEditorCategoryPlaceholder')}
                 onChange={(e) => updateCategory(cat.id, { name: e.target.value })}
               />
             </div>
@@ -254,7 +253,7 @@ export default function GidsMenuEditor() {
               className="text-sm font-semibold text-red-700 hover:underline"
               onClick={() => removeCategory(cat.id)}
             >
-              Categorie verwijderen
+              {t('beheer.menuEditorCategoryRemove')}
             </button>
           </div>
 
@@ -263,23 +262,23 @@ export default function GidsMenuEditor() {
               <li key={p.id} className="rounded-lg bg-gray-50 p-3">
                 <div className="grid gap-3 sm:grid-cols-2">
                   <div>
-                    <label className="text-xs font-semibold text-gray-600">Productnaam</label>
+                    <label className="text-xs font-semibold text-gray-600">{t('beheer.menuEditorProductName')}</label>
                     <input
                       className="vysiongids-form-input mt-1"
                       value={p.name}
-                      placeholder="Naam"
+                      placeholder={t('modals.premiumPaywall.contactNameLabel')}
                       onChange={(e) => updateProduct(cat.id, p.id, { name: e.target.value })}
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-gray-600">Prijs (€)</label>
+                    <label className="text-xs font-semibold text-gray-600">{t('beheer.menuEditorProductPrice')}</label>
                     <input
                       className="vysiongids-form-input mt-1"
                       type="number"
                       min={0}
                       step={0.1}
                       value={p.priceEur ?? ''}
-                      placeholder="Optioneel"
+                      placeholder={t('common.optional')}
                       onChange={(e) => {
                         const v = e.target.value
                         updateProduct(cat.id, p.id, {
@@ -290,7 +289,7 @@ export default function GidsMenuEditor() {
                   </div>
                 </div>
                 <div className="mt-2">
-                  <label className="text-xs font-semibold text-gray-600">Omschrijving</label>
+                  <label className="text-xs font-semibold text-gray-600">{t('beheer.menuEditorProductDescription')}</label>
                   <textarea
                     className="vysiongids-form-input mt-1 min-h-[4rem]"
                     value={p.description ?? ''}
@@ -309,7 +308,11 @@ export default function GidsMenuEditor() {
                   <label
                     className={`vysiongids-photo-pick-btn cursor-pointer${uploadingProductId === p.id ? ' opacity-70' : ''}`}
                   >
-                    {uploadingProductId === p.id ? 'Bezig…' : photoPreviewByProductId[p.id] || sanitizeMenuImageUrl(p.imageUrl) ? 'Foto vervangen' : 'Foto toevoegen'}
+                    {uploadingProductId === p.id
+                      ? t('common.busy')
+                      : photoPreviewByProductId[p.id] || sanitizeMenuImageUrl(p.imageUrl)
+                        ? t('beheer.menuEditorPhotoReplace')
+                        : t('beheer.menuEditorPhotoAdd')}
                     <input
                       type="file"
                       accept="image/*"
@@ -327,10 +330,10 @@ export default function GidsMenuEditor() {
                     className="text-sm text-red-700 hover:underline"
                     onClick={() => removeProduct(cat.id, p.id)}
                   >
-                    Product verwijderen
+                    {t('beheer.menuEditorProductRemove')}
                   </button>
                 </div>
-                <p className="mt-1 text-xs text-gray-500">Product {pi + 1}</p>
+                <p className="mt-1 text-xs text-gray-500">{t('beheer.menuEditorProductIndex', { index: pi + 1 })}</p>
               </li>
             ))}
           </ul>
@@ -340,14 +343,14 @@ export default function GidsMenuEditor() {
             className="mt-3 text-sm font-semibold text-accent hover:underline"
             onClick={() => addProduct(cat.id)}
           >
-            + Product in deze categorie
+            {t('beheer.menuEditorAddProduct')}
           </button>
         </section>
       ))}
 
       <div className="flex flex-wrap gap-3">
         <button type="button" className="rounded-lg border border-gray-300 px-4 py-2 font-semibold" onClick={addCategory}>
-          + Categorie
+          {t('beheer.menuEditorAddCategory')}
         </button>
         <button
           type="button"
@@ -355,7 +358,7 @@ export default function GidsMenuEditor() {
           className="rounded-lg bg-accent px-5 py-2.5 font-semibold text-white disabled:opacity-60"
           onClick={() => void saveMenu()}
         >
-          {saving ? 'Opslaan…' : 'Menu opslaan'}
+          {saving ? t('beheer.menuEditorSaveBusy') : t('beheer.menuEditorSave')}
         </button>
       </div>
     </div>

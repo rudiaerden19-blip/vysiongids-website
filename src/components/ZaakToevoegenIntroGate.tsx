@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 import VysionPlatformPromoModal, { type VysionPlatformPromoKind } from '@/components/VysionPlatformPromoModal'
@@ -10,10 +11,30 @@ type Props = {
   children: React.ReactNode
 }
 
+const INTRO_RULE_KEYS = [
+  'correctData',
+  'pin',
+  'photos',
+  'orderLink',
+  'reviews',
+  'delete',
+  'zoekertjes',
+  'jobs',
+  'security',
+] as const
+
 export default function ZaakToevoegenIntroGate({ children }: Props) {
+  const { t } = useLanguage()
   const router = useRouter()
   const [open, setOpen] = useState(true)
   const [platformPromo, setPlatformPromo] = useState<VysionPlatformPromoKind | null>(null)
+
+  const introVars = {
+    addBusinessBtn: t('meta.pages.zaakToevoegen'),
+    horecaYearlyEur: GIDS_HORECA_YEARLY_EUR,
+    navDiensten: t('header.navDiensten'),
+    dienstenYearlyEur: GIDS_DIENSTEN_YEARLY_EUR,
+  }
 
   const continueToForm = useCallback(() => setOpen(false), [])
 
@@ -53,133 +74,65 @@ export default function ZaakToevoegenIntroGate({ children }: Props) {
       >
         <div className="vysiongids-zaak-intro-head">
           <h2 id="zaak-intro-title" className="vysiongids-zaak-intro-title">
-            Lees eerst dit
+            {t('forms.zaakToevoegen.introGateTitle')}
           </h2>
           <button
             type="button"
             className="vysiongids-zaak-intro-close"
             onClick={dismiss}
-            aria-label="Sluiten"
+            aria-label={t('common.close')}
           >
             ×
           </button>
         </div>
         <div className="vysiongids-zaak-intro-body">
-          <p className="vysiongids-zaak-intro-promo">
-            Wil je lid worden van Vysiongids? Druk dan bovenaan op de knop <strong>Zaak toevoegen</strong> en volg alle
-            stappen. Je <strong>zaakkaart</strong> staat <strong>gratis</strong> in de gids — klanten kunnen je zoeken,
-            info bekijken en rechtstreeks bestellen. Zoekertjes en jobadvertenties zijn premium (
-            <strong>€{GIDS_HORECA_YEARLY_EUR} per jaar</strong>). Je zaak wordt direct zichtbaar voor duizenden klanten
-            in de buurt, maar ook in heel België.
-          </p>
-          <p className="vysiongids-zaak-intro-promo">
-            Heb je geen reserveringssoftware of online bestelplatform? Indien je lid bent van Vysiongids, kan je je via
-            de knoppen hieronder registreren. Deze softwaremodules behoren tot de meest professionele softwareplatformen in
-            België. Je kan de software downloaden voor <strong>€49 per jaar</strong>. Dit is tot{' '}
-            <strong>20 keer goedkoper</strong> dan andere platformen en alleen toegankelijk voor onze Vysiongids-leden.
-          </p>
+          <p className="vysiongids-zaak-intro-promo">{t('forms.zaakToevoegen.introGatePromo1', introVars)}</p>
+          <p className="vysiongids-zaak-intro-promo">{t('forms.zaakToevoegen.introGatePromo2')}</p>
           <div className="vysiongids-zaak-intro-platform-btns">
             <button
               type="button"
               className="vysiongids-zaak-intro-platform-btn"
               onClick={() => setPlatformPromo('order')}
             >
-              Bekijk online bestelplatform
+              {t('forms.zaakToevoegen.introGatePlatformOrder')}
             </button>
             <button
               type="button"
               className="vysiongids-zaak-intro-platform-btn"
               onClick={() => setPlatformPromo('reservations')}
             >
-              Bekijk restaurantreserveringen
+              {t('forms.zaakToevoegen.introGatePlatformReservations')}
             </button>
           </div>
-          <p className="vysiongids-zaak-intro-promo">
-            Heb je wél al een reserverings- en online bestelplatform? Perfect — dit kan je rechtstreeks koppelen aan je
-            bestelknop in Vysiongids. Met <strong>één klik</strong> zit de klant op jouw software.
-          </p>
+          <p className="vysiongids-zaak-intro-promo">{t('forms.zaakToevoegen.introGatePromo3')}</p>
           <div className="vysiongids-zaak-intro-promo">
-            <h3 className="vysiongids-zaak-intro-promo-title">Wat is de Vysiongids</h3>
+            <h3 className="vysiongids-zaak-intro-promo-title">{t('forms.zaakToevoegen.introGateWhatIsTitle')}</h3>
             <p className="vysiongids-zaak-intro-promo-text">
-              Als je lid bent van Vysiongids, kan je je gratis zaakkaart met gegevens, foto&apos;s, QR-code en meer
-              beheren. Duizenden klanten kunnen je in onze gids zoeken. Met premium (
-              <strong>€{GIDS_HORECA_YEARLY_EUR}/jaar</strong>) plaats je ook zoekertjes en jobadvertenties — meteen zichtbaar
-              voor ondernemers en consumenten. Bij interesse kan je chatten met de koper.
+              {t('forms.zaakToevoegen.introGateWhatIsP1', introVars)}
             </p>
             <p className="vysiongids-zaak-intro-promo-text">
-              Jouw zaak wordt meteen gekoppeld aan je online bestelplatform, reserveringssoftware, website, Facebook, enz.
-              Heb je nog geen software? Dan kan je die via Vysiongids bekomen. Zoek je een nieuwe toonbank, friteuse, kassa,
-              tafels en stoelen, enz.? Onder <strong>Diensten</strong> staan alle verkopers in één gids: contact opnemen of
-              een vraag stellen via de chat. Wil je zoekertjes of jobadvertenties plaatsen? Dan betaal je{' '}
-              <strong>€{GIDS_HORECA_YEARLY_EUR} per jaar</strong> (premium horeca). Ben je verkoper onder{' '}
-              <strong>Diensten</strong>? Registreer je profiel voor <strong>€{GIDS_DIENSTEN_YEARLY_EUR} per jaar</strong>{' '}
-              — zichtbaar voor duizenden potentiële klanten.
+              {t('forms.zaakToevoegen.introGateWhatIsP2', introVars)}
             </p>
           </div>
           <div className="vysiongids-zaak-intro-promo">
-            <h3 className="vysiongids-zaak-intro-promo-title">Hoe klanten jou vinden</h3>
-            <p className="vysiongids-zaak-intro-promo-text">
-              De klant kan jou zoeken op <strong>frituur nu open</strong>, <strong>frituur in de buurt</strong> of op jouw
-              naam, enz. Meer dan 3000 klanten gebruiken nu al iedere dag de Vysiongids.
-            </p>
-            <p className="vysiongids-zaak-intro-promo-text">
-              Op jouw zaakkaart staat ook de QR-code naar jouw kaart. Je kan die afdrukken en op je toonbank plaatsen of op
-              je verpakkingen laten drukken, zodat klanten rechtstreeks bij jou bestellen en niet via platformen waar je
-              commissie moet betalen.
-            </p>
+            <h3 className="vysiongids-zaak-intro-promo-title">{t('forms.zaakToevoegen.introGateHowFindTitle')}</h3>
+            <p className="vysiongids-zaak-intro-promo-text">{t('forms.zaakToevoegen.introGateHowFindP1')}</p>
+            <p className="vysiongids-zaak-intro-promo-text">{t('forms.zaakToevoegen.introGateHowFindP2')}</p>
           </div>
-          <p className="vysiongids-zaak-intro-lead">
-            Voordat je je zaak online zet in Vysiongids, lees onderstaande punten. Zo blijft de gids betrouwbaar voor
-            klanten en voor alle horeca-zaken in België.
-          </p>
+          <p className="vysiongids-zaak-intro-lead">{t('forms.zaakToevoegen.introGateRulesLead')}</p>
           <ul>
-            <li>
-              <strong>Juiste gegevens:</strong> naam, adres, openingsuren, telefoon, e-mail en links moeten kloppen. Geen
-              misleidende teksten of foto&apos;s.
-            </li>
-            <li>
-              <strong>PIN bewaren:</strong> je 6-cijferige PIN is nodig om later in te loggen, je zaak te beheren of te
-              verwijderen.
-            </li>
-            <li>
-              <strong>Foto&apos;s:</strong> upload enkel beelden van jouw zaak (minstens 1, max. 3). Geen stockfoto&apos;s van andere
-              zaken.
-            </li>
-            <li>
-              <strong>Bestellen of reserveren:</strong> de link gaat rechtstreeks naar jouw site of shop — Vysiongids
-              verwerkt geen bestellingen en rekent <strong>0% commissie</strong>.
-            </li>
-            <li>
-              <strong>Reviews:</strong> klanten kunnen een review plaatsen op jouw pagina. Reageer niet met valse
-              reviews.
-            </li>
-            <li>
-              <strong>Verwijderen:</strong> wil je offline? Log in en kies <em>Verwijder je zaak</em> in je account.
-            </li>
-            <li>
-              <strong>Zoekertjes:</strong> plaats geen zoekertjes die niet stroken met onze regels — deze worden dan
-              onmiddellijk verwijderd.
-            </li>
-            <li>
-              <strong>Jobadvertenties:</strong> plaats geen vacatures die niet voldoen aan onze regels — deze worden dan
-              onmiddellijk verwijderd.
-            </li>
-            <li>
-              <strong>Veiligheid:</strong> geef nooit bankgegevens of andere gevoelige financiële informatie vrij aan
-              derden.
-            </li>
+            {INTRO_RULE_KEYS.map((key) => (
+              <li key={key}>{t(`forms.zaakToevoegen.introGateRules.${key}`)}</li>
+            ))}
           </ul>
-          <p className="text-sm text-gray-600">
-            Door verder te gaan bevestig je dat je deze info gelezen hebt en dat je bevoegd bent om namens deze zaak te
-            registreren.
-          </p>
+          <p className="text-sm text-gray-600">{t('forms.zaakToevoegen.introGateConfirm')}</p>
         </div>
         <div className="vysiongids-zaak-intro-actions">
           <button type="button" className="vysiongids-zaak-intro-btn-primary" onClick={continueToForm}>
-            Ik heb gelezen — verder met registratie
+            {t('forms.zaakToevoegen.introGateContinue')}
           </button>
           <button type="button" className="vysiongids-zaak-intro-btn-secondary" onClick={dismiss}>
-            Sluiten
+            {t('common.close')}
           </button>
         </div>
       </div>

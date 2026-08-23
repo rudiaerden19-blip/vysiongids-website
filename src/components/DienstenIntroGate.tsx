@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useRouter } from 'next/navigation'
 import { useCallback, useEffect, useState } from 'react'
 
@@ -8,6 +9,7 @@ type Props = {
 }
 
 export default function DienstenIntroGate({ children }: Props) {
+  const { t } = useLanguage()
   const router = useRouter()
   const [open, setOpen] = useState(true)
 
@@ -40,7 +42,7 @@ export default function DienstenIntroGate({ children }: Props) {
           <h2 id="diensten-intro-title" className="vysiongids-zaak-intro-title">
             Diensten & publiciteit
           </h2>
-          <button type="button" className="vysiongids-zaak-intro-close" onClick={dismiss} aria-label="Sluiten">
+          <button type="button" className="vysiongids-zaak-intro-close" onClick={dismiss} aria-label={t('common.close')}>
             ×
           </button>
         </div>
@@ -53,7 +55,7 @@ export default function DienstenIntroGate({ children }: Props) {
           <p className="vysiongids-zaak-intro-promo">
             Vul je gegevens, categorieën (kassa, meubilair, …) en tot <strong>10 foto&apos;s</strong> in. Na betaling is
             je profiel zichtbaar. Klanten contacteeren je via <strong>Contacteer verkoper</strong> (telefoon/e-mail) of
-            via je <strong>Website</strong>-knop.
+            via je <strong>{t('common.website')}</strong>-knop.
           </p>
           <p className="vysiongids-zaak-intro-promo">
             Let op: het is bewezen — met een leveranciersprofiel boost je je zaak tot{' '}

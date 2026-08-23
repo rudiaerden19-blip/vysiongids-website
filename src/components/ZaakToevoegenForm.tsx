@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useRouter } from 'next/navigation'
 import { useCallback, useRef, useState } from 'react'
 import { GidsButtonLoadingContent } from '@/components/GidsLoadingSpinner'
@@ -40,6 +41,7 @@ function PhotoPickField({
   required?: boolean
   disabled?: boolean
 }) {
+  const { t } = useLanguage()
   const inputRef = useRef<HTMLInputElement>(null)
   const [fileLabel, setFileLabel] = useState<string | null>(null)
   const id = `photo${index}`
@@ -48,7 +50,7 @@ function PhotoPickField({
   return (
     <div className="vysiongids-photo-pick">
       <label className="vysiongids-photo-pick-label" htmlFor={id}>
-        Foto {index + 1}
+        {t('beheer.editForm.photoSlotLabel', { index: index + 1 })}
         {isRequired ? (
           <span className="vysiongids-form-required" aria-hidden>
             *
@@ -76,16 +78,17 @@ function PhotoPickField({
         disabled={disabled}
         onClick={() => inputRef.current?.click()}
       >
-        Kies bestand
+        {t('beheer.editForm.photoChoose')}
       </button>
       <p className="vysiongids-photo-pick-hint" aria-live="polite">
-        {fileLabel ?? 'Nog geen foto'}
+        {fileLabel ?? t('beheer.editForm.photoHintEmpty')}
       </p>
     </div>
   )
 }
 
 export default function ZaakToevoegenForm() {
+  const { t } = useLanguage()
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [loadingHint, setLoadingHint] = useState<string | null>(null)
@@ -111,7 +114,7 @@ export default function ZaakToevoegenForm() {
       return
     }
     if (hoursRaw === '[]' || hoursRaw === '') {
-      setError('Controleer je openingsuren per dag (tijden en eventueel 2e shift).')
+      setError(t('errors.openingHoursCheckDetail'))
       stopBusy()
       return
     }
@@ -121,7 +124,7 @@ export default function ZaakToevoegenForm() {
     if (websiteRaw) {
       const websiteNorm = normalizeHttpsUrl(websiteRaw)
       if (!websiteNorm.ok) {
-        setError(`Website: ${websiteNorm.message}`)
+        setError(t('errors.websiteInvalid', { message: websiteNorm.message }))
         stopBusy()
         return
       }
@@ -132,7 +135,7 @@ export default function ZaakToevoegenForm() {
     if (orderUrlRaw) {
       const orderUrlNorm = normalizeHttpsUrl(orderUrlRaw)
       if (!orderUrlNorm.ok) {
-        setError(`Bestel- of reserveer-URL: ${orderUrlNorm.message}`)
+        setError(t('errors.orderUrlInvalid', { message: orderUrlNorm.message }))
         stopBusy()
         return
       }
@@ -143,22 +146,22 @@ export default function ZaakToevoegenForm() {
     try {
       const rows = JSON.parse(hoursRaw) as ListingDayHours[]
       if (!Array.isArray(rows) || rows.length !== 7) {
-        setError('Vul openingsuren per dag in.')
+        setError(t('errors.hoursFillAllDays'))
         stopBusy()
         return
       }
       if (rows.every((r) => r.hours === 'gesloten')) {
-        setError('Minstens één dag moet open zijn.')
+        setError(t('errors.hoursAtLeastOneOpen'))
         stopBusy()
         return
       }
     } catch {
-      setError('Openingsuren ongeldig.')
+      setError(t('errors.hoursInvalid'))
       stopBusy()
       return
     }
     try {
-      setLoadingHint('Foto\'s worden verkleind…')
+      setLoadingHint(t('forms.zaakToevoegen.photosCompressing'))
       let totalPhotoBytes = 0
       let hasPhoto = false
       for (let i = 0; i < 3; i++) {
@@ -169,7 +172,7 @@ export default function ZaakToevoegenForm() {
         try {
           compressed = await compressListingPhoto(f)
         } catch {
-          setError(`Foto ${i + 1} kon niet verwerkt worden. Probeer een andere foto (JPG/PNG).`)
+          setError(t('errors.photoProcessFailedDetail', { index: i + 1 }))
           stopBusy()
           setLoadingHint(null)
           return
@@ -178,19 +181,19 @@ export default function ZaakToevoegenForm() {
         totalPhotoBytes += compressed.size
       }
       if (!hasPhoto) {
-        setError('Upload minstens 1 foto.')
+        setError(t('errors.photoMinOne'))
         stopBusy()
         setLoadingHint(null)
         return
       }
       if (totalPhotoBytes > GIDS_REGISTER_MAX_TOTAL_PHOTO_BYTES) {
-        setError('Foto\'s samen nog te groot na verkleinen. Upload minder foto\'s.')
+        setError(t('errors.photosStillTooLarge'))
         stopBusy()
         setLoadingHint(null)
         return
       }
 
-      setLoadingHint('Zaak wordt online gezet…')
+      setLoadingHint(t('forms.zaakToevoegen.publishingOnline'))
       const res = await fetch('/api/gids/register', { method: 'POST', body: fd })
       const raw = await res.text()
       let data: { error?: string; url?: string } = {}
@@ -199,9 +202,9 @@ export default function ZaakToevoegenForm() {
           data = JSON.parse(raw) as { error?: string; url?: string }
         } catch {
           if (res.status === 413) {
-            setError('Upload te groot voor de server. Probeer met minder foto\'s.')
+            setError(t('errors.uploadTooLarge'))
           } else {
-            setError(`Server antwoordde niet correct (${res.status}). Probeer later opnieuw.`)
+            setError(t('errors.serverBadResponseRetry', { status: res.status }))
           }
           stopBusy()
           setLoadingHint(null)
@@ -209,20 +212,20 @@ export default function ZaakToevoegenForm() {
         }
       }
       if (!res.ok) {
-        setError(data.error ?? 'Registratie mislukt.')
+        setError(data.error ?? t('errors.registerFailed'))
         stopBusy()
         setLoadingHint(null)
         return
       }
       if (data.url) {
-        setLoadingHint('Doorverwijzen…')
+        setLoadingHint(t('forms.zaakToevoegen.redirecting'))
         window.location.assign(data.url)
         return
       }
-      setLoadingHint('Zoeken openen…')
+      setLoadingHint(t('forms.zaakToevoegen.openingSearch'))
       router.push('/zoeken')
     } catch {
-      setError('Verbinding mislukt. Controleer je internet en probeer opnieuw.')
+      setError(t('errors.connectionFailedInternet'))
       stopBusy()
       setLoadingHint(null)
     }
@@ -245,19 +248,19 @@ export default function ZaakToevoegenForm() {
       ) : null}
 
       <div>
-        <RequiredLabel htmlFor="name">Volledige zaaknaam (uniek)</RequiredLabel>
+        <RequiredLabel htmlFor="name">{t('forms.zaakToevoegen.nameLabel')}</RequiredLabel>
         <TitleCaseTextInput
           id="name"
           name="name"
           required
           minLength={3}
-          placeholder="Bv. Restaurant De Ketel Brugge"
+          placeholder={t('forms.zaakToevoegen.namePlaceholder')}
           className="vysiongids-form-input mt-1"
         />
       </div>
 
       <div>
-        <RequiredLabel htmlFor="pin">6-cijferige PIN (bewaren voor inloggen)</RequiredLabel>
+        <RequiredLabel htmlFor="pin">{t('forms.zaakToevoegen.pinLabel')}</RequiredLabel>
         <input
           id="pin"
           name="pin"
@@ -282,7 +285,7 @@ export default function ZaakToevoegenForm() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div className="sm:col-span-2 sm:max-w-md">
-          <RequiredLabel htmlFor="province">Provincie</RequiredLabel>
+          <RequiredLabel htmlFor="province">{t('common.province')}</RequiredLabel>
           <select id="province" name="province" required className="vysiongids-form-input mt-1" defaultValue="">
             <option value="" disabled>
               Kies provincie
@@ -300,17 +303,17 @@ export default function ZaakToevoegenForm() {
 
       <div className="grid gap-4 sm:grid-cols-2">
         <div>
-          <RequiredLabel htmlFor="city">Gemeente</RequiredLabel>
+          <RequiredLabel htmlFor="city">{t('beheer.editForm.cityLabel')}</RequiredLabel>
           <TitleCaseTextInput id="city" name="city" required className="vysiongids-form-input mt-1" />
         </div>
         <div>
-          <RequiredLabel htmlFor="postcode">Postcode</RequiredLabel>
+          <RequiredLabel htmlFor="postcode">{t('beheer.editForm.postcodeLabel')}</RequiredLabel>
           <input id="postcode" name="postcode" required className="vysiongids-form-input mt-1" />
         </div>
       </div>
 
       <div>
-        <RequiredLabel htmlFor="address">Straat + nummer</RequiredLabel>
+        <RequiredLabel htmlFor="address">{t('beheer.editForm.addressLabel')}</RequiredLabel>
         <TitleCaseTextInput id="address" name="address" required className="vysiongids-form-input mt-1" />
       </div>
 
@@ -323,7 +326,7 @@ export default function ZaakToevoegenForm() {
           name="phone"
           type="tel"
           autoComplete="tel"
-          placeholder="+32 … (optioneel)"
+          placeholder={t('beheer.editForm.phonePlaceholder')}
           className="vysiongids-form-input mt-1"
         />
       </div>
@@ -345,10 +348,10 @@ export default function ZaakToevoegenForm() {
           type="text"
           inputMode="url"
           autoComplete="url"
-          placeholder="jouwzaak.be of https://jouwzaak.be (optioneel)"
+          placeholder={t('forms.zaakToevoegen.websitePlaceholder')}
           className="vysiongids-form-input mt-1"
         />
-        <p className="mt-1 text-xs text-gray-500">https:// mag weg — wij vullen dat automatisch aan.</p>
+        <p className="mt-1 text-xs text-gray-500">{t('forms.zaakToevoegen.websiteHintHttps')}</p>
       </div>
 
       <div>
@@ -361,7 +364,7 @@ export default function ZaakToevoegenForm() {
           type="text"
           inputMode="url"
           autoComplete="url"
-          placeholder="shop.jouwzaak.be (optioneel)"
+          placeholder={t('forms.zaakToevoegen.orderUrlPlaceholder')}
           className="vysiongids-form-input mt-1"
         />
         <p className="mt-1 text-xs text-gray-500">
@@ -394,7 +397,7 @@ export default function ZaakToevoegenForm() {
             inputMode="decimal"
             min={0}
             step={0.5}
-            placeholder="0 = gratis (optioneel)"
+            placeholder={t('forms.zaakToevoegen.deliveryFeePlaceholder')}
             className="vysiongids-form-input mt-1"
           />
         </div>
@@ -409,7 +412,7 @@ export default function ZaakToevoegenForm() {
             inputMode="decimal"
             min={0}
             step={0.5}
-            placeholder="Optioneel"
+            placeholder={t('common.optional')}
             className="vysiongids-form-input mt-1"
           />
         </div>
@@ -427,7 +430,7 @@ export default function ZaakToevoegenForm() {
             inputMode="numeric"
             min={1}
             max={180}
-            placeholder="Bv. 10"
+            placeholder={t('beheer.editForm.pickupPlaceholderExample')}
             className="vysiongids-form-input mt-1"
           />
         </div>
@@ -442,7 +445,7 @@ export default function ZaakToevoegenForm() {
             inputMode="numeric"
             min={1}
             max={240}
-            placeholder="Bv. 20"
+            placeholder={t('beheer.editForm.pickupMaxPlaceholderExample')}
             className="vysiongids-form-input mt-1"
           />
         </div>
@@ -460,7 +463,7 @@ export default function ZaakToevoegenForm() {
             inputMode="numeric"
             min={1}
             max={180}
-            placeholder="Optioneel"
+            placeholder={t('common.optional')}
             className="vysiongids-form-input mt-1"
           />
         </div>
@@ -475,7 +478,7 @@ export default function ZaakToevoegenForm() {
             inputMode="numeric"
             min={1}
             max={240}
-            placeholder="Optioneel"
+            placeholder={t('common.optional')}
             className="vysiongids-form-input mt-1"
           />
         </div>
@@ -512,10 +515,10 @@ export default function ZaakToevoegenForm() {
         {busy ? (
           <GidsButtonLoadingContent label={loadingHint ?? 'Bezig…'} />
         ) : (
-          'Direct online zetten'
+          t('forms.zaakToevoegen.submit')
         )}
       </button>
-      <GidsPageLoadingOverlay open={busy} message={loadingHint ?? 'Registratie verwerken…'} />
+      <GidsPageLoadingOverlay open={busy} message={loadingHint ?? t('forms.zaakToevoegen.overlayDefault')} />
     </form>
   )
 }

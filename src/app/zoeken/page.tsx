@@ -7,6 +7,7 @@ import SearchResultsNavContextSync from '@/components/SearchResultsNavContextSyn
 import SearchResultsVoiceAnnouncement from '@/components/SearchResultsVoiceAnnouncement'
 import ZoekenResultsList from '@/components/ZoekenResultsList'
 import SiteHeader from '@/components/SiteHeader'
+import { tServer } from '@/i18n/server-translate'
 import { parseListingSearchQuery } from '@/lib/gids-listing-search'
 import { parseNearPointFromSearchParams } from '@/lib/gids-search-url'
 import { searchListings } from '@/lib/listings'
@@ -33,13 +34,29 @@ export default async function ZoekenPage({ searchParams }: Props) {
   const parsedQ = parseListingSearchQuery(sp.q ?? '')
   const qLabel = sp.q?.trim()
   const provLabel = sp.prov?.trim() ? provinceLabel(sp.prov) : null
-  const title = qLabel
-    ? parsedQ.nearby && near
-      ? `Dichtbij${parsedQ.freeText ? ` · ${parsedQ.freeText}` : ''}`
-      : `Zaken in «${qLabel}»`
-    : provLabel
-      ? `Zaken in ${provLabel}`
-      : 'Alle zaken'
+
+  let title: string
+  if (qLabel) {
+    if (parsedQ.nearby && near) {
+      const suffix = parsedQ.freeText
+        ? await tServer('zoeken.titleNearbySuffixFreeText', { freeText: parsedQ.freeText })
+        : ''
+      title = await tServer('zoeken.titleNearby', { suffix })
+    } else {
+      title = await tServer('zoeken.titleInQuery', { query: qLabel })
+    }
+  } else if (provLabel) {
+    title = await tServer('zoeken.titleInProvince', { provinceLabel: provLabel })
+  } else {
+    title = await tServer('zoeken.titleAll')
+  }
+
+  const lead = await tServer('zoeken.lead')
+  const leadCapped = search.capped ? await tServer('zoeken.leadCapped') : ''
+  const emptyResults = await tServer('zoeken.emptyResults')
+  const showAllLabel = sp.prov?.trim()
+    ? await tServer('zoeken.showAllInProvince', { provinceLabel: provLabel ?? sp.prov!.trim() })
+    : await tServer('zoeken.showAll')
 
   return (
     <>
@@ -56,8 +73,8 @@ export default async function ZoekenPage({ searchParams }: Props) {
           {title}
         </h1>
         <p style={{ margin: '0 0 1.5rem', color: '#4b5563', fontSize: '1rem' }}>
-          Bestel rechtstreeks bij de zaak
-          {search.capped ? ' · Verfijn je zoekopdracht voor meer resultaten' : ''}
+          {lead}
+          {leadCapped}
         </p>
 
         <Suspense fallback={null}>
@@ -86,15 +103,12 @@ export default async function ZoekenPage({ searchParams }: Props) {
               textAlign: 'center',
             }}
           >
-            <p style={{ margin: 0, color: '#374151' }}>
-              Geen zaken gevonden. Probeer een andere stad, keukentype (bv. Belgische keuken) of voorziening (bv.
-              glutenvrij, parking).
-            </p>
+            <p style={{ margin: 0, color: '#374151' }}>{emptyResults}</p>
             <Link
               href={sp.prov?.trim() ? `/zoeken?prov=${encodeURIComponent(sp.prov.trim())}` : '/zoeken'}
               style={{ marginTop: '0.75rem', display: 'inline-block', fontWeight: 600, color: '#0e5d82' }}
             >
-              {sp.prov?.trim() ? `Toon alle zaken in ${provLabel ?? sp.prov}` : 'Toon alle zaken'}
+              {showAllLabel}
             </Link>
           </div>
         ) : (

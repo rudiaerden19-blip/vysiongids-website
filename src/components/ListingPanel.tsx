@@ -1,4 +1,7 @@
+'use client'
+
 import Link from 'next/link'
+import { useLanguage } from '@/i18n/LanguageProvider'
 import ListingPanelOpenStatus from '@/components/ListingPanelOpenStatus'
 import ListingPanelAmenityFooter from '@/components/ListingPanelAmenityFooter'
 import ListingPhotoSlider from '@/components/ListingPhotoSlider'
@@ -30,6 +33,7 @@ export default function ListingPanel({
   /** Rijtijd via routing (OSRM); anders geschat uit km. */
   driveMinutes?: number
 }) {
+  const { t } = useLanguage()
   const cuisineLine = getListingCuisineDisplay(listing.cuisineType)
   const minOrder = formatMinOrder(listing)
   const deliveryRadiusLabel = formatDeliveryRadius(listing)
@@ -79,7 +83,7 @@ export default function ListingPanel({
               {travelLabel ? (
                 <div
                   className="vysiongids-listing-panel-travel vysiongids-listing-panel-travel--under-status"
-                  aria-label={`${travelLabel} rijden`}
+                  aria-label={t('zoeken.travelAriaDrive', { travelLabel })}
                 >
                   <span>{travelLabel}</span>
                   <a
@@ -88,7 +92,7 @@ export default function ListingPanel({
                     target="_blank"
                     rel="noopener noreferrer"
                   >
-                    Waze
+                    {t('common.waze')}
                   </a>
                 </div>
               ) : null}
@@ -129,10 +133,10 @@ export default function ListingPanel({
                 rel="noopener noreferrer"
                 className="vysiongids-listing-action-btn"
               >
-                Bestel
+                {t('common.order')}
               </a>
               <Link href={`${reviewsHref}#schrijven`} className="vysiongids-listing-action-btn">
-                Geef review
+                {t('listing.giveReview')}
               </Link>
               <ListingMenuButton listing={listing} className="vysiongids-listing-action-btn" />
               <ListingPromotionButton listing={listing} className="vysiongids-listing-action-btn" />

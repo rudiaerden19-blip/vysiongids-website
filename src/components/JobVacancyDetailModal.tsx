@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import Link from 'next/link'
 import { useEffect, useId } from 'react'
 import { createPortal } from 'react-dom'
@@ -21,6 +22,7 @@ type Props = {
 }
 
 export default function JobVacancyDetailModal({ listing, open, onClose }: Props) {
+  const { t } = useLanguage()
   const titleId = useId()
   const hiring = listing.infoExtras?.hiring
 
@@ -52,9 +54,9 @@ export default function JobVacancyDetailModal({ listing, open, onClose }: Props)
 
   const panel = (
     <div className="vysiongids-job-modal-root" role="presentation">
-      <button type="button" className="vysiongids-job-modal-backdrop" aria-label="Sluiten" onClick={onClose} />
+      <button type="button" className="vysiongids-job-modal-backdrop" aria-label={t('common.close')} onClick={onClose} />
       <div className="vysiongids-job-modal-panel" role="dialog" aria-modal="true" aria-labelledby={titleId}>
-        <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label="Sluiten">
+        <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label={t('common.close')}>
           ×
         </button>
         <p className="vysiongids-job-modal-kicker">Solliciteren</p>

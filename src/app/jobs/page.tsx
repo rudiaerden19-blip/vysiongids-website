@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import SiteHeader from '@/components/SiteHeader'
 import JobsPageClient from '@/components/JobsPageClient'
 import { getJobListings } from '@/lib/listings'
+import { tServer } from '@/i18n/server-translate'
 
 export const metadata = { title: 'Jobs' }
 
@@ -14,7 +15,7 @@ export default async function JobsPage() {
     <>
       <SiteHeader />
       <main className="vysiongids-page-wrap">
-        <Suspense fallback={<p className="vysiongids-jobs-empty">Vacatures laden…</p>}>
+        <Suspense fallback={<p className="vysiongids-jobs-empty">{await tServer('jobs.pageFallbackLoading')}</p>}>
           <JobsPageClient listings={listings} />
         </Suspense>
       </main>

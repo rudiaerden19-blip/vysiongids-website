@@ -2,20 +2,26 @@ import { Suspense } from 'react'
 import SiteHeader from '@/components/SiteHeader'
 import GidsLoginForm from '@/components/GidsLoginForm'
 import GidsLoginFormFallback from '@/components/GidsLoginFormFallback'
+import { tServer } from '@/i18n/server-translate'
 
-export const metadata = { title: 'Login' }
+export async function generateMetadata() {
+  return { title: await tServer('meta.pages.login') }
+}
 
-export default function LoginPage() {
+export default async function LoginPage() {
+  const [pageTitle, pageLead, pageHint] = await Promise.all([
+    tServer('login.pageTitle'),
+    tServer('login.pageLead'),
+    tServer('login.pageHint'),
+  ])
+
   return (
     <>
       <SiteHeader />
       <main className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
-        <h1 className="text-2xl font-bold text-gray-900">Login zaakhouder</h1>
-        <p className="mt-4 text-gray-600">Log in met je volledige zaaknaam en je 6-cijferige PIN.</p>
-        <p className="mt-2 text-sm text-gray-500">
-          Na login kun je in beheer je zaak volledig wissen met <strong>Verwijder je zaak</strong> (foto&apos;s, reviews,
-          listing).
-        </p>
+        <h1 className="text-2xl font-bold text-gray-900">{pageTitle}</h1>
+        <p className="mt-4 text-gray-600">{pageLead}</p>
+        <p className="mt-2 text-sm text-gray-500">{pageHint}</p>
         <Suspense fallback={<GidsLoginFormFallback />}>
           <GidsLoginForm />
         </Suspense>

@@ -1,6 +1,7 @@
 'use client'
 
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { getBrowserGeolocation } from '@/lib/browser-geolocation'
 import { parseListingSearchQuery } from '@/lib/gids-listing-search'
 import {
@@ -10,6 +11,7 @@ import {
 } from '@/lib/gids-search-url'
 
 export default function NearbySearchHintBanner() {
+  const { t } = useLanguage()
   const searchParams = useSearchParams()
   const router = useRouter()
   const q = searchParams.get('q') ?? ''
@@ -24,7 +26,8 @@ export default function NearbySearchHintBanner() {
 
   if (!wantsGeo || hasNear) return null
 
-  const label = parsed.openNow && !parsed.nearby ? '«Nu open» in de buurt' : '«Dichtbij»'
+  const label =
+    parsed.openNow && !parsed.nearby ? t('search.nearbyLabelOpenNow') : t('search.nearbyLabelNearby')
 
   return (
     <p
@@ -39,7 +42,7 @@ export default function NearbySearchHintBanner() {
         fontSize: '0.9375rem',
       }}
     >
-      Voor {label} hebben we je locatie nodig.{' '}
+      {t('search.nearbyHintNeedLocation', { label })}{' '}
       <button
         type="button"
         style={{
@@ -65,11 +68,11 @@ export default function NearbySearchHintBanner() {
               )
             })
             .catch(() => {
-              window.alert('Locatie niet beschikbaar. Sta locatie toe in je browser of zoek op stad of postcode.')
+              window.alert(t('search.locationUnavailableAlert'))
             })
         }}
       >
-        Sta locatie toe
+        {t('search.nearbyHintAllowLocation')}
       </button>
     </p>
   )

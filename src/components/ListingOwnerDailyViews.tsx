@@ -5,6 +5,7 @@ import {
   listingOwnerViewStats,
   type ListingOwnerViewStats,
 } from '@/lib/gids-listing-daily-views'
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useGidsOwnerSlug } from '@/lib/use-gids-owner-slug'
 import { useEffect, useState } from 'react'
 
@@ -17,18 +18,20 @@ type Props = {
   variant?: 'card' | 'beheer'
 }
 
-function ViewStatLine({ label, value }: { label: string; value: number }) {
+function ViewStatLine({ label, value, suffix }: { label: string; value: number; suffix: string }) {
   return (
     <p className="vysiongids-beheer-views-line">
       <span className="vysiongids-beheer-views-line-label">{label}</span>
       <span className="vysiongids-listing-daily-views-count">{formatListingDailyViewCount(value)}</span>
-      <span className="vysiongids-beheer-views-line-suffix"> weergaves</span>
+      <span className="vysiongids-beheer-views-line-suffix"> {suffix}</span>
     </p>
   )
 }
 
 function BeheerViewsCard({ slug }: { slug: string }) {
+  const { t } = useLanguage()
   const [stats, setStats] = useState<ListingOwnerViewStats>(() => listingOwnerViewStats(slug))
+  const suffix = t('beheer.viewsSuffix')
 
   useEffect(() => {
     const refresh = () => setStats(listingOwnerViewStats(slug))
@@ -39,13 +42,13 @@ function BeheerViewsCard({ slug }: { slug: string }) {
 
   return (
     <div className="vysiongids-beheer-views-card">
-      <p className="vysiongids-beheer-views-kicker">Weergaves in Vysiongids</p>
+      <p className="vysiongids-beheer-views-kicker">{t('beheer.viewsKicker')}</p>
       <div className="vysiongids-beheer-views-stats" aria-live="polite">
-        <ViewStatLine label="Vandaag" value={stats.today} />
-        <ViewStatLine label="Deze week" value={stats.week} />
-        <ViewStatLine label="Deze maand" value={stats.month} />
+        <ViewStatLine label={t('beheer.viewsToday')} value={stats.today} suffix={suffix} />
+        <ViewStatLine label={t('beheer.viewsWeek')} value={stats.week} suffix={suffix} />
+        <ViewStatLine label={t('beheer.viewsMonth')} value={stats.month} suffix={suffix} />
       </div>
-      <p className="vysiongids-beheer-views-hint">Alleen zichtbaar in beheer — klanten zien dit niet.</p>
+      <p className="vysiongids-beheer-views-hint">{t('beheer.viewsHint')}</p>
     </div>
   )
 }
@@ -60,6 +63,7 @@ export default function ListingOwnerDailyViews({ slug, className, variant = 'car
 }
 
 function ListingOwnerDailyViewsPublic({ slug, className }: { slug: string; className?: string }) {
+  const { t } = useLanguage()
   const { ownerSlug, authChecked } = useGidsOwnerSlug()
   const [stats, setStats] = useState<ListingOwnerViewStats>(() => listingOwnerViewStats(slug))
 
@@ -74,15 +78,15 @@ function ListingOwnerDailyViewsPublic({ slug, className }: { slug: string; class
   if (!authChecked || ownerSlug !== slug) return null
 
   const views = stats.today
+  const count = formatListingDailyViewCount(views)
   const variantClass = 'vysiongids-listing-daily-views'
 
   return (
     <p
       className={`${variantClass}${className ? ` ${className}` : ''}`}
-      aria-label={`Vandaag ${views} weergaves`}
+      aria-label={t('beheer.viewsAriaToday', { count })}
     >
-      Uw zaak heeft vandaag{' '}
-      <span className="vysiongids-listing-daily-views-count">{formatListingDailyViewCount(views)}</span> weergaves
+      {t('beheer.viewsPublicLine', { count })}
     </p>
   )
 }

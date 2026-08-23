@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useEffect, useMemo, useState } from 'react'
 import ListingPanel from '@/components/ListingPanel'
 import type { Listing } from '@/lib/listing-types'
@@ -25,6 +26,7 @@ function listingNeedsClientGeocode(listing: Listing): boolean {
 }
 
 export default function ZoekenResultsList({ listings, initialNear, sortByDistance = false }: Props) {
+  const { t } = useLanguage()
   const [rows, setRows] = useState(listings)
   const [near, setNear] = useState<{ lat: number; lng: number } | null>(initialNear)
   const [geoDenied, setGeoDenied] = useState(false)
@@ -176,7 +178,7 @@ export default function ZoekenResultsList({ listings, initialNear, sortByDistanc
       ) : null}
       {!near && geoTooCoarse ? (
         <p className="vysiongids-zoeken-travel-hint" role="status">
-          Je locatie is te onnauwkeurig (vaak op desktop). Gebruik een telefoon met GPS, of tik op <strong>Waze</strong>{' '}
+          Je locatie is te onnauwkeurig (vaak op desktop). Gebruik een telefoon met GPS, of tik op <strong>{t('common.waze')}</strong>{' '}
           op de kaart voor de echte route.
         </p>
       ) : null}

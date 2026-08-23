@@ -1,18 +1,28 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useLayoutEffect, useMemo, useState } from 'react'
 import {
-  DAY_LABEL,
   defaultWeekHoursFormState,
   hoursByDayToFormState,
   type DayHoursFormState,
   weekFormToHoursByDay,
 } from '@/lib/gids-opening-hours'
-import type { ListingDayHours } from '@/lib/listing-types'
+import type { ListingDayHours, ListingWeekday } from '@/lib/listing-types'
 
 export type OpeningHoursPayload = {
   json: string
   error: string | null
+}
+
+const WEEKDAY_DAY_KEY: Record<ListingWeekday, string> = {
+  maandag: 'mon',
+  dinsdag: 'tue',
+  woensdag: 'wed',
+  donderdag: 'thu',
+  vrijdag: 'fri',
+  zaterdag: 'sat',
+  zondag: 'sun',
 }
 
 type OpeningHoursEditorProps = {
@@ -21,6 +31,7 @@ type OpeningHoursEditorProps = {
 }
 
 export default function OpeningHoursEditor({ initialHoursByDay, onPayloadChange }: OpeningHoursEditorProps) {
+  const { t } = useLanguage()
   const [days, setDays] = useState<DayHoursFormState[]>(() =>
     initialHoursByDay?.length === 7 ? hoursByDayToFormState(initialHoursByDay) : defaultWeekHoursFormState(),
   )
@@ -67,20 +78,22 @@ export default function OpeningHoursEditor({ initialHoursByDay, onPayloadChange 
       {days.map((day, index) => (
         <div key={day.day} className="vysiongids-opening-hours-day">
           <div className="vysiongids-opening-hours-day-head">
-            <span className="vysiongids-opening-hours-day-label">{DAY_LABEL[day.day]}</span>
+            <span className="vysiongids-opening-hours-day-label">
+              {t(`common.days.${WEEKDAY_DAY_KEY[day.day]}`)}
+            </span>
             <label className="vysiongids-opening-hours-closed">
               <input
                 type="checkbox"
                 checked={day.closed}
                 onChange={(e) => setDayClosed(index, e.target.checked)}
               />
-              Gesloten
+              {t('common.closed')}
             </label>
           </div>
           {!day.closed ? (
             <div className="vysiongids-opening-hours-shifts">
               <div className="vysiongids-opening-hours-shift">
-                <span className="vysiongids-opening-hours-shift-label">Shift 1</span>
+                <span className="vysiongids-opening-hours-shift-label">{t('common.shift1')}</span>
                 <input
                   type="time"
                   required
@@ -88,7 +101,7 @@ export default function OpeningHoursEditor({ initialHoursByDay, onPayloadChange 
                   onChange={(e) => updateDay(index, { shift1From: e.target.value })}
                   className="vysiongids-form-input vysiongids-opening-hours-time"
                 />
-                <span className="text-sm text-gray-500">tot</span>
+                <span className="text-sm text-gray-500">{t('common.until')}</span>
                 <input
                   type="time"
                   required
@@ -103,11 +116,11 @@ export default function OpeningHoursEditor({ initialHoursByDay, onPayloadChange 
                   checked={day.shift2Enabled}
                   onChange={(e) => setShift2Enabled(index, day, e.target.checked)}
                 />
-                2e shift (van – tot)
+                {t('forms.openingHours.secondShiftToggle')}
               </label>
               {day.shift2Enabled ? (
                 <div className="vysiongids-opening-hours-shift">
-                  <span className="vysiongids-opening-hours-shift-label">Shift 2</span>
+                  <span className="vysiongids-opening-hours-shift-label">{t('common.shift2')}</span>
                   <input
                     type="time"
                     required={day.shift2Enabled}
@@ -115,7 +128,7 @@ export default function OpeningHoursEditor({ initialHoursByDay, onPayloadChange 
                     onChange={(e) => updateDay(index, { shift2From: e.target.value })}
                     className="vysiongids-form-input vysiongids-opening-hours-time"
                   />
-                  <span className="text-sm text-gray-500">tot</span>
+                  <span className="text-sm text-gray-500">{t('common.until')}</span>
                   <input
                     type="time"
                     required={day.shift2Enabled}
@@ -134,7 +147,7 @@ export default function OpeningHoursEditor({ initialHoursByDay, onPayloadChange 
           {payload.error}
         </p>
       ) : (
-        <p className="mt-2 text-xs text-gray-500">Gebruikt voor weergave en «Nu open» op de gids.</p>
+        <p className="mt-2 text-xs text-gray-500">{t('beheer.editForm.openingHoursHint')}</p>
       )}
     </div>
   )

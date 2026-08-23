@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { formatStatNumber, zoekactiesPerDagDisplay } from '@/lib/gids-public-stats'
 
 type StatProps = { display: string; label: string }
@@ -21,6 +22,7 @@ export type HomeStatsBarProps = {
 }
 
 export default function HomeStatsBar({ zoekactiesPerDag }: HomeStatsBarProps) {
+  const { t } = useLanguage()
   const [bezoekers, setBezoekers] = useState(zoekactiesPerDag)
 
   useEffect(() => {
@@ -30,11 +32,11 @@ export default function HomeStatsBar({ zoekactiesPerDag }: HomeStatsBarProps) {
   }, [zoekactiesPerDag])
 
   return (
-    <section className="vysiongids-home-stats" aria-label="Platformcijfers">
-      <h2 className="vysiongids-home-stats-title">13.000+ klanten gebruiken dagelijks vysiongids</h2>
+    <section className="vysiongids-home-stats" aria-label={t('home.statsAria')}>
+      <h2 className="vysiongids-home-stats-title">{t('home.statsTitle')}</h2>
       <div className="vysiongids-home-stats-inner">
-        <Stat display={formatStatNumber(bezoekers)} label="Bezoekers vandaag" />
-        <Stat display="0%" label="0% commissie" />
+        <Stat display={formatStatNumber(bezoekers)} label={t('home.statsVisitorsToday')} />
+        <Stat display="0%" label={t('home.statsZeroCommission')} />
       </div>
     </section>
   )

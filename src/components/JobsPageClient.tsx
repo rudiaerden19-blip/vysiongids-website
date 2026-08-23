@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import JobListingCard from '@/components/JobListingCard'
+import { useLanguage } from '@/i18n/LanguageProvider'
 import {
   BELGIUM_PROVINCES,
   DEFAULT_PROVINCE_SLUG,
@@ -33,6 +34,7 @@ type Props = {
 }
 
 export default function JobsPageClient({ listings }: Props) {
+  const { t } = useLanguage()
   const searchParams = useSearchParams()
   const router = useRouter()
   const [province, setProvince] = useState<string>(ALL_PROVINCES)
@@ -65,14 +67,12 @@ export default function JobsPageClient({ listings }: Props) {
   return (
     <>
       <div className="vysiongids-jobs-intro">
-        <h1 className="vysiongids-jobs-page-title">Jobs</h1>
-        <p className="vysiongids-jobs-page-lead">
-          Vacatures bij horeca in België — solliciteer rechtstreeks bij de zaak.
-        </p>
+        <h1 className="vysiongids-jobs-page-title">{t('jobs.title')}</h1>
+        <p className="vysiongids-jobs-page-lead">{t('jobs.lead')}</p>
 
         <div className="vysiongids-jobs-province-picker vysiongids-jobs-intro-picker">
           <label className="vysiongids-jobs-province-label" htmlFor="jobs-province">
-            Provincie
+            {t('jobs.provinceLabel')}
           </label>
           <select
             id="jobs-province"
@@ -80,7 +80,7 @@ export default function JobsPageClient({ listings }: Props) {
             value={province}
             onChange={(e) => onProvinceChange(e.target.value)}
           >
-            <option value={ALL_PROVINCES}>Heel België</option>
+            <option value={ALL_PROVINCES}>{t('common.allBelgium')}</option>
             {BELGIUM_PROVINCES.map((prov) => (
               <option key={prov.slug} value={prov.slug}>
                 {prov.label}
@@ -91,21 +91,19 @@ export default function JobsPageClient({ listings }: Props) {
       </div>
 
       <div className="vysiongids-jobs-listings">
-      {filtered.length === 0 ? (
-        <p className="vysiongids-jobs-empty">
-          {listings.length === 0
-            ? 'Momenteel geen open vacatures in de gids.'
-            : 'Geen vacatures in deze provincie. Kies «Heel België» of een andere provincie.'}
-        </p>
-      ) : (
-        <ul className="vysiongids-jobs-grid">
-          {filtered.map((listing) => (
-            <li key={listing.slug}>
-              <JobListingCard listing={listing} />
-            </li>
-          ))}
-        </ul>
-      )}
+        {filtered.length === 0 ? (
+          <p className="vysiongids-jobs-empty">
+            {listings.length === 0 ? t('jobs.emptyNone') : t('jobs.emptyProvince')}
+          </p>
+        ) : (
+          <ul className="vysiongids-jobs-grid">
+            {filtered.map((listing) => (
+              <li key={listing.slug}>
+                <JobListingCard listing={listing} />
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </>
   )

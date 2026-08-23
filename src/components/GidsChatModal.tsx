@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { GidsChatMessage, GidsChatThreadDetail } from '@/lib/gids-chat-types'
@@ -25,6 +26,7 @@ function formatChatTime(iso: string): string {
 }
 
 export default function GidsChatModal({ threadId, open, onClose, initialContextTitle, onDeleted }: Props) {
+  const { t } = useLanguage()
   const [detail, setDetail] = useState<GidsChatThreadDetail | null>(null)
   const [loadError, setLoadError] = useState<string | null>(null)
   const [draft, setDraft] = useState('')
@@ -43,7 +45,7 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
     if (gen !== refreshGenRef.current) return
     const data = (await r.json()) as { thread?: GidsChatThreadDetail; error?: string }
     if (!r.ok) {
-      if (!opts?.silent) setLoadError(data.error ?? 'Laden mislukt.')
+      if (!opts?.silent) setLoadError(data.error ?? t('errors.loadFailed'))
       return
     }
     setLoadError(null)
@@ -66,7 +68,7 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
         })
         const data = (await r.json()) as { message?: GidsChatMessage; error?: string }
         if (!r.ok) {
-          alert(data.error ?? 'Versturen mislukt.')
+          alert(data.error ?? t('beheer.gidsChatSendFailed'))
           return
         }
         if (data.message) {
@@ -124,9 +126,7 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
 
   async function handleDeleteThread() {
     if (!threadId || deleting) return
-    const ok = window.confirm(
-      'Dit gesprek en alle berichten permanent verwijderen?\n\nHandig als het product verkocht is of je de chat niet meer nodig hebt.',
-    )
+    const ok = window.confirm(t('beheer.chatDeleteConfirmExtended'))
     if (!ok) return
     setDeleting(true)
     try {
@@ -136,7 +136,7 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
       })
       const data = (await r.json()) as { error?: string }
       if (!r.ok) {
-        alert(data.error ?? 'Verwijderen mislukt.')
+        alert(data.error ?? t('errors.deleteFailed'))
         return
       }
       if (onDeleted) await onDeleted()
@@ -152,12 +152,12 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
   if (!threadId) {
     const loadingPanel = (
       <div className="vysiongids-gids-chat-root" role="presentation">
-        <button type="button" className="vysiongids-job-modal-backdrop" aria-label="Sluiten" onClick={onClose} />
+        <button type="button" className="vysiongids-job-modal-backdrop" aria-label={t('common.close')} onClick={onClose} />
         <div className="vysiongids-gids-chat-panel" role="dialog" aria-modal="true" aria-label="Chat">
-          <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label="Sluiten">
+          <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label={t('common.close')}>
             ×
           </button>
-          <h2 className="vysiongids-gids-chat-title">Chat voorbereiden…</h2>
+          <h2 className="vysiongids-gids-chat-title">{t('beheer.gidsChatPreparing')}</h2>
         </div>
       </div>
     )
@@ -166,28 +166,28 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
 
   const panel = (
     <div className="vysiongids-gids-chat-root" role="presentation">
-      <button type="button" className="vysiongids-job-modal-backdrop" aria-label="Sluiten" onClick={onClose} />
+      <button type="button" className="vysiongids-job-modal-backdrop" aria-label={t('common.close')} onClick={onClose} />
       <div className="vysiongids-gids-chat-panel" role="dialog" aria-modal="true" aria-label="Chat">
-        <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label="Sluiten">
+        <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label={t('common.close')}>
           ×
         </button>
         {detail ? (
           <>
             <p className="vysiongids-gids-chat-kicker">
-              {detail.contextType === 'zoekertje' ? 'Zoekertje' : 'Leveranciersprofiel'}
+              {detail.contextType === 'zoekertje' ? t('beheer.chatContextZoekertje') : t('beheer.chatContextSupplier')}
             </p>
             <h2 className="vysiongids-gids-chat-title">{detail.contextTitle}</h2>
             {detail.contextMeta ? (
               <p className="vysiongids-gids-chat-context-meta">{detail.contextMeta}</p>
             ) : null}
             <p className="vysiongids-gids-chat-peer-line">
-              Met {detail.peerName}
+              {t('beheer.gidsChatWithPeer', { name: detail.peerName })}
               <span className="vysiongids-gids-chat-city"> · {detail.peerCity}</span>
             </p>
           </>
         ) : (
           <h2 className="vysiongids-gids-chat-title">
-            {initialContextTitle ? `Chat · ${initialContextTitle}` : 'Chat laden…'}
+            {initialContextTitle ? t('beheer.gidsChatTitlePrefix', { title: initialContextTitle }) : t('beheer.gidsChatLoading')}
           </h2>
         )}
         {loadError ? <p className="vysiongids-gids-chat-error">{loadError}</p> : null}
@@ -204,7 +204,7 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
             </div>
           ))}
           {detail && detail.messages.length === 0 ? (
-            <p className="vysiongids-gids-chat-empty">Nog geen berichten. Stel je vraag hieronder.</p>
+            <p className="vysiongids-gids-chat-empty">{t('beheer.gidsChatEmptyThread')}</p>
           ) : null}
         </div>
         <div className="vysiongids-gids-chat-quick">
@@ -235,7 +235,7 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
             className="vysiongids-gids-chat-input"
             rows={3}
             maxLength={GIDS_CHAT_BODY_MAX}
-            placeholder="Typ je bericht…"
+            placeholder={t('beheer.gidsChatPlaceholder')}
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
             disabled={sending}
@@ -245,7 +245,7 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
             className="vysiongids-gids-chat-send"
             disabled={sending || Boolean(loadError) || !draft.trim()}
           >
-            {sending ? 'Bezig…' : 'Verstuur'}
+            {sending ? t('common.busy') : t('beheer.gidsChatSend')}
           </button>
         </form>
         {onDeleted ? (
@@ -255,7 +255,7 @@ export default function GidsChatModal({ threadId, open, onClose, initialContextT
             disabled={deleting || sending}
             onClick={() => void handleDeleteThread()}
           >
-            {deleting ? 'Bezig…' : 'Gesprek verwijderen'}
+            {deleting ? t('common.busy') : t('beheer.gidsChatDeleteThread')}
           </button>
         ) : null}
       </div>

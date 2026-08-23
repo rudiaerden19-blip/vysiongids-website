@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import Link from 'next/link'
 import ListingPhotoSlider from '@/components/ListingPhotoSlider'
 import ListingStarRating from '@/components/ListingStarRating'
@@ -37,6 +38,7 @@ function contactMail(email: string | undefined): string | null {
 }
 
 export default function DienstenListingCard({ listing }: { listing: Listing }) {
+  const { t } = useLanguage()
   const { street, cityLine } = formatListingAddressLines(listing)
   const profileHref = `/diensten/${listing.slug}`
   const telHref = belgiumPhoneTelHref(listing.phone)
@@ -65,7 +67,7 @@ export default function DienstenListingCard({ listing }: { listing: Listing }) {
             <h2 className="vysiongids-diensten-card-title">{listing.name}</h2>
           </Link>
           {listing.serviceCategories?.length ? (
-            <ul className="vysiongids-diensten-card-cats" aria-label="Categorieën">
+            <ul className="vysiongids-diensten-card-cats" aria-label={t('diensten.categoriesDialogAria')}>
               {listing.serviceCategories.map((id) => (
                 <li key={id}>{serviceCategoryLabel(id)}</li>
               ))}

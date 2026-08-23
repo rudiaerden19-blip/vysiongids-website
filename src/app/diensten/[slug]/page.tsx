@@ -9,6 +9,7 @@ import { serviceCategoryLabel } from '@/lib/gids-service-categories'
 import { provinceLabel } from '@/lib/belgium-locations'
 import { belgiumPhoneTelHref, formatBelgiumPhoneDisplay } from '@/lib/belgium-phone'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
+import { tServer } from '@/i18n/server-translate'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -97,7 +98,7 @@ export default async function DienstenProfielPage({ params }: Props) {
 
         {listing.serviceDescription ? (
           <section className="vysiongids-diensten-detail-desc mt-10">
-            <h2 className="text-lg font-bold text-gray-900">Over dit bedrijf</h2>
+            <h2 className="text-lg font-bold text-gray-900">{await tServer('diensten.detailAboutHeading')}</h2>
             <p className="mt-2 whitespace-pre-wrap text-gray-700 leading-relaxed">{listing.serviceDescription}</p>
           </section>
         ) : null}

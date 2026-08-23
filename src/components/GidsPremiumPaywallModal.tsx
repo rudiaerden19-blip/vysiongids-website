@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useEffect, useId, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { GIDS_PREMIUM_YEARLY_EUR } from '@/lib/gids-premium'
@@ -19,6 +20,7 @@ type Prefill = {
 }
 
 export default function GidsPremiumPaywallModal({ open, onClose, listingName }: Props) {
+  const { t } = useLanguage()
   const titleId = useId()
   const [contactName, setContactName] = useState('')
   const [zaakName, setZaakName] = useState(listingName ?? '')
@@ -120,18 +122,18 @@ export default function GidsPremiumPaywallModal({ open, onClose, listingName }: 
 
   const panel = (
     <div className="vysiongids-job-modal-root vysiongids-premium-modal-root" role="presentation">
-      <button type="button" className="vysiongids-job-modal-backdrop" aria-label="Sluiten" onClick={onClose} />
+      <button type="button" className="vysiongids-job-modal-backdrop" aria-label={t('common.close')} onClick={onClose} />
       <div
         className="vysiongids-job-modal-panel vysiongids-premium-modal-panel"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
       >
-        <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label="Sluiten">
+        <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label={t('common.close')}>
           ×
         </button>
         <div className="vysiongids-premium-modal-scroll">
-          <p className="vysiongids-job-modal-kicker">Premium</p>
+          <p className="vysiongids-job-modal-kicker">{t('common.premium')}</p>
           <h2 id={titleId} className="vysiongids-job-modal-title">
             Vysiongids-lidmaatschap
           </h2>
@@ -217,10 +219,10 @@ export default function GidsPremiumPaywallModal({ open, onClose, listingName }: 
             className="vysiongids-job-card-btn vysiongids-job-card-btn--phone"
             onClick={() => void onPremiumNemen()}
           >
-            {submitting ? 'Even geduld…' : 'Premium nemen'}
+            {submitting ? t('modals.premiumPaywall.submitBusy') : t('modals.premiumPaywall.submit')}
           </button>
           <button type="button" className="vysiongids-job-card-btn vysiongids-job-card-btn--email" onClick={onClose}>
-            Sluiten
+            {t('common.close')}
           </button>
         </div>
       </div>

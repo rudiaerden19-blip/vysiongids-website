@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useRouter } from 'next/navigation'
 import { useCallback, useRef, useState } from 'react'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
@@ -117,6 +118,7 @@ type BeheerEditFormProps = {
 }
 
 export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps) {
+  const { t } = useLanguage()
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -254,8 +256,8 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
 
   return (
     <section className="vysiongids-surface-card rounded-xl bg-white p-5">
-      <h2 className="text-xl font-bold text-gray-900">Gegevens bewerken</h2>
-      <p className="mt-1 text-sm text-gray-600">Wijzigingen zijn direct zichtbaar op je publieke pagina.</p>
+      <h2 className="text-xl font-bold text-gray-900">{t('beheer.editFormTitle')}</h2>
+      <p className="mt-1 text-sm text-gray-600">{t('beheer.editFormLead')}</p>
 
       <form onSubmit={onSubmit} noValidate className="vysiongids-zaak-form mt-6 space-y-5">
         {error ? (
@@ -270,7 +272,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
         ) : null}
 
         <div>
-          <RequiredLabel htmlFor="edit-name">Volledige zaaknaam</RequiredLabel>
+          <RequiredLabel htmlFor="edit-name">{t('beheer.editForm.nameLabel')}</RequiredLabel>
           <TitleCaseTextInput
             id="edit-name"
             name="name"
@@ -292,7 +294,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
             pattern="\d{6}"
             maxLength={6}
             autoComplete="off"
-            placeholder="6 cijfers — leeg laten = PIN blijft"
+            placeholder={t('beheer.editForm.newPinPlaceholder')}
             className="vysiongids-form-input mt-1 max-w-xs tracking-widest"
           />
         </div>
@@ -309,7 +311,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <RequiredLabel htmlFor="edit-province">Provincie</RequiredLabel>
+            <RequiredLabel htmlFor="edit-province">{t('common.province')}</RequiredLabel>
             <select
               id="edit-province"
               name="province"
@@ -333,7 +335,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
 
         <div className="grid gap-4 sm:grid-cols-2">
           <div>
-            <RequiredLabel htmlFor="edit-city">Gemeente</RequiredLabel>
+            <RequiredLabel htmlFor="edit-city">{t('beheer.editForm.cityLabel')}</RequiredLabel>
             <TitleCaseTextInput
               id="edit-city"
               name="city"
@@ -343,7 +345,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
             />
           </div>
           <div>
-            <RequiredLabel htmlFor="edit-postcode">Postcode</RequiredLabel>
+            <RequiredLabel htmlFor="edit-postcode">{t('beheer.editForm.postcodeLabel')}</RequiredLabel>
             <input
               id="edit-postcode"
               name="postcode"
@@ -355,7 +357,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
         </div>
 
         <div>
-          <RequiredLabel htmlFor="edit-address">Straat + nummer</RequiredLabel>
+          <RequiredLabel htmlFor="edit-address">{t('beheer.editForm.addressLabel')}</RequiredLabel>
           <TitleCaseTextInput
             id="edit-address"
             name="address"
@@ -374,7 +376,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
             name="phone"
             type="tel"
             defaultValue={listing.phone ?? ''}
-            placeholder="+32 … (optioneel)"
+            placeholder={t('beheer.editForm.phonePlaceholder')}
             className="vysiongids-form-input mt-1"
           />
         </div>
@@ -401,7 +403,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
             name="website"
             type="text"
             defaultValue={listing.website ?? ''}
-            placeholder="jouwzaak.be (optioneel)"
+            placeholder={t('beheer.editForm.websitePlaceholder')}
             className="vysiongids-form-input mt-1"
           />
         </div>
@@ -415,7 +417,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
             name="orderUrl"
             type="text"
             defaultValue={listing.orderUrl !== listing.website ? listing.orderUrl : ''}
-            placeholder="Optioneel"
+            placeholder={t('common.optional')}
             className="vysiongids-form-input mt-1"
           />
         </div>
@@ -481,7 +483,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
               min={1}
               max={180}
               defaultValue={listing.pickupTimeMin ?? ''}
-              placeholder="Bv. 10"
+              placeholder={t('beheer.editForm.pickupPlaceholderExample')}
               className="vysiongids-form-input mt-1"
             />
           </div>
@@ -496,7 +498,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
               min={1}
               max={240}
               defaultValue={listing.pickupTimeMax ?? ''}
-              placeholder="Bv. 20"
+              placeholder={t('beheer.editForm.pickupMaxPlaceholderExample')}
               className="vysiongids-form-input mt-1"
             />
           </div>
@@ -537,7 +539,7 @@ export default function BeheerEditForm({ listing, onSaved }: BeheerEditFormProps
 
         <div>
           <p className="vysiongids-form-label">Foto&apos;s</p>
-          <p className="mt-0.5 text-xs text-gray-500">Minstens 1 foto. Vervang of verwijder per slot (max. 3).</p>
+          <p className="mt-0.5 text-xs text-gray-500">{t('beheer.editForm.photosHint')}</p>
           <div className="mt-2 flex flex-wrap gap-3">
             {[0, 1, 2].map((i) => (
               <EditPhotoField

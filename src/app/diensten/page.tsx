@@ -3,6 +3,7 @@ import { Suspense } from 'react'
 import SiteHeader from '@/components/SiteHeader'
 import DienstenZoekenClient from '@/components/DienstenZoekenClient'
 import { loadDienstenListings } from '@/lib/listings-diensten'
+import { tServer } from '@/i18n/server-translate'
 
 export const metadata = { title: 'Publiciteit en diensten' }
 
@@ -13,7 +14,7 @@ export default async function DienstenPage() {
     <>
       <SiteHeader />
       <main className="vysiongids-page-wrap">
-        <h1 className="vysiongids-diensten-page-title">Publiciteit en diensten</h1>
+        <h1 className="vysiongids-diensten-page-title">{await tServer('meta.pages.diensten')}</h1>
         <p className="vysiongids-diensten-page-lead">
           Heb je een onderneming die diensten verkoopt, bijv. kassasystemen, horecameubilair, inrichting horeca, of ben
           je een groothandel of leverancier? Dan zit je hier op de juiste plek. Met een zaakprofiel val je als verkoper
@@ -25,7 +26,7 @@ export default async function DienstenPage() {
           </Link>
         </p>
 
-        <Suspense fallback={<p className="text-gray-600">Zoeken laden…</p>}>
+        <Suspense fallback={<p className="text-gray-600">{await tServer('diensten.searchLoading')}</p>}>
           <DienstenZoekenClient initialListings={listings} />
         </Suspense>
       </main>

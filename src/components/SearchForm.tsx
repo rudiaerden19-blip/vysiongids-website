@@ -7,6 +7,7 @@ import { buildSearchResultsSpeechMessage } from '@/lib/search-results-speech'
 import { useVoiceSearch } from '@/lib/use-voice-search'
 import { primeSpeechSynthesis, speakDutchAsync, stashVoiceSearchAnnouncement } from '@/lib/speak-dutch'
 import SearchVoiceMicButton from '@/components/SearchVoiceMicButton'
+import { useLanguage } from '@/i18n/LanguageProvider'
 import type { VoiceNameHint } from '@/lib/voice-search-transcript-fix'
 import { fixVoiceSearchTranscript } from '@/lib/voice-search-transcript-fix'
 import { getBrowserGeolocation } from '@/lib/browser-geolocation'
@@ -18,8 +19,6 @@ import {
 } from '@/lib/gids-listing-action-intent-client'
 import { normalizeVoiceActionQuery, voiceQueryNeedsGeolocation } from '@/lib/gids-listing-action-intent'
 import { saveGidsNavTarget } from '@/lib/gids-nav-session'
-
-const GIDS_SEARCH_PLACEHOLDER = 'Bv frituur dichtbij — pizzeria gent — frituur nu open'
 
 const fieldLabel: CSSProperties = {
   display: 'block',
@@ -142,6 +141,7 @@ type SearchActionsProps = {
 }
 
 function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: SearchActionsProps) {
+  const { t } = useLanguage()
   const router = useRouter()
   const voiceNameHintsRef = useRef<VoiceNameHint[]>([])
   const hintsLoadRef = useRef<Promise<void> | null>(null)
@@ -232,7 +232,7 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
       className={`vysiongids-hero-search-actions${compact ? ' vysiongids-hero-search-actions--compact' : ''}`}
     >
       <button type="submit" className="vysiongids-hero-search-submit" style={submitStyle}>
-        Zoeken
+        {t('search.submit')}
       </button>
       <SearchVoiceMicButton listening={listening} supported={supported} onClick={onMicClick} />
     </div>
@@ -240,6 +240,7 @@ function SearchActions({ submitStyle, formRef, qInputRef, prov, compact }: Searc
 }
 
 export default function SearchForm({ compact }: { compact?: boolean }) {
+  const { t } = useLanguage()
   const router = useRouter()
   const searchParams = useSearchParams()
   const formRef = useRef<HTMLFormElement>(null)
@@ -271,10 +272,10 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
   if (!compact) {
     return (
       <form ref={formRef} onSubmit={onSubmit} className="vysiongids-hero-search" style={heroFormStyle}>
-        <h2 className="vysiongids-hero-search-title">Eten bestellen</h2>
+        <h2 className="vysiongids-hero-search-title">{t('search.heroTitle')}</h2>
         <div className="vysiongids-hero-search-grow" style={heroGrowStyle}>
           <label htmlFor="search-q" style={heroFieldLabel}>
-            Stad, postcode of naam
+            {t('search.queryLabel')}
           </label>
           <input
             ref={qInputRef}
@@ -282,19 +283,19 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
             name="q"
             type="search"
             defaultValue={q}
-            placeholder={GIDS_SEARCH_PLACEHOLDER}
+            placeholder={t('search.placeholder')}
             autoComplete="off"
             style={heroFieldInput}
           />
         </div>
         <div className="vysiongids-hero-search-type" style={heroTypeStyle}>
           <label htmlFor="search-type" style={heroFieldLabel}>
-            Type zaak
+            {t('search.typeLabel')}
           </label>
           <select id="search-type" name="type" defaultValue={type} style={heroFieldInput}>
-            {LISTING_TYPES.map((t) => (
-              <option key={t.id} value={t.id}>
-                {t.label}
+            {LISTING_TYPES.map((row) => (
+              <option key={row.id} value={row.id}>
+                {t(`search.types.${row.id}`)}
               </option>
             ))}
           </select>
@@ -319,7 +320,7 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
     >
       <div style={{ flex: '1 1 16rem', minWidth: 'min(100%, 14rem)' }}>
         <label htmlFor="search-q-compact" style={fieldLabel}>
-          Stad, postcode of naam
+          {t('search.queryLabel')}
         </label>
         <input
           ref={qInputRef}
@@ -327,19 +328,19 @@ export default function SearchForm({ compact }: { compact?: boolean }) {
           name="q"
           type="search"
           defaultValue={q}
-          placeholder={GIDS_SEARCH_PLACEHOLDER}
+          placeholder={t('search.placeholder')}
           style={fieldInput}
           autoComplete="off"
         />
       </div>
       <div style={{ flex: '0 1 12rem', minWidth: 'min(100%, 10rem)' }}>
         <label htmlFor="search-type-compact" style={fieldLabel}>
-          Type zaak
+          {t('search.typeLabel')}
         </label>
         <select id="search-type-compact" name="type" defaultValue={type} style={fieldInput}>
-          {LISTING_TYPES.map((t) => (
-            <option key={t.id} value={t.id}>
-              {t.label}
+          {LISTING_TYPES.map((row) => (
+            <option key={row.id} value={row.id}>
+              {t(`search.types.${row.id}`)}
             </option>
           ))}
         </select>

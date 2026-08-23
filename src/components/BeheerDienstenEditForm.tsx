@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useRouter } from 'next/navigation'
 import { useRef, useState } from 'react'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
@@ -83,6 +84,7 @@ type Props = {
 }
 
 export default function BeheerDienstenEditForm({ listing, onSaved }: Props) {
+  const { t } = useLanguage()
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
@@ -169,10 +171,10 @@ export default function BeheerDienstenEditForm({ listing, onSaved }: Props) {
         onSubmit={onSubmit}
         className="vysiongids-surface-card mt-4 space-y-5 rounded-xl bg-white p-5 sm:p-6"
       >
-        <h2 className="text-lg font-bold text-gray-900">Dienstenprofiel bewerken</h2>
+        <h2 className="text-lg font-bold text-gray-900">{t('diensten.beheerEditTitle')}</h2>
         <p className="text-sm text-gray-600">
           Pas je reclametekst, foto&apos;s en contactgegevens aan. Dit is wat klanten zien onder{' '}
-          <strong>Publiciteit en diensten</strong>.
+          <strong>{t('meta.pages.diensten')}</strong>.
         </p>
 
         {error ? (

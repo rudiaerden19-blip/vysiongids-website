@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import SentenceCaseTextarea from '@/components/SentenceCaseTextarea'
 import TitleCaseTextInput from '@/components/TitleCaseTextInput'
 import { formatGidsTitleCase, formatReviewCommentText } from '@/lib/gids-text'
@@ -15,6 +16,7 @@ type Props = {
 }
 
 export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: Props) {
+  const { t } = useLanguage()
   const router = useRouter()
   const [rating, setRating] = useState<number | null>(null)
   const [bodyLen, setBodyLen] = useState(0)
@@ -26,7 +28,7 @@ export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: 
     e.preventDefault()
     setError(null)
     if (rating == null) {
-      setError('Kies eerst je score: tik op 1 tot 5 sterren.')
+      setError(t('errors.reviewChooseStars'))
       return
     }
     const fd = new FormData(e.currentTarget)
@@ -35,7 +37,7 @@ export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: 
     const reviewerName = nameRaw ? formatGidsTitleCase(nameRaw) : undefined
     const reviewBody = formatReviewCommentText(bodyRaw)
     if (reviewBody.length < 10) {
-      setError('Schrijf minstens 10 tekens over je ervaring.')
+      setError(t('errors.reviewMinLength'))
       return
     }
     setLoading(true)
@@ -47,7 +49,7 @@ export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: 
       })
       const data = (await res.json()) as { error?: string; ok?: boolean; review?: GidsReview }
       if (!res.ok) {
-        setError(data.error ?? 'Review plaatsen mislukt.')
+        setError(data.error ?? t('errors.reviewPostFailed'))
         return
       }
       if (data.review) {
@@ -56,7 +58,7 @@ export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: 
       setDone(true)
       router.refresh()
     } catch {
-      setError('Netwerkfout. Probeer opnieuw.')
+      setError(t('errors.networkRetry'))
     } finally {
       setLoading(false)
     }
@@ -79,7 +81,7 @@ export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: 
             *
           </span>
         </legend>
-        <p className="mt-1 text-sm text-gray-600">Kies 1 tot 5 sterren vóór je publiceert.</p>
+        <p className="mt-1 text-sm text-gray-600">{t('reviews.formStarsHint')}</p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           {[1, 2, 3, 4, 5].map((n) => (
             <button
@@ -96,7 +98,7 @@ export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: 
           {rating != null ? (
             <span className="self-center text-sm font-semibold text-gray-700">{rating} / 5</span>
           ) : (
-            <span className="self-center text-sm font-medium text-amber-800">Nog geen score gekozen</span>
+            <span className="self-center text-sm font-medium text-amber-800">{t('reviews.noScoreYet')}</span>
           )}
         </div>
       </fieldset>
@@ -130,7 +132,7 @@ export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: 
           rows={4}
           onChange={(e) => setBodyLen(e.target.value.trim().length)}
           className="vysiongids-form-input mt-1 resize-y"
-          placeholder="Vertel kort wat je goed of minder vond…"
+          placeholder={t('reviews.bodyPlaceholder')}
         />
       </div>
 
@@ -145,7 +147,7 @@ export default function ReviewSubmitForm({ slug, listingName, onReviewPosted }: 
         disabled={loading || rating == null || bodyLen < 10}
         className="rounded-xl bg-accent px-8 py-3 font-bold text-white hover:bg-accent/90 disabled:opacity-60"
       >
-        {loading ? 'Bezig…' : 'Review plaatsen'}
+        {loading ? t('common.busy') : t('reviews.submit')}
       </button>
     </form>
   )

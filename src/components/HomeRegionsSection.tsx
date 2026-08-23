@@ -1,5 +1,8 @@
+'use client'
+
 import Image from 'next/image'
 import Link from 'next/link'
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { BELGIUM_CITIES, BELGIUM_PROVINCES } from '@/lib/belgium-locations'
 import { provinceImageUrl } from '@/lib/province-images'
 
@@ -17,17 +20,16 @@ function homeProvincesForGrid() {
 }
 
 export default function HomeRegionsSection() {
+  const { t } = useLanguage()
   const homeProvinces = homeProvincesForGrid()
   return (
     <section className="vysiongids-home-regions" aria-labelledby="home-regions-title">
       <div className="vysiongids-home-regions-inner">
         <header className="vysiongids-home-section-intro">
           <h2 id="home-regions-title" className="vysiongids-home-regions-title">
-            Alle horeca zaken per stad en provincie
+            {t('home.regionsTitle')}
           </h2>
-          <p className="vysiongids-home-regions-lead">
-            Kies een provincie of stad — je ziet meteen welke zaken in de gids staan.
-          </p>
+          <p className="vysiongids-home-regions-lead">{t('home.regionsLead')}</p>
         </header>
 
         <ul className="vysiongids-home-regions-grid">
@@ -52,12 +54,12 @@ export default function HomeRegionsSection() {
         </ul>
 
         <div className="vysiongids-home-cities">
-          <h3 className="vysiongids-home-cities-title">Populaire steden</h3>
+          <h3 className="vysiongids-home-cities-title">{t('home.popularCitiesTitle')}</h3>
           <ul className="vysiongids-home-cities-list">
             {BELGIUM_CITIES.map((city) => (
               <li key={city.q}>
                 <Link href={`/zoeken?q=${encodeURIComponent(city.q)}`} className="vysiongids-home-city-chip">
-                  Horeca in {city.label}
+                  {t('home.popularCityChip', { city: city.label })}
                 </Link>
               </li>
             ))}

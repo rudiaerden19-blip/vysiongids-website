@@ -1,12 +1,13 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import ZoekertjeDetailModal from '@/components/ZoekertjeDetailModal'
 import ZoekertjeCardPlacedStrip from '@/components/ZoekertjeCardPlacedStrip'
 import {
   ZOEKERTJES_BROWSE_KIND_OPTIONS,
   ZOEKERTJES_CATEGORIES,
-  zoekertjeCategoryLabel,
+  zoekertjeCategoryMessageKey,
   zoekertjeMatchesBrowseKind,
 } from '@/lib/gids-zoekertjes-categories'
 import { formatGidsZoekertjePriceDisplay } from '@/lib/gids-zoekertjes-price'
@@ -31,6 +32,7 @@ export default function ZoekertjesPageClient({
   initialSetupRequired = false,
   initialLoadError = null,
 }: Props) {
+  const { t } = useLanguage()
   const hasServerList = initialZoekertjes !== undefined
   const [zoekertjes, setZoekertjes] = useState<GidsZoekertje[]>(initialZoekertjes ?? [])
   const [setupRequired, setSetupRequired] = useState(initialSetupRequired)
@@ -62,7 +64,7 @@ export default function ZoekertjesPageClient({
         error?: string
       }
       if (!r.ok) {
-        setLoadError(data.error ?? 'Laden mislukt.')
+        setLoadError(data.error ?? t('errors.loadFailed'))
         setSetupRequired(false)
         setZoekertjes([])
         return
@@ -70,11 +72,11 @@ export default function ZoekertjesPageClient({
       setZoekertjes(data.zoekertjes ?? [])
       setSetupRequired(data.setupRequired === true)
     } catch {
-      setLoadError('Laden mislukt.')
+      setLoadError(t('errors.loadFailed'))
     } finally {
       setLoading(false)
     }
-  }, [])
+  }, [t])
 
   useEffect(() => {
     if (hasServerList) return
@@ -97,36 +99,31 @@ export default function ZoekertjesPageClient({
   return (
     <>
       <div className="vysiongids-zoekertjes-intro">
-        <h1 className="vysiongids-jobs-page-title">Zoekertjes</h1>
+        <h1 className="vysiongids-jobs-page-title">{t('header.navZoekertjes')}</h1>
 
         <p className="vysiongids-zoekertjes-intro-lead">
-          Welkom op het zoekertjesplatform van Vysiongids. Zoekertjes komen van horeca-leden met premium (
-          <strong>€{GIDS_HORECA_YEARLY_EUR}/jaar</strong>). Plaats je eigen zoekertje via je dashboard na registratie
-          en premium in beheer.
+          {t('zoekertjes.introLead', { yearlyEur: GIDS_HORECA_YEARLY_EUR })}
         </p>
 
         <div className="vysiongids-zoekertje-beheer-warn vysiongids-zoekertjes-intro-warn" role="note">
-          <p className="vysiongids-zoekertje-beheer-warn-title">Let Op</p>
-          <p className="vysiongids-zoekertje-beheer-warn-text">
-            Geef geen bankgegevens aan derden. Een zoekertje dat met een koerier moet worden opgehaald, of een
-            misleidend zoekertje, wordt onmiddellijk verwijderd.
-          </p>
+          <p className="vysiongids-zoekertje-beheer-warn-title">{t('zoekertjes.warnTitle')}</p>
+          <p className="vysiongids-zoekertje-beheer-warn-text">{t('zoekertjes.warnText')}</p>
         </div>
 
         <div className="vysiongids-zoekertjes-filters">
           <div className="vysiongids-zoekertjes-filter-block">
-            <p className="vysiongids-jobs-province-label">Soort &amp; categorie</p>
+            <p className="vysiongids-jobs-province-label">{t('zoekertjes.filterKindCategory')}</p>
             <div className="vysiongids-zoekertjes-filter-row">
               <select
                 id="zoekertjes-kind"
                 className="vysiongids-jobs-province-select"
                 value={kindFilter}
                 onChange={(e) => setKindFilter(e.target.value)}
-                aria-label="Soort zoekertje"
+                aria-label={t('zoekertjes.filterKindAria')}
               >
                 {ZOEKERTJES_BROWSE_KIND_OPTIONS.map((opt) => (
                   <option key={opt.value || 'all'} value={opt.value}>
-                    {opt.label}
+                    {t(opt.labelKey)}
                   </option>
                 ))}
               </select>
@@ -135,12 +132,12 @@ export default function ZoekertjesPageClient({
                 className="vysiongids-jobs-province-select"
                 value={categoryFilter}
                 onChange={(e) => setCategoryFilter(e.target.value)}
-                aria-label="Categorie"
+                aria-label={t('zoekertjes.filterCategoryAria')}
               >
-                <option value="">Alle categorieën</option>
+                <option value="">{t('zoekertjes.allCategories')}</option>
                 {ZOEKERTJES_CATEGORIES.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.label}
+                    {t(zoekertjeCategoryMessageKey(c.id))}
                   </option>
                 ))}
               </select>
@@ -149,7 +146,7 @@ export default function ZoekertjesPageClient({
 
           <div className="vysiongids-jobs-province-picker vysiongids-zoekertjes-province-picker">
             <label className="vysiongids-jobs-province-label" htmlFor="zoekertjes-province">
-              Provincie
+              {t('common.province')}
             </label>
             <select
               id="zoekertjes-province"
@@ -157,7 +154,7 @@ export default function ZoekertjesPageClient({
               value={provinceFilter}
               onChange={(e) => setProvinceFilter(e.target.value)}
             >
-              <option value={ALL_PROVINCES}>Heel België</option>
+              <option value={ALL_PROVINCES}>{t('common.allBelgium')}</option>
               {BELGIUM_PROVINCES.map((prov) => (
                 <option key={prov.slug} value={prov.slug}>
                   {prov.label}
@@ -179,16 +176,16 @@ export default function ZoekertjesPageClient({
         <p className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">{loadError}</p>
       ) : null}
 
-      {loading ? <p className="vysiongids-jobs-empty">Zoekertjes laden…</p> : null}
+      {loading ? <p className="vysiongids-jobs-empty">{t('zoekertjes.loading')}</p> : null}
 
       {!loading && !loadError && zoekertjes.length === 0 ? (
         <p className="vysiongids-jobs-empty">
-          {setupRequired ? 'Nog geen zoekertjes zichtbaar.' : 'Nog geen zoekertjes.'}
+          {setupRequired ? t('zoekertjes.emptyNoneSetup') : t('zoekertjes.emptyNone')}
         </p>
       ) : null}
 
       {!loading && !loadError && zoekertjes.length > 0 && filteredZoekertjes.length === 0 ? (
-        <p className="vysiongids-jobs-empty">Geen zoekertjes voor deze filters. Pas soort, categorie of provincie aan.</p>
+        <p className="vysiongids-jobs-empty">{t('zoekertjes.emptyFiltered')}</p>
       ) : null}
 
       <ul className="vysiongids-zoekertjes-grid vysiongids-zoekertjes-grid--browse">
@@ -202,14 +199,14 @@ export default function ZoekertjesPageClient({
                   type="button"
                   className="vysiongids-zoekertje-card-media vysiongids-zoekertje-card-media--browse vysiongids-zoekertje-card-photo-hit"
                   onClick={() => openDetail(z)}
-                  aria-label={`Bekijk zoekertje: ${normalizeZoekertjeTitleInput(z.title)}`}
+                  aria-label={t('zoekertjes.viewAria', { title: normalizeZoekertjeTitleInput(z.title) })}
                 >
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img src={thumb} alt="" loading="lazy" decoding="async" />
                 </button>
               ) : (
                 <div className="vysiongids-zoekertje-card-media vysiongids-zoekertje-card-media--browse vysiongids-zoekertje-card-media--empty">
-                  Geen Foto
+                  {t('zoekertjes.noPhoto')}
                 </div>
               )}
               <button type="button" className="vysiongids-zoekertje-card-body-hit" onClick={() => openDetail(z)}>
@@ -219,7 +216,7 @@ export default function ZoekertjesPageClient({
                     {normalizeZoekertjeTitleInput(z.title)}
                   </h2>
                   <p className="vysiongids-zoekertje-card-tags vysiongids-zoekertje-card-tags--browse">
-                    {zoekertjeCategoryLabel(z.category)}
+                    {t(zoekertjeCategoryMessageKey(z.category))}
                   </p>
                   <p className="vysiongids-zoekertje-card-meta">
                     {z.listingName} · {z.listingCity}

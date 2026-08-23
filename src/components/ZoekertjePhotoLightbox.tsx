@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useEffect, type MouseEvent } from 'react'
 import { createPortal } from 'react-dom'
 
@@ -14,6 +15,7 @@ type Props = {
 }
 
 export default function ZoekertjePhotoLightbox({ open, photos, index, onIndexChange, onClose }: Props) {
+  const { t } = useLanguage()
   const total = photos.length
   const current = photos[index]
 
@@ -49,8 +51,8 @@ export default function ZoekertjePhotoLightbox({ open, photos, index, onIndexCha
 
   const panel = (
     <div className="vysiongids-zoekertje-lightbox" role="dialog" aria-modal="true" aria-label="Foto vergroten">
-      <button type="button" className="vysiongids-zoekertje-lightbox-backdrop" aria-label="Sluiten" onClick={onClose} />
-      <button type="button" className="vysiongids-zoekertje-lightbox-close" onClick={onClose} aria-label="Sluiten">
+      <button type="button" className="vysiongids-zoekertje-lightbox-backdrop" aria-label={t('common.close')} onClick={onClose} />
+      <button type="button" className="vysiongids-zoekertje-lightbox-close" onClick={onClose} aria-label={t('common.close')}>
         ×
       </button>
       {total > 1 ? (

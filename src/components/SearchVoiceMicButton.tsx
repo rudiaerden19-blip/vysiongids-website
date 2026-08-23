@@ -1,5 +1,7 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
+
 type Props = {
   listening: boolean
   supported: boolean
@@ -27,11 +29,12 @@ function MicIcon() {
 }
 
 export default function SearchVoiceMicButton({ listening, supported, onClick, className }: Props) {
+  const { t } = useLanguage()
   const title = supported
     ? listening
-      ? 'Luisteren… spreek je zoekopdracht in'
-      : 'Inspreken — bv. pizzeria in Pelt, frituur, naam van de zaak'
-    : 'Spraakzoeken werkt in Chrome, Edge of Safari'
+      ? t('search.voiceListening')
+      : t('search.voiceSpeak')
+    : t('search.voiceSpeak')
 
   return (
     <button
@@ -44,7 +47,9 @@ export default function SearchVoiceMicButton({ listening, supported, onClick, cl
       aria-pressed={listening}
     >
       <MicIcon />
-      <span className="vysiongids-hero-search-voice-label">{listening ? 'Luisteren…' : 'Inspreken'}</span>
+      <span className="vysiongids-hero-search-voice-label">
+        {listening ? t('search.voiceListening') : t('search.voiceSpeak')}
+      </span>
     </button>
   )
 }

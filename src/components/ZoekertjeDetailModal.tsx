@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import Link from 'next/link'
 import { useEffect, useId, useState } from 'react'
 import { createPortal } from 'react-dom'
@@ -31,6 +32,7 @@ function detailLine(label: string, value: string | null | undefined) {
 }
 
 export default function ZoekertjeDetailModal({ zoekertje, open, onClose }: Props) {
+  const { t } = useLanguage()
   const titleId = useId()
   const [lightboxOpen, setLightboxOpen] = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState(0)
@@ -71,14 +73,14 @@ export default function ZoekertjeDetailModal({ zoekertje, open, onClose }: Props
 
   const panel = (
     <div className="vysiongids-job-modal-root vysiongids-zoekertje-detail-root" role="presentation">
-      <button type="button" className="vysiongids-job-modal-backdrop" aria-label="Sluiten" onClick={onClose} />
+      <button type="button" className="vysiongids-job-modal-backdrop" aria-label={t('common.close')} onClick={onClose} />
       <div
         className="vysiongids-job-modal-panel vysiongids-zoekertje-detail-panel"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
       >
-        <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label="Sluiten">
+        <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label={t('common.close')}>
           ×
         </button>
         <div className="vysiongids-zoekertje-detail-scroll">

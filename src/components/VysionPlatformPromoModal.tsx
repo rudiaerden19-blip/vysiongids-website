@@ -2,27 +2,13 @@
 
 import { useEffect, useId } from 'react'
 import { createPortal } from 'react-dom'
+import { useLanguage } from '@/i18n/LanguageProvider'
 
 export type VysionPlatformPromoKind = 'order' | 'reservations'
 
-const CONFIG: Record<
-  VysionPlatformPromoKind,
-  { title: string; body: string; cta: string; href: string }
-> = {
-  order: {
-    title: 'Online bestelplatform',
-    body:
-      'Indien u lid bent van Vysiongids, betaalt u niet €49 per maand voor het online bestelplatform, maar €49 per jaar.',
-    cta: 'Ga naar het online bestelplatform',
-    href: 'https://www.vysionorder.com',
-  },
-  reservations: {
-    title: 'Restaurantreserveringen',
-    body:
-      'Indien u lid bent van Vysiongids, betaalt u niet €49 per maand voor het restaurantreserveringsplatform, maar €49 per jaar.',
-    cta: 'Ga naar de reserveringssoftware',
-    href: 'https://www.tablevysion.com',
-  },
+const HREF: Record<VysionPlatformPromoKind, string> = {
+  order: 'https://www.vysionorder.com',
+  reservations: 'https://www.tablevysion.com',
 }
 
 type Props = {
@@ -32,6 +18,7 @@ type Props = {
 }
 
 export default function VysionPlatformPromoModal({ kind, open, onClose }: Props) {
+  const { t } = useLanguage()
   const titleId = useId()
 
   useEffect(() => {
@@ -50,25 +37,28 @@ export default function VysionPlatformPromoModal({ kind, open, onClose }: Props)
 
   if (!open || !kind) return null
 
-  const { title, body, cta, href } = CONFIG[kind]
+  const titleKey = kind === 'order' ? 'modals.platformPromo.orderTitle' : 'modals.platformPromo.reservationsTitle'
+  const bodyKey = kind === 'order' ? 'modals.platformPromo.orderBody' : 'modals.platformPromo.reservationsBody'
+  const ctaKey = kind === 'order' ? 'modals.platformPromo.orderCta' : 'modals.platformPromo.reservationsCta'
+  const href = HREF[kind]
 
   const panel = (
     <div className="vysiongids-platform-promo-modal-root" role="presentation">
-      <button type="button" className="vysiongids-job-modal-backdrop" aria-label="Sluiten" onClick={onClose} />
+      <button type="button" className="vysiongids-job-modal-backdrop" aria-label={t('common.close')} onClick={onClose} />
       <div
         className="vysiongids-job-modal-panel vysiongids-platform-promo-modal-panel"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
       >
-        <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label="Sluiten">
+        <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label={t('common.close')}>
           ×
         </button>
-        <p className="vysiongids-job-modal-kicker">Voor leden van Vysiongids</p>
+        <p className="vysiongids-job-modal-kicker">{t('modals.platformPromo.kicker')}</p>
         <h2 id={titleId} className="vysiongids-job-modal-title">
-          {title}
+          {t(titleKey)}
         </h2>
-        <p className="vysiongids-platform-promo-modal-text">{body}</p>
+        <p className="vysiongids-platform-promo-modal-text">{t(bodyKey)}</p>
         <a
           href={href}
           target="_blank"
@@ -76,7 +66,7 @@ export default function VysionPlatformPromoModal({ kind, open, onClose }: Props)
           className="vysiongids-platform-promo-modal-cta"
           onClick={onClose}
         >
-          {cta}
+          {t(ctaKey)}
         </a>
       </div>
     </div>

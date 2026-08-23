@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useRouter } from 'next/navigation'
 import { useCallback, useState, useSyncExternalStore } from 'react'
 import BeheerDienstenEditForm from '@/components/BeheerDienstenEditForm'
@@ -19,6 +20,7 @@ type MeResponse = {
 
 /** Formulier direct uit server-props — geen wachten op BeheerClient/API. */
 export default function BeheerListingEditor({ initialListing }: Props) {
+  const { t } = useLanguage()
   const router = useRouter()
   const [listing, setListing] = useState(initialListing)
   const mounted = useSyncExternalStore(
@@ -47,8 +49,8 @@ export default function BeheerListingEditor({ initialListing }: Props) {
   if (!mounted) {
     return (
       <section className="vysiongids-surface-card rounded-xl bg-white p-5" aria-busy="true">
-        <h2 className="text-xl font-bold text-gray-900">Gegevens bewerken</h2>
-        <p className="mt-2 text-sm text-gray-500">Formulier laden…</p>
+        <h2 className="text-xl font-bold text-gray-900">{t('beheer.editFormTitle')}</h2>
+        <p className="mt-2 text-sm text-gray-500">{t('beheer.formLoading')}</p>
       </section>
     )
   }

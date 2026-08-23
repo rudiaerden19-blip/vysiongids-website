@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
 import { useRouter, useSearchParams } from 'next/navigation'
@@ -16,22 +17,32 @@ const ListingOwnerDailyViews = dynamic(() => import('@/components/ListingOwnerDa
   loading: () => null,
 })
 
+function ZoekertjesSectionLoading() {
+  const { t } = useLanguage()
+  return (
+    <section className="vysiongids-surface-card rounded-xl bg-sky-50/80 p-5">
+      <p className="text-sm text-gray-500">{t('beheer.zoekertjesLoading')}</p>
+    </section>
+  )
+}
+
+function ChatSectionLoading() {
+  const { t } = useLanguage()
+  return (
+    <section className="vysiongids-surface-card rounded-xl bg-white p-5">
+      <p className="text-sm text-gray-500">{t('beheer.chatLoading')}</p>
+    </section>
+  )
+}
+
 const BeheerZoekertjesSection = dynamic(() => import('@/components/BeheerZoekertjesSection'), {
   ssr: false,
-  loading: () => (
-    <section className="vysiongids-surface-card rounded-xl bg-sky-50/80 p-5">
-      <p className="text-sm text-gray-500">Zoekertjes laden…</p>
-    </section>
-  ),
+  loading: () => <ZoekertjesSectionLoading />,
 })
 
 const BeheerGidsChatSection = dynamic(() => import('@/components/BeheerGidsChatSection'), {
   ssr: false,
-  loading: () => (
-    <section className="vysiongids-surface-card rounded-xl bg-white p-5">
-      <p className="text-sm text-gray-500">Berichten laden…</p>
-    </section>
-  ),
+  loading: () => <ChatSectionLoading />,
 })
 
 type Props = {
@@ -39,6 +50,7 @@ type Props = {
 }
 
 export default function BeheerClientExtras({ listing }: Props) {
+  const { t } = useLanguage()
   const router = useRouter()
   const searchParams = useSearchParams()
   const premiumFlash = searchParams.get('premium')
@@ -141,7 +153,7 @@ export default function BeheerClientExtras({ listing }: Props) {
 
       {slug ? (
         <section className="rounded-xl border border-red-200 bg-red-50/50 p-5">
-          <h2 className="text-lg font-bold text-gray-900">Verwijder je zaak</h2>
+          <h2 className="text-lg font-bold text-gray-900">{t('beheer.deleteSectionTitle')}</h2>
           <p className="mt-2 text-sm text-gray-600">
             Je listing, alle foto&apos;s, reviews en instellingen worden permanent verwijderd. Je zaak is daarna niet meer
             vindbaar in Vysiongids.

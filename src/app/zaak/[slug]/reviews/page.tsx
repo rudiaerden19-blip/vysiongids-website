@@ -4,6 +4,7 @@ import ZaakReviewsLive from '@/components/ZaakReviewsLive'
 import SiteHeader from '@/components/SiteHeader'
 import { getCachedListingIdBySlug, getCachedReviewsByListingSlug } from '@/lib/gids-reviews-cache'
 import { formatListingAddressLines, getListingBySlug, getListingTypeLabel } from '@/lib/listings'
+import { tServer } from '@/i18n/server-translate'
 
 type Props = { params: Promise<{ slug: string }> }
 
@@ -47,7 +48,7 @@ export default async function ZaakReviewsPage({ params }: Props) {
             {listing.name}
           </Link>
           <span className="mx-2">|</span>
-          <span className="text-gray-800">Reviews</span>
+          <span className="text-gray-800">{await tServer('common.reviews')}</span>
         </nav>
 
         <header className="mt-6 border-b border-gray-200 pb-6">

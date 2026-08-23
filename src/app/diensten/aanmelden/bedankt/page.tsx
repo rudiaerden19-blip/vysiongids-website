@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import SiteHeader from '@/components/SiteHeader'
+import { tServer } from '@/i18n/server-translate'
 
 export const metadata = { title: 'Bedankt — dienstenprofiel' }
 
@@ -15,7 +16,7 @@ export default async function DienstenAanmeldenBedanktPage({
     <>
       <SiteHeader />
       <main className="vysiongids-page-wrap mx-auto max-w-xl">
-        <h1 className="text-2xl font-bold text-gray-900">Bedankt voor je betaling</h1>
+        <h1 className="text-2xl font-bold text-gray-900">{await tServer('diensten.registerThankYouTitle')}</h1>
         <p className="mt-3 text-gray-700 leading-relaxed">
           Je dienstenprofiel wordt zichtbaar zodra de betaling is verwerkt (meestal binnen enkele seconden).
         </p>

@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useMemo, useState } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import DienstenListingCard from '@/components/DienstenListingCard'
@@ -12,6 +13,7 @@ type Props = {
 }
 
 export default function DienstenZoekenClient({ initialListings }: Props) {
+  const { t } = useLanguage()
   const router = useRouter()
   const searchParams = useSearchParams()
   const qParam = searchParams.get('q') ?? ''
@@ -56,14 +58,14 @@ export default function DienstenZoekenClient({ initialListings }: Props) {
   const catLabel = cat ? GIDS_SERVICE_CATEGORIES.find((c) => c.id === cat)?.label : null
 
   return (
-    <section className="vysiongids-diensten-zoeken" aria-label="Zoek leveranciers">
+    <section className="vysiongids-diensten-zoeken" aria-label={t('diensten.searchAria')}>
       <form onSubmit={applySearch} className="vysiongids-diensten-zoek-form">
         <input
           type="search"
           name="q"
           value={q}
           onChange={(e) => setQ(e.target.value)}
-          placeholder="Zoek op naam, product of plaats…"
+          placeholder={t('diensten.searchPlaceholder')}
           className="vysiongids-diensten-zoek-input"
           autoComplete="off"
         />
@@ -72,9 +74,9 @@ export default function DienstenZoekenClient({ initialListings }: Props) {
           value={prov}
           onChange={(e) => setProv(e.target.value)}
           className="vysiongids-diensten-zoek-select"
-          aria-label="Provincie"
+          aria-label={t('common.province')}
         >
-          <option value="">Heel België</option>
+          <option value="">{t('common.allBelgium')}</option>
           {BELGIUM_PROVINCES.map((p) => (
             <option key={p.slug} value={p.slug}>
               {p.label}
@@ -101,8 +103,8 @@ export default function DienstenZoekenClient({ initialListings }: Props) {
       {pickerOpen ? (
         <>
           <div className="vysiongids-diensten-cat-backdrop" aria-hidden onClick={() => setPickerOpen(false)} />
-          <div className="vysiongids-diensten-cat-dialog" role="dialog" aria-modal="true" aria-label="Categorieën">
-            <h3 className="vysiongids-diensten-cat-dialog-title">Kies categorie</h3>
+          <div className="vysiongids-diensten-cat-dialog" role="dialog" aria-modal="true" aria-label={t('diensten.categoriesDialogAria')}>
+            <h3 className="vysiongids-diensten-cat-dialog-title">{t('diensten.chooseCategory')}</h3>
             <ul className="vysiongids-diensten-cat-list">
               {GIDS_SERVICE_CATEGORIES.map((c) => (
                 <li key={c.id}>

@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import ListingAmenityIcon from '@/components/ListingAmenityIcon'
 import ListingInfoExtrasSections from '@/components/ListingInfoExtrasSections'
 import ListingZaakQr from '@/components/ListingZaakQr'
@@ -64,6 +65,7 @@ function OpenStatus({ listing }: { listing: Listing }) {
 }
 
 export default function ListingInfoSection({ listing }: { listing: Listing }) {
+  const { t } = useLanguage()
   const hoursRows = resolveHoursByDay(listing)
   const schedule = listing.infoExtras?.schedule
   const website = listing.website?.trim()
@@ -76,7 +78,7 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
     <section id="info" className="vysiongids-zaak-info vysiongids-zaak-panel">
       <div className="vysiongids-zaak-info-grid">
         <div className="vysiongids-zaak-info-col">
-          <h2 className="vysiongids-zaak-info-heading">OPENINGSUREN</h2>
+          <h2 className="vysiongids-zaak-info-heading">{t('listing.infoOpeningHours')}</h2>
           <OpenStatus listing={listing} />
           <div className="vysiongids-zaak-hours-block">
             <div className="vysiongids-zaak-hours-list">
@@ -100,7 +102,7 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
         </div>
 
         <div className="vysiongids-zaak-info-col vysiongids-zaak-info-col--info">
-          <h2 className="vysiongids-zaak-info-heading">INFO</h2>
+          <h2 className="vysiongids-zaak-info-heading">{t('listing.infoSection')}</h2>
           <ul className="vysiongids-zaak-info-list">
             {website ? (
               <li className="vysiongids-zaak-info-item vysiongids-zaak-info-item--contact">
@@ -138,7 +140,7 @@ export default function ListingInfoSection({ listing }: { listing: Listing }) {
             ))}
             {!website && !phoneDisplay && !email && amenityList.length === 0 ? (
               <li className="vysiongids-zaak-info-item">
-                <span style={{ color: '#6b7280', fontSize: '0.9375rem' }}>Contactgegevens volgen binnenkort.</span>
+                <span style={{ color: '#6b7280', fontSize: '0.9375rem' }}>{t('listing.contactComingSoon')}</span>
               </li>
             ) : null}
           </ul>

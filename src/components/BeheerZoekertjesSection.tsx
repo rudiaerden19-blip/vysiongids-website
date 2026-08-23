@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useCallback, useEffect, useState } from 'react'
 import ZoekertjesPlaceModal from '@/components/ZoekertjesPlaceModal'
 import ZoekertjeDetailModal from '@/components/ZoekertjeDetailModal'
@@ -30,6 +31,7 @@ export default function BeheerZoekertjesSection({
   placeRequestId = 0,
   initialMine,
 }: Props) {
+  const { t } = useLanguage()
   const isPremium = listingHasGidsPremium(premiumMember)
   const hasInitialMine = initialMine !== undefined
   const [mine, setMine] = useState<GidsZoekertje[]>(initialMine ?? [])
@@ -120,7 +122,7 @@ export default function BeheerZoekertjesSection({
 
   return (
     <section id="zoekertje-beheer" className="vysiongids-surface-card rounded-xl bg-sky-50/80 p-5">
-      <h2 className="text-lg font-bold text-gray-900">Zoekertjes</h2>
+      <h2 className="text-lg font-bold text-gray-900">{t('header.navZoekertjes')}</h2>
       <p className="mt-2 text-sm text-gray-600">
         Plaats hier je zoekertje — iedereen kan dit zien op de{' '}
         <a href="/zoekertjes" className="font-semibold text-accent underline">
@@ -131,7 +133,7 @@ export default function BeheerZoekertjesSection({
       </p>
 
       <div className="vysiongids-zoekertje-beheer-warn mt-3" role="note">
-        <p className="vysiongids-zoekertje-beheer-warn-title">Let Op</p>
+        <p className="vysiongids-zoekertje-beheer-warn-title">{t('zoekertjes.warnTitle')}</p>
         <p className="vysiongids-zoekertje-beheer-warn-text">
           Geef geen bankgegevens aan derden. Een zoekertje dat met een koerier moet worden opgehaald, of een
           misleidend zoekertje, wordt onmiddellijk verwijderd.

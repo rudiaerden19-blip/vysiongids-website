@@ -2,6 +2,7 @@ import { Suspense } from 'react'
 import ZoekertjesPageClient from '@/components/ZoekertjesPageClient'
 import SiteHeader from '@/components/SiteHeader'
 import { getCachedPublishedGidsZoekertjesBrowse } from '@/lib/gids-zoekertjes-public-cache'
+import { tServer } from '@/i18n/server-translate'
 
 export const metadata = { title: 'Zoekertjes' }
 export const revalidate = 60
@@ -17,7 +18,7 @@ export default async function ZoekertjesPage() {
     <>
       <SiteHeader />
       <main className="vysiongids-page-wrap">
-        <Suspense fallback={<p className="vysiongids-jobs-empty">Laden…</p>}>
+        <Suspense fallback={<p className="vysiongids-jobs-empty">{await tServer('common.loading')}</p>}>
           <ZoekertjesPageClient
             initialZoekertjes={initialZoekertjes}
             initialSetupRequired={initialSetupRequired}

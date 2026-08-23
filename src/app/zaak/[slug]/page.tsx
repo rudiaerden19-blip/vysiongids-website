@@ -10,6 +10,7 @@ import ListingMap from '@/components/ListingMapClient'
 import ListingNavigationButtons from '@/components/ListingNavigationButtons'
 import ZaakOwnerDeleteSection from '@/components/ZaakOwnerDeleteSection'
 import { getListingCuisineDisplay } from '@/lib/listing-cuisine-types'
+import { tServer } from '@/i18n/server-translate'
 import {
   formatDeliveryFee,
   formatDeliveryRadius,
@@ -128,7 +129,7 @@ export default async function ZaakPage({ params }: Props) {
                 <ListingMenuButton listing={listing} className="vysiongids-zaak-action-btn" />
               </div>
               <div className="mt-4 border-t border-gray-200 pt-4">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">Route</p>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">{await tServer('listing.routeHeading')}</p>
                 <ListingNavigationButtons listing={listing} compact mapPin={mapPin} />
               </div>
             </div>
@@ -140,7 +141,7 @@ export default async function ZaakPage({ params }: Props) {
             <ListingMap listing={listingForRating} mapPin={mapPin} />
 
             <section id="beoordeling" className="vysiongids-zaak-panel mt-8 scroll-mt-24 bg-white p-4 sm:p-5">
-              <h2 className="text-lg font-bold text-gray-900">Beoordeling</h2>
+              <h2 className="text-lg font-bold text-gray-900">{await tServer('listing.ratingHeading')}</h2>
               <div className="mt-3">
                 <ListingStarRating slug={slug} avg={listingForRating.ratingAvg} count={listingForRating.ratingCount} size="md" />
               </div>
@@ -156,7 +157,7 @@ export default async function ZaakPage({ params }: Props) {
               </p>
               {canSubmitReview ? (
                 <div className="mt-8">
-                  <h3 className="text-base font-bold text-gray-900">Schrijf een review</h3>
+                  <h3 className="text-base font-bold text-gray-900">{await tServer('listing.writeReviewHeading')}</h3>
                   <div className="mt-3">
                     <ReviewSubmitForm slug={slug} listingName={listing.name} />
                   </div>
@@ -165,11 +166,11 @@ export default async function ZaakPage({ params }: Props) {
             </section>
 
             <section className="vysiongids-zaak-panel mt-8 bg-white p-4 sm:p-5">
-              <h2 className="text-lg font-bold text-gray-900">Bestellen</h2>
+              <h2 className="text-lg font-bold text-gray-900">{await tServer('listing.orderSectionTitle')}</h2>
               <dl className="mt-4 grid gap-3 text-sm sm:grid-cols-2">
                 {listing.pickupTimeMin != null && listing.pickupTimeMax != null ? (
                   <div>
-                    <dt className="font-semibold text-gray-500">Afhaaltijd</dt>
+                    <dt className="font-semibold text-gray-500">{await tServer('listing.pickupTime')}</dt>
                     <dd>
                       {listing.pickupTimeMin}–{listing.pickupTimeMax} min
                     </dd>
@@ -177,7 +178,7 @@ export default async function ZaakPage({ params }: Props) {
                 ) : null}
                 {listing.deliveryTimeMin != null && listing.deliveryTimeMax != null ? (
                   <div>
-                    <dt className="font-semibold text-gray-500">Levertijd</dt>
+                    <dt className="font-semibold text-gray-500">{await tServer('listing.deliveryTime')}</dt>
                     <dd>
                       {listing.deliveryTimeMin}–{listing.deliveryTimeMax} min
                     </dd>
@@ -185,19 +186,19 @@ export default async function ZaakPage({ params }: Props) {
                 ) : null}
                 {deliveryFeeLabel ? (
                   <div>
-                    <dt className="font-semibold text-gray-500">Bezorging</dt>
+                    <dt className="font-semibold text-gray-500">{await tServer('listing.deliveryFee')}</dt>
                     <dd>{deliveryFeeLabel}</dd>
                   </div>
                 ) : null}
                 {minOrder ? (
                   <div>
-                    <dt className="font-semibold text-gray-500">Minimum</dt>
+                    <dt className="font-semibold text-gray-500">{await tServer('listing.minimumOrder')}</dt>
                     <dd>{minOrder}</dd>
                   </div>
                 ) : null}
                 {deliveryRadiusLabel ? (
                   <div>
-                    <dt className="font-semibold text-gray-500">Leveringsstraal</dt>
+                    <dt className="font-semibold text-gray-500">{await tServer('listing.deliveryRadius')}</dt>
                     <dd>{deliveryRadiusLabel.replace('Levering binnen ', '')}</dd>
                   </div>
                 ) : null}

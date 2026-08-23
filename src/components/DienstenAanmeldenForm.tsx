@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useRouter } from 'next/navigation'
 import { useCallback, useRef, useState } from 'react'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
@@ -60,6 +61,7 @@ function PhotoPickField({
 }
 
 export default function DienstenAanmeldenForm() {
+  const { t } = useLanguage()
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
@@ -144,7 +146,7 @@ export default function DienstenAanmeldenForm() {
             *
           </span>
         </legend>
-        <p className="mt-1 text-sm text-gray-600">Kies alles wat op jouw aanbod van toepassing is.</p>
+        <p className="mt-1 text-sm text-gray-600">{t('forms.dienstenAanmelden.categoriesHint')}</p>
         <ul className="mt-2 grid gap-2 sm:grid-cols-2">
           {GIDS_SERVICE_CATEGORIES.map((c) => (
             <li key={c.id}>
@@ -172,7 +174,7 @@ export default function DienstenAanmeldenForm() {
           maxLength={2000}
           rows={4}
           className="vysiongids-form-input mt-1 resize-y"
-          placeholder="Kassasystemen, installatie, onderhoud, …"
+          placeholder={t('forms.dienstenAanmelden.descriptionPlaceholder')}
         />
       </div>
 
@@ -252,7 +254,7 @@ export default function DienstenAanmeldenForm() {
           type="text"
           inputMode="url"
           autoComplete="url"
-          placeholder="jouwzaak.be of https://jouwzaak.be (optioneel)"
+          placeholder={t('forms.zaakToevoegen.websitePlaceholder')}
           className="vysiongids-form-input mt-1"
         />
       </div>

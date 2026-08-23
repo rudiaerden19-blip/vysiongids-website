@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useRef, useState } from 'react'
 
 type Props = {
@@ -16,6 +17,7 @@ export default function ListingMenuOwnerFields({
   existingMenuPdfUrl,
   disabled,
 }: Props) {
+  const { t } = useLanguage()
   const inputRef = useRef<HTMLInputElement>(null)
   const [pdfLabel, setPdfLabel] = useState<string | null>(null)
   const [removePdf, setRemovePdf] = useState(false)
@@ -24,7 +26,7 @@ export default function ListingMenuOwnerFields({
 
   return (
     <div className="vysiongids-form-menu-block">
-      <p className="vysiongids-form-label">Menu</p>
+      <p className="vysiongids-form-label">{t('common.menu')}</p>
       <p className="mb-2 text-xs text-gray-500">
         Of bouw je volledige menu (categorieën & producten) via{' '}
         <a href="/beheer/menu" className="font-semibold text-accent hover:underline">

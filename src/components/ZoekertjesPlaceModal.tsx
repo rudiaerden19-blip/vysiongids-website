@@ -1,13 +1,16 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import { useEffect, useId, useMemo, useState } from 'react'
 import { createPortal } from 'react-dom'
 import {
   ZOEKERTJES_CATEGORIES,
   ZOEKERTJES_CONDITIONS,
+  ZOEKERTJES_CONDITION_MESSAGE_KEYS,
   ZOEKERTJES_KINDS,
+  ZOEKERTJES_KIND_MESSAGE_KEYS,
   guessZoekertjeCategoryFromTitle,
-  zoekertjeCategoryLabel,
+  zoekertjeCategoryMessageKey,
 } from '@/lib/gids-zoekertjes-categories'
 import { gidsZoekertjePriceForInput } from '@/lib/gids-zoekertjes-price'
 import {
@@ -34,15 +37,16 @@ type PhotoSlot = {
   preview: string
 }
 
-const STEP_TITLES: Record<Step, string> = {
-  1: 'Wat wil je verkopen?',
-  2: "Foto's",
-  3: 'Details',
-  4: 'Kenmerken',
-  5: 'Prijs',
+const STEP_TITLE_KEYS: Record<Step, string> = {
+  1: 'zoekertjes.placeModal.step1Title',
+  2: 'zoekertjes.placeModal.step2Title',
+  3: 'zoekertjes.placeModal.step3Title',
+  4: 'zoekertjes.placeModal.step4Title',
+  5: 'zoekertjes.placeModal.step5Title',
 }
 
 export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, setupRequired }: Props) {
+  const { t } = useLanguage()
   const titleId = useId()
   const [step, setStep] = useState<Step>(1)
   const [titleHint, setTitleHint] = useState('')
@@ -89,7 +93,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
         const r = await fetch(`/api/gids/zoekertjes/${editId}`, { credentials: 'same-origin' })
         const data = (await r.json()) as { zoekertje?: GidsZoekertje; error?: string }
         if (!r.ok || !data.zoekertje) {
-          setError(data.error ?? 'Laden mislukt.')
+          setError(data.error ?? t('errors.loadFailed'))
           return
         }
         const z = data.zoekertje
@@ -107,7 +111,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
         setReplaceAllPhotos(false)
         setStep(3)
       } catch {
-        setError('Laden mislukt.')
+        setError(t('errors.loadFailed'))
       } finally {
         setLoadingEdit(false)
       }
@@ -136,7 +140,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
       setCategory(guess)
       if (!title) setTitle(normalizeZoekertjeTitleInput(titleHint))
     } else {
-      setError('Geen Categorie Herkend — Kies Er Zelf Één.')
+      setError(t('zoekertjes.placeModal.categoryNotRecognized'))
     }
   }
 
@@ -165,16 +169,16 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
 
   function validateStep(s: Step): string | null {
     if (s === 1) {
-      if (!category) return 'Kies Een Categorie.'
+      if (!category) return t('zoekertjes.placeModal.chooseCategoryRequired')
       return null
     }
     if (s === 3) {
-      if (!title.trim()) return 'Titel Is Verplicht.'
-      if (!description.trim()) return 'Beschrijving Is Verplicht.'
+      if (!title.trim()) return t('zoekertjes.placeModal.titleRequiredError')
+      if (!description.trim()) return t('zoekertjes.placeModal.descriptionRequiredError')
       return null
     }
     if (s === 5) {
-      if (!price.trim()) return 'Prijs Is Verplicht.'
+      if (!price.trim()) return t('zoekertjes.placeModal.priceRequiredError')
       return null
     }
     return null
@@ -237,41 +241,44 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
       })
       const data = (await r.json().catch(() => ({}))) as { error?: string }
       if (!r.ok) {
-        setError(data.error ?? 'Opslaan mislukt.')
+        setError(data.error ?? t('errors.saveFailed'))
         return
       }
       onSaved?.()
       onClose()
     } catch {
-      setError('Netwerkfout. Probeer opnieuw.')
+      setError(t('errors.networkRetry'))
     } finally {
       setSubmitting(false)
     }
   }
 
-  const categoryLabel = useMemo(() => (category ? zoekertjeCategoryLabel(category) : ''), [category])
+  const categoryLabel = useMemo(
+    () => (category ? t(zoekertjeCategoryMessageKey(category)) : ''),
+    [category, t],
+  )
 
   if (!open) return null
 
   const panel = (
     <div className="vysiongids-job-modal-root vysiongids-premium-modal-root vysiongids-zoekertje-modal-root" role="presentation">
-      <button type="button" className="vysiongids-job-modal-backdrop" aria-label="Sluiten" onClick={onClose} />
+      <button type="button" className="vysiongids-job-modal-backdrop" aria-label={t('common.close')} onClick={onClose} />
       <div
         className="vysiongids-job-modal-panel vysiongids-premium-modal-panel vysiongids-zoekertje-modal-panel"
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
       >
-        <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label="Sluiten">
+        <button type="button" className="vysiongids-job-modal-close" onClick={onClose} aria-label={t('common.close')}>
           ×
         </button>
         <div className="vysiongids-premium-modal-scroll">
           <p className="vysiongids-job-modal-kicker">
-            Zoekertje · Stap {step}/5
+            {t('zoekertjes.placeModal.kicker', { step })}
             {categoryLabel ? ` · ${categoryLabel}` : ''}
           </p>
           <h2 id={titleId} className="vysiongids-job-modal-title">
-            {editId ? 'Zoekertje bewerken' : STEP_TITLES[step]}
+            {editId ? t('zoekertjes.placeModal.editTitle') : t(STEP_TITLE_KEYS[step])}
           </h2>
 
           {setupRequired && !editId ? (
@@ -280,13 +287,13 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
             </p>
           ) : null}
 
-          {loadingEdit ? <p className="text-sm text-gray-600">Gegevens laden…</p> : null}
+          {loadingEdit ? <p className="text-sm text-gray-600">{t('zoekertjes.placeModal.loadingEdit')}</p> : null}
 
           {!loadingEdit && step === 1 ? (
             <div className="vysiongids-zoekertje-modal-fields mt-4 space-y-4">
               <div>
                 <label className="vysiongids-form-label text-sm" htmlFor="zoekertjeTitleHint">
-                  Vul een titel in
+                  {t('zoekertjes.placeModal.titleHintLabel')}
                 </label>
                 <div className="vysiongids-zoekertje-title-row mt-1">
                   <input
@@ -295,17 +302,17 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
                     value={titleHint}
                     onChange={(e) => setTitleHint(e.target.value)}
                     className="vysiongids-form-input w-full text-sm"
-                    placeholder="Bijv. Oven, Friteuse, Barkrukken…"
+                    placeholder={t('zoekertjes.placeModal.titleHintPlaceholder')}
                   />
                   <button type="button" className="vysiongids-zoekertje-primary-btn" onClick={onVindCategorie}>
-                    Vind categorie
+                    {t('zoekertjes.placeModal.findCategory')}
                   </button>
                 </div>
-                <p className="mt-1 text-xs text-gray-500">Noem bijv. kleur, merk of maat</p>
+                <p className="mt-1 text-xs text-gray-500">{t('zoekertjes.placeModal.titleHintSub')}</p>
               </div>
               <div>
                 <label className="vysiongids-form-label text-sm" htmlFor="zoekertjeCategory">
-                  Of selecteer zelf een categorie
+                  {t('zoekertjes.placeModal.categoryManualLabel')}
                 </label>
                 <select
                   id="zoekertjeCategory"
@@ -313,10 +320,10 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
                   onChange={(e) => setCategory(e.target.value)}
                   className="vysiongids-form-input mt-1 w-full text-sm"
                 >
-                  <option value="">Kies een categorie</option>
+                  <option value="">{t('zoekertjes.placeModal.chooseCategory')}</option>
                   {ZOEKERTJES_CATEGORIES.map((c) => (
                     <option key={c.id} value={c.id}>
-                      {c.label}
+                      {t(zoekertjeCategoryMessageKey(c.id))}
                     </option>
                   ))}
                 </select>
@@ -326,10 +333,10 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
 
           {!loadingEdit && step === 2 ? (
             <div className="vysiongids-zoekertje-modal-fields mt-4">
-              <p className="text-sm font-semibold text-gray-900">Foto&apos;s</p>
+              <p className="text-sm font-semibold text-gray-900">{t('zoekertjes.placeModal.photosHeading')}</p>
               <div className="vysiongids-zoekertje-photo-grid mt-2">
                 <label className="vysiongids-zoekertje-photo-add">
-                  <span className="text-accent font-semibold text-sm">+ Voeg foto&apos;s toe</span>
+                  <span className="text-accent font-semibold text-sm">{t('zoekertjes.placeModal.addPhotos')}</span>
                   <input
                     type="file"
                     accept="image/*"
@@ -357,7 +364,10 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
                 ))}
               </div>
               <p className="mt-2 text-xs text-gray-500">
-                {photoCount} van {GIDS_ZOEKERTJE_MAX_PHOTOS} foto&apos;s gebruikt.
+                {t('zoekertjes.placeModal.photosUsed', {
+                  count: photoCount,
+                  max: GIDS_ZOEKERTJE_MAX_PHOTOS,
+                })}
               </p>
               {editId && existingPhotoUrls.length > 0 ? (
                 <button
@@ -368,7 +378,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
                     setExistingPhotoUrls([])
                   }}
                 >
-                  Alle bestaande foto&apos;s vervangen bij opslaan
+                  {t('zoekertjes.placeModal.replaceAllPhotos')}
                 </button>
               ) : null}
             </div>
@@ -378,7 +388,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
             <div className="vysiongids-zoekertje-modal-fields mt-4 space-y-4">
               <div>
                 <label className="vysiongids-form-label text-sm" htmlFor="zoekertjeTitle">
-                  Titel (Verplicht)
+                  {t('zoekertjes.placeModal.titleRequired')}
                 </label>
                 <input
                   id="zoekertjeTitle"
@@ -396,7 +406,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
               </div>
               <div>
                 <label className="vysiongids-form-label text-sm" htmlFor="zoekertjeDesc">
-                  Beschrijving (Verplicht)
+                  {t('zoekertjes.placeModal.descriptionRequired')}
                 </label>
                 <textarea
                   id="zoekertjeDesc"
@@ -413,31 +423,39 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
 
           {!loadingEdit && step === 4 ? (
             <div className="vysiongids-zoekertje-modal-fields mt-4 space-y-3">
-              {(
-                [
-                  ['Conditie', condition, setCondition, ZOEKERTJES_CONDITIONS],
-                  ['Soort', kind, setKind, ZOEKERTJES_KINDS],
-                ] as const
-              ).map(([label, val, setVal, options]) => (
-                <div key={label}>
-                  <label className="vysiongids-form-label text-sm">{label}</label>
-                  <select
-                    value={val}
-                    onChange={(e) => setVal(e.target.value)}
-                    className="vysiongids-form-input mt-1 w-full text-sm"
-                  >
-                    <option value="">Kies…</option>
-                    {options.map((o) => (
-                      <option key={o} value={o}>
-                        {o}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ))}
+              <div>
+                <label className="vysiongids-form-label text-sm">{t('zoekertjes.placeModal.conditionLabel')}</label>
+                <select
+                  value={condition}
+                  onChange={(e) => setCondition(e.target.value)}
+                  className="vysiongids-form-input mt-1 w-full text-sm"
+                >
+                  <option value="">{t('common.choose')}</option>
+                  {ZOEKERTJES_CONDITIONS.map((o) => (
+                    <option key={o} value={o}>
+                      {t(ZOEKERTJES_CONDITION_MESSAGE_KEYS[o])}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="vysiongids-form-label text-sm">{t('zoekertjes.placeModal.kindLabel')}</label>
+                <select
+                  value={kind}
+                  onChange={(e) => setKind(e.target.value)}
+                  className="vysiongids-form-input mt-1 w-full text-sm"
+                >
+                  <option value="">{t('common.choose')}</option>
+                  {ZOEKERTJES_KINDS.map((o) => (
+                    <option key={o} value={o}>
+                      {t(ZOEKERTJES_KIND_MESSAGE_KEYS[o])}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div>
                 <label className="vysiongids-form-label text-sm" htmlFor="zoekertjeType">
-                  Type
+                  {t('zoekertjes.placeModal.typeLabel')}
                 </label>
                 <input
                   id="zoekertjeType"
@@ -445,12 +463,12 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
                   value={itemType}
                   onChange={(e) => setItemType(e.target.value)}
                   className="vysiongids-form-input mt-1 w-full text-sm"
-                  placeholder="Bijv. Oven"
+                  placeholder={t('zoekertjes.placeModal.typePlaceholder')}
                 />
               </div>
               <div>
                 <label className="vysiongids-form-label text-sm" htmlFor="zoekertjeBrand">
-                  Merk
+                  {t('zoekertjes.placeModal.brandLabel')}
                 </label>
                 <input
                   id="zoekertjeBrand"
@@ -466,7 +484,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
           {!loadingEdit && step === 5 ? (
             <div className="vysiongids-zoekertje-modal-fields mt-4">
               <label className="vysiongids-form-label text-sm" htmlFor="zoekertjePrice">
-                Prijs (Verplicht)
+                {t('zoekertjes.placeModal.priceRequired')}
               </label>
               <div className="mt-1 flex items-center gap-2">
                 <span className="text-sm font-semibold text-gray-700">€</span>
@@ -478,7 +496,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
                   className="vysiongids-form-input w-full text-sm"
-                  placeholder="Bijv. 250 Of 250,50"
+                  placeholder={t('zoekertjes.placeModal.pricePlaceholder')}
                 />
               </div>
             </div>
@@ -490,7 +508,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
         <div className="vysiongids-job-card-actions vysiongids-premium-modal-actions vysiongids-zoekertje-modal-actions">
           {step > 1 && step < 5 ? (
             <button type="button" className="vysiongids-job-card-btn vysiongids-job-card-btn--email" onClick={goBack}>
-              Terug
+              {t('common.back')}
             </button>
           ) : null}
           {step < 5 ? (
@@ -500,7 +518,7 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
               onClick={goNext}
               disabled={loadingEdit}
             >
-              Verder
+              {t('common.next')}
             </button>
           ) : (
             <button
@@ -509,7 +527,11 @@ export default function ZoekertjesPlaceModal({ open, onClose, editId, onSaved, s
               disabled={submitting || loadingEdit}
               onClick={() => void onPlaatsen()}
             >
-              {submitting ? 'Even Geduld…' : editId ? 'Opslaan' : 'Plaats Zoekertje'}
+              {submitting
+                ? t('zoekertjes.placeModal.submitBusy')
+                : editId
+                  ? t('zoekertjes.placeModal.submitSave')
+                  : t('zoekertjes.placeModal.submitPlace')}
             </button>
           )}
         </div>

@@ -1,5 +1,6 @@
 'use client'
 
+import { useLanguage } from '@/i18n/LanguageProvider'
 import Link from 'next/link'
 import { useMemo } from 'react'
 import type { Listing } from '@/lib/listing-types'
@@ -50,6 +51,7 @@ function MenuProductRow({ product }: { product: GidsMenuProduct }) {
 }
 
 export default function GidsMenuPublicView({ listing, catalog }: Props) {
+  const { t } = useLanguage()
   const sections = useMemo(() => {
     return catalog.categories
       .filter((c) => c.isActive)
@@ -70,7 +72,7 @@ export default function GidsMenuPublicView({ listing, catalog }: Props) {
           ← Terug
         </Link>
         <h1 className="vysiongids-menu-catalog-title">{listing.name}</h1>
-        <p className="vysiongids-menu-catalog-sub">Menukaart</p>
+        <p className="vysiongids-menu-catalog-sub">{t('beheer.menuCardTitle')}</p>
       </header>
 
       {sections.length === 0 ? (
