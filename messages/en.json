@@ -128,7 +128,7 @@
     "heroTitle": "Order food",
     "queryLabel": "City, postcode or name",
     "typeLabel": "Business type",
-    "placeholder": "E.g. chip shop, pizzeria, sandwiches, bakery, butcher",
+    "placeholder": "E.g. chip shop, pizzeria, sandwiches, bakery, butcher, city, open now",
     "submit": "Search",
     "voiceListening": "Listening…",
     "voiceSpeak": "Speak",

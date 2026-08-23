@@ -128,7 +128,7 @@
     "heroTitle": "Commander à manger",
     "queryLabel": "Ville, code postal ou nom",
     "typeLabel": "Type d’établissement",
-    "placeholder": "Ex. friterie, pizzeria, sandwicherie, boulangerie, boucherie",
+    "placeholder": "Ex. friterie, pizzeria, sandwicherie, boulangerie, boucherie, ville, ouvert",
     "submit": "Rechercher",
     "voiceListening": "Écoute…",
     "voiceSpeak": "Dicter",
