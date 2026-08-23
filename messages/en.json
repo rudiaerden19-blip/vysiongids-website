@@ -128,7 +128,7 @@
     "heroTitle": "Order food",
     "queryLabel": "City, postcode or name",
     "typeLabel": "Business type",
-    "placeholder": "E.g. chip shop nearby — pizzeria ghent — chip shop open now",
+    "placeholder": "E.g. chip shop, pizzeria, sandwiches, bakery, butcher",
     "submit": "Search",
     "voiceListening": "Listening…",
     "voiceSpeak": "Speak",
