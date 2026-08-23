@@ -1066,6 +1066,18 @@ body {
   color: #6b7280;
 }
 
+.vysiongids-home-stats-tagline {
+  margin: clamp(1.25rem, 3vw, 1.75rem) auto 0;
+  max-width: min(52rem, 100%);
+  padding: 0 0.5rem;
+  text-align: center;
+  font-size: clamp(1.05rem, 2.5vw, 1.25rem);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #0e5d82;
+  line-height: 1.35;
+}
+
 .vysiongids-home-featured-inner {
   width: 100%;
   max-width: var(--vysiongids-content-max);

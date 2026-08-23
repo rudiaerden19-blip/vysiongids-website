@@ -38,6 +38,7 @@ export default function HomeStatsBar({ zoekactiesPerDag }: HomeStatsBarProps) {
         <Stat display={formatStatNumber(bezoekers)} label={t('home.statsVisitorsToday')} />
         <Stat display="0%" label={t('home.statsZeroCommission')} />
       </div>
+      <p className="vysiongids-home-stats-tagline">{t('home.statsTagline')}</p>
     </section>
   )
 }
