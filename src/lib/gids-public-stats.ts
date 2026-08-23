@@ -86,21 +86,28 @@ function brusselsHourAndMinute(now: Date): { hour: number; minute: number } {
 }
 
 /**
- * Bezoekers vandaag: 9:00 (Brussel) = 180, lineair oplopend tot 20:00 ≈ 13.000; daarvoor/daarna vast.
+ * Bezoekers vandaag (Brussel):
+ * 00:00–09:00 → 0 · 09:00→20:00 lineair ~180→13.000 · 20:00→24:00 blijft oplopen · 00:00 reset.
  */
 export function zoekactiesPerDagDisplay(now = new Date()): number {
   const { hour, minute } = brusselsHourAndMinute(now)
+  const time = hour + minute / 60
   const startHour = 9
-  const endHour = 20
+  const peakHour = 20
   const baseAtNine = 180
-  const endTotal = 13_000
-  const windowHours = endHour - startHour
+  const atPeak = 13_000
 
-  if (hour < startHour) return baseAtNine
+  if (time < startHour) return 0
 
-  const hoursSinceNine = hour - startHour + minute / 60
-  if (hoursSinceNine >= windowHours) return endTotal
+  const morningHours = peakHour - startHour
+  if (time < peakHour) {
+    const progress = (time - startHour) / morningHours
+    return Math.round(baseAtNine + (atPeak - baseAtNine) * progress)
+  }
 
-  const progress = hoursSinceNine / windowHours
-  return Math.round(baseAtNine + (endTotal - baseAtNine) * progress)
+  const eveningHours = 24 - peakHour
+  const hourlyMorningRate = (atPeak - baseAtNine) / morningHours
+  const eveningEnd = Math.round(atPeak + hourlyMorningRate * eveningHours)
+  const progressEvening = Math.min(1, (time - peakHour) / eveningHours)
+  return Math.round(atPeak + (eveningEnd - atPeak) * progressEvening)
 }
