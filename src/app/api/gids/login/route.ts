@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 import { verifyGidsPin } from '@/lib/gids-pin'
-import { fetchListingByLoginNameAdmin } from '@/lib/gids-listings-db'
+import { fetchListingByLoginNameAdmin, fetchOwnerPinMustChangeAdmin } from '@/lib/gids-listings-db'
 import { enforceRateLimit } from '@/lib/gids-rate-limit'
 import {
   GIDS_SESSION_COOKIE,
@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     ok: true,
     slug: row.slug,
     name: row.name,
-    mustChangePin: row.pin_must_change === true,
+    mustChangePin: await fetchOwnerPinMustChangeAdmin(row.id),
   })
   res.cookies.set(GIDS_SESSION_COOKIE, token, gidsSessionCookieOptions())
   return res

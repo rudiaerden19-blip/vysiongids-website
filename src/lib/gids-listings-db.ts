@@ -691,12 +691,30 @@ type GidsLoginLookupRow = Pick<GidsListingRow, 'id' | 'name' | 'name_normalized'
 async function fetchListingsByNormalizedNamesAdmin(keys: string[]): Promise<GidsLoginLookupRow[]> {
   const supabase = createGidsSupabaseAdmin()
   if (!supabase || keys.length === 0) return []
+  // Geen pin_must_change hier: ontbreekt die kolom (migratie 025), faalt de hele login.
   const { data, error } = await supabase
     .from('gids_listings')
-    .select('id, name, name_normalized, pin_hash, slug, pin_must_change')
+    .select('id, name, name_normalized, pin_hash, slug')
     .in('name_normalized', keys)
-  if (error || !data?.length) return []
+  if (error) {
+    console.error('[gids login] name lookup:', error.message)
+    return []
+  }
+  if (!data?.length) return []
   return data as GidsLoginLookupRow[]
+}
+
+/** Optioneel: false als kolom pin_must_change nog niet bestaat. */
+export async function fetchOwnerPinMustChangeAdmin(id: string): Promise<boolean> {
+  const supabase = createGidsSupabaseAdmin()
+  if (!supabase) return false
+  const { data, error } = await supabase
+    .from('gids_listings')
+    .select('pin_must_change')
+    .eq('id', id)
+    .maybeSingle()
+  if (error || !data) return false
+  return data.pin_must_change === true
 }
 
 export async function fetchListingBySlugAdmin(slug: string): Promise<GidsListingRow | null> {
