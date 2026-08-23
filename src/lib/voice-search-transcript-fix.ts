@@ -29,6 +29,8 @@ const STOPWORDS = new Set([
   'chinees',
   'chinese',
   'sterrenzaak',
+  'bakkerij',
+  'slagerij',
   'de',
   'het',
   'den',

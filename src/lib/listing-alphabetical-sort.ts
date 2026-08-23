@@ -24,6 +24,8 @@ const NAME_SORT_PREFIXES = [
   'sushi restaurant',
   'sushi',
   'sterrenzaak',
+  'bakkerij',
+  'slagerij',
 ]
 
 /** Sorteersleutel: echte naam (bv. «Nolim Pelt»), niet «Frituur Nolim Pelt». */

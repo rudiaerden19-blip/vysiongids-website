@@ -15,6 +15,8 @@ export const LISTING_TYPES = [
   { id: 'sushi', label: 'Sushi restaurant' },
   { id: 'cafe', label: 'Café' },
   { id: 'bistro', label: 'Bistro' },
+  { id: 'bakkerij', label: 'Bakkerij' },
+  { id: 'slagerij', label: 'Slagerij' },
 ] as const
 
 export type ListingTypeId = (typeof LISTING_TYPES)[number]['id']

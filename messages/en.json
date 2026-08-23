@@ -144,7 +144,9 @@
       "chinees": "Chinese restaurant",
       "sushi": "Sushi restaurant",
       "cafe": "Café",
-      "bistro": "Bistro"
+      "bistro": "Bistro",
+      "bakkerij": "Bakery",
+      "slagerij": "Butcher's shop"
     },
     "nearbyHintNeedLocation": "For {label} we need your location.",
     "nearbyHintAllowLocation": "Allow location",

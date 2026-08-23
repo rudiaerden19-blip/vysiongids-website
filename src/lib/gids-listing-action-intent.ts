@@ -99,6 +99,8 @@ const TYPE_WORDS = new Set([
   'chinees',
   'chinese',
   'sterrenzaak',
+  'bakkerij',
+  'slagerij',
   'eethuis',
   'grill',
   'house',

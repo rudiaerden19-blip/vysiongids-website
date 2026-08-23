@@ -76,6 +76,8 @@ const LISTING_TYPE_SEARCH: Array<{ type: ListingTypeSearchId; phrases: string[] 
   { type: 'sushi', phrases: ['sushi restaurant'] },
   { type: 'cafe', phrases: ['cafe', 'café', 'koffiehuis'] },
   { type: 'bistro', phrases: ['bistro'] },
+  { type: 'bakkerij', phrases: ['bakkerij', 'bakker', 'brood', 'patisserie', 'patissier'] },
+  { type: 'slagerij', phrases: ['slagerij', 'slager', 'charcuterie', 'beenhouwer', 'beenhouwerij'] },
 ]
 
 const OPEN_NOW_PHRASES = [
