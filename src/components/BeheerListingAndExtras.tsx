@@ -1,13 +1,8 @@
-import dynamic from 'next/dynamic'
+import BeheerClientExtrasLazy from '@/components/BeheerClientExtrasLazy'
 import BeheerListingEditor from '@/components/BeheerListingEditor'
 import { BeheerMenuCardLink } from '@/components/BeheerPageIntroServer'
 import { fetchListingForBeheerAdmin } from '@/lib/gids-listings-db'
 import { isDienstenListing } from '@/lib/listing-segment'
-
-const BeheerClientExtras = dynamic(() => import('@/components/BeheerClientExtras'), {
-  ssr: false,
-  loading: () => null,
-})
 
 type Props = {
   listingId: string
@@ -22,7 +17,7 @@ export async function BeheerListingAndExtras({ listingId }: Props) {
     <>
       <BeheerListingEditor initialListing={listing} />
       {!isDienstenListing(listing) ? <BeheerMenuCardLink /> : null}
-      <BeheerClientExtras listing={listing} />
+      <BeheerClientExtrasLazy listing={listing} />
     </>
   )
 }
