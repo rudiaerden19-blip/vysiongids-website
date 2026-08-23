@@ -11,8 +11,14 @@ export function listingPanelPromotionActive(
   if (!p?.enabled) return null
   const text = p.text?.trim() ?? ''
   const imageUrl = p.imageUrl?.trim() ?? ''
-  if (!text && !imageUrl) return null
-  return { enabled: true, text: text || undefined, imageUrl: imageUrl || undefined }
+  const offers = (p.offers ?? []).filter((r) => r.label.trim() || r.priceEur != null)
+  if (!text && !imageUrl && offers.length === 0) return null
+  return {
+    enabled: true,
+    text: text || undefined,
+    ...(imageUrl ? { imageUrl } : {}),
+    ...(offers.length ? { offers } : {}),
+  }
 }
 
 function listingTypeLabelsLower(listing: Pick<Listing, 'type' | 'horecaTypes'>): string[] {

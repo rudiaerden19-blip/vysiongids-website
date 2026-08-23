@@ -3014,6 +3014,59 @@ body {
   color: #4b5563;
 }
 
+.vysiongids-beheer-promo-offer-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 480px) {
+  .vysiongids-beheer-promo-offer-row {
+    grid-template-columns: minmax(0, 1.4fr) minmax(6rem, 0.75fr);
+    align-items: end;
+  }
+}
+
+.vysiongids-promotion-offers-list {
+  list-style: none;
+  margin: 1rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.vysiongids-promotion-offers-list--modal {
+  margin-top: 0.85rem;
+}
+
+.vysiongids-promotion-offers-list--card {
+  padding: 0 1.125rem 1rem;
+}
+
+.vysiongids-promotion-offers-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.35rem 1rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 0.5rem;
+  background: #f3f4f6;
+  border: 1px solid #e5e7eb;
+}
+
+.vysiongids-promotion-offers-label {
+  font-weight: 600;
+  color: #111827;
+}
+
+.vysiongids-promotion-offers-price {
+  font-weight: 700;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
 .vysiongids-zaak-sidebar-cta {
   display: flex;
   flex-direction: column;

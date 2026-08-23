@@ -9,6 +9,12 @@ import {
 } from '@/lib/listing-hiring'
 import { normalizeHttpsUrl } from '@/lib/normalize-url'
 import { normalizeListingScheduleExtras, parseScheduleExtrasJson } from '@/lib/listing-schedule-extras'
+import {
+  normalizePromotionOfferRows,
+  parsePromotionOfferRowsFromForm,
+  promotionOfferRowsHaveContent,
+  type ListingPromotionOfferRow,
+} from '@/lib/listing-promotion-offers'
 
 export type ListingSpecialtyItem = {
   caption: string
@@ -37,6 +43,7 @@ export type ListingInfoExtras = {
     enabled: boolean
     text?: string
     imageUrl?: string
+    offers?: ListingPromotionOfferRow[]
   }
   schedule?: import('@/lib/listing-schedule-extras').ListingScheduleExtras
 }
@@ -117,11 +124,13 @@ export function normalizeListingInfoExtras(raw: unknown): ListingInfoExtras | un
     if (p.enabled === true) {
       const text = formatGidsSentenceText(String(p.text ?? '').trim()).slice(0, 500)
       const imageUrl = String(p.imageUrl ?? '').trim()
-      if (text || imageUrl) {
+      const offers = normalizePromotionOfferRows(p.offers)
+      if (text || imageUrl || offers.length) {
         out.promotion = {
           enabled: true,
           text: text || undefined,
           ...(imageUrl ? { imageUrl } : {}),
+          ...(offers.length ? { offers } : {}),
         }
       }
     }
@@ -187,6 +196,7 @@ export type ParsedInfoExtrasForm = {
   giftValueEur: number | null
   promotionEnabled: boolean
   promotionText: string
+  promotionOffers: ListingPromotionOfferRow[]
   promotionPhoto: File | null
   removePromotionPhoto: boolean
   specialtyPhotos: { index: number; file: File }[]
@@ -230,6 +240,7 @@ export function parseInfoExtrasFromForm(form: FormData): ParsedInfoExtrasForm {
     })(),
     promotionEnabled: form.get('infoPromotionEnabled') === 'on',
     promotionText: formatGidsSentenceText(String(form.get('infoPromotionText') ?? '').trim()).slice(0, 500),
+    promotionOffers: parsePromotionOfferRowsFromForm(form),
     promotionPhoto: (() => {
       const file = form.get('promotionPhoto0')
       return file instanceof File && file.size > 0 ? file : null
@@ -307,18 +318,26 @@ export async function buildInfoExtrasPayload(
     }
   }
 
-  if (parsed.promotionEnabled && (parsed.promotionText || existing?.promotion?.imageUrl || parsed.promotionPhoto)) {
+  if (
+    parsed.promotionEnabled &&
+    (parsed.promotionText ||
+      parsed.promotionPhoto ||
+      promotionOfferRowsHaveContent(parsed.promotionOffers) ||
+      existing?.promotion?.imageUrl)
+  ) {
     let imageUrl = existing?.promotion?.imageUrl
     if (parsed.promotionPhoto && uploadPromotion) {
       imageUrl = await uploadPromotion(parsed.promotionPhoto)
     } else if (parsed.removePromotionPhoto) {
       imageUrl = undefined
     }
-    if (parsed.promotionText || imageUrl) {
+    const offers = parsed.promotionOffers
+    if (parsed.promotionText || imageUrl || offers.length) {
       payload.promotion = {
         enabled: true,
         text: parsed.promotionText || undefined,
         ...(imageUrl ? { imageUrl } : {}),
+        ...(offers.length ? { offers } : {}),
       }
     }
   }

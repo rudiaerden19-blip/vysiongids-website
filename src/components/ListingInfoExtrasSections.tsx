@@ -1,6 +1,8 @@
 import type { Listing } from '@/lib/listing-types'
 import { belgiumPhoneTelHref } from '@/lib/belgium-phone'
 import { listingHasInfoExtras } from '@/lib/listing-info-extras'
+import { listingPanelPromotionActive } from '@/lib/listing-panel-promotion'
+import ListingPromotionOffersList from '@/components/ListingPromotionOffersList'
 import { hiringJobTypeLabels } from '@/lib/listing-hiring'
 
 type Props = {
@@ -15,7 +17,7 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
   const hiring = extras?.hiring?.enabled ? extras.hiring : null
   const hiringTypeLabels = hiring ? hiringJobTypeLabels(hiring.jobTypes) : []
   const gift = extras?.giftCard?.enabled ? extras.giftCard : null
-  const promotion = extras?.promotion?.enabled ? extras.promotion : null
+  const promotion = listingPanelPromotionActive(extras)
   const giftValue =
     gift?.valueEur != null && Number.isFinite(gift.valueEur)
       ? `€${gift.valueEur.toFixed(0)}`
@@ -126,6 +128,9 @@ export default function ListingInfoExtrasSections({ listing }: Props) {
               <img src={promotion.imageUrl} alt="" className="vysiongids-promotion-card-img" />
             ) : null}
             {promotion.text ? <p className="vysiongids-promotion-card-text">{promotion.text}</p> : null}
+            {promotion.offers?.length ? (
+              <ListingPromotionOffersList offers={promotion.offers} className="vysiongids-promotion-offers-list vysiongids-promotion-offers-list--card" />
+            ) : null}
           </div>
         </section>
       ) : null}

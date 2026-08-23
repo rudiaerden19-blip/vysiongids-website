@@ -3,6 +3,11 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Listing } from '@/lib/listing-types'
 import SentenceCaseTextarea from '@/components/SentenceCaseTextarea'
+import TitleCaseTextInput from '@/components/TitleCaseTextInput'
+import {
+  formatPromotionPriceDisplay,
+  MAX_PROMOTION_OFFER_ROWS,
+} from '@/lib/listing-promotion-offers'
 
 function PromotionPhotoField({
   existingUrl,
@@ -136,6 +141,52 @@ export default function BeheerPromotiesFields({ listing, disabled }: Props) {
         className="vysiongids-form-input mt-1 w-full max-w-2xl text-sm"
         placeholder="Bv. 1 menu kopen, 1 cola gratis — geldig t.e.m. einde maand."
       />
+      <div className="mt-5">
+        <p className="vysiongids-form-label text-sm">Promotieprijzen (optioneel, max. 3)</p>
+        <p className="mt-0.5 text-xs text-gray-500">Bv. productnaam en actieprijs — zichtbaar in de promotie-popup en op INFO.</p>
+        <ul className="vysiongids-beheer-promo-offers mt-3 space-y-3">
+          {Array.from({ length: MAX_PROMOTION_OFFER_ROWS }, (_, i) => {
+            const row = promo?.offers?.[i]
+            const priceDefault =
+              row?.priceEur != null && Number.isFinite(row.priceEur)
+                ? row.priceEur.toFixed(2).replace('.', ',')
+                : ''
+            return (
+              <li key={i} className="vysiongids-beheer-promo-offer-row">
+                <div className="vysiongids-beheer-promo-offer-field">
+                  <label className="vysiongids-form-label text-xs" htmlFor={`infoPromotionOfferLabel${i}`}>
+                    Product {i + 1}
+                  </label>
+                  <TitleCaseTextInput
+                    id={`infoPromotionOfferLabel${i}`}
+                    name={`infoPromotionOfferLabel${i}`}
+                    maxLength={80}
+                    defaultValue={row?.label ?? ''}
+                    disabled={disabled}
+                    className="vysiongids-form-input mt-1 w-full text-sm"
+                    placeholder="Bv. Sito"
+                  />
+                </div>
+                <div className="vysiongids-beheer-promo-offer-field vysiongids-beheer-promo-offer-field--price">
+                  <label className="vysiongids-form-label text-xs" htmlFor={`infoPromotionOfferPrice${i}`}>
+                    Prijs (€)
+                  </label>
+                  <input
+                    id={`infoPromotionOfferPrice${i}`}
+                    name={`infoPromotionOfferPrice${i}`}
+                    type="text"
+                    inputMode="decimal"
+                    defaultValue={priceDefault}
+                    disabled={disabled}
+                    className="vysiongids-form-input mt-1 w-full text-sm"
+                    placeholder={formatPromotionPriceDisplay(2.5) || '2,50'}
+                  />
+                </div>
+              </li>
+            )
+          })}
+        </ul>
+      </div>
       <PromotionPhotoField
         existingUrl={promo?.imageUrl}
         disabled={disabled}

@@ -5,4 +5,4 @@ alter table public.gids_listings
   add column if not exists info_extras jsonb;
 
 comment on column public.gids_listings.info_extras is
-  'INFO op zaakpagina: specialties, hiring, giftCard, promotion {enabled,text,imageUrl}, schedule. Foto promotion: storage gids-listing-photos/{listing_id}/promotion-0.*';
+  'INFO op zaakpagina: specialties, hiring, giftCard, promotion {enabled,text,imageUrl,offers:[{label,priceEur}]}, schedule. Foto promotion: storage gids-listing-photos/{listing_id}/promotion-0.*';

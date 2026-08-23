@@ -7,6 +7,7 @@ import {
   listingPanelPromotionActive,
   listingPromotionEmptyMessage,
 } from '@/lib/listing-panel-promotion'
+import ListingPromotionOffersList from '@/components/ListingPromotionOffersList'
 
 type Props = {
   listing: Listing
@@ -59,6 +60,9 @@ export default function ListingPromotionModal({ listing, open, onClose }: Props)
                 <img src={promotion.imageUrl} alt="" className="vysiongids-promotion-modal-img" />
               ) : null}
               {promotion.text ? <p className="vysiongids-promotion-modal-text">{promotion.text}</p> : null}
+              {promotion.offers?.length ? (
+                <ListingPromotionOffersList offers={promotion.offers} className="vysiongids-promotion-offers-list vysiongids-promotion-offers-list--modal" />
+              ) : null}
             </>
           ) : (
             <p className="vysiongids-promotion-modal-text vysiongids-promotion-modal-text--empty">{emptyMessage}</p>
