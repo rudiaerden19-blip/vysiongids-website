@@ -21,14 +21,19 @@
 
 **Niet door agent uitgevoerd:** echte Stripe-betaling, Vercel-env, browser op productie-URL (geen toegang tot jullie secrets/accounts). Dat blijft **jouw** bevestiging in live omgeving.
 
-### Nog door eigenaar op productie (Stripe/Vercel)
+### Live bevestigd (eigenaar, productie)
 
-Alleen als je live wilt bevestigen — niet omdat de agent het al “getest” heeft:
+| Pad | Status | Opmerking |
+|-----|--------|-----------|
+| Premium horeca **€49** (Stripe Checkout) | ✅ | o.a. «Vysiongids Premium (1 jaar) — Vacatures & zoekertjes» |
+| Diensten **€99** | ✅ | checkout werkt |
 
-1. **Env Vercel:** `STRIPE_GIDS_PREMIUM_AMOUNT_CENTS` = **4900** of unset (niet 5000).
-2. **Gratis kaart:** test-zaak registreren → publieke pagina + beheer zonder premium; zoekertje/vacature geblokkeerd.
-3. **€49:** Premium nemen in beheer → checkoutbedrag €49 → webhook → zoekertje/vacature werkt.
-4. **€99:** `/diensten/aanmelden` → checkout €99 → profiel zichtbaar.
+### Nog optioneel op productie (Stripe/Vercel)
+
+Alleen als je extra wilt dubbelchecken:
+
+1. **Env Vercel:** `STRIPE_GIDS_PREMIUM_AMOUNT_CENTS` = **4900** of unset (niet 5000) — checkout toont al €49.
+2. **Gratis kaart:** test-zaak registreren → publieke pagina + beheer zonder premium; zoekertje/vacature geblokkeerd tot premium actief is na betaling.
 
 ---
 
