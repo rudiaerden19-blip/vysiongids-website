@@ -28,9 +28,10 @@ export default function GidsOwnerSessionKeepAlive() {
 
     const id = window.setInterval(ping, PING_MS)
     markActive()
-    ping()
+    const firstPingDelay = window.setTimeout(ping, 12_000)
 
     return () => {
+      window.clearTimeout(firstPingDelay)
       window.clearInterval(id)
       for (const ev of events) {
         window.removeEventListener(ev, markActive)

@@ -1,7 +1,7 @@
 'use client'
 
-import { useSearchParams } from 'next/navigation'
-import { useState } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 import { GidsButtonLoadingContent } from '@/components/GidsLoadingSpinner'
 import GidsInternalNavLink from '@/components/GidsInternalNavLink'
 import GidsPageLoadingOverlay from '@/components/GidsPageLoadingOverlay'
@@ -10,10 +10,15 @@ import { useGidsBusyUntilNav } from '@/hooks/use-gids-busy-until-nav'
 import { storeGidsBeheerLoginHint } from '@/lib/gids-beheer-login-hint'
 
 export default function GidsLoginForm() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const returnTo = searchParams.get('returnTo')?.trim()
   const [error, setError] = useState<string | null>(null)
   const { busy, startBusy, stopBusy } = useGidsBusyUntilNav()
+
+  useEffect(() => {
+    router.prefetch('/beheer')
+  }, [router])
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -40,7 +45,7 @@ export default function GidsLoginForm() {
       }
       const dest =
         returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/beheer'
-      stopBusy()
+      // Volledige navigatie: cookie + server-listing betrouwbaar; overlay blijft tot unload.
       window.location.assign(dest)
     } catch {
       setError('Netwerkfout.')

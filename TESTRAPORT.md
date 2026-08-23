@@ -44,4 +44,5 @@ npx tsc --noEmit
 npm test
 ```
 
-**Laatste agent-review billing-flow:** 23 augustus 2026 — commits `dac9aa1`, `5d2de47` op `main`.
+**Laatste agent-review billing-flow:** 23 augustus 2026 — commits `dac9aa1`, `4041668` op `main`.  
+**Live Stripe €49 + €99:** bevestigd door eigenaar, 23 augustus 2026.
