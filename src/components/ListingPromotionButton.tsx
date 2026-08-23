@@ -11,16 +11,14 @@ type Props = {
 }
 
 export default function ListingPromotionButton({ listing, className }: Props) {
-  const promotion = listingPanelPromotionActive(listing.infoExtras)
+  const hasActivePromotion = Boolean(listingPanelPromotionActive(listing.infoExtras))
   const [open, setOpen] = useState(false)
-
-  if (!promotion) return null
 
   return (
     <>
       <button
         type="button"
-        className={`${className} vysiongids-listing-action-btn--promo-blink`}
+        className={`${className}${hasActivePromotion ? ' vysiongids-listing-action-btn--promo-blink' : ''}`}
         onClick={(e) => {
           e.preventDefault()
           e.stopPropagation()

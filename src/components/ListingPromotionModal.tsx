@@ -3,7 +3,10 @@
 import { useEffect, useId } from 'react'
 import { createPortal } from 'react-dom'
 import type { Listing } from '@/lib/listing-types'
-import { listingPanelPromotionActive } from '@/lib/listing-panel-promotion'
+import {
+  listingPanelPromotionActive,
+  listingPromotionEmptyMessage,
+} from '@/lib/listing-panel-promotion'
 
 type Props = {
   listing: Listing
@@ -14,6 +17,7 @@ type Props = {
 export default function ListingPromotionModal({ listing, open, onClose }: Props) {
   const titleId = useId()
   const promotion = listingPanelPromotionActive(listing.infoExtras)
+  const emptyMessage = listingPromotionEmptyMessage(listing)
 
   useEffect(() => {
     if (!open) return
@@ -29,7 +33,7 @@ export default function ListingPromotionModal({ listing, open, onClose }: Props)
     }
   }, [open, onClose])
 
-  if (!open || !promotion) return null
+  if (!open) return null
 
   const panel = (
     <div className="vysiongids-job-modal-root vysiongids-promotion-modal-root" role="presentation">
@@ -44,17 +48,23 @@ export default function ListingPromotionModal({ listing, open, onClose }: Props)
           ×
         </button>
         <div className="vysiongids-promotion-modal-scroll">
-          <p className="vysiongids-job-modal-kicker">Promotie</p>
+          <p className="vysiongids-job-modal-kicker">Promoties</p>
           <h2 id={titleId} className="vysiongids-job-modal-title">
             {listing.name}
           </h2>
-          {promotion.imageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={promotion.imageUrl} alt="" className="vysiongids-promotion-modal-img" />
-          ) : null}
-          {promotion.text ? <p className="vysiongids-promotion-modal-text">{promotion.text}</p> : null}
+          {promotion ? (
+            <>
+              {promotion.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={promotion.imageUrl} alt="" className="vysiongids-promotion-modal-img" />
+              ) : null}
+              {promotion.text ? <p className="vysiongids-promotion-modal-text">{promotion.text}</p> : null}
+            </>
+          ) : (
+            <p className="vysiongids-promotion-modal-text vysiongids-promotion-modal-text--empty">{emptyMessage}</p>
+          )}
         </div>
-        {listing.orderUrl?.trim() ? (
+        {promotion && listing.orderUrl?.trim() ? (
           <div className="vysiongids-promotion-modal-footer">
             <div className="vysiongids-job-card-actions vysiongids-job-modal-actions">
               <a
@@ -72,5 +82,6 @@ export default function ListingPromotionModal({ listing, open, onClose }: Props)
     </div>
   )
 
+  if (typeof document === 'undefined') return null
   return createPortal(panel, document.body)
 }

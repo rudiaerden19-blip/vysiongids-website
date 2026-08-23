@@ -3009,6 +3009,11 @@ body {
   white-space: pre-wrap;
 }
 
+.vysiongids-promotion-modal-text--empty {
+  font-weight: 500;
+  color: #4b5563;
+}
+
 .vysiongids-zaak-sidebar-cta {
   display: flex;
   flex-direction: column;
