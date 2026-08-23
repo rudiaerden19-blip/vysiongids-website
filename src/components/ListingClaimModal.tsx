@@ -84,7 +84,7 @@ export default function ListingClaimModal({ listing, open, onClose }: Props) {
   }
 
   const panel = (
-    <div className="vysiongids-platform-promo-modal-root" role="presentation">
+    <div className="vysiongids-job-modal-root vysiongids-claim-modal-root" role="presentation">
       <button
         type="button"
         className="vysiongids-job-modal-backdrop"
@@ -107,27 +107,29 @@ export default function ListingClaimModal({ listing, open, onClose }: Props) {
         </button>
 
         {done ? (
-          <div className="vysiongids-claim-modal-success">
+          <div className="vysiongids-claim-modal-scroll">
             <p className="vysiongids-job-modal-kicker">{t('claim.kicker')}</p>
             <h2 id={titleId} className="vysiongids-job-modal-title">
               {duplicate ? t('claim.successTitleDuplicate') : t('claim.successTitle')}
             </h2>
-            <p className="vysiongids-job-modal-body">{t('claim.successBody')}</p>
+            <p className="vysiongids-job-modal-text">{t('claim.successBody')}</p>
             <button type="button" className="vysiongids-platform-promo-modal-cta mt-4" onClick={onClose}>
               {t('common.close')}
             </button>
           </div>
         ) : (
           <>
-            <p className="vysiongids-job-modal-kicker">{t('claim.kicker')}</p>
-            <h2 id={titleId} className="vysiongids-job-modal-title">
-              {t('claim.title')}
-            </h2>
-            <p className="vysiongids-job-modal-body">{t('claim.lead', { listingName: listing.name })}</p>
-            <p className="mt-2 text-sm font-semibold text-accent">{t('claim.freeNote')}</p>
+            <div className="vysiongids-claim-modal-scroll">
+              <p className="vysiongids-job-modal-kicker">{t('claim.kicker')}</p>
+              <h2 id={titleId} className="vysiongids-job-modal-title">
+                {t('claim.title')}
+              </h2>
+              <p className="vysiongids-job-modal-text">{t('claim.lead', { listingName: listing.name })}</p>
+              <p className="vysiongids-claim-modal-free-note">{t('claim.freeNote')}</p>
 
-            <form onSubmit={onSubmit} className="vysiongids-claim-form mt-4 space-y-3">
-              <div>
+              <form id="vysiongids-claim-form" onSubmit={onSubmit} className="vysiongids-claim-form">
+                <div className="vysiongids-claim-form-fields space-y-3">
+                  <div>
                 <label className="vysiongids-form-label" htmlFor="claim-contact-name">
                   {t('claim.contactNameLabel')}
                   <span className="vysiongids-form-required" aria-hidden>
@@ -212,17 +214,22 @@ export default function ListingClaimModal({ listing, open, onClose }: Props) {
                   placeholder={t('claim.messagePlaceholder')}
                 />
               </div>
-              <label className="flex cursor-pointer items-start gap-2 text-sm text-gray-700">
+              <label className="vysiongids-claim-form-check flex cursor-pointer items-start gap-2 text-sm text-gray-700">
                 <input
                   type="checkbox"
                   className="mt-1"
                   checked={authorized}
                   onChange={(e) => setAuthorized(e.target.checked)}
                   required
+                  form="vysiongids-claim-form"
                 />
                 <span>{t('claim.authorizedLabel')}</span>
               </label>
+                </div>
+              </form>
+            </div>
 
+            <div className="vysiongids-claim-modal-footer">
               {error ? (
                 <p className="rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800" role="alert">
                   {error}
@@ -231,12 +238,13 @@ export default function ListingClaimModal({ listing, open, onClose }: Props) {
 
               <button
                 type="submit"
+                form="vysiongids-claim-form"
                 disabled={loading || !authorized}
                 className="vysiongids-platform-promo-modal-cta w-full disabled:opacity-60"
               >
                 {loading ? t('common.busy') : t('claim.submit')}
               </button>
-            </form>
+            </div>
           </>
         )}
       </div>

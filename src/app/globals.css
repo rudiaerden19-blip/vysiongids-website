@@ -6334,10 +6334,68 @@ body {
   background: #ef4444;
 }
 
-.vysiongids-claim-modal-panel {
-  max-width: min(28rem, calc(100vw - 2rem));
-  max-height: min(90vh, 42rem);
+.vysiongids-claim-modal-root {
+  z-index: 10150;
+  align-items: flex-start;
   overflow-y: auto;
+  padding: max(0.75rem, env(safe-area-inset-top, 0px)) 1rem max(1rem, env(safe-area-inset-bottom, 0px));
+}
+
+.vysiongids-claim-modal-panel {
+  width: min(100%, 32rem);
+  max-width: min(100%, 32rem);
+  max-height: min(92vh, 44rem);
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: 1rem;
+}
+
+.vysiongids-claim-modal-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 0.2rem;
+}
+
+.vysiongids-claim-modal-free-note {
+  margin: 0.65rem 0 0;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1.45;
+}
+
+.vysiongids-claim-form {
+  margin-top: 1rem;
+}
+
+.vysiongids-claim-form-fields {
+  padding-bottom: 0.5rem;
+}
+
+.vysiongids-claim-form-check {
+  margin-top: 0.25rem;
+}
+
+.vysiongids-claim-modal-footer {
+  flex: 0 0 auto;
+  margin-top: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: #fff;
+}
+
+@media (max-width: 640px) {
+  .vysiongids-claim-modal-panel {
+    max-height: min(calc(100dvh - 1.5rem), 44rem);
+  }
 }
 
 .vysiongids-zaak-claim-banner {
