@@ -1,0 +1,13 @@
+-- Promoties (beheer + zoekkaart) gebruiken het bestaande info_extras JSON-veld.
+-- Vereist: 011_gids_listings_info_extras.sql (kolom info_extras jsonb).
+--
+-- Geen extra kolom of tabel. Vorm in applicatie:
+--   info_extras.promotion = {
+--     "enabled": true,
+--     "text": "1 menu kopen, 1 cola gratis",
+--     "imageUrl": "https://…/gids-listing-photos/{listing_id}/promotion-0.jpg"
+--   }
+--
+-- Foto's: Supabase Storage bucket gids-listing-photos, pad {listing_id}/promotion-0.{jpg|png|webp}
+--
+-- Controleren: supabase/VERIFY_LISTING_PROMOTIONS.sql
