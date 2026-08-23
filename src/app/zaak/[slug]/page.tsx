@@ -8,6 +8,7 @@ import ZaakOwnerDeleteSection from '@/components/ZaakOwnerDeleteSection'
 import ZaakPageBreadcrumb from '@/components/ZaakPageBreadcrumb'
 import ZaakPageSidebar from '@/components/ZaakPageSidebar'
 import ZaakPageTitle from '@/components/ZaakPageTitle'
+import ZaakClaimBlock from '@/components/ZaakClaimBlock'
 import ZaakOrderDetailsSection from '@/components/ZaakOrderDetailsSection'
 import ZaakReviewsSection from '@/components/ZaakReviewsSection'
 import { tServer } from '@/i18n/server-translate'
@@ -70,6 +71,7 @@ export default async function ZaakPage({ params }: Props) {
         <div className="vysiongids-zaak-layout">
           <div className="vysiongids-zaak-hero">
             <ZaakPageTitle listing={listing} />
+            <ZaakClaimBlock listing={listing} variant="banner" />
             <p className="mt-2 text-gray-600">
               {street}
               <br />

@@ -300,7 +300,8 @@
     "overlayBusy": "Bezig met inloggen…",
     "noAccount": "Nog geen zaak?",
     "addBusinessLink": "Zaak toevoegen",
-    "addBusinessLoading": "Registratie openen…"
+    "addBusinessLoading": "Registratie openen…",
+    "claimHint": "Staat je zaak al in de gids? Zoek je zaak op en klik op «Claim je zaak» op je pagina — gratis."
   },
   "beheer": {
     "pageTitle": "Zaak beheren",
@@ -592,6 +593,27 @@
     "sterrenzakenLead": "Topbeoordeelde zaken in de gids — binnenkort een apart overzicht. Tot die tijd: zoek op stad of provincie.",
     "cadeaubonnenTitle": "Cadeaubonnen",
     "cadeaubonnenLead": "Cadeaubonnen per zaak volgen later. Vraag bij je favoriete zaak naar hun cadeauformule."
+  },
+  "claim": {
+    "kicker": "Gratis",
+    "title": "Claim je zaak",
+    "lead": "Is {listingName} van jou? Vul je gegevens in — wij activeren je beheer en sturen je een PIN om in te loggen.",
+    "freeNote": "Claimen is gratis. BTW-nummer is optioneel.",
+    "sidebarTeaser": "Beheer je foto's, uren en bestellink in Vysiongids.",
+    "openButton": "Claim je zaak",
+    "contactNameLabel": "Naam contactpersoon",
+    "contactEmailLabel": "E-mailadres",
+    "contactPhoneLabel": "Telefoonnummer",
+    "btwLabel": "BTW-nummer (optioneel)",
+    "btwPlaceholder": "Bijv. BE0123.456.789",
+    "messageLabel": "Extra info (optioneel)",
+    "messagePlaceholder": "Functie, beste moment om te bellen, …",
+    "authorizedLabel": "Ik ben bevoegd om deze zaak te beheren en mijn gegevens zijn correct.",
+    "submit": "Aanvraag versturen",
+    "submitFailed": "Aanvraag mislukt. Probeer later opnieuw.",
+    "successTitle": "Aanvraag ontvangen",
+    "successTitleDuplicate": "Aanvraag staat al open",
+    "successBody": "Bedankt! We nemen contact op via e-mail of telefoon om je login (PIN) te activeren. Meestal binnen enkele werkdagen."
   },
   "reviews": {
     "pageTitle": "Reviews — {name}",

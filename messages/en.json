@@ -300,7 +300,8 @@
     "overlayBusy": "Signing in…",
     "noAccount": "No business yet?",
     "addBusinessLink": "Add business",
-    "addBusinessLoading": "Opening registration…"
+    "addBusinessLoading": "Opening registration…",
+    "claimHint": "Already listed? Find your page and click «Claim your business» — it's free."
   },
   "beheer": {
     "pageTitle": "Manage business",
@@ -592,6 +593,27 @@
     "sterrenzakenLead": "Top-rated businesses in the guide — a dedicated overview coming soon. Until then: search by city or province.",
     "cadeaubonnenTitle": "Gift vouchers",
     "cadeaubonnenLead": "Gift vouchers per business will follow later. Ask your favourite business about their gift option."
+  },
+  "claim": {
+    "kicker": "Free",
+    "title": "Claim your business",
+    "lead": "Is {listingName} yours? Leave your details — we will activate your dashboard and send a PIN to log in.",
+    "freeNote": "Claiming is free. VAT number is optional.",
+    "sidebarTeaser": "Manage photos, hours and your order link on Vysiongids.",
+    "openButton": "Claim your business",
+    "contactNameLabel": "Contact name",
+    "contactEmailLabel": "Email address",
+    "contactPhoneLabel": "Phone number",
+    "btwLabel": "VAT number (optional)",
+    "btwPlaceholder": "E.g. BE0123.456.789",
+    "messageLabel": "Extra info (optional)",
+    "messagePlaceholder": "Role, best time to call, …",
+    "authorizedLabel": "I am authorised to manage this business and my details are correct.",
+    "submit": "Send request",
+    "submitFailed": "Request failed. Try again later.",
+    "successTitle": "Request received",
+    "successTitleDuplicate": "Request already pending",
+    "successBody": "Thank you! We will contact you by email or phone to activate your login (PIN), usually within a few business days."
   },
   "reviews": {
     "pageTitle": "Reviews — {name}",

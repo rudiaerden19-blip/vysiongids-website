@@ -300,7 +300,8 @@
     "overlayBusy": "Connexion en cours…",
     "noAccount": "Pas encore d’établissement ?",
     "addBusinessLink": "Ajouter un établissement",
-    "addBusinessLoading": "Ouverture de l’inscription…"
+    "addBusinessLoading": "Ouverture de l’inscription…",
+    "claimHint": "Votre établissement est déjà dans le guide ? Recherchez-le et cliquez sur « Revendiquer » sur sa page — gratuit."
   },
   "beheer": {
     "pageTitle": "Gérer l’établissement",
@@ -634,6 +635,27 @@
     "sterrenzakenLead": "Établissements les mieux notés — bientôt un aperçu dédié. En attendant : recherchez par ville ou province.",
     "cadeaubonnenTitle": "Chèques-cadeaux",
     "cadeaubonnenLead": "Les chèques-cadeaux par établissement suivront plus tard. Demandez la formule cadeau à votre établissement préféré."
+  },
+  "claim": {
+    "kicker": "Gratuit",
+    "title": "Revendiquez votre établissement",
+    "lead": "{listingName} est le vôtre ? Indiquez vos coordonnées — nous activerons votre espace et vous enverrons un PIN pour vous connecter.",
+    "freeNote": "La revendication est gratuite. Numéro de TVA facultatif.",
+    "sidebarTeaser": "Gérez photos, horaires et lien de commande sur Vysiongids.",
+    "openButton": "Revendiquer",
+    "contactNameLabel": "Nom du contact",
+    "contactEmailLabel": "Adresse e-mail",
+    "contactPhoneLabel": "Numéro de téléphone",
+    "btwLabel": "Numéro de TVA (facultatif)",
+    "btwPlaceholder": "Ex. BE0123.456.789",
+    "messageLabel": "Info supplémentaire (facultatif)",
+    "messagePlaceholder": "Fonction, meilleur moment pour appeler, …",
+    "authorizedLabel": "Je suis habilité à gérer cet établissement et mes données sont correctes.",
+    "submit": "Envoyer la demande",
+    "submitFailed": "Échec de l'envoi. Réessayez plus tard.",
+    "successTitle": "Demande reçue",
+    "successTitleDuplicate": "Demande déjà en cours",
+    "successBody": "Merci ! Nous vous contactons par e-mail ou téléphone pour activer votre login (PIN), en général sous quelques jours ouvrables."
   },
   "reviews": {
     "pageTitle": "Avis — {name}",

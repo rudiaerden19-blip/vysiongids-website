@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useLanguage } from '@/i18n/LanguageProvider'
+import ZaakClaimBlock from '@/components/ZaakClaimBlock'
 import ListingMenuButton from '@/components/ListingMenuButton'
 import ListingNavigationButtons from '@/components/ListingNavigationButtons'
 import ZaakInfoTopLink from '@/components/ZaakInfoTopLink'
@@ -40,6 +41,7 @@ export default function ZaakPageSidebar({ listing, slug, reviewsHref, mapPin }: 
           </Link>
           <ListingMenuButton listing={listing} className="vysiongids-zaak-action-btn" />
         </div>
+        <ZaakClaimBlock listing={listing} variant="sidebar" />
         <div className="mt-4 border-t border-gray-200 pt-4">
           <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-500">{t('listing.routeHeading')}</p>
           <ListingNavigationButtons listing={listing} compact mapPin={mapPin} />

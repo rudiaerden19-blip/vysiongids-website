@@ -60,6 +60,7 @@ export type GidsListingRow = {
   diensten_expires_at?: string | null
   created_at?: string
   updated_at?: string
+  claimed_at?: string | null
   gids_listing_photos?: PhotoRow[] | null
 }
 
@@ -110,7 +111,8 @@ const PUBLIC_LISTING_COLUMNS = `
   diensten_paid_at,
   diensten_expires_at,
   created_at,
-  updated_at
+  updated_at,
+  claimed_at
 `.replace(/\s+/g, ' ')
 
 /** Geen embedded foto's — browse/zoeken haalt thumbnails in batch (1 per zaak). */
@@ -349,6 +351,7 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
     lat: row.lat ?? undefined,
     lng: row.lng ?? undefined,
     updatedAt: row.updated_at ?? undefined,
+    claimedAt: row.claimed_at ?? undefined,
   }
 }
 

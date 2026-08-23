@@ -112,6 +112,8 @@ export type Listing = {
   premiumMember?: boolean
   /** Laatste wijziging zaak (fallback vacature-datum) */
   updatedAt?: string
+  /** Gezet bij registratie of goedgekeurde claim; ontbrekend = nog claimbaar */
+  claimedAt?: string
 }
 
 export type ListingSearchParams = {

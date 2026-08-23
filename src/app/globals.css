@@ -6333,3 +6333,64 @@ body {
   border-radius: 9999px;
   background: #ef4444;
 }
+
+.vysiongids-claim-modal-panel {
+  max-width: min(28rem, calc(100vw - 2rem));
+  max-height: min(90vh, 42rem);
+  overflow-y: auto;
+}
+
+.vysiongids-zaak-claim-banner {
+  margin-top: 1rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+}
+
+.vysiongids-zaak-claim-banner-text {
+  margin: 0;
+  flex: 1 1 12rem;
+  font-size: 0.9375rem;
+  color: #1e3a5f;
+}
+
+.vysiongids-zaak-claim-banner-btn,
+.vysiongids-zaak-claim-sidebar-btn {
+  flex-shrink: 0;
+  border: none;
+  border-radius: 0.5rem;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.875rem;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+.vysiongids-zaak-claim-banner-btn:hover,
+.vysiongids-zaak-claim-sidebar-btn:hover {
+  filter: brightness(0.95);
+}
+
+.vysiongids-zaak-claim-sidebar {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e5e7eb;
+}
+
+.vysiongids-zaak-claim-sidebar-text {
+  margin: 0 0 0.65rem;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: #4b5563;
+}
+
+.vysiongids-zaak-claim-sidebar-btn {
+  width: 100%;
+  padding: 0.55rem 1rem;
+}

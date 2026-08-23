@@ -98,6 +98,12 @@ export default function GidsLoginForm() {
           {busy ? <GidsButtonLoadingContent label={t('login.formSubmitBusy')} /> : t('login.formSubmit')}
         </button>
         <p className="text-sm text-gray-600">
+          {t('login.claimHint')}{' '}
+          <GidsInternalNavLink href="/zoeken" className="font-semibold text-accent hover:underline">
+            {t('common.search')}
+          </GidsInternalNavLink>
+        </p>
+        <p className="text-sm text-gray-600">
           {t('login.noAccount')}{' '}
           <GidsInternalNavLink
             href="/zaak-toevoegen"
