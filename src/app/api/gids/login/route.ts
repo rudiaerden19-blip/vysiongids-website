@@ -49,7 +49,7 @@ export async function POST(req: Request) {
     ok: true,
     slug: row.slug,
     name: row.name,
-    mustChangePin: row.pin_must_change === true,
+    mustChangePin: false,
   })
   res.cookies.set(GIDS_SESSION_COOKIE, token, gidsSessionCookieOptions())
   return res
