@@ -331,7 +331,8 @@ function SiteHeaderBar() {
 
   const regionLabel = provinceLabel(region)
   const onZoekenWithRegion = pathname === '/zoeken' && searchParams.get('prov') === region
-  const labelClass = 'text-accent text-base font-bold tracking-tight hover:text-accent/85 sm:text-lg'
+  const labelClass =
+    'vysiongids-site-header-region-label text-accent text-base font-bold tracking-tight hover:text-accent/85 sm:text-lg'
 
   const panelStyle: CSSProperties = {
     position: 'fixed',
