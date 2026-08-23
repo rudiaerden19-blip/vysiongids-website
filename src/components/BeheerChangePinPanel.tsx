@@ -19,8 +19,8 @@ function pinInputProps(id: string, value: string, onChange: (v: string) => void)
     pattern: '\\d{6}',
     maxLength: 6,
     autoComplete: 'off' as const,
-    className:
-      'mt-1 w-full max-w-sm rounded-lg border-2 border-gray-300 px-3 py-2.5 text-lg tracking-[0.35em] font-semibold focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/30',
+    size: 6,
+    className: 'vysiongids-change-pin-input',
     value,
     onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
       onChange(e.target.value.replace(/\D/g, '').slice(0, 6)),
@@ -72,7 +72,7 @@ export default function BeheerChangePinPanel({ businessName, variant = 'beheer' 
 
   return (
     <section
-      className="vysiongids-change-pin-panel rounded-xl border-2 border-accent bg-white p-6 shadow-md"
+      className="vysiongids-change-pin-panel rounded-xl border-2 border-accent bg-white shadow-md"
       aria-labelledby="change-pin-title"
     >
       <h2 id="change-pin-title" className="text-xl font-bold text-accent">
@@ -123,7 +123,7 @@ export default function BeheerChangePinPanel({ businessName, variant = 'beheer' 
         <button
           type="submit"
           disabled={!ready}
-          className="w-full max-w-sm rounded-xl bg-accent px-8 py-3.5 text-lg font-bold text-white hover:bg-accent/90 disabled:opacity-60 sm:w-auto"
+          className="w-full max-w-full rounded-xl bg-accent px-6 py-3.5 text-base font-bold text-white hover:bg-accent/90 disabled:opacity-60 sm:w-auto sm:max-w-sm sm:px-8 sm:text-lg"
         >
           {loading ? <GidsButtonLoadingContent label={t('pinChange.submitBusy')} /> : t('pinChange.submit')}
         </button>

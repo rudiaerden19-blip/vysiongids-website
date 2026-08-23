@@ -9,7 +9,7 @@ export default function ZaakToevoegenPage() {
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+      <main className="vysiongids-form-page mx-auto px-4 py-12 sm:px-6">
         <h1 className="text-2xl font-bold text-gray-900">Zaak toevoegen</h1>
         <p className="mt-4 text-gray-600">
           Unieke zaaknaam, 6-cijferige PIN en alle velden met <span className="vysiongids-form-required">*</span>.

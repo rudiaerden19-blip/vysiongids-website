@@ -11,7 +11,7 @@ export default function BeheerMenuPage() {
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
+      <main className="vysiongids-form-page mx-auto max-w-3xl px-4 py-10 sm:px-6">
         <Link href="/beheer" className="text-sm font-semibold text-accent hover:underline">
           ← Terug naar beheer
         </Link>

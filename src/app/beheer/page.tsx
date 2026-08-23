@@ -27,7 +27,7 @@ export default async function BeheerPage() {
   return (
     <>
       <SiteHeader />
-      <main className="mx-auto max-w-2xl px-4 py-12 sm:px-6">
+      <main className="vysiongids-beheer-page mx-auto px-4 py-12 sm:px-6">
         {shell.authenticated && shell.slug && shell.name && shell.listingId ? (
           <BeheerPremiumTopBanner
             premiumMember={shell.premiumMember}

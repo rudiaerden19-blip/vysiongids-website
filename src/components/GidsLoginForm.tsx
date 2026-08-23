@@ -87,13 +87,14 @@ export default function GidsLoginForm() {
             pattern="\d{6}"
             maxLength={6}
             disabled={busy}
-            className="mt-1 w-full max-w-xs rounded-lg border border-gray-300 px-3 py-2 tracking-widest disabled:opacity-60"
+            className="vysiongids-change-pin-input disabled:opacity-60"
+            size={6}
           />
         </div>
         <button
           type="submit"
           disabled={busy}
-          className="rounded-xl bg-accent px-8 py-3 font-bold text-white hover:bg-accent/90 disabled:opacity-60"
+          className="w-full max-w-full rounded-xl bg-accent px-6 py-3 font-bold text-white hover:bg-accent/90 disabled:opacity-60 sm:w-auto sm:px-8"
         >
           {busy ? <GidsButtonLoadingContent label={t('login.formSubmitBusy')} /> : t('login.formSubmit')}
         </button>

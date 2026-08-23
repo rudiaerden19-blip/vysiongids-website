@@ -2858,21 +2858,112 @@ body {
 }
 
 .vysiongids-beheer-views-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   border-radius: 1rem;
   border: var(--vysiongids-card-border);
   background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  padding: 1.35rem 1.5rem;
+  padding: 1.1rem 1rem;
   box-shadow: var(--vysiongids-card-shadow);
 }
 
+@media (min-width: 640px) {
+  .vysiongids-beheer-views-card {
+    padding: 1.35rem 1.5rem;
+  }
+}
+
+.vysiongids-beheer-page,
+.vysiongids-form-page {
+  width: 100%;
+  max-width: 42rem;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.vysiongids-form-page.max-w-3xl {
+  max-width: 48rem;
+}
+
+.vysiongids-beheer-page > *,
+.vysiongids-form-page > * {
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.vysiongids-beheer-page input:not([type='checkbox']):not([type='radio']),
+.vysiongids-beheer-page select,
+.vysiongids-beheer-page textarea,
+.vysiongids-form-page input:not([type='checkbox']):not([type='radio']),
+.vysiongids-form-page select,
+.vysiongids-form-page textarea,
+.vysiongids-zaak-form input:not([type='checkbox']):not([type='radio']),
+.vysiongids-zaak-form select,
+.vysiongids-zaak-form textarea {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+.vysiongids-change-pin-panel {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  padding: 1rem;
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-change-pin-panel {
+    padding: 1.5rem;
+  }
+}
+
+.vysiongids-change-pin-input {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+  margin-top: 0.25rem;
+  border-radius: 0.5rem;
+  border: 2px solid #d1d5db;
+  padding: 0.65rem 0.75rem;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.18em;
+}
+
+.vysiongids-change-pin-input:focus {
+  border-color: var(--accent);
+  outline: none;
+  box-shadow: 0 0 0 2px rgb(14 93 130 / 0.3);
+}
+
 .vysiongids-beheer-premium-top {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
   border-radius: 1rem;
   border: 2px solid var(--accent);
   background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 45%, #fef3c7 100%);
-  padding: 1.35rem 1.5rem;
+  padding: 1.1rem 1rem;
   box-shadow:
     0 4px 14px rgba(234, 88, 12, 0.15),
     var(--vysiongids-card-shadow);
+  overflow-wrap: anywhere;
+}
+
+@media (min-width: 640px) {
+  .vysiongids-beheer-premium-top {
+    padding: 1.35rem 1.5rem;
+  }
 }
 
 .vysiongids-beheer-premium-top-text {
@@ -2881,6 +2972,7 @@ body {
   font-weight: 700;
   line-height: 1.45;
   color: #9a3412;
+  overflow-wrap: anywhere;
 }
 
 @media (min-width: 640px) {
@@ -3518,6 +3610,8 @@ body {
 .vysiongids-form-input {
   display: block;
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
   box-sizing: border-box;
   border-radius: 0.5rem;
   border: 1px solid #d1d5db;

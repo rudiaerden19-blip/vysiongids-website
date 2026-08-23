@@ -236,7 +236,7 @@ export default function GidsMenuEditor() {
       {categories.map((cat, catIndex) => (
         <section key={cat.id} className="vysiongids-surface-card vysiongids-menu-editor-category rounded-xl p-4">
           <div className="flex flex-wrap items-end gap-3">
-            <div className="min-w-[12rem] flex-1">
+            <div className="min-w-0 flex-1">
               <label className="vysiongids-form-label" htmlFor={`cat-${cat.id}`}>
                 {t('beheer.menuEditorCategoryLabel', { index: catIndex + 1 })}
               </label>
