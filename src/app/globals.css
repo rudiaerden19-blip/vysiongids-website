@@ -2916,6 +2916,54 @@ body {
   filter: brightness(0.95);
 }
 
+.vysiongids-listing-action-btn.vysiongids-listing-action-btn--promo-blink {
+  background-color: #fff;
+  color: #f59e0b !important;
+  border: 2px solid #f59e0b;
+  animation: vysiongids-soliciteren-blink 1.35s ease-in-out infinite;
+  filter: none;
+}
+
+.vysiongids-listing-action-btn.vysiongids-listing-action-btn--promo-blink:hover {
+  animation-play-state: paused;
+  filter: none;
+  background-color: #fff !important;
+  color: #f59e0b !important;
+  border-color: #f59e0b !important;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vysiongids-listing-action-btn.vysiongids-listing-action-btn--promo-blink {
+    animation: none;
+    background-color: #f59e0b;
+    color: #fff !important;
+    border-color: #f59e0b;
+  }
+}
+
+.vysiongids-promotion-modal-panel {
+  max-width: 26rem;
+}
+
+.vysiongids-promotion-modal-img {
+  display: block;
+  width: 100%;
+  height: auto;
+  margin-top: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  object-fit: cover;
+}
+
+.vysiongids-promotion-modal-text {
+  margin: 1rem 0 0;
+  font-size: 1.0625rem;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #111827;
+  white-space: pre-wrap;
+}
+
 .vysiongids-zaak-sidebar-cta {
   display: flex;
   flex-direction: column;

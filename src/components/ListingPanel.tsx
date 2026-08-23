@@ -13,6 +13,7 @@ import { formatDistanceAndDriveTime } from '@/lib/listing-distance'
 import { listingWazeUrl } from '@/lib/gids-listing-navigation'
 import { resolveListingPanelHiring } from '@/lib/listing-info-extras'
 import ListingMenuButton from '@/components/ListingMenuButton'
+import ListingPromotionButton from '@/components/ListingPromotionButton'
 import ZaakInfoTopLink from '@/components/ZaakInfoTopLink'
 import ListingPanelHiringBar from '@/components/ListingPanelHiringBar'
 
@@ -134,6 +135,7 @@ export default function ListingPanel({
                 Geef review
               </Link>
               <ListingMenuButton listing={listing} className="vysiongids-listing-action-btn" />
+              <ListingPromotionButton listing={listing} className="vysiongids-listing-action-btn" />
             </div>
           </div>
         </div>
