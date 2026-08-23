@@ -2781,6 +2781,14 @@ body {
   color: #374151;
 }
 
+.vysiongids-staff-table tr.vysiongids-staff-table-row--claimed td {
+  background: #dcfce7;
+}
+
+.vysiongids-staff-table tr.vysiongids-staff-table-row--claimed:hover td {
+  background: #bbf7d0;
+}
+
 .vysiongids-staff-actions {
   display: flex;
   flex-wrap: wrap;

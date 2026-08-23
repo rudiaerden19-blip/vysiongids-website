@@ -8,6 +8,7 @@ import type { GidsStaffListingRow, StaffListingsSegment } from '@/lib/gids-staff
 import {
   staffListingExpiresAt,
   staffListingHasMembershipRecord,
+  staffListingIsClaimed,
   staffListingIsDiensten,
   staffListingMembershipPaidLabel,
   staffListingPaidAt,
@@ -77,9 +78,13 @@ function StaffListingsTable({
               const isDiensten = staffListingIsDiensten(row)
               const paidLabel = staffListingMembershipPaidLabel(row)
               const profileHref = isDiensten ? `/diensten/${row.slug}` : `/zaak/${row.slug}`
+              const claimed = staffListingIsClaimed(row)
 
               return (
-                <tr key={row.id}>
+                <tr
+                  key={row.id}
+                  className={claimed ? 'vysiongids-staff-table-row--claimed' : undefined}
+                >
                   <td>
                     <div className="font-semibold text-gray-900">{row.name}</div>
                     <div className="text-xs text-gray-500">
