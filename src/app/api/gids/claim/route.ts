@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
 import { enforceRateLimit } from '@/lib/gids-rate-limit'
+import { isGidsMailConfigured, sendListingClaimNotificationEmail } from '@/lib/gids-mail'
 
 const WINDOW_MS = 60 * 60 * 1000
 const MAX_PER_IP = 8
@@ -63,7 +64,7 @@ export async function POST(req: Request) {
 
   const { data: listing, error: listingErr } = await admin
     .from('gids_listings')
-    .select('id, slug, name, claimed_at, status')
+    .select('id, slug, name, city, claimed_at, status')
     .eq('slug', slug)
     .maybeSingle()
 
@@ -93,16 +94,20 @@ export async function POST(req: Request) {
     return NextResponse.json({ ok: true, duplicate: true })
   }
 
-  const { error: insertErr } = await admin.from('gids_listing_claim_requests').insert({
-    listing_id: listing.id,
-    contact_name: contactName,
-    contact_email: contactEmail,
-    contact_phone: contactPhone,
-    btw_number: btwNumber,
-    message,
-  })
+  const { data: insertedRow, error: insertErr } = await admin
+    .from('gids_listing_claim_requests')
+    .insert({
+      listing_id: listing.id,
+      contact_name: contactName,
+      contact_email: contactEmail,
+      contact_phone: contactPhone,
+      btw_number: btwNumber,
+      message,
+    })
+    .select('id')
+    .single()
 
-  if (insertErr) {
+  if (insertErr || !insertedRow) {
     console.error('[gids claim insert]', insertErr.message, insertErr.code)
     if (/gids_listing_claim_requests/i.test(insertErr.message)) {
       return NextResponse.json(
@@ -111,6 +116,39 @@ export async function POST(req: Request) {
       )
     }
     return NextResponse.json({ error: 'Aanvraag kon niet worden opgeslagen. Probeer later opnieuw.' }, { status: 500 })
+  }
+
+  if (!isGidsMailConfigured()) {
+    console.error('[gids claim] mail skipped: ZOHO_EMAIL / ZOHO_PASSWORD missing on server')
+    return NextResponse.json(
+      {
+        error:
+          'Claim is tijdelijk niet beschikbaar (e-mail niet geconfigureerd). Mail info@vysionhoreca.com met je gegevens.',
+      },
+      { status: 503 },
+    )
+  }
+
+  try {
+    await sendListingClaimNotificationEmail({
+      listingName: listing.name,
+      listingSlug: listing.slug,
+      listingCity: listing.city ?? '',
+      contactName,
+      contactEmail,
+      contactPhone,
+      btwNumber,
+      message,
+    })
+  } catch (mailErr) {
+    console.error('[gids claim mail]', mailErr)
+    await admin.from('gids_listing_claim_requests').delete().eq('id', insertedRow.id)
+    return NextResponse.json(
+      {
+        error: 'Verzenden mislukt. Probeer later opnieuw of mail rechtstreeks naar info@vysionhoreca.com.',
+      },
+      { status: 503 },
+    )
   }
 
   return NextResponse.json({ ok: true, listingName: listing.name })
