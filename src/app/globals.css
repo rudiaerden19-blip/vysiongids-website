@@ -1943,6 +1943,130 @@ body {
   }
 }
 
+.vysiongids-listing-panel-hiring--with-rating .vysiongids-listing-panel-hiring-inner {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  width: 100%;
+}
+
+.vysiongids-listing-panel-hiring-rating {
+  grid-column: 1;
+  grid-row: 1;
+  justify-self: start;
+  align-self: end;
+  min-width: 0;
+}
+
+.vysiongids-listing-panel-hiring--with-rating .vysiongids-listing-panel-hiring-copy {
+  grid-column: 2;
+  grid-row: 1;
+  flex: none;
+  width: auto;
+  justify-content: center;
+  text-align: center;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.vysiongids-listing-panel-hiring--with-rating.vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-inner {
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+}
+
+.vysiongids-listing-panel-hiring--with-rating.vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-copy {
+  grid-column: 2;
+  grid-row: 1;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.vysiongids-listing-panel-hiring--with-rating.vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-btn-wrap {
+  grid-column: 3;
+  grid-row: 1;
+  justify-self: end;
+  align-self: center;
+  position: static;
+  transform: none;
+  width: auto;
+  max-width: 8.5rem;
+  margin-left: 0;
+}
+
+.vysiongids-listing-panel-hiring--with-rating.vysiongids-listing-panel-hiring--empty .vysiongids-listing-panel-hiring-inner {
+  justify-content: unset;
+}
+
+.vysiongids-listing-panel-hiring--with-rating .vysiongids-star-rating {
+  font-size: 0.8125rem;
+  gap: 0.25rem 0.4rem;
+}
+
+.vysiongids-listing-panel-hiring--with-rating .vysiongids-star-rating-stars {
+  color: #fbbf24;
+}
+
+.vysiongids-listing-panel-hiring--with-rating .vysiongids-star-rating-avg,
+.vysiongids-listing-panel-hiring--with-rating .vysiongids-star-rating-count {
+  color: #fff;
+  font-weight: 600;
+}
+
+.vysiongids-listing-panel-hiring--with-rating .vysiongids-star-rating-link:hover .vysiongids-star-rating-avg,
+.vysiongids-listing-panel-hiring--with-rating .vysiongids-star-rating-link:hover .vysiongids-star-rating-count {
+  color: #e0f2fe;
+}
+
+.vysiongids-listing-panel-hiring--with-rating .vysiongids-star-rating--empty .vysiongids-star-rating-count {
+  color: rgb(255 255 255 / 0.85);
+  font-style: normal;
+  font-size: 0.75rem;
+}
+
+@media (max-width: 639px) {
+  .vysiongids-listing-panel-hiring--with-rating.vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-inner {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .vysiongids-listing-panel-hiring--with-rating.vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-copy {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .vysiongids-listing-panel-hiring--with-rating.vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-rating {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+  }
+
+  .vysiongids-listing-panel-hiring--with-rating.vysiongids-listing-panel-hiring--active .vysiongids-listing-panel-hiring-btn-wrap {
+    grid-column: 2;
+    grid-row: 2;
+    justify-self: end;
+    width: auto;
+    max-width: 8.5rem;
+  }
+}
+
+@media (max-width: 479px) {
+  .vysiongids-listing-panel-hiring--with-rating.vysiongids-listing-panel-hiring--empty .vysiongids-listing-panel-hiring-inner {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .vysiongids-listing-panel-hiring--with-rating.vysiongids-listing-panel-hiring--empty .vysiongids-listing-panel-hiring-copy {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+
+  .vysiongids-listing-panel-hiring--with-rating.vysiongids-listing-panel-hiring--empty .vysiongids-listing-panel-hiring-rating {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+  }
+}
+
 .vysiongids-listing-panel-hiring--empty {
   font-weight: 500;
 }

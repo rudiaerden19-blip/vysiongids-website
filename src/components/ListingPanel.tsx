@@ -3,7 +3,6 @@ import ListingPanelOpenStatus from '@/components/ListingPanelOpenStatus'
 import ListingPanelAmenityFooter from '@/components/ListingPanelAmenityFooter'
 import ListingPhotoSlider from '@/components/ListingPhotoSlider'
 import ListingTopZaakStamp from '@/components/ListingTopZaakStamp'
-import ListingStarRating from '@/components/ListingStarRating'
 import type { Listing } from '@/lib/listing-types'
 import { DAY_LABEL } from '@/lib/gids-opening-hours'
 import { resolveHoursByDay } from '@/lib/listing-info'
@@ -68,9 +67,6 @@ export default function ListingPanel({
                   ) : null}
                 </h2>
               </Link>
-              <div className="vysiongids-listing-panel-title-rating">
-                <ListingStarRating slug={listing.slug} avg={listing.ratingAvg} count={listing.ratingCount} />
-              </div>
             </div>
             <div
               className={`vysiongids-listing-panel-status-col${showTopZaakStamp ? ' vysiongids-listing-panel-status-col--topzaak' : ''}${travelLabel ? ' vysiongids-listing-panel-status-col--has-travel' : ''}`}

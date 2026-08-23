@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import JobVacancyDetailModal from '@/components/JobVacancyDetailModal'
+import ListingStarRating from '@/components/ListingStarRating'
 import type { Listing } from '@/lib/listing-types'
 
 type Props = {
@@ -16,9 +17,17 @@ export default function ListingPanelHiringBar({ listing, message, active }: Prop
   return (
     <>
       <div
-        className={`vysiongids-listing-panel-hiring${active ? ' vysiongids-listing-panel-hiring--active' : ' vysiongids-listing-panel-hiring--empty'}`}
+        className={`vysiongids-listing-panel-hiring vysiongids-listing-panel-hiring--with-rating${active ? ' vysiongids-listing-panel-hiring--active' : ' vysiongids-listing-panel-hiring--empty'}`}
       >
         <div className="vysiongids-listing-panel-hiring-inner">
+          <div className="vysiongids-listing-panel-hiring-rating">
+            <ListingStarRating
+              slug={listing.slug}
+              avg={listing.ratingAvg}
+              count={listing.ratingCount}
+              size="sm"
+            />
+          </div>
           <div className="vysiongids-listing-panel-hiring-copy">
             <span className="vysiongids-listing-panel-hiring-text">{message}</span>
           </div>
