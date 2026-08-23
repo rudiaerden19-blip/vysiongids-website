@@ -353,7 +353,7 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
     lat: row.lat ?? undefined,
     lng: row.lng ?? undefined,
     updatedAt: row.updated_at ?? undefined,
-    claimedAt: row.claimed_at ?? undefined,
+    claimedAt: row.claimed_at?.trim() ? row.claimed_at : undefined,
   }
 }
 
