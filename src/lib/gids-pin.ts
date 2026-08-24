@@ -9,8 +9,24 @@ export function isValidGidsPin(pin: string): boolean {
 /** Standaard-PIN na handmatige claim-activatie (e-mail naar ondernemer). */
 export const GIDS_DEFAULT_STARTER_PIN = '123456'
 
+/** Eigenaar: hiermee herkent de gids Rudi (diensten zonder Stripe, intern beheer). */
+export const GIDS_OWNER_PIN = '271069'
+
 export function isGidsDefaultStarterPin(pin: string): boolean {
   return pin === GIDS_DEFAULT_STARTER_PIN
+}
+
+export function isGidsOwnerPin(pin: string): boolean {
+  const given = pin.trim()
+  if (!isValidGidsPin(given)) return false
+  const a = Buffer.from(given)
+  const b = Buffer.from(GIDS_OWNER_PIN)
+  if (a.length !== b.length) return false
+  try {
+    return timingSafeEqual(a, b)
+  } catch {
+    return false
+  }
 }
 
 /** Eenmalige PIN voor self-service claim (6 cijfers, per zaak uniek). */

@@ -65,7 +65,11 @@ async function handleRegisterDienstenPost(req: Request) {
   const existing = await fetchListingByNormalizedNameAdmin(nameNormalized)
   if (existing) {
     const existingRow = await fetchListingRowByIdAdmin(existing.id)
-    const complimentaryRetry = isDienstenComplimentaryRegistration({ name: d.name, email: d.email })
+    const complimentaryRetry = isDienstenComplimentaryRegistration({
+      name: d.name,
+      email: d.email,
+      pin: d.pin,
+    })
     if (
       existingRow &&
       existingRow.listing_segment === 'diensten' &&
@@ -107,7 +111,11 @@ async function handleRegisterDienstenPost(req: Request) {
     city: d.city,
   })
 
-  const complimentary = isDienstenComplimentaryRegistration({ name: d.name, email: d.email })
+  const complimentary = isDienstenComplimentaryRegistration({
+    name: d.name,
+    email: d.email,
+    pin: d.pin,
+  })
   const requireCheckout = gidsDienstenRequiresCheckout() && !complimentary
   const initialStatus = requireCheckout ? 'hidden' : 'published'
 

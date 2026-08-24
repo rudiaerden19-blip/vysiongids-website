@@ -3,12 +3,12 @@ import {
   GIDS_STAFF_COOKIE,
   gidsStaffSessionCookieOptions,
   isGidsStaffAuthenticated,
-  isGidsStaffPasswordConfigured,
   signGidsStaffSessionToken,
   verifyGidsStaffPassword,
 } from '@/lib/gids-staff-session'
 import { isGidsSessionConfigured } from '@/lib/gids-session'
 import { enforceRateLimit } from '@/lib/gids-rate-limit'
+import { isGidsOwnerPin } from '@/lib/gids-pin'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -20,7 +20,7 @@ export async function GET() {
   const authenticated = await isGidsStaffAuthenticated()
   return NextResponse.json({
     authenticated,
-    configured: isGidsStaffPasswordConfigured() && isGidsSessionConfigured(),
+    configured: isGidsSessionConfigured(),
   })
 }
 
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
   const limited = enforceRateLimit(req, 'gids-staff-login', STAFF_LOGIN_WINDOW_MS, STAFF_LOGIN_MAX_PER_IP)
   if (limited) return limited
 
-  if (!isGidsStaffPasswordConfigured() || !isGidsSessionConfigured()) {
+  if (!isGidsSessionConfigured()) {
     return NextResponse.json({ error: 'Medewerkerslogin niet geconfigureerd.' }, { status: 503 })
   }
 
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Ongeldige aanvraag.' }, { status: 400 })
   }
 
-  if (!verifyGidsStaffPassword(password)) {
+  if (!isGidsOwnerPin(password) && !verifyGidsStaffPassword(password)) {
     return NextResponse.json({ error: 'Onjuiste toegangscode.' }, { status: 401 })
   }
 
