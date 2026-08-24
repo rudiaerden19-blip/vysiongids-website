@@ -65,7 +65,7 @@ export async function POST(req: Request) {
     ? await admin
         .from('gids_listings')
         .select(
-          'id, listing_segment, premium_member, premium_paused, premium_expires_at, diensten_expires_at, status',
+          'id, listing_segment, premium_member, premium_paused, premium_expires_at, diensten_expires_at, diensten_complimentary, status',
         )
         .eq('id', ctx.sellerListingId)
         .maybeSingle()

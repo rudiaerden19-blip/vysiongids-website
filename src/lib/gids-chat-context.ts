@@ -56,6 +56,7 @@ export async function resolveGidsChatContextAdmin(opts: {
     !resolveDienstenListingActive({
       listing_segment: row.listing_segment,
       diensten_expires_at: row.diensten_expires_at,
+      diensten_complimentary: row.diensten_complimentary,
       status: row.status ?? 'published',
     })
   ) {

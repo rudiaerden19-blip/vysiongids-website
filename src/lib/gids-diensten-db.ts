@@ -1,5 +1,5 @@
 import { createGidsSupabaseAdmin } from '@/lib/supabase-gids'
-import { dienstenMembershipDays } from '@/lib/gids-diensten-membership'
+import { dienstenComplimentaryExpiresIso, dienstenMembershipDays } from '@/lib/gids-diensten-membership'
 
 export async function activateGidsDienstenMembershipByIdAdmin(
   listingId: string,
@@ -25,7 +25,35 @@ export async function activateGidsDienstenMembershipByIdAdmin(
   return { ok: true }
 }
 
-/** Zonder Stripe (dev): direct zichtbaar met 1 jaar lidmaatschap. */
+/** Eigenaar/gratis: zichtbaar blijven na PIN-wijziging (complimentary-vlag + verre vervaldatum). */
 export async function grantDienstenMembershipDevByIdAdmin(listingId: string): Promise<void> {
-  await activateGidsDienstenMembershipByIdAdmin(listingId)
+  const admin = createGidsSupabaseAdmin()
+  if (!admin) return
+  const now = new Date()
+  await admin
+    .from('gids_listings')
+    .update({
+      status: 'published',
+      diensten_complimentary: true,
+      diensten_paid_at: now.toISOString(),
+      diensten_expires_at: dienstenComplimentaryExpiresIso(now),
+    })
+    .eq('id', listingId)
+    .eq('listing_segment', 'diensten')
+}
+
+/** Na PIN-wijziging: complimentary-profiel blijft gratis (vlag niet wissen). */
+export async function keepDienstenComplimentaryAfterPinChange(listingId: string): Promise<void> {
+  const admin = createGidsSupabaseAdmin()
+  if (!admin) return
+  await admin
+    .from('gids_listings')
+    .update({
+      diensten_complimentary: true,
+      status: 'published',
+      diensten_expires_at: dienstenComplimentaryExpiresIso(),
+    })
+    .eq('id', listingId)
+    .eq('listing_segment', 'diensten')
+    .eq('diensten_complimentary', true)
 }

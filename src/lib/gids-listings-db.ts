@@ -58,6 +58,7 @@ export type GidsListingRow = {
   service_description?: string | null
   diensten_paid_at?: string | null
   diensten_expires_at?: string | null
+  diensten_complimentary?: boolean | null
   created_at?: string
   updated_at?: string
   claimed_at?: string | null
@@ -111,6 +112,7 @@ const PUBLIC_LISTING_COLUMNS = `
   service_description,
   diensten_paid_at,
   diensten_expires_at,
+  diensten_complimentary,
   created_at,
   updated_at,
   claimed_at
@@ -160,6 +162,7 @@ export const LISTING_BROWSE_SELECT = `
   service_categories,
   service_description,
   diensten_expires_at,
+  diensten_complimentary,
   created_at,
   updated_at,
   claimed_at
@@ -348,6 +351,7 @@ export function mapGidsRowToListing(row: GidsListingRow): Listing {
     dienstenActive: resolveDienstenListingActive({
       listing_segment: row.listing_segment,
       diensten_expires_at: row.diensten_expires_at,
+      diensten_complimentary: row.diensten_complimentary,
       status: row.status ?? 'published',
     }),
     lat: row.lat ?? undefined,

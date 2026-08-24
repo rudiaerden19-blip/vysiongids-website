@@ -20,6 +20,7 @@ export function listingCanUseGidsChatFromRow(
     | 'premium_paused'
     | 'premium_expires_at'
     | 'diensten_expires_at'
+    | 'diensten_complimentary'
     | 'status'
   >,
 ): boolean {
@@ -27,6 +28,7 @@ export function listingCanUseGidsChatFromRow(
     return resolveDienstenListingActive({
       listing_segment: row.listing_segment,
       diensten_expires_at: row.diensten_expires_at,
+      diensten_complimentary: row.diensten_complimentary,
       status: row.status ?? 'published',
     })
   }

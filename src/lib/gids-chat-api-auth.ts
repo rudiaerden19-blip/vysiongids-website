@@ -31,7 +31,7 @@ export async function requireGidsChatOwner(): Promise<GidsChatOwnerContext> {
   const { data: row, error } = await admin
     .from('gids_listings')
     .select(
-      'id, listing_segment, premium_member, premium_paused, premium_expires_at, diensten_expires_at, status',
+      'id, listing_segment, premium_member, premium_paused, premium_expires_at, diensten_expires_at, diensten_complimentary, status',
     )
     .eq('id', session.listingId)
     .maybeSingle()

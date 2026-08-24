@@ -35,7 +35,7 @@ export type GidsStaffListingRow = {
 }
 
 const STAFF_LISTING_SELECT =
-  'id, slug, name, address, city, postcode, status, email, listing_segment, premium_member, premium_paid_at, premium_expires_at, premium_paused, diensten_paid_at, diensten_expires_at, created_at, claimed_at'
+  'id, slug, name, address, city, postcode, status, email, listing_segment, premium_member, premium_paid_at, premium_expires_at, premium_paused, diensten_paid_at, diensten_expires_at, diensten_complimentary, created_at, claimed_at'
 
 function mapStaffListingRow(row: Record<string, unknown>): GidsStaffListingRow {
   const premium_member = row.premium_member === true
@@ -70,6 +70,7 @@ function mapStaffListingRow(row: Record<string, unknown>): GidsStaffListingRow {
     dienstenActive: resolveDienstenListingActive({
       listing_segment,
       diensten_expires_at,
+      diensten_complimentary: row.diensten_complimentary === true,
       status: (row.status as string) ?? 'published',
     }),
     created_at: row.created_at as string,
@@ -227,6 +228,7 @@ export async function applyGidsStaffListingActionAdmin(
       patch = {
         diensten_paid_at: null,
         diensten_expires_at: null,
+        diensten_complimentary: false,
       }
     } else {
       patch = {

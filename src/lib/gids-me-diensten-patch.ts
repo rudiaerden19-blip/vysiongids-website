@@ -7,6 +7,7 @@ import { parseGidsDienstenFormData } from '@/lib/gids-diensten-form-server'
 import { applyGidsOwnerDienstenPhotoPatch } from '@/lib/gids-me-diensten-photo-patch'
 import { geocodeListingAddress } from '@/lib/gids-listing-geocode'
 import { hashGidsPin } from '@/lib/gids-pin'
+import { keepDienstenComplimentaryAfterPinChange } from '@/lib/gids-diensten-db'
 import { normalizeGidsBusinessName, slugifyListing } from '@/lib/gids-text'
 import { ensureGidsPhotosBucket, siteOriginFromRequest } from '@/lib/gids-listing-photos-server'
 import { applyOwnerSessionRefresh, type VerifiedGidsSession } from '@/lib/gids-session'
@@ -116,6 +117,10 @@ export async function patchOwnerDienstenListing(
   if (updateErr) {
     console.error('[gids me patch diensten]', updateErr.message)
     return NextResponse.json({ error: gidsListingSaveErrorMessage(updateErr.message) }, { status: 500 })
+  }
+
+  if (d.pin) {
+    await keepDienstenComplimentaryAfterPinChange(listingId)
   }
 
   revalidateTag('gids-listings', 'max')

@@ -8,6 +8,7 @@ import {
   verifyGidsPin,
 } from '@/lib/gids-pin'
 import { readGidsOwnerSession } from '@/lib/gids-session'
+import { keepDienstenComplimentaryAfterPinChange } from '@/lib/gids-diensten-db'
 
 export async function POST(req: Request) {
   const session = await readGidsOwnerSession()
@@ -84,6 +85,8 @@ export async function POST(req: Request) {
     console.error('[gids change-pin]', updateErr.message)
     return NextResponse.json({ error: 'Opslaan mislukt. Probeer later opnieuw.' }, { status: 500 })
   }
+
+  await keepDienstenComplimentaryAfterPinChange(session.listingId)
 
   return NextResponse.json({ ok: true })
 }
