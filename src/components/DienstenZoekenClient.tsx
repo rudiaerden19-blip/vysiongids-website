@@ -7,6 +7,7 @@ import DienstenListingCard from '@/components/DienstenListingCard'
 import { BELGIUM_PROVINCES } from '@/lib/belgium-locations'
 import { localizedProvinceLabel } from '@/lib/geo-i18n'
 import { GIDS_SERVICE_CATEGORIES } from '@/lib/gids-service-categories'
+import { listingMatchesDienstenQuery } from '@/lib/gids-diensten-search'
 import type { Listing } from '@/lib/listing-types'
 
 type Props = {
@@ -32,17 +33,7 @@ export default function DienstenZoekenClient({ initialListings }: Props) {
       if (prov && listing.province !== prov) return false
       if (cat && !listing.serviceCategories?.includes(cat)) return false
       if (!qNorm) return true
-      const hay = [
-        listing.name,
-        listing.city,
-        listing.postcode,
-        listing.address,
-        listing.serviceDescription ?? '',
-        ...(listing.serviceCategories ?? []),
-      ]
-        .join(' ')
-        .toLowerCase()
-      return qNorm.split(/\s+/).filter(Boolean).every((t) => hay.includes(t))
+      return listingMatchesDienstenQuery(listing, q)
     })
   }, [initialListings, q, cat, prov])
 

@@ -18,10 +18,11 @@ export async function GET(request: Request) {
     nearLat: Number.isFinite(nearLat) ? nearLat : undefined,
     nearLng: Number.isFinite(nearLng) ? nearLng : undefined,
   })
-  const top = search.listings[0]
+  const top = search.listings[0] ?? search.dienstenListings[0]
+  const hasResults = search.listings.length > 0 || search.dienstenListings.length > 0
   return NextResponse.json(
     {
-      hasResults: search.listings.length > 0,
+      hasResults,
       capped: search.capped,
       top: top ? { slug: top.slug, name: top.name } : null,
     },

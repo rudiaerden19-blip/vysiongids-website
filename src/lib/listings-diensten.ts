@@ -1,5 +1,6 @@
 import type { DienstenSearchParams, Listing } from '@/lib/listing-types'
 import { fetchListingBySlugFromDb, fetchPublishedListingsFromDb } from '@/lib/gids-listings-db'
+import { listingMatchesDienstenQuery } from '@/lib/gids-diensten-search'
 import { normalizeSearchText } from '@/lib/gids-text'
 import { compareListingsByName } from '@/lib/listing-alphabetical-sort'
 import { unstable_cache } from 'next/cache'
@@ -13,18 +14,6 @@ const cachedDienstenListings = unstable_cache(
   ['gids-diensten-listings'],
   { revalidate: 60, tags: ['gids-listings'] },
 )
-
-function listingHaystack(listing: Listing): string {
-  const parts = [
-    listing.name,
-    listing.city,
-    listing.postcode,
-    listing.address,
-    listing.serviceDescription ?? '',
-    ...(listing.serviceCategories ?? []),
-  ]
-  return normalizeSearchText(parts.join(' '))
-}
 
 export async function loadDienstenListings(): Promise<Listing[]> {
   const fromDb = await cachedDienstenListings()
@@ -57,9 +46,7 @@ export async function searchDienstenListings(params: DienstenSearchParams): Prom
       if (!listing.serviceCategories?.includes(cat)) return false
     }
     if (!qNorm) return true
-    const hay = listingHaystack(listing)
-    const tokens = qNorm.split(' ').filter(Boolean)
-    return tokens.every((t) => hay.includes(t))
+    return listingMatchesDienstenQuery(listing, params.q ?? '')
   })
 
   results.sort(compareListingsByName)

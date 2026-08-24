@@ -22,6 +22,7 @@ import { compareListingsByName } from '@/lib/listing-alphabetical-sort'
 import { listingDistanceKmFrom } from '@/lib/listing-display'
 import { listingHiringIsActive } from '@/lib/listing-hiring'
 import { listingHasGidsPremium } from '@/lib/gids-premium'
+import { loadDienstenListings, searchDienstenListings } from '@/lib/listings-diensten'
 import { unstable_cache } from 'next/cache'
 
 export {
@@ -48,6 +49,8 @@ export const GIDS_SEARCH_MAX_RESULTS = 200
 
 export type ListingSearchOutcome = {
   listings: Listing[]
+  /** Actieve leveranciers/diensten die op dezelfde zoekterm matchen (niet in horeca-filter). */
+  dienstenListings: Listing[]
   total: number
   capped: boolean
 }
@@ -80,10 +83,14 @@ export async function getListingsForVoiceAction(): Promise<Listing[]> {
   return unstable_cache(
     async () => {
       const fromDb = await fetchPublishedHorecaListingsForVoiceFromDb()
-      if (fromDb) return mergeVoiceListingsWithJson(fromDb)
-      return jsonHorecaListings()
+      const horeca = fromDb ? mergeVoiceListingsWithJson(fromDb) : jsonHorecaListings()
+      const diensten = await loadDienstenListings()
+      const bySlug = new Map<string, Listing>()
+      for (const listing of horeca) bySlug.set(listing.slug, listing)
+      for (const listing of diensten) bySlug.set(listing.slug, listing)
+      return Array.from(bySlug.values())
     },
-    ['gids-voice-listings'],
+    ['gids-voice-listings-v2'],
     { revalidate: 300, tags: ['gids-listings'] },
   )()
 }
@@ -264,7 +271,12 @@ export async function searchListings(params: ListingSearchParams): Promise<Listi
     capped = true
   }
 
-  return { listings: results, total, capped }
+  const qTrim = params.q?.trim() ?? ''
+  const dienstenOutcome = qTrim
+    ? await searchDienstenListings({ q: qTrim, prov: params.prov })
+    : { listings: [] as Listing[], total: 0 }
+
+  return { listings: results, dienstenListings: dienstenOutcome.listings, total, capped }
 }
 
 export async function listingsDataSourceLabel(): Promise<'supabase' | 'json' | 'mixed'> {

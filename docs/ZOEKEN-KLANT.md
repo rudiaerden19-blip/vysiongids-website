@@ -21,8 +21,11 @@ Alles in **één zoekveld** (`q` op home en `/zoeken`). Optioneel: dropdown **ty
 | Broodjeszaak | broodjes, broodjeszaak |
 | Traiteur | traiteur, catering |
 | Sterrenzaak | sterrenzaak, michelin |
+| Bakkerij / slagerij | bakker, bakkerij, slager, beenhouwer, … |
 
-**Combinaties:** «frituur nu open», «pizza met levering in hasselt», «kebab halal genk».
+**Diensten / leveranciers** (zelfde zoekveld, o.a. kassa, POS, meubilair, diensten, zaaknaam zoals Vysion): resultaten onder **Leveranciers & diensten**, daarna horeca.
+
+**Combinaties:** «frituur nu open», «pizza met levering in hasselt», «kebab halal genk», «kassa», «vysion».
 
 ## Nu open
 

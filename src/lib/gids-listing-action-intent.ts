@@ -110,6 +110,13 @@ const TYPE_WORDS = new Set([
   'foodtruck',
   'ijssalon',
   'wijnhandel',
+  'diensten',
+  'dienst',
+  'kassa',
+  'kassasysteem',
+  'leverancier',
+  'publiciteit',
+  'meubilair',
   'eethuis',
   'grill',
   'house',
@@ -267,7 +274,7 @@ async function pickListingForNavigateSearch(
     nearLat: near?.lat,
     nearLng: near?.lng,
   })
-  return search.listings[0] ?? null
+  return search.listings[0] ?? search.dienstenListings[0] ?? null
 }
 
 export function voiceQueryNeedsGeolocation(raw: string): boolean {

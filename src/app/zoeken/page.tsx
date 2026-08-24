@@ -6,6 +6,7 @@ import SearchForm from '@/components/SearchForm'
 import SearchResultsNavContextSync from '@/components/SearchResultsNavContextSync'
 import SearchResultsVoiceAnnouncement from '@/components/SearchResultsVoiceAnnouncement'
 import ZoekenResultsList from '@/components/ZoekenResultsList'
+import DienstenListingCard from '@/components/DienstenListingCard'
 import SiteHeader from '@/components/SiteHeader'
 import { tServer } from '@/i18n/server-translate'
 import { getServerLocale } from '@/i18n/get-server-locale'
@@ -31,6 +32,8 @@ export default async function ZoekenPage({ searchParams }: Props) {
     nearLng: near?.lng,
   })
   const results = search.listings
+  const dienstenResults = search.dienstenListings
+  const hasAnyResults = results.length > 0 || dienstenResults.length > 0
 
   const locale = await getServerLocale()
   const parsedQ = parseListingSearchQuery(sp.q ?? '')
@@ -56,6 +59,8 @@ export default async function ZoekenPage({ searchParams }: Props) {
   const lead = await tServer('zoeken.lead')
   const leadCapped = search.capped ? await tServer('zoeken.leadCapped') : ''
   const emptyResults = await tServer('zoeken.emptyResults')
+  const dienstenHeading = await tServer('zoeken.dienstenHeading')
+  const dienstenAllLink = await tServer('zoeken.dienstenAllLink')
   const showAllLabel = sp.prov?.trim()
     ? await tServer('zoeken.showAllInProvince', { provinceLabel: provLabel ?? sp.prov!.trim() })
     : await tServer('zoeken.showAll')
@@ -84,7 +89,10 @@ export default async function ZoekenPage({ searchParams }: Props) {
           <NearbySearchHintBanner />
           <SearchResultsVoiceAnnouncement />
           <SearchResultsNavContextSync
-            listings={results.map((l) => ({ slug: l.slug, name: l.name }))}
+            listings={[
+              ...dienstenResults.map((l) => ({ slug: l.slug, name: l.name })),
+              ...results.map((l) => ({ slug: l.slug, name: l.name })),
+            ]}
             query={sp.q}
           />
         </Suspense>
@@ -95,7 +103,7 @@ export default async function ZoekenPage({ searchParams }: Props) {
           </div>
         </Suspense>
 
-        {results.length === 0 ? (
+        {!hasAnyResults ? (
           <div
             style={{
               borderRadius: '0.75rem',
@@ -114,11 +122,32 @@ export default async function ZoekenPage({ searchParams }: Props) {
             </Link>
           </div>
         ) : (
-          <ZoekenResultsList
-            listings={results}
-            initialNear={near}
-            sortByDistance={Boolean(near && (parsedQ.nearby || parsedQ.openNow))}
-          />
+          <>
+            {dienstenResults.length > 0 ? (
+              <section className="vysiongids-zoeken-diensten" aria-label={dienstenHeading}>
+                <div className="vysiongids-zoeken-diensten-head">
+                  <h2 className="vysiongids-zoeken-diensten-title">{dienstenHeading}</h2>
+                  <Link href="/diensten" className="vysiongids-zoeken-diensten-all">
+                    {dienstenAllLink}
+                  </Link>
+                </div>
+                <ul className="vysiongids-diensten-results">
+                  {dienstenResults.map((listing) => (
+                    <li key={listing.slug}>
+                      <DienstenListingCard listing={listing} />
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            ) : null}
+            {results.length > 0 ? (
+              <ZoekenResultsList
+                listings={results}
+                initialNear={near}
+                sortByDistance={Boolean(near && (parsedQ.nearby || parsedQ.openNow))}
+              />
+            ) : null}
+          </>
         )}
       </main>
     </>

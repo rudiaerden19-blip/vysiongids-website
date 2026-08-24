@@ -1876,8 +1876,40 @@ body {
 }
 
 .vysiongids-zoeken-search {
+
   width: 100%;
   max-width: none;
+}
+
+.vysiongids-zoeken-diensten {
+  margin: 0 0 2rem;
+}
+
+.vysiongids-zoeken-diensten-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  margin: 0 0 1rem;
+}
+
+.vysiongids-zoeken-diensten-title {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #111827;
+}
+
+.vysiongids-zoeken-diensten-all {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: #0e5d82;
+  text-decoration: none;
+}
+
+.vysiongids-zoeken-diensten-all:hover {
+  text-decoration: underline;
 }
 
 .vysiongids-listing-panel {
