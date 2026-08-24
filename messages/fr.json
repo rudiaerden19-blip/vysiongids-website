@@ -125,7 +125,7 @@
     "popularCityChip": "Horeca à {city}"
   },
   "search": {
-    "heroTitle": "Commander à manger",
+    "heroTitle": "Commander à manger Chercher des entreprises",
     "queryLabel": "Ville, code postal ou nom",
     "typeLabel": "Type d’établissement",
     "placeholder": "Ex. friterie, caisse, boulangerie, services, ville, ouvert",

@@ -125,7 +125,7 @@
     "popularCityChip": "Horeca in {city}"
   },
   "search": {
-    "heroTitle": "Eten bestellen",
+    "heroTitle": "Eten bestellen Bedrijven zoeken",
     "queryLabel": "Stad, postcode of naam",
     "typeLabel": "Type zaak",
     "placeholder": "Bv frituur, kassa, bakker, diensten, stad, nu open",

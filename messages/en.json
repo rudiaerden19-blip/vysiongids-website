@@ -125,7 +125,7 @@
     "popularCityChip": "Hospitality in {city}"
   },
   "search": {
-    "heroTitle": "Order food",
+    "heroTitle": "Order food Find businesses",
     "queryLabel": "City, postcode or name",
     "typeLabel": "Business type",
     "placeholder": "E.g. chip shop, POS, bakery, services, city, open now",
