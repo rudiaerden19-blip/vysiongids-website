@@ -1,7 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 const FALLBACK = '/images/placeholder-frituur.svg'
 
@@ -25,11 +25,9 @@ export default function ListingPhoto({
   objectFit = 'cover',
   layout = 'fill',
 }: Props) {
-  const [currentSrc, setCurrentSrc] = useState(src || FALLBACK)
-
-  useEffect(() => {
-    setCurrentSrc(src?.trim() || FALLBACK)
-  }, [src])
+  const incoming = src?.trim() || FALLBACK
+  const [failedSrc, setFailedSrc] = useState<string | null>(null)
+  const currentSrc = failedSrc === incoming ? FALLBACK : incoming
 
   if (layout === 'intrinsic') {
     return (
@@ -43,7 +41,7 @@ export default function ListingPhoto({
         className={className}
         style={{ width: '100%', height: 'auto', display: 'block' }}
         onError={() => {
-          if (currentSrc !== FALLBACK) setCurrentSrc(FALLBACK)
+          if (incoming !== FALLBACK) setFailedSrc(incoming)
         }}
       />
     )
@@ -59,7 +57,7 @@ export default function ListingPhoto({
       className={className}
       style={{ objectFit, objectPosition: 'center' }}
       onError={() => {
-        if (currentSrc !== FALLBACK) setCurrentSrc(FALLBACK)
+        if (incoming !== FALLBACK) setFailedSrc(incoming)
       }}
     />
   )

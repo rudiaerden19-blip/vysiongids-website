@@ -2444,6 +2444,11 @@ body {
   opacity: 1;
 }
 
+.vysiongids-listing-photo-slider-stage--no-fade {
+  opacity: 1;
+  transition: none;
+}
+
 .vysiongids-listing-photo-slider-dots {
   position: absolute;
   bottom: 0.5rem;

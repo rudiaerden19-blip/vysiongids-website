@@ -18,6 +18,7 @@ export default function DienstenDetailGallery({ urls, alt }: Props) {
         .map((publicUrl) => ({ publicUrl: publicUrl! })),
     [urls],
   )
+  const sliderUrls = useMemo(() => photos.map((p) => p.publicUrl), [photos])
   const [slideIndex, setSlideIndex] = useState(0)
   const [lightboxOpen, setLightboxOpen] = useState(false)
 
@@ -35,14 +36,14 @@ export default function DienstenDetailGallery({ urls, alt }: Props) {
     <div className="vysiongids-diensten-detail-gallery">
       <div className="vysiongids-diensten-detail-gallery-stage">
         <ListingPhotoSlider
-          urls={photos.map((p) => p.publicUrl)}
+          urls={sliderUrls}
           alt={alt}
           sizes="(max-width: 768px) 100vw, 480px"
           showControls
           priority
           objectFit="contain"
           onSlideIndexChange={setSlideIndex}
-          activeIndex={slideIndex}
+          activeIndex={lightboxOpen ? slideIndex : undefined}
         />
       </div>
       <button

@@ -46,11 +46,17 @@ export default function ListingPhotoSlider({
   onSlideIndexChange,
   activeIndex,
 }: Props) {
-  const slides = useMemo(() => uniqueUrls(urls), [urls])
+  const slidesKey = urls
+    .map((u) => (u ?? '').trim())
+    .filter(Boolean)
+    .join('\n')
+  const slides = useMemo(() => (slidesKey ? uniqueUrls(slidesKey.split('\n')) : []), [slidesKey])
   const [index, setIndex] = useState(0)
   const [visible, setVisible] = useState(true)
   const fadeTimeoutRef = useRef<number | null>(null)
+  const lastNotifiedIndex = useRef<number | null>(null)
   const total = slides.length
+  const noFade = showControls && !autoPlay
 
   const clearFadeTimeout = useCallback(() => {
     if (fadeTimeoutRef.current !== null) {
@@ -64,7 +70,7 @@ export default function ListingPhotoSlider({
       if (total <= 1) return
       clearFadeTimeout()
       // Handmatige slider: geen fade (voorkomt flikkeren bij contain/intrinsic layout).
-      if (showControls && !autoPlay) {
+      if (noFade) {
         setIndex((i) => (i + delta + total) % total)
         setVisible(true)
         return
@@ -76,7 +82,7 @@ export default function ListingPhotoSlider({
         fadeTimeoutRef.current = null
       }, FADE_MS)
     },
-    [autoPlay, clearFadeTimeout, showControls, total],
+    [clearFadeTimeout, noFade, total],
   )
 
   const goPrev = useCallback(() => advance(-1), [advance])
@@ -94,20 +100,21 @@ export default function ListingPhotoSlider({
   useEffect(() => {
     setIndex(0)
     setVisible(true)
-  }, [slides])
+    lastNotifiedIndex.current = null
+  }, [slidesKey])
 
   useEffect(() => {
+    if (lastNotifiedIndex.current === index) return
+    lastNotifiedIndex.current = index
     onSlideIndexChange?.(index)
   }, [index, onSlideIndexChange])
 
   useEffect(() => {
     if (activeIndex === undefined || total === 0) return
     const next = ((activeIndex % total) + total) % total
-    if (next !== index) {
-      setIndex(next)
-      setVisible(true)
-    }
-  }, [activeIndex, total, index])
+    setIndex((i) => (i === next ? i : next))
+    setVisible(true)
+  }, [activeIndex, total])
 
   if (total === 0) {
     return (
@@ -156,13 +163,18 @@ export default function ListingPhotoSlider({
     layout === 'intrinsic'
       ? 'vysiongids-listing-photo-slider vysiongids-listing-photo-slider--intrinsic'
       : 'vysiongids-listing-photo-slider'
+  const stageVisible = visible || noFade
+  const stageClass = [
+    'vysiongids-listing-photo-slider-stage',
+    stageVisible ? 'is-visible' : '',
+    noFade ? 'vysiongids-listing-photo-slider-stage--no-fade' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
     <div className={sliderClass}>
-      <div
-        className={`vysiongids-listing-photo-slider-stage ${visible ? 'is-visible' : ''}`}
-        aria-live="polite"
-      >
+      <div className={stageClass} aria-live="polite">
         <ListingPhoto
           src={src}
           alt={`${alt} — foto ${index + 1} van ${total}`}
