@@ -38,31 +38,23 @@ function daysSinceLaunch(now: Date, anchorKey = STATS_SEARCH_LAUNCH_KEY): number
   return Math.max(0, Math.floor((currentUtc - anchorUtc) / 86400000))
 }
 
-function utcDateKeyAfterDays(anchorKey: string, dayOffset: number): string {
-  const [ay, am, ad] = anchorKey.split('-').map(Number)
-  const t = Date.UTC(ay, am - 1, ad + dayOffset)
-  const d = new Date(t)
-  const y = d.getUTCFullYear()
-  const m = String(d.getUTCMonth() + 1).padStart(2, '0')
-  const day = String(d.getUTCDate()).padStart(2, '0')
-  return `${y}-${m}-${day}`
-}
-
-const DIENSTEN_VISITORS_BASE = 80
 const DIENSTEN_VISITORS_LAUNCH = STATS_SEARCH_LAUNCH_KEY
-const DIENSTEN_VISITOR_DAY_DELTAS = [75, 70, 40, 100, 55, 90, 35, 65, 110, 45, 80, 50] as const
+/** Duidelijk verschillende niveaus per bedrijf — niet allemaal ~900. */
+const DIENSTEN_VISITOR_BANDS = [600, 800, 1300, 2000] as const
 
-/** Bezoekers op dienstenkaart: start 80, per dag wisselende stijging (per slug stabiel). */
+/**
+ * Bezoekers op dienstenkaart: per slug een vast populariteitsniveau
+ * (rond 600 / 800 / 1300 / 2000) plus kleine dagelijkse groei.
+ * Oude optelling van vergelijkbare dagsprongen liet alle bedrijven samenvallen.
+ */
 export function dienstenListingVisitorsDisplay(slug: string, now = new Date()): number {
   const slugNorm = slug.trim().toLowerCase() || 'leverancier'
+  const seed = hashDateKey(`${slugNorm}|visitors-band`)
+  const band = DIENSTEN_VISITOR_BANDS[seed % DIENSTEN_VISITOR_BANDS.length]!
+  const jitter = (hashDateKey(`${slugNorm}|visitors-jitter`) % 241) - 120
   const dayCount = daysSinceLaunch(now, DIENSTEN_VISITORS_LAUNCH)
-  let total = DIENSTEN_VISITORS_BASE
-  for (let i = 0; i < dayCount; i++) {
-    const dayKey = utcDateKeyAfterDays(DIENSTEN_VISITORS_LAUNCH, i)
-    const h = hashDateKey(`${slugNorm}|visitors|${dayKey}`)
-    total += DIENSTEN_VISITOR_DAY_DELTAS[h % DIENSTEN_VISITOR_DAY_DELTAS.length]!
-  }
-  return total
+  const daily = 2 + (hashDateKey(`${slugNorm}|visitors-daily`) % 10)
+  return Math.max(180, band + jitter + dayCount * daily)
 }
 
 function hashDateKey(key: string): number {
