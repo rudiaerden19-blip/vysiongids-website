@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
 import SiteFooter from '@/components/SiteFooter'
 import ScrollToTopOnNavigation from '@/components/ScrollToTopOnNavigation'
 import { GlobalAutoCapitalize } from '@/components/GlobalAutoCapitalize'
@@ -59,6 +60,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <SiteFooter />
         </LanguageProvider>
+        <Analytics />
       </body>
     </html>
   )
